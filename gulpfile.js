@@ -30,3 +30,11 @@ gulp.task('tdd', function(done) {
     configFile: __dirname + '/karma.conf.js'
   }, done);
 });
+
+gulp.task('test', function(done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true,
+    browsers: ['PhantomJS']
+  }, done);
+});

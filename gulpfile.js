@@ -24,6 +24,13 @@
 
 var gulp = require('gulp');
 var karma = require('karma').server;
+var jshint = require('gulp-jshint');
+
+gulp.task('lint', function() {
+  gulp.src("./src/**/*.js")
+    .pipe(jshint())
+    .pipe(jshint.reporter("default"));
+});
 
 gulp.task('tdd', function(done) {
   karma.start({
@@ -38,3 +45,5 @@ gulp.task('test', function(done) {
     browsers: ['PhantomJS']
   }, done);
 });
+
+gulp.task('default', ['lint', 'test']);

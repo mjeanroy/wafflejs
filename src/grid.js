@@ -45,9 +45,9 @@ Grid.prototype = {
   }
 };
 
-forEach(['forEach', 'map'], function(fn) {
+$util.forEach(['forEach', 'map'], function(fn) {
   Grid.prototype[fn] = function() {
-    var args = [this].concat(clone(arguments));
-    return utils[fn].apply(this, args);
+    var args = [this].concat($util.clone(arguments));
+    return $util[fn].apply(this, args);
   };
 });

@@ -31,7 +31,7 @@
  * replace this utility object by underscore or lodash.
  */
 
-var Util = {
+var $util = {
   // Clone array
   clone: function(array) {
     return [].slice.call(array);
@@ -53,7 +53,3 @@ var Util = {
     return newArray;
   }
 };
-
-// Shortcuts
-var forEach = Util.forEach;
-var clone = Util.clone;

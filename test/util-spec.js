@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-describe('Util', function() {
+describe('$util', function() {
 
   it('clone should clone to new array', function() {
     var array = [1, 2, 3];
 
-    var newArray = Util.clone(array);
+    var newArray = $util.clone(array);
 
     expect(array).toEqual([1, 2, 3]);
     expect(newArray).toEqual(array);
@@ -38,7 +38,7 @@ describe('Util', function() {
     var callback = jasmine.createSpy('callback');
     var array = [1, 2, 3];
 
-    Util.forEach(array, callback);
+    $util.forEach(array, callback);
 
     expect(array).toEqual([1, 2, 3]);
     expect(callback).toHaveBeenCalledWith(1, 0, array);
@@ -53,7 +53,7 @@ describe('Util', function() {
 
     var array = [1, 2, 3];
 
-    var results = Util.map(array, callback);
+    var results = $util.map(array, callback);
 
     expect(results).toEqual([2, 4, 6]);
     expect(array).toEqual([1, 2, 3]);

@@ -13,7 +13,7 @@
     "karma-phantomjs-launcher": "0.1.4"
   },
   "engines": {
-    "node": ">=0.9.0"
+    "node": ">=0.10.0"
   },
   "scripts": {
     "test": "gulp test"

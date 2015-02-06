@@ -24,7 +24,7 @@
 
 describe('$util', function() {
 
-  it('clone should clone to new array', function() {
+  it('should clone to new array', function() {
     var array = [1, 2, 3];
 
     var newArray = $util.clone(array);
@@ -34,7 +34,7 @@ describe('$util', function() {
     expect(newArray).not.toBe(array);
   });
 
-  it('forEach should apply callback for each array element', function() {
+  it('should apply callback for each array element', function() {
     var callback = jasmine.createSpy('callback');
     var array = [1, 2, 3];
 
@@ -46,7 +46,7 @@ describe('$util', function() {
     expect(callback).toHaveBeenCalledWith(3, 2, array);
   });
 
-  it('map should apply callback and return new array with results', function() {
+  it('should apply callback and return new array with results', function() {
     var callback = jasmine.createSpy('callback').and.callFake(function(value) {
       return value * 2;
     });

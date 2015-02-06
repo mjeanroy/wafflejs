@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,7 @@
  * SOFTWARE.
  */
 
-describe('sanitize', function() {
-
-  it('should escape html string', function() {
-    var html = '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>';
-    expect($sanitize(html)).toBe('&lt;em onmouseover="this.textContent=\'PWN3D!\'"&gt;click here&lt;/em&gt;');
-  });
-
-  it('should not change safe string', function() {
-    expect($sanitize('foo')).toBe('foo');
-  });
-});
+(function(window, document, undefined){
+"use strict";
+<%= contents %>
+})(window, document, void 0);

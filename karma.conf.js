@@ -40,6 +40,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'src/utils.js',
+      'src/dom.js',
       'src/grid.js',
       'test/**/*.js'
     ],

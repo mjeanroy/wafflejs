@@ -23,8 +23,23 @@
  */
 
 var $doc = {
+  // Create dom element
   create: function(tagName) {
     return document.createElement(tagName);
+  },
+
+  // Find element by its id
+  // To have a consistent api, this function will return an array of element.
+  // If id does not exist, it will return an empty array.
+  byId: function(id) {
+    var node = document.getElementById(id);  
+    return !!node ? [node] : [];
+  },
+
+  // Find element by tags.
+  // This function will return an "array like" of dom elements.
+  byTagName: function(tagName, parentNode) {
+    return (parentNode || document).getElementsByTagName(tagName);
   }
 };
 

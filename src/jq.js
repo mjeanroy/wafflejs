@@ -22,39 +22,60 @@
  * SOFTWARE.
  */
 
-/**
- * Set of utilities.
- * The goal of this module is to provide a set of static
- * utilities.
- *
- * Keep underscore compatibility as it should remain easy to
- * replace this utility object by underscore or lodash.
- */
+var jq = function(nodes) {
+  if (nodes instanceof jq) {
+  	return nodes;
+  }
 
-var $util = {
-  // Check that given object is a DOM element
-  isElement: function(obj) {
-    return !!(obj && obj.nodeType === 1);
+  if (!(this instanceof jq)) {
+    return new jq(nodes);
+  }
+
+  if ($util.isElement(nodes)) {
+    nodes = [nodes];
+  }
+
+  $util.forEach(nodes, function(node, idx) {
+    this[idx] = node;
+  }, this);
+
+  this.length = nodes.length;
+};
+
+jq.prototype = {
+  $$each: function(fn) {
+    this.forEach(fn);
+    return this;
   },
 
-  // Clone array
-  clone: function(array) {
-    return [].slice.call(array);
+  // Clear node
+  empty: function() {
+    return this.$$each(function(node) {
+      while (node.firstChild) {
+        node.removeChild(node.firstChild);
+      }
+    });
   },
 
-  // Apply callback for each item of array
-  forEach: function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
-      callback.call(ctx, array[i], i, array);
-    }
+  // Remove node from DOM
+  remove: function() {
+    return this.$$each(function(node) {
+      node.parentNode.removeChild(node);
+    });
   },
 
-  // Map array to a new array using callback results
-  map: function(array, callback, ctx) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
-      newArray[i] = callback.call(ctx, array[i], i, array);
-    }
-    return newArray;
+  // Append node
+  append: function(childNode) {
+    return this.$$each(function(node, idx) {
+      var child = idx > 0 ? childNode.cloneNode(true) : childNode;
+      node.appendChild(child);
+    });
   }
 };
+
+$util.forEach(['forEach'], function(fnName) {
+  jq.prototype[fnName] = function() {
+    var args = [this].concat($util.clone(arguments));
+    return $util[fnName].apply($util, args);
+  };
+});

@@ -24,6 +24,16 @@
 
 describe('$util', function() {
 
+  it('should check if object is a dom element', function() {
+    expect($util.isElement(undefined)).toBe(false);
+    expect($util.isElement(null)).toBe(false);
+    expect($util.isElement(1)).toBe(false);
+    expect($util.isElement('foo')).toBe(false);
+    expect($util.isElement(true)).toBe(false);
+
+    expect($util.isElement(document.createElement('div'))).toBe(true);
+  });
+
   it('should clone to new array', function() {
     var array = [1, 2, 3];
 

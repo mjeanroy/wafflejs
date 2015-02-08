@@ -41,6 +41,7 @@ module.exports = function(config) {
     files: [
       'src/utils.js',
       'src/dom.js',
+      'src/jq.js',
       'src/grid.js',
       'test/**/*.js'
     ],

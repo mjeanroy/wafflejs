@@ -24,6 +24,57 @@
 
 describe('$doc', function() {
 
+  var fixtures;
+
+  beforeEach(function() {
+    fixtures = document.createElement('div');
+    fixtures.setAttribute('id', 'fixtures');
+
+    var node1 = document.createElement('span');
+    node1.setAttribute('id', 'span1');
+    fixtures.appendChild(node1);
+
+    var node2 = document.createElement('span');
+    node2.setAttribute('id', 'span2');
+    fixtures.appendChild(node2);
+
+    document.body.appendChild(fixtures);
+  });
+
+  afterEach(function() {
+    fixtures.parentNode.removeChild(fixtures);
+  });
+
+  it('should find element by id', function() {
+    var node = $doc.byId('span1');
+    var unknownNode = $doc.byId('foo');
+
+    expect(node).toBeDefined();
+    expect(node.length).toBe(1);
+
+    expect(unknownNode).toBeDefined();
+    expect(unknownNode.length).toBe(0);
+  });
+
+  it('should find element by tag name', function() {
+    var nodes = $doc.byTagName('span');
+    var unknownNodes = $doc.byTagName('foo');
+    expect(nodes).toBeDefined();
+    expect(nodes.length).toBe(2);
+
+    expect(unknownNodes).toBeDefined();
+    expect(unknownNodes.length).toBe(0);
+  });
+
+  it('should find element by tag name of parent node', function() {
+    spyOn(fixtures, 'getElementsByTagName').and.callThrough();
+    var nodes = $doc.byTagName('span', fixtures);
+
+    expect(fixtures.getElementsByTagName).toHaveBeenCalled();
+    expect(nodes).toBeDefined();
+    expect(nodes.length).toBe(2);
+  });
+
   it('should create tr element', function() {
     var node = $doc.tr();
     expect(node).toBeDefined();

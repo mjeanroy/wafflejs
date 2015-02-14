@@ -32,6 +32,22 @@
  */
 
 var $util = {
+  // Check if given object is undefined
+  isUndefined: function(obj) {
+    return typeof obj === 'undefined';
+  },
+
+  // Check if given object is null
+  isNull: function(obj) {
+    return obj === null;
+  },
+
+  // Check if given object is a plain old javascript object
+  isObject: function(obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+  },
+
   // Check that given object is a DOM element
   isElement: function(obj) {
     return !!(obj && obj.nodeType === 1);

@@ -24,6 +24,22 @@
 
 describe('$util', function() {
 
+  it('should check if object is undefined', function() {
+    expect($util.isUndefined(undefined)).toBe(true);
+    expect($util.isUndefined(null)).toBe(false);
+    expect($util.isUndefined(0)).toBe(false);
+    expect($util.isUndefined('')).toBe(false);
+    expect($util.isUndefined(NaN)).toBe(false);
+  });
+
+  it('should check if object is null', function() {
+    expect($util.isNull(null)).toBe(true);
+    expect($util.isNull(undefined)).toBe(false);
+    expect($util.isNull(0)).toBe(false);
+    expect($util.isNull('')).toBe(false);
+    expect($util.isNull(NaN)).toBe(false);
+  });
+
   it('should check if object is a dom element', function() {
     expect($util.isElement(undefined)).toBe(false);
     expect($util.isElement(null)).toBe(false);
@@ -70,5 +86,5 @@ describe('$util', function() {
     expect(callback).toHaveBeenCalledWith(1, 0, array);
     expect(callback).toHaveBeenCalledWith(2, 1, array);
     expect(callback).toHaveBeenCalledWith(3, 2, array);
-  })
+  });
 });

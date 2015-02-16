@@ -140,6 +140,10 @@ describe('collection', function() {
       expect(collection.toLocaleString()).toBe('1,2');
     });
 
+    it('should get json representation', function() {
+      expect(collection.toJSON()).toEqual(JSON.stringify([o1, o2]));
+    });
+
     it('should check if collection is empty', function() {
       expect(new Collection().isEmpty()).toBe(true);
       expect(collection.isEmpty()).toBe(false);

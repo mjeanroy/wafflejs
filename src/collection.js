@@ -190,6 +190,12 @@ Collection.prototype = {
       key: this.$key,
       model: this.$model
     });
+  },
+
+  // Custom json representation
+  // Need JSON.stringify to be available
+  toJSON: function() {
+    return JSON.stringify(this.toArray());
   }
 };
 

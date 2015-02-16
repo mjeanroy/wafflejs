@@ -164,6 +164,8 @@ $util.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filt
 
 $util.forEach(['toString', 'toLocaleString', 'join'], function(fn) {
   Collection.prototype[fn] = function() {
-    return Array.prototype[fn].apply(this, arguments);
+    // Make PhantomJS 1.x happy: context need to be a "real" array.
+    var array = $util.clone(this);
+    return Array.prototype[fn].apply(array, arguments);
   }
 });

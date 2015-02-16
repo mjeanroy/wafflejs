@@ -329,5 +329,29 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
+
+    it('should find element in collection', function() {
+      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
+        return current.id === 2;
+      });
+
+      var result = collection.find(callback);
+
+      expect(result).toBe(collection[1]);
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
+
+    it('should find element index in collection', function() {
+      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
+        return current.id === 2;
+      });
+
+      var result = collection.findIndex(callback);
+
+      expect(result).toBe(1);
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
   });
 });

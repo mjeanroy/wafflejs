@@ -221,4 +221,28 @@ describe('$util', function() {
     expect(callback).toHaveBeenCalledWith(3, 2, array);
     expect(callback).toHaveBeenCalledWith(4, 3, array);
   });
+
+  it('should find element in array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 === 0;
+    });
+
+    var a1 = [1, 2, 3, 4];
+    var a2 = [1, 3, 5];
+
+    var r1 = $util.find(a1, callback);
+    var r2 = $util.find(a2, callback);
+
+    expect(r1).toBe(2);
+    expect(r2).toBeUndefined();
+
+    expect(callback).toHaveBeenCalledWith(1, 0, a1);
+    expect(callback).toHaveBeenCalledWith(2, 1, a1);
+    expect(callback).not.toHaveBeenCalledWith(3, 2, a1);
+    expect(callback).not.toHaveBeenCalledWith(4, 3, a1);
+
+    expect(callback).toHaveBeenCalledWith(1, 0, a2);
+    expect(callback).toHaveBeenCalledWith(3, 1, a2);
+    expect(callback).toHaveBeenCalledWith(5, 2, a2);
+  });
 });

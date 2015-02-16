@@ -141,5 +141,17 @@ var $util = {
     }
 
     return step;
+  },
+
+  // Looks through each value in the list, returning the first one that
+  // passes a truth test (predicate), or undefined if no value passes the test.
+  // The function returns as soon as it finds an acceptable element, and doesn't traverse the entire list.
+  find: function(array, callback, ctx) {
+    for (var i = 0, size = array.length; i < size; ++i) {
+      if (callback.call(ctx, array[i], i, array)) {
+        return array[i];
+      }
+    }
+    return undefined;
   }
 };

@@ -121,6 +121,17 @@ Collection.prototype = {
     return this[index];
   },
 
+  // Returns an index in the array, if an element in the array
+  // satisfies the provided testing function. Otherwise -1 is returned.
+  findIndex: function(callback, ctx) {
+    for (var i = 0, size = this.length; i < size; ++i) {
+      if (callback.call(ctx, this[i], i, this)) {
+        return i;
+      }
+    }
+    return -1;
+  },
+
   // Adds one or more elements to the end of the collection
   // and returns the new length of the collection.
   // Semantic is the same as [].push function
@@ -172,7 +183,7 @@ Collection.prototype = {
   }
 };
 
-$util.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter'], function(fn) {
+$util.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'find'], function(fn) {
   Collection.prototype[fn] = function() {
     var args = [this].concat($util.clone(arguments));
     return $util[fn].apply($util, args);

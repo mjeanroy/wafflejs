@@ -36,7 +36,7 @@
  *  - Key identifier must be a simple type (numeric, string or
  *    boolean).
  *
- * TODO splice ; slice ; indexOf ; lastIndexOf
+ * TODO splice ; reverse
  */
 
 var Collection = function(data, options) {
@@ -152,6 +152,23 @@ Collection.prototype = {
   // and returns that element.
   shift: function() {
     return this.$$removeAt(0);
+  },
+
+  // Return array object
+  toArray: function() {
+    return $util.clone(this);
+  },
+
+  // returns a shallow copy of a portion of the collection
+  // into a new collection object.
+  slice: function() {
+    // Make PhantomJS 1.x happy: context need to be a "real" array.
+    var array = $util.clone(this);
+    var results = Array.prototype.slice.apply(this.toArray(), arguments);
+    return new Collection(results, {
+      key: this.$key,
+      model: this.$model
+    });
   }
 };
 
@@ -162,10 +179,9 @@ $util.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filt
   };
 });
 
-$util.forEach(['toString', 'toLocaleString', 'join'], function(fn) {
+$util.forEach(['toString', 'toLocaleString', 'join', 'indexOf', 'lastIndexOf'], function(fn) {
   Collection.prototype[fn] = function() {
     // Make PhantomJS 1.x happy: context need to be a "real" array.
-    var array = $util.clone(this);
-    return Array.prototype[fn].apply(array, arguments);
-  }
+    return Array.prototype[fn].apply(this.toArray(), arguments);
+  };
 });

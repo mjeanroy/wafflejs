@@ -219,6 +219,33 @@ describe('collection', function() {
       });
     });
 
+    it('should slice entire collection', function() {
+      expect(collection.slice()).toEqual(collection);
+      expect(collection.slice(0)).toEqual(collection);
+      expect(collection.slice(0, collection.length)).toEqual(collection);
+    });
+
+    it('should slice part of collection', function() {
+      var results = collection.slice(0, 1);
+      expect(results.length).toBe(1);
+      expect(results[0]).toBe(collection[0]);
+      expect(results.$map).toEqual({
+        1: 0
+      });
+    });
+
+    it('should get index of element', function() {
+      expect(collection.indexOf(o1)).toBe(0);
+      expect(collection.indexOf(o2)).toBe(1);
+      expect(collection.indexOf({ id: 3 })).toBe(-1);
+    });
+
+    it('should get last index of element', function() {
+      expect(collection.lastIndexOf(o1)).toBe(0);
+      expect(collection.lastIndexOf(o2)).toBe(1);
+      expect(collection.lastIndexOf({ id: 3 })).toBe(-1);
+    });
+
     it('should apply callback on each elements', function() {
       var callback = jasmine.createSpy('callback');
 

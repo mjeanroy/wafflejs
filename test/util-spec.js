@@ -40,6 +40,16 @@ describe('$util', function() {
     expect($util.isNull(NaN)).toBe(false);
   });
 
+  it('should check if object is a function', function() {
+    expect($util.isFunction(null)).toBe(false);
+    expect($util.isFunction(undefined)).toBe(false);
+    expect($util.isFunction(0)).toBe(false);
+    expect($util.isFunction('')).toBe(false);
+    expect($util.isFunction(NaN)).toBe(false);
+
+    expect($util.isFunction(function() {})).toBe(true);
+  });
+
   it('should check if object is a dom element', function() {
     expect($util.isElement(undefined)).toBe(false);
     expect($util.isElement(null)).toBe(false);
@@ -86,5 +96,129 @@ describe('$util', function() {
     expect(callback).toHaveBeenCalledWith(1, 0, array);
     expect(callback).toHaveBeenCalledWith(2, 1, array);
     expect(callback).toHaveBeenCalledWith(3, 2, array);
+  });
+
+  it('should check if every elements of array statisfy callback', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 === 0;
+    });
+
+    var array1 = [1, 2, 3];
+    var array2 = [2, 4, 6];
+
+    var r1 = $util.every(array1, callback);
+
+    expect(r1).toBe(false);
+    expect(callback).toHaveBeenCalledWith(1, 0, array1);
+    expect(callback).not.toHaveBeenCalledWith(2, 1, array1);
+    expect(callback).not.toHaveBeenCalledWith(3, 2, array1);
+
+    var r2 = $util.every(array2, callback);
+
+    expect(r2).toBe(true);
+    expect(callback).toHaveBeenCalledWith(2, 0, array2);
+    expect(callback).toHaveBeenCalledWith(4, 1, array2);
+    expect(callback).toHaveBeenCalledWith(6, 2, array2);
+  });
+
+  it('should check if some elements of array statisfy callback', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 === 0;
+    });
+
+    var array1 = [1, 3, 5];
+    var array2 = [2, 4, 6];
+
+    var r1 = $util.some(array1, callback);
+
+    expect(r1).toBe(false);
+    expect(callback).toHaveBeenCalledWith(1, 0, array1);
+    expect(callback).toHaveBeenCalledWith(3, 1, array1);
+    expect(callback).toHaveBeenCalledWith(5, 2, array1);
+
+    var r2 = $util.some(array2, callback);
+
+    expect(r2).toBe(true);
+    expect(callback).toHaveBeenCalledWith(2, 0, array2);
+    expect(callback).not.toHaveBeenCalledWith(4, 1, array2);
+    expect(callback).not.toHaveBeenCalledWith(6, 2, array2);
+  });
+
+  it('should reduce array from left to right to a single value without initial value', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(previous, value) {
+      return previous + value;
+    });
+
+    var array = [0, 1, 2, 3, 4];
+    var result = $util.reduce(array, callback);
+
+    expect(result).toBe(10);
+
+    expect(callback).toHaveBeenCalledWith(0, 1, 1, array);
+    expect(callback).toHaveBeenCalledWith(1, 2, 2, array);
+    expect(callback).toHaveBeenCalledWith(3, 3, 3, array);
+    expect(callback).toHaveBeenCalledWith(6, 4, 4, array);
+  });
+
+  it('should reduce array from left to right to a single value with initial value', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(previous, value) {
+      return previous + value;
+    });
+
+    var array = [0, 1, 2, 3, 4];
+    var result = $util.reduce(array, callback, 10);
+
+    expect(result).toBe(20);
+
+    expect(callback).toHaveBeenCalledWith(10, 0, 0, array);
+    expect(callback).toHaveBeenCalledWith(10, 1, 1, array);
+    expect(callback).toHaveBeenCalledWith(11, 2, 2, array);
+    expect(callback).toHaveBeenCalledWith(13, 3, 3, array);
+    expect(callback).toHaveBeenCalledWith(16, 4, 4, array);
+  });
+
+  it('should reduce array from right to left to a single value without initial value', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(previous, value) {
+      return previous + value;
+    });
+
+    var array = [0, 1, 2, 3, 4];
+    var result = $util.reduceRight(array, callback);
+
+    expect(result).toBe(10);
+    expect(callback).toHaveBeenCalledWith(4, 3, 3, array);
+    expect(callback).toHaveBeenCalledWith(7, 2, 2, array);
+    expect(callback).toHaveBeenCalledWith(9, 1, 1, array);
+    expect(callback).toHaveBeenCalledWith(10, 0, 0, array);
+  });
+
+  it('should reduce array from right to left to a single value with initial value', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(previous, value) {
+      return previous + value;
+    });
+
+    var array = [0, 1, 2, 3, 4];
+    var result = $util.reduceRight(array, callback, 10);
+
+    expect(result).toBe(20);
+    expect(callback).toHaveBeenCalledWith(10, 4, 4, array);
+    expect(callback).toHaveBeenCalledWith(14, 3, 3, array);
+    expect(callback).toHaveBeenCalledWith(17, 2, 2, array);
+    expect(callback).toHaveBeenCalledWith(19, 1, 1, array);
+  });
+
+  it('should filter array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 === 0;
+    });
+
+    var array = [1, 2, 3, 4];
+    var newArray = $util.filter(array, callback, 10);
+
+    expect(newArray).toEqual([2, 4]);
+    expect(callback).toHaveBeenCalledWith(1, 0, array);
+    expect(callback).toHaveBeenCalledWith(2, 1, array);
+    expect(callback).toHaveBeenCalledWith(3, 2, array);
+    expect(callback).toHaveBeenCalledWith(4, 3, array);
   });
 });

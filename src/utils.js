@@ -48,6 +48,11 @@ var $util = {
     return type === 'function' || type === 'object' && !!obj;
   },
 
+  // Check if given object is a function
+  isFunction: function(obj) {
+    return typeof obj === 'function';
+  },
+
   // Check that given object is a DOM element
   isElement: function(obj) {
     return !!(obj && obj.nodeType === 1);
@@ -72,5 +77,69 @@ var $util = {
       newArray[i] = callback.call(ctx, array[i], i, array);
     }
     return newArray;
+  },
+
+  // Tests whether all elements in the array pass the test
+  // implemented by the provided function.
+  every: function(array, callback, ctx) {
+    for (var i = 0, size = array.length; i < size; ++i) {
+      if (!callback.call(ctx, array[i], i, array)) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  // Tests whether some element in the array passes the test
+  // implemented by the provided function.
+  some: function(array, callback, ctx) {
+    for (var i = 0, size = array.length; i < size; ++i) {
+      if (callback.call(ctx, array[i], i, array)) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  // Creates a new array with all elements that pass
+  // the test implemented by the provided function.
+  filter: function(array, callback, ctx) {
+    var newArray = [];
+    for (var i = 0, size = array.length; i < size; ++i) {
+      if (callback.call(ctx, array[i], i, array)) {
+        newArray.push(array[i]);
+      }
+    }
+    return newArray;
+  },
+
+  // Applies a function against an accumulator and each value
+  // of the array (from left-to-right) has to reduce it to a single value.
+  reduce: function(array, callback, initialValue) {
+    var nbArgs = arguments.length;
+    var step = nbArgs === 3 ? initialValue : array[0];
+    var size = array.length;
+    var i = nbArgs === 3 ? 0 : 1;
+
+    for (; i < size; ++i) {
+      step = callback.call(null, step, array[i], i, array);
+    }
+
+    return step;
+  },
+
+  // Applies a function against an accumulator and each value
+  // of the array (from right-to-left) has to reduce it to a single value.
+  reduceRight: function(array, callback, initialValue) {
+    var nbArgs = arguments.length;
+    var size = array.length - 1;
+    var step = nbArgs === 3 ? initialValue : array[size];
+    var i = nbArgs === 3 ? size : size - 1;
+
+    for (; i >= 0; --i) {
+      step = callback.call(null, step, array[i], i, array);
+    }
+
+    return step;
   }
 };

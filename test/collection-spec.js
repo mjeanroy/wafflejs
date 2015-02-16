@@ -219,6 +219,26 @@ describe('collection', function() {
       });
     });
 
+    it('should concat collections', function() {
+      var o3 = { id: 3 };
+      var o4 = { id: 4 };
+
+      var newCollection = collection.concat([o3, o4]);
+
+      expect(newCollection).not.toBe(collection);
+      expect(newCollection.length).toBe(4);
+      expect(newCollection[0]).toBe(o1);
+      expect(newCollection[1]).toBe(o2);
+      expect(newCollection[2]).toBe(o3);
+      expect(newCollection[3]).toBe(o4);
+      expect(newCollection.$map).toEqual({
+        1: 0,
+        2: 1,
+        3: 2,
+        4: 3
+      });
+    });
+
     it('should slice entire collection', function() {
       expect(collection.slice()).toEqual(collection);
       expect(collection.slice(0)).toEqual(collection);

@@ -170,6 +170,16 @@ Collection.prototype = {
     return $util.clone(this);
   },
 
+  // Returns a new collection comprised of the collection on which it is called
+  // joined with the collection(s) and/or value(s) provided as arguments.
+  concat: function() {
+    var newArray = Array.prototype.concat.apply(this.toArray(), arguments);
+    return new Collection(newArray, {
+      key: this.$key,
+      model: this.$model
+    });
+  },
+
   // returns a shallow copy of a portion of the collection
   // into a new collection object.
   slice: function() {

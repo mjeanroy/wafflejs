@@ -70,6 +70,13 @@ jq.prototype = {
       var child = idx > 0 ? childNode.cloneNode(true) : childNode;
       node.appendChild(child);
     });
+  },
+
+  // Replace html content
+  html: function(html) {
+    return this.$$each(function(node) {
+      node.innerHTML = html;
+    });
   }
 };
 

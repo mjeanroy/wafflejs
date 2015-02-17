@@ -23,31 +23,67 @@
  */
 
 var Grid = function(table, options) {
-  this.table = table;
-  this.length = 0;
+  this.$table = jq(table);
+
+  this.$data = new Collection(options.data || []);
+  this.$columns = new Collection(options.columns || [], {
+    key: 'id',
+    model: Column
+  });
+
   this.init();
 };
 
 Grid.prototype = {
+  // Initialize grid:
+  //  - Create or retrieve thead element
+  //  - Create or retrieve tbody element
   init: function() {
-  	// TODO
-  	return this;
+    var table = this.$table[0];
+    this.$tbody = jq($doc.byTagName('tbody', table));
+    this.$thead = jq($doc.byTagName('thead', table));
+
+    if (!this.$thead.length) {
+      var thead = $doc.thead();
+      this.$thead = jq(thead);
+      this.$table.append(thead);
+    }
+
+    if (!this.$tbody.length) {
+      var tbody = $doc.tbody();
+      this.$tbody = jq(tbody);
+      this.$table.append(tbody);
+    }
   },
 
+  // Render entire grid
   render: function() {
-  	// TODO
-  	return this;
+  	return this.renderHeader().renderBody();
+  },
+
+  // Render entire header of grid
+  renderHeader: function() {
+    var $ths = this.$columns.forEach(function(column) {
+      var text = column.title;
+      return jq($doc.th()).html(text)[0];
+    });
+
+    this.$thead.empty().append($ths);
+    return this;
+  },
+
+  // Render entire body of grid
+  renderBody: function() {
+    return this;
   },
 
   destroy: function() {
-  	// TODO
-  	return this;
+    for (var i in this) {
+      if (this.hasOwnProperty(i)) {
+        this[i] = null;
+      }
+    }
+
+    return this;
   }
 };
-
-$util.forEach(['forEach', 'map'], function(fn) {
-  Grid.prototype[fn] = function() {
-    var args = [this].concat($util.clone(arguments));
-    return $util[fn].apply(this, args);
-  };
-});

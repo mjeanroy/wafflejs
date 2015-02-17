@@ -89,5 +89,12 @@ describe('jq', function() {
       expect(node1.innerText).toBe('foo');
       expect(node2.innerText).toBe('foo');
     });
+
+    it('should set html content', function() {
+      var $result = $div.html('foo bar');
+
+      expect($result).toBe($div);
+      expect($div[0].innerHTML).toBe('foo bar');
+    });
   });
 });

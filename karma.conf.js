@@ -44,6 +44,7 @@ module.exports = function(config) {
       'src/parser.js',
       'src/collection.js',
       'src/jq.js',
+      'src/column.js',
       'src/grid.js',
       'test/**/*.js'
     ],

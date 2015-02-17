@@ -21,6 +21,10 @@
   "globals": {
     "$util": true,
     "$parse": true,
+    "$doc": true,
+    "Collection": true,
+    "Column": true,
+    "jq": true,
     "jasmine": true,
     "spyOn": true,
     "beforeEach": true

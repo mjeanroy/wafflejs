@@ -61,7 +61,7 @@ Grid.prototype = {
 
   // Render entire grid
   render: function() {
-  	return this.renderHeader().renderBody();
+    return this.renderHeader().renderBody();
   },
 
   // Render entire header of grid

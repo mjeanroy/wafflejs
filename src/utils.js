@@ -48,6 +48,11 @@ var $util = {
     return type === 'function' || type === 'object' && !!obj;
   },
 
+  // Check if given object is an array
+  isArray: function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+  },
+
   // Check if given object is a function
   isFunction: function(obj) {
     return typeof obj === 'function';

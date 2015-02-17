@@ -113,6 +113,10 @@ describe('Grid', function() {
     expect(ths).toVerify(function(node, idx) {
       return node.innerHTML === columns[idx].title;
     });
+
+    expect(ths).toVerify(function(node, idx) {
+      return node.className === ' ' + columns[idx].id;
+    });
   });
 
   it('should render data', function() {
@@ -150,6 +154,12 @@ describe('Grid', function() {
       var tds = node.childNodes;
       return tds[0].innerHTML === data[idx].id.toString() &&
              tds[1].innerHTML === data[idx].name.toString();
+    });
+
+    expect(trs).toVerify(function(node) {
+      var tds = node.childNodes;
+      return tds[0].className === ' '+ columns[0].id.toString() &&
+             tds[1].className === ' ' + columns[1].id.toString();
     });
   });
 });

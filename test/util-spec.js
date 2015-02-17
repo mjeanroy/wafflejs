@@ -50,6 +50,15 @@ describe('$util', function() {
     expect($util.isFunction(function() {})).toBe(true);
   });
 
+  it('should check if object is an array', function() {
+    expect($util.isArray([])).toBe(true);
+    expect($util.isArray(undefined)).toBe(false);
+    expect($util.isArray(null)).toBe(false);
+    expect($util.isArray(0)).toBe(false);
+    expect($util.isArray('')).toBe(false);
+    expect($util.isArray(NaN)).toBe(false);
+  });
+
   it('should check if object is a dom element', function() {
     expect($util.isElement(undefined)).toBe(false);
     expect($util.isElement(null)).toBe(false);

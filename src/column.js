@@ -29,6 +29,7 @@ var Column = function(column) {
 
   this.id = column.id;
   this.title = column.title || '';
+  this.css = column.css || this.id;
   this.escape = isUndefined(escape) ? true : !!escape;
   this.sortable = isUndefined(sortable) ? true : !!sortable;
 

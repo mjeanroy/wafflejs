@@ -72,6 +72,14 @@ jq.prototype = {
     });
   },
 
+  // Add css class
+  addClass: function(classes) {
+    var css = $util.isArray(classes) ? classes.join(' ') : classes;
+    return this.$$each(function(node) {
+      node.className = node.className + ' ' + css;
+    });
+  },
+
   // Replace html content
   html: function(html) {
     return this.$$each(function(node) {

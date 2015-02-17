@@ -96,5 +96,17 @@ describe('jq', function() {
       expect($result).toBe($div);
       expect($div[0].innerHTML).toBe('foo bar');
     });
+
+    it('should add class to node', function() {
+      var $result = $div.addClass('foo');
+      expect($result).toBe($div);
+      expect($div[0].className).toBe(' foo');
+    });
+
+    it('should add array of classes to node', function() {
+      var $result = $div.addClass(['foo', 'bar']);
+      expect($result).toBe($div);
+      expect($div[0].className).toBe(' foo bar');
+    });
   });
 });

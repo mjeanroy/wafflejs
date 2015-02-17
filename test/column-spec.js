@@ -33,12 +33,14 @@ describe('Column', function() {
     expect(column.sortable).toBe(true);
     expect(column.title).toBe('');
     expect(column.id).toBe('foo');
+    expect(column.css).toBe('foo');
   });
 
   it('should initialize with custom values', function() {
     var column = new Column({
       id: 'foo',
       title: 'Foo',
+      css: 'foo-bar',
       escape: false,
       sortable: false
     });
@@ -47,6 +49,7 @@ describe('Column', function() {
     expect(column.sortable).toBe(false);
     expect(column.title).toBe('Foo');
     expect(column.id).toBe('foo');
+    expect(column.css).toBe('foo-bar');
   });
 
   it('should extract value of object', function() {

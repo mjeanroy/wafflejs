@@ -69,7 +69,10 @@ Grid.prototype = {
     var tr = $doc.tr();
 
     this.$columns.forEach(function(column) {
-      var $node = jq($doc.th()).html(column.title);
+      var $node = jq($doc.th())
+        .addClass(column.css)
+        .html(column.title);
+
       tr.appendChild($node[0]);
     });
 
@@ -109,7 +112,10 @@ Grid.prototype = {
     var tr = $doc.tr();
 
     this.$columns.forEach(function(column) {
-      var $node = jq($doc.td()).html(column.extract(data));
+      var $node = jq($doc.td())
+        .addClass(column.css)
+        .html(column.extract(data));
+
       tr.appendChild($node[0]);
     });
 

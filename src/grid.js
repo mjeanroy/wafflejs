@@ -54,6 +54,9 @@ Grid.prototype = {
       this.$tbody = jq(tbody);
       this.$table.append(tbody);
     }
+
+    // Render grid on initialization
+    return this.render();
   },
 
   // Render entire grid
@@ -63,20 +66,34 @@ Grid.prototype = {
 
   // Render entire header of grid
   renderHeader: function() {
-    var $ths = this.$columns.forEach(function(column) {
-      var text = column.title;
-      return jq($doc.th()).html(text)[0];
+    var tr = $doc.tr();
+
+    this.$columns.forEach(function(column) {
+      var $node = jq($doc.th()).html(column.title);
+      tr.appendChild($node[0]);
     });
 
-    this.$thead.empty().append($ths);
+    this.$thead.empty().append(tr);
     return this;
   },
 
   // Render entire body of grid
+  // Each row is appended to a fragment in memory
+  // This fragment will be appended once to tbody element to avoid unnecessary DOM access
   renderBody: function() {
+    var fragment = $doc.createFragment();
+
+    this.$data.forEach(function(data) {
+      var row = this.$renderRow(data);
+      fragment.appendChild(row);
+    }, this);
+
+    this.$tbody.empty().append(fragment);
     return this;
   },
 
+  // Destroy datagrid
+  // This method should be call to clear memory when datagrid is removed from DOM
   destroy: function() {
     for (var i in this) {
       if (this.hasOwnProperty(i)) {
@@ -85,5 +102,17 @@ Grid.prototype = {
     }
 
     return this;
+  },
+
+  // Build row and return it
+  $renderRow: function(data) {
+    var tr = $doc.tr();
+
+    this.$columns.forEach(function(column) {
+      var $node = jq($doc.td()).html(column.extract(data));
+      tr.appendChild($node[0]);
+    });
+
+    return tr;
   }
 };

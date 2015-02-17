@@ -74,13 +74,82 @@ describe('Grid', function() {
     expect(grid.$thead).toBeDefined();
     expect(grid.$tbody).toBeDefined();
 
-    expect(grid.$tbody[0]).toBeDefined();
-    expect(grid.$tbody[0].tagName).toBe('TBODY');
-    expect(grid.$thead[0]).toBeDefined();
-    expect(grid.$thead[0].tagName).toBe('THEAD');
+    expect(grid.$tbody[0]).toBeDOMElement('tbody');
+    expect(grid.$thead[0]).toBeDOMElement('thead');
 
     var childs = table.childNodes;
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
+  });
+
+  it('should render column header', function() {
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo' }
+    ];
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: columns
+    });
+
+    var tbody = grid.$tbody[0];
+    expect(tbody.childNodes).toHaveLength(0);
+
+    var thead = grid.$thead[0];
+    var tr = thead.childNodes;
+    expect(tr).toHaveLength(1);
+    expect(tr[0]).toBeDOMElement('tr');
+
+    var ths = tr[0].childNodes;
+    expect(ths).toHaveLength(2);
+
+    expect(ths).toVerify(function(node) {
+      return node.tagName === 'TH';
+    });
+
+    expect(ths).toVerify(function(node, idx) {
+      return node.innerHTML === columns[idx].title;
+    });
+  });
+
+  it('should render data', function() {
+    var columns = [
+      { id: 'id', title: 'Foo' },
+      { id: 'name', title: 'Boo' }
+    ];
+
+    var data = [
+      { id: 1, name: 'foo1 '},
+      { id: 2, name: 'foo2 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    var $tbody = grid.$tbody;
+    var trs = $tbody[0].childNodes;
+    expect(trs.length).toBe(data.length);
+
+    expect(trs).toVerify(function(node) {
+      return node.tagName === 'TR';
+    });
+
+    expect(trs).toVerify(function(node, idx) {
+      return node.childNodes.length === 2;
+    });
+
+    expect(trs).toVerify(function(node, idx) {
+      var tds = node.childNodes;
+      return tds[0].innerHTML === data[idx].id.toString() &&
+             tds[1].innerHTML === data[idx].name.toString();
+    });
   });
 });

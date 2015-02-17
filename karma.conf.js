@@ -39,6 +39,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/jasmine-utils/src/jasmine-utils.js',
       'src/utils.js',
       'src/dom.js',
       'src/parser.js',

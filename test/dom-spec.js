@@ -75,6 +75,12 @@ describe('$doc', function() {
     expect(nodes.length).toBe(2);
   });
 
+  it('should create new empty document fragment', function() {
+    var fragment = $doc.createFragment();
+    expect(fragment).toBeDefined();
+    expect(fragment instanceof DocumentFragment).toBe(true);
+  });
+
   it('should create tr element', function() {
     var node = $doc.tr();
     expect(node).toBeDefined();

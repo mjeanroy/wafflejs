@@ -40,6 +40,11 @@ var $doc = {
   // This function will return an "array like" of dom elements.
   byTagName: function(tagName, parentNode) {
     return (parentNode || document).getElementsByTagName(tagName);
+  },
+
+  // Create new empty document fragment
+  createFragment: function() {
+    return document.createDocumentFragment();
   }
 };
 

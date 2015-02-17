@@ -37,7 +37,7 @@ describe('jq', function() {
   it('should return instance of jq', function() {
     var $div = jq([node1, node2]);
     expect($div).toBeDefined();
-    expect($div instanceof jq).toBe(true);
+    expect($div).toBeInstanceOf(jq);
 
     expect($div[0]).toBe(node1);
     expect($div[1]).toBe(node2);

@@ -23,7 +23,41 @@
  */
 
 var Column = function(column) {
+  var isUndefined = $util.isUndefined;
+  var escape = column.escape;
+  var sortable = column.sortable;
+
   this.id = column.id;
   this.title = column.title || '';
-  this.sortable = $util.isUndefined(column.sortable) ? true : !!column.sortable;
+  this.escape = isUndefined(escape) ? true : !!escape;
+  this.sortable = isUndefined(sortable) ? true : !!sortable;
+
+  // Sanitize input at construction
+  if (escape) {
+    this.title = $sanitize(this.title);
+  }
+
+  // Parse that will be used to extract data value from plain old javascript object
+  this.$parser = $parse(this.id);
+};
+
+Column.prototype = {
+
+  extract: function(object) {
+    var isDefined = function(val) {
+      return !$util.isUndefined(val) && !$util.isNull(val);
+    };
+
+    if (!isDefined(object)) {
+      return '';
+    }
+
+    var value = this.$parser(object);
+
+    if (!isDefined(value)) {
+      return '';
+    }
+
+    return this.escape ? $sanitize(value) : value;
+  }
 };

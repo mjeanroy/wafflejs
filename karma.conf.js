@@ -42,6 +42,7 @@ module.exports = function(config) {
       'src/utils.js',
       'src/dom.js',
       'src/parser.js',
+      'src/sanitize.js',
       'src/collection.js',
       'src/jq.js',
       'src/column.js',

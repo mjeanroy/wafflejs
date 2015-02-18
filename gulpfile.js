@@ -39,6 +39,7 @@ var srcFiles = [
   'src/parser.js',
   'src/sanitize.js',
   'src/collection.js',
+  'src/renderers.js',
   'src/jq.js',
   'src/column.js',
   'src/grid.js'

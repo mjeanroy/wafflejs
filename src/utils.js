@@ -53,6 +53,11 @@ var $util = {
     return Object.prototype.toString.call(obj) === '[object Array]';
   },
 
+  // Check if given object is a string
+  isString: function(obj) {
+    return Object.prototype.toString.call(obj) === '[object String]';
+  },
+
   // Check if given object is a function
   isFunction: function(obj) {
     return typeof obj === 'function';

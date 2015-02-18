@@ -69,6 +69,17 @@ describe('$util', function() {
     expect($util.isElement(document.createElement('div'))).toBe(true);
   });
 
+  it('should check if object is a string', function() {
+    expect($util.isString(undefined)).toBe(false);
+    expect($util.isString(null)).toBe(false);
+    expect($util.isString(1)).toBe(false);
+    expect($util.isString(true)).toBe(false);
+
+    expect($util.isString('foo')).toBe(true);
+    expect($util.isString(String('foo'))).toBe(true);
+    expect($util.isString(new String('foo'))).toBe(true);
+  });
+
   it('should clone to new array', function() {
     var array = [1, 2, 3];
 

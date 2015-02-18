@@ -114,7 +114,7 @@ Grid.prototype = {
     this.$columns.forEach(function(column) {
       var $node = jq($doc.td())
         .addClass(column.css)
-        .html(column.extract(data));
+        .html(column.render(data));
 
       tr.appendChild($node[0]);
     });

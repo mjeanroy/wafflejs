@@ -33,12 +33,14 @@ describe('Column', function() {
     expect(column.sortable).toBe(true);
     expect(column.title).toBe('');
     expect(column.id).toBe('foo');
+    expect(column.field).toBe('foo');
     expect(column.css).toBe('foo');
   });
 
   it('should initialize with custom values', function() {
     var column = new Column({
       id: 'foo',
+      field: 'foo.bar',
       title: 'Foo',
       css: 'foo-bar',
       escape: false,
@@ -49,10 +51,11 @@ describe('Column', function() {
     expect(column.sortable).toBe(false);
     expect(column.title).toBe('Foo');
     expect(column.id).toBe('foo');
+    expect(column.field).toBe('foo.bar');
     expect(column.css).toBe('foo-bar');
   });
 
-  it('should extract value of object', function() {
+  it('should render value of object', function() {
     var column = new Column({
       id: 'id'
     });
@@ -61,15 +64,15 @@ describe('Column', function() {
       id: 1
     };
 
-    expect(column.extract(object)).toBe('1');
-    expect(column.extract({ id: 0 })).toBe('0');
-    expect(column.extract({ })).toBe('');
+    expect(column.render(object)).toBe('1');
+    expect(column.render({ id: 0 })).toBe('0');
+    expect(column.render({ })).toBe('');
 
-    expect(column.extract(null)).toBe('');
-    expect(column.extract(undefined)).toBe('');
+    expect(column.render(null)).toBe('');
+    expect(column.render(undefined)).toBe('');
   });
 
-  it('should extract value of object and escape value', function() {
+  it('should render value of object and escape value', function() {
     var column = new Column({
       id: 'name',
       escape: true
@@ -80,10 +83,10 @@ describe('Column', function() {
       name: '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>'
     };
 
-    expect(column.extract(object)).toBe('&lt;em onmouseover="this.textContent=\'PWN3D!\'"&gt;click here&lt;/em&gt;');
+    expect(column.render(object)).toBe('&lt;em onmouseover="this.textContent=\'PWN3D!\'"&gt;click here&lt;/em&gt;');
   });
 
-  it('should extract value of complex object', function() {
+  it('should render value of complex object', function() {
     var column = new Column({
       id: 'nested.name',
       escape: true
@@ -96,6 +99,99 @@ describe('Column', function() {
       }
     };
 
-    expect(column.extract(object)).toBe('foo');
+    expect(column.render(object)).toBe('foo');
+  });
+
+  it('should render value using custom renderer', function() {
+    var renderer = jasmine.createSpy('renderer').and.callFake(function(value) {
+      return value += 'foo';
+    });
+
+    var column = new Column({
+      id: 'nested.name',
+      escape: true,
+      renderer: renderer
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'foo'
+      }
+    };
+
+    expect(column.render(object)).toBe('foofoo');
+    expect(renderer).toHaveBeenCalledWith('foo', object, 'nested.name');
+  });
+
+  it('should render value using custom field', function() {
+    var renderer = jasmine.createSpy('renderer').and.callFake(function(value) {
+      return value += 'foo';
+    });
+
+    var column = new Column({
+      id: 'c1',
+      field: 'nested.name',
+      escape: true,
+      renderer: renderer
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'foo'
+      }
+    };
+
+    expect(column.render(object)).toBe('foofoo');
+    expect(renderer).toHaveBeenCalledWith('foo', object, 'nested.name');
+  });
+
+  it('should render value using pre-built renderer', function() {
+    var column = new Column({
+      id: 'nested.name',
+      renderer: 'empty'
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'foo'
+      }
+    };
+
+    expect(column.render(object)).toBe('');
+  });
+
+  it('should render value using pre-built lowercase renderer', function() {
+    var column = new Column({
+      id: 'nested.name',
+      renderer: 'lowercase'
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'Foo'
+      }
+    };
+
+    expect(column.render(object)).toBe('foo');
+  });
+
+  it('should render value using pre-built uppercase renderer', function() {
+    var column = new Column({
+      id: 'nested.name',
+      renderer: 'uppercase'
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'Foo'
+      }
+    };
+
+    expect(column.render(object)).toBe('FOO');
   });
 });

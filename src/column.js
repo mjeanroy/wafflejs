@@ -29,6 +29,7 @@ var Column = function(column) {
 
   this.id = column.id;
   this.title = column.title || '';
+  this.field = column.field || this.id;
   this.css = column.css || this.id;
   this.escape = isUndefined(escape) ? true : !!escape;
   this.sortable = isUndefined(sortable) ? true : !!sortable;
@@ -38,27 +39,48 @@ var Column = function(column) {
     this.title = $sanitize(this.title);
   }
 
+  // Renderer can be defined as a custom function
+  this.renderer = column.renderer;
+
+  // Or it could be defined a string which is a shortcut to a pre-built renderer
+  if ($util.isString(this.renderer)) {
+    this.renderer = $renderers[this.renderer];
+  }
+
+  // If it is not a function, switch to default renderer
+  // TODO Is it really a good idea ? Should we allow more flexibility ?
+  // TODO Should we define a way to chain renderers ?
+  if (!$util.isFunction(this.renderer)) {
+    this.renderer = $renderers.identity;
+  }
+
   // Parse that will be used to extract data value from plain old javascript object
-  this.$parser = $parse(this.id);
+  this.$parser = $parse(this.field);
 };
 
 Column.prototype = {
 
-  extract: function(object) {
-    var isDefined = function(val) {
-      return !$util.isUndefined(val) && !$util.isNull(val);
-    };
+  // Check if a value is defined (i.e not undefined and not null)
+  $$isDefined: function(val) {
+    return !$util.isUndefined(val) && !$util.isNull(val);
+  },
 
-    if (!isDefined(object)) {
+  // Render object using column settings
+  render: function(object) {
+    // Extract value
+    var value = this.$$isDefined(object) ? this.$parser(object) : '';
+
+    // Give extracted value as the first parameter
+    // Give object as the second parameter to allow more flexibility
+    // Give field to display as the third parameter to allow more flexibility
+    // Use '$renderers' as this context, this way renderers can be easy compose
+    var rendererValue = this.renderer.call($renderers, value, object, this.field);
+
+    // If value is null or undefined, fallback to an empty string
+    if (!this.$$isDefined(rendererValue)) {
       return '';
     }
 
-    var value = this.$parser(object);
-
-    if (!isDefined(value)) {
-      return '';
-    }
-
-    return this.escape ? $sanitize(value) : value;
+    return this.escape ? $sanitize(rendererValue) : rendererValue;
   }
 };

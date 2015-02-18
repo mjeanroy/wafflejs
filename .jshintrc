@@ -23,6 +23,7 @@
     "$parse": true,
     "$doc": true,
     "$sanitize": true,
+    "$renderers": true,
     "Collection": true,
     "Column": true,
     "jq": true,

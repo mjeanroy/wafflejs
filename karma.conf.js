@@ -37,21 +37,6 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
 
 
-    // list of files / patterns to load in the browser
-    files: [
-      'node_modules/jasmine-utils/src/jasmine-utils.js',
-      'src/utils.js',
-      'src/dom.js',
-      'src/parser.js',
-      'src/sanitize.js',
-      'src/collection.js',
-      'src/jq.js',
-      'src/column.js',
-      'src/grid.js',
-      'test/**/*.js'
-    ],
-
-
     // list of files to exclude
     exclude: [
     ],

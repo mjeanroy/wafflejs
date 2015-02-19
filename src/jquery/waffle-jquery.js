@@ -1,0 +1,62 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Mickael Jeanroy
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/* global $ */
+/* global $util */
+/* global Grid */
+
+$.fn.waffle = function(options) {
+
+  var PLUGIN_NAME = 'wafflejs';
+
+  $.each(['destroy', 'render', 'renderHeader', 'renderBody'], function(fn) {
+
+    this[fn] = function() {
+      var $waffle = $(this).data(PLUGIN_NAME);
+      if ($waffle) {
+        return $waffle[fn].apply($waffle, arguments);
+      }
+    };
+
+  }, this);
+
+  return this.each(function() {
+    var $waffle = $(this).data(PLUGIN_NAME);
+    if (!$waffle) {
+      var opts = $.extend({}, $.fn.waffle.options);
+      if ($util.isObjec(options)) {
+        opts = $.extend(opts, options);
+      }
+
+      $waffle = new Grid(this, opts);
+    }
+
+    $(this).data(PLUGIN_NAME, $waffle);
+  });
+
+};
+
+// Default options
+$.fn.waffle.options = {
+};

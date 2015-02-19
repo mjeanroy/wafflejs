@@ -46,7 +46,10 @@ var jq = function(nodes) {
 
 jq.prototype = {
   $$each: function(fn) {
-    this.forEach(fn);
+    for (var i = 0; i < this.length; ++i) {
+      fn.call(this, this[i], i, this);
+    }
+
     return this;
   },
 
@@ -69,7 +72,7 @@ jq.prototype = {
   // Append node
   append: function(childNode) {
     return this.$$each(function(node, idx) {
-      var child = idx > 0 ? childNode.cloneNode(true) : childNode;
+      var child = idx ? childNode.cloneNode(true) : childNode;
       node.appendChild(child);
     });
   },
@@ -89,10 +92,3 @@ jq.prototype = {
     });
   }
 };
-
-$util.forEach(['forEach'], function(fnName) {
-  jq.prototype[fnName] = function() {
-    var args = [this].concat($util.clone(arguments));
-    return $util[fnName].apply($util, args);
-  };
-});

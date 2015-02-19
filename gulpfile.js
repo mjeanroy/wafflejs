@@ -30,27 +30,35 @@ var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
 var uglify = require('gulp-uglify');
 var wrap = require('gulp-wrap');
-
+var taskListing = require('gulp-task-listing');
 var karma = require('karma').server;
 
-var srcFiles = [
-  'src/utils.js',
+var underscoreLite = 'src/utils.js';
+var jqLite = 'src/jq.js';
+var commonsFiles = [
   'src/dom.js',
   'src/parser.js',
   'src/sanitize.js',
   'src/collection.js',
   'src/renderers.js',
-  'src/jq.js',
   'src/column.js',
   'src/grid.js'
 ];
 
-var testFiles = srcFiles.concat([
+var files = {
+  standalone: [underscoreLite, jqLite].concat(commonsFiles),
+  jquery: [underscoreLite].concat(commonsFiles),
+  underscore: [jqLite].concat(commonsFiles)
+};
+
+var testFiles = files.standalone.concat([
   'node_modules/jasmine-utils/src/jasmine-utils.js',
   'test/**/*.js'
 ]);
 
 var buildFolder = 'dist';
+
+gulp.task('help', taskListing);
 
 gulp.task('clean', function() {
   return gulp.src(buildFolder, { read : false })
@@ -58,7 +66,7 @@ gulp.task('clean', function() {
 });
 
 gulp.task('lint', function() {
-  gulp.src("src/**/*.js")
+  return gulp.src("src/**/*.js")
     .pipe(jshint())
     .pipe(jshint.reporter("default"));
 });
@@ -79,21 +87,37 @@ gulp.task('test', function(done) {
   }, done);
 });
 
-gulp.task('concat', ['clean'], function(done) {
-  return gulp.src(srcFiles)
-    .pipe(concat('waffle.js'))
-    .pipe(strip())
-    .pipe(wrap({src: 'wrap-template.js'}))
-    .pipe(gulp.dest(buildFolder));
+var MINIFY_PREFIX = 'minify:';
+var CONCAT_PREFIX = 'concat:';
+var TARGETS = ['standalone', 'jquery', 'underscore'];
+
+TARGETS.forEach(function(target) {
+  var concatTask = CONCAT_PREFIX + target;
+  var minifyTask = MINIFY_PREFIX + target;
+
+  gulp.task(concatTask, ['clean', 'lint', 'test'], function(done) {
+    return gulp.src(files[target])
+      .pipe(concat('waffle-' + target + '.js'))
+      .pipe(strip({ block: true }))
+      .pipe(wrap({src: 'wrap-template-' + target + '.js'}))
+      .pipe(gulp.dest(buildFolder));
+  });
+
+  gulp.task(minifyTask, [concatTask], function(done) {
+    return gulp.src(buildFolder + '/waffle-' + target + '.js')
+      .pipe(uglify())
+      .pipe(rename('waffle-' + target + '.min.js'))
+      .pipe(gulp.dest(buildFolder));
+  });
 });
 
-gulp.task('minify', ['concat'], function(done) {
-  return gulp.src(buildFolder + '/waffle.js')
-    .pipe(uglify())
-    .pipe(rename('waffle.min.js'))
-    .pipe(gulp.dest(buildFolder));
-});
+gulp.task('concat', TARGETS.map(function(t) {
+  return 'concat:' + t;
+}));
+
+gulp.task('minify', TARGETS.map(function(t) {
+  return 'minify:' + t;
+}));
 
 gulp.task('build', ['clean', 'lint', 'test', 'minify']);
-
 gulp.task('default', ['build']);

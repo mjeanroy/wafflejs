@@ -1,5 +1,7 @@
 {
   "node": true,
+  "freeze": true,
+  "notypeof": true,
   "browser": true,
   "es5": false,
   "esnext": true,
@@ -14,9 +16,9 @@
   "quotmark": "single",
   "regexp": true,
   "undef": true,
-  "unused": false,
+  "unused": true,
   "strict": false,
   "trailing": true,
-  "smarttabs": true,
+  "smarttabs": false,
   "globals": { }
 }

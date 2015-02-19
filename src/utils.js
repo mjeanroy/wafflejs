@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* exported $util */
+
 /**
  * Set of utilities.
  * The goal of this module is to provide a set of static

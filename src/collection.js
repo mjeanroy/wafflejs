@@ -187,7 +187,6 @@ Collection.prototype = {
   // into a new collection object.
   slice: function() {
     // Make PhantomJS 1.x happy: context need to be a "real" array.
-    var array = $util.clone(this);
     var results = Array.prototype.slice.apply(this.toArray(), arguments);
     return new Collection(results, {
       key: this.$key,

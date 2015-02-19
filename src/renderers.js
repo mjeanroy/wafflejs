@@ -23,6 +23,7 @@
  */
 
 /* global $util */
+/* exported $renderers */
 
 var $renderers = {
   $$toString: function(value) {

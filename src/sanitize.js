@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* exported $sanitize */
+
 /**
  * Utility service that will sanitize input to
  * prevent XSS injection.

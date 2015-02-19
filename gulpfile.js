@@ -25,6 +25,7 @@
 var gulp = require('gulp');
 var clean = require('gulp-clean');
 var concat = require('gulp-concat');
+var server = require('gulp-express');
 var jshint = require('gulp-jshint');
 var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
@@ -121,3 +122,16 @@ gulp.task('minify', TARGETS.map(function(t) {
 
 gulp.task('build', ['clean', 'lint', 'test', 'minify']);
 gulp.task('default', ['build']);
+
+gulp.task('server', ['concat'], function () {
+  server.run({
+    file:'sample-server.js'
+  });
+
+  gulp.watch(['src/**/*'], function(event) {
+    gulp.run('concat');
+    server.notify(event);
+  });
+
+  gulp.watch(['sample/**/*'], server.notify);
+});

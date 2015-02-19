@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* global $util */
+
 var jq = function(nodes) {
   if (nodes instanceof jq) {
   	return nodes;

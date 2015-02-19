@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* global $util */
+
 var $parse = function(key) {
   var parts = $parse.$split(key);
   var size = parts.length;

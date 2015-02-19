@@ -18,17 +18,5 @@
   "strict": false,
   "trailing": true,
   "smarttabs": true,
-  "globals": {
-    "$util": true,
-    "$parse": true,
-    "$doc": true,
-    "$sanitize": true,
-    "$renderers": true,
-    "Collection": true,
-    "Column": true,
-    "jq": true,
-    "jasmine": true,
-    "spyOn": true,
-    "beforeEach": true
-  }
+  "globals": { }
 }

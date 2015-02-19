@@ -22,6 +22,9 @@
  * SOFTWARE.
  */
 
+/* global $util */
+/* global $parse */
+
 /**
  * Collection implementation that can be used
  * to keep internal data indexed using key identifier.

@@ -22,6 +22,11 @@
  * SOFTWARE.
  */
 
+/* global $doc */
+/* global Collection */
+/* global Column */
+/* global jq */
+
 var Grid = function(table, options) {
   this.$table = jq(table);
 

@@ -22,6 +22,11 @@
  * SOFTWARE.
  */
 
+/* global $util */
+/* global $parse */
+/* global $sanitize */
+/* global $renderers */
+
 var Column = function(column) {
   var isUndefined = $util.isUndefined;
   var escape = column.escape;

@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* global $util */
+
 var $doc = {
   // Create dom element
   create: function(tagName) {

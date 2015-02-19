@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* global $util */
+
 var $renderers = {
   $$toString: function(value) {
     var val = $util.isUndefined(value) || $util.isNull(value) ? '' : value;

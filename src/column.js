@@ -26,6 +26,9 @@
 /* global $parse */
 /* global $sanitize */
 /* global $renderers */
+/* global CSS_SORTABLE */
+/* global CSS_SORTABLE_DESC */
+/* global CSS_SORTABLE_ASC */
 
 var Column = function(column) {
   var isUndefined = $util.isUndefined;
@@ -37,7 +40,9 @@ var Column = function(column) {
   this.field = column.field || this.id;
   this.css = column.css || this.id;
   this.escape = isUndefined(escape) ? true : !!escape;
+
   this.sortable = isUndefined(sortable) ? true : !!sortable;
+  this.order = column.order || '';
 
   // Sanitize input at construction
   if (escape) {
@@ -68,6 +73,23 @@ Column.prototype = {
   // Check if a value is defined (i.e not undefined and not null)
   $$isDefined: function(val) {
     return !$util.isUndefined(val) && !$util.isNull(val);
+  },
+
+  // Get css class to append to each cell
+  cssClasses: function() {
+    var classes = [this.css];
+
+    if (this.sortable) {
+      // Add css to display that column is sortable
+      classes.push(CSS_SORTABLE);
+
+      // Add css to display current sort
+      if (this.order) {
+        classes.push(this.order === '-' ? CSS_SORTABLE_DESC : CSS_SORTABLE_ASC);
+      }
+    }
+
+    return classes;
   },
 
   // Render object using column settings

@@ -194,4 +194,60 @@ describe('Column', function() {
 
     expect(column.render(object)).toBe('FOO');
   });
+
+  it('should get default css classes to apply', function() {
+    var column = new Column({
+      id: 'id'
+    });
+
+    expect(column.cssClasses()).toEqual(['id', 'waffle-sortable']);
+  });
+
+  it('should get default custom css classes to apply', function() {
+    var column = new Column({
+      id: 'id',
+      css: 'foo'
+    });
+
+    expect(column.cssClasses()).toEqual(['foo', 'waffle-sortable']);
+  });
+
+  it('should get css classes if column is sorted in ascendant order', function() {
+    var column = new Column({
+      id: 'id',
+      order: '+'
+    });
+
+    var classes = column.cssClasses();
+
+    expect(classes).toContain('waffle-sortable');
+    expect(classes).toContain('waffle-sortable-asc');
+    expect(classes).not.toContain('waffle-sortable-desc');
+  });
+
+  it('should get css classes if column is sorted in descendant order', function() {
+    var column = new Column({
+      id: 'id',
+      order: '-'
+    });
+
+    var classes = column.cssClasses();
+
+    expect(classes).toContain('waffle-sortable');
+    expect(classes).toContain('waffle-sortable-desc');
+    expect(classes).not.toContain('waffle-sortable-asc');
+  });
+
+  it('should get default css classes to apply if column is not sortable', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false
+    });
+
+    var classes = column.cssClasses();
+
+    expect(classes).not.toContain('waffle-sortable');
+    expect(classes).not.toContain('waffle-sortable-asc');
+    expect(classes).not.toContain('waffle-sortable-desc');
+  });
 });

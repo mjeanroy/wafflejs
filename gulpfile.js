@@ -37,6 +37,7 @@ var karma = require('karma').server;
 var underscoreLite = 'src/utils.js';
 var jqLite = 'src/jq.js';
 var commonsFiles = [
+  'src/constants.js',
   'src/dom.js',
   'src/parser.js',
   'src/sanitize.js',

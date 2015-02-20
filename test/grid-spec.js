@@ -115,7 +115,12 @@ describe('Grid', function() {
     });
 
     expect(ths).toVerify(function(node, idx) {
-      return node.className === ' ' + columns[idx].id;
+      var cssClasses = [
+        columns[idx].id,
+        'waffle-sortable'
+      ];
+
+      return node.className === ' ' + cssClasses.join(' ');
     });
   });
 
@@ -157,9 +162,19 @@ describe('Grid', function() {
     });
 
     expect(trs).toVerify(function(node) {
+      var css1 = [
+        columns[0].id,
+        'waffle-sortable'
+      ];
+
+      var css2 = [
+        columns[1].id,
+        'waffle-sortable'
+      ];
+
       var tds = node.childNodes;
-      return tds[0].className === ' '+ columns[0].id.toString() &&
-             tds[1].className === ' ' + columns[1].id.toString();
+      return tds[0].className === ' '+ css1.join(' ') &&
+             tds[1].className === ' ' + css2.join(' ');
     });
   });
 });

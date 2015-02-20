@@ -75,7 +75,7 @@ Grid.prototype = {
 
     this.$columns.forEach(function(column) {
       var $node = jq($doc.th())
-        .addClass(column.css)
+        .addClass(column.cssClasses())
         .html(column.title);
 
       tr.appendChild($node[0]);
@@ -118,7 +118,7 @@ Grid.prototype = {
 
     this.$columns.forEach(function(column) {
       var $node = jq($doc.td())
-        .addClass(column.css)
+        .addClass(column.cssClasses())
         .html(column.render(data));
 
       tr.appendChild($node[0]);

@@ -108,5 +108,38 @@ describe('jq', function() {
       expect($result).toBe($div);
       expect($div[0].className).toBe(' foo bar');
     });
+
+    it('should bind and unbind event', function() {
+      // Bind and check callbacks
+      var callback = jasmine.createSpy('callback');
+      $div.on('click', callback);
+
+      expect($div.$$events).toEqual([
+        { event: 'click', node: $div[0], callback: callback },
+        { event: 'click', node: $div[1], callback: callback }
+      ]);
+
+      var e1 = document.createEvent('MouseEvent');
+      e1.initEvent('click', true, true);
+
+      var e2 = document.createEvent('MouseEvent');
+      e2.initEvent('click', true, true);
+
+      $div[0].dispatchEvent(e1);
+      $div[1].dispatchEvent(e2);
+
+      expect(callback).toHaveBeenCalledWith(e1);
+      expect(callback).toHaveBeenCalledWith(e2);
+
+      // Reset spy, Unbind and check callbacks
+      callback.calls.reset();
+      $div.off();
+
+      expect($div.$$events).toEqual([]);
+
+      $div[0].dispatchEvent(e1);
+      $div[1].dispatchEvent(e2);
+      expect(callback).not.toHaveBeenCalled();
+    });
   });
 });

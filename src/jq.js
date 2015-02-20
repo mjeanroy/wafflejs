@@ -42,6 +42,11 @@ var jq = function(nodes) {
   }, this);
 
   this.length = nodes.length;
+
+  // Store internal event listeners binded
+  // with addEventListener or attachEvent
+  // This will be used to remove event listeners
+  this.$$events = [];
 };
 
 jq.prototype = {
@@ -51,6 +56,44 @@ jq.prototype = {
     }
 
     return this;
+  },
+
+  // Bind event
+  // This is a cross browser implementation
+  $$bind: function(event, callback, node) {
+    // Should we support IE < 9 ?
+    node.addEventListener(event, callback);
+
+    // Track event
+    this.$$events.push({
+      event: event,
+      callback: callback,
+      node: node
+    });
+  },
+
+  // Bind event
+  // This is a cross browser implementation
+  $$unbind: function(event, callback, node) {
+    // Should we support IE < 9 ?
+    node.removeEventListener(event, callback);
+  },
+
+  // Attach event
+  on: function(event, callback) {
+    return this.$$each(function(node) {
+      this.$$bind(event, callback, node);
+    });
+  },
+
+  // Detach events
+  off: function() {
+    for (var i = 0, size = this.$$events.length; i < size; ++i) {
+      var e = this.$$events[i];
+      this.$$unbind(e.event, e.callback, e.node);
+    }
+
+    this.$$events = [];
   },
 
   // Clear node

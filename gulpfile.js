@@ -51,7 +51,8 @@ var commonsFiles = [
 var files = {
   standalone: [underscoreLite, jqLite].concat(commonsFiles),
   jquery: [underscoreLite].concat(commonsFiles),
-  underscore: [jqLite].concat(commonsFiles)
+  underscore: [jqLite].concat(commonsFiles),
+  bare: commonsFiles
 };
 
 var testFiles = files.standalone.concat([

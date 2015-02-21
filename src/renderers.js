@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-/* global $util */
+/* global _ */
 /* exported $renderers */
 
 var $renderers = {
   $$toString: function(value) {
-    var val = $util.isUndefined(value) || $util.isNull(value) ? '' : value;
+    var val = _.isUndefined(value) || _.isNull(value) ? '' : value;
     return val.toString();
   },
 

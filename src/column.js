@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-/* global $util */
+/* global _ */
 /* global $parse */
 /* global $sanitize */
 /* global $renderers */
@@ -31,7 +31,7 @@
 /* global CSS_SORTABLE_ASC */
 
 var Column = function(column) {
-  var isUndefined = $util.isUndefined;
+  var isUndefined = _.isUndefined;
   var escape = column.escape;
   var sortable = column.sortable;
 
@@ -53,14 +53,14 @@ var Column = function(column) {
   this.renderer = column.renderer;
 
   // Or it could be defined a string which is a shortcut to a pre-built renderer
-  if ($util.isString(this.renderer)) {
+  if (_.isString(this.renderer)) {
     this.renderer = $renderers[this.renderer];
   }
 
   // If it is not a function, switch to default renderer
   // TODO Is it really a good idea ? Should we allow more flexibility ?
   // TODO Should we define a way to chain renderers ?
-  if (!$util.isFunction(this.renderer)) {
+  if (!_.isFunction(this.renderer)) {
     this.renderer = $renderers.identity;
   }
 
@@ -72,7 +72,7 @@ Column.prototype = {
 
   // Check if a value is defined (i.e not undefined and not null)
   $$isDefined: function(val) {
-    return !$util.isUndefined(val) && !$util.isNull(val);
+    return !_.isUndefined(val) && !_.isNull(val);
   },
 
   // Get css class to append to each cell

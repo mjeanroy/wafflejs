@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-(function(window, document, $util, undefined) {
+(function(window, document, _, undefined) {
 
 'use strict';
 

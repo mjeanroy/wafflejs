@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-/* global $util */
+/* global _ */
 
 var $doc = {
   // Create dom element
@@ -50,7 +50,7 @@ var $doc = {
   }
 };
 
-$util.forEach(['tr', 'td', 'th', 'tbody', 'thead'], function(tagName) {
+_.forEach(['tr', 'td', 'th', 'tbody', 'thead'], function(tagName) {
   $doc[tagName] = function() {
     return this.create(tagName);
   };

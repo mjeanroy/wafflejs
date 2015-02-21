@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-/* global $util */
+/* global _ */
 
 var $parse = function(key) {
   var parts = $parse.$split(key);
   var size = parts.length;
-  var isDefined = $util.isObject;
+  var isDefined = _.isObject;
 
   return function(object) {
     var current = object;

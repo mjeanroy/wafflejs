@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-/* exported $util */
+/* exported _ */
 
 /**
  * Set of utilities.
@@ -33,7 +33,7 @@
  * replace this utility object by underscore or lodash.
  */
 
-var $util = {
+var _ = {
   // Check if given object is undefined
   isUndefined: function(obj) {
     return typeof obj === 'undefined';

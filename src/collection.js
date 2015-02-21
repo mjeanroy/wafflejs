@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-/* global $util */
+/* global _ */
 /* global $parse */
 
 /**
@@ -50,7 +50,7 @@ var Collection = function(data, options) {
   this.$key = opts.key || 'id';
   this.$model = opts.model;
 
-  if (!$util.isFunction(this.$key)) {
+  if (!_.isFunction(this.$key)) {
   	this.$key = $parse(this.$key);
   }
 
@@ -139,7 +139,7 @@ Collection.prototype = {
   // and returns the new length of the collection.
   // Semantic is the same as [].push function
   push: function() {
-    var models = $util.clone(arguments);
+    var models = _.clone(arguments);
     return this.$$add(models, this.length);
   },
 
@@ -147,7 +147,7 @@ Collection.prototype = {
   // and returns the new length of the collection.
   // Semantic is the same as [].unshift function
   unshift: function() {
-    var models = $util.clone(arguments);
+    var models = _.clone(arguments);
     return this.$$add(models, 0);
   },
 
@@ -170,7 +170,7 @@ Collection.prototype = {
 
   // Return array object
   toArray: function() {
-    return $util.clone(this);
+    return _.clone(this);
   },
 
   // Returns a new collection comprised of the collection on which it is called
@@ -201,14 +201,14 @@ Collection.prototype = {
   }
 };
 
-$util.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'find'], function(fn) {
+_.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'find'], function(fn) {
   Collection.prototype[fn] = function() {
-    var args = [this].concat($util.clone(arguments));
-    return $util[fn].apply($util, args);
+    var args = [this].concat(_.clone(arguments));
+    return _[fn].apply(_, args);
   };
 });
 
-$util.forEach(['toString', 'toLocaleString', 'join', 'indexOf', 'lastIndexOf'], function(fn) {
+_.forEach(['toString', 'toLocaleString', 'join', 'indexOf', 'lastIndexOf'], function(fn) {
   Collection.prototype[fn] = function() {
     // Make PhantomJS 1.x happy: context need to be a "real" array.
     return Array.prototype[fn].apply(this.toArray(), arguments);

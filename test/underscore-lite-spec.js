@@ -22,68 +22,68 @@
  * SOFTWARE.
  */
 
-describe('$util', function() {
+describe('_', function() {
 
   it('should check if object is undefined', function() {
-    expect($util.isUndefined(undefined)).toBe(true);
-    expect($util.isUndefined(null)).toBe(false);
-    expect($util.isUndefined(0)).toBe(false);
-    expect($util.isUndefined('')).toBe(false);
-    expect($util.isUndefined(NaN)).toBe(false);
+    expect(_.isUndefined(undefined)).toBe(true);
+    expect(_.isUndefined(null)).toBe(false);
+    expect(_.isUndefined(0)).toBe(false);
+    expect(_.isUndefined('')).toBe(false);
+    expect(_.isUndefined(NaN)).toBe(false);
   });
 
   it('should check if object is null', function() {
-    expect($util.isNull(null)).toBe(true);
-    expect($util.isNull(undefined)).toBe(false);
-    expect($util.isNull(0)).toBe(false);
-    expect($util.isNull('')).toBe(false);
-    expect($util.isNull(NaN)).toBe(false);
+    expect(_.isNull(null)).toBe(true);
+    expect(_.isNull(undefined)).toBe(false);
+    expect(_.isNull(0)).toBe(false);
+    expect(_.isNull('')).toBe(false);
+    expect(_.isNull(NaN)).toBe(false);
   });
 
   it('should check if object is a function', function() {
-    expect($util.isFunction(null)).toBe(false);
-    expect($util.isFunction(undefined)).toBe(false);
-    expect($util.isFunction(0)).toBe(false);
-    expect($util.isFunction('')).toBe(false);
-    expect($util.isFunction(NaN)).toBe(false);
+    expect(_.isFunction(null)).toBe(false);
+    expect(_.isFunction(undefined)).toBe(false);
+    expect(_.isFunction(0)).toBe(false);
+    expect(_.isFunction('')).toBe(false);
+    expect(_.isFunction(NaN)).toBe(false);
 
-    expect($util.isFunction(function() {})).toBe(true);
+    expect(_.isFunction(function() {})).toBe(true);
   });
 
   it('should check if object is an array', function() {
-    expect($util.isArray([])).toBe(true);
-    expect($util.isArray(undefined)).toBe(false);
-    expect($util.isArray(null)).toBe(false);
-    expect($util.isArray(0)).toBe(false);
-    expect($util.isArray('')).toBe(false);
-    expect($util.isArray(NaN)).toBe(false);
+    expect(_.isArray([])).toBe(true);
+    expect(_.isArray(undefined)).toBe(false);
+    expect(_.isArray(null)).toBe(false);
+    expect(_.isArray(0)).toBe(false);
+    expect(_.isArray('')).toBe(false);
+    expect(_.isArray(NaN)).toBe(false);
   });
 
   it('should check if object is a dom element', function() {
-    expect($util.isElement(undefined)).toBe(false);
-    expect($util.isElement(null)).toBe(false);
-    expect($util.isElement(1)).toBe(false);
-    expect($util.isElement('foo')).toBe(false);
-    expect($util.isElement(true)).toBe(false);
+    expect(_.isElement(undefined)).toBe(false);
+    expect(_.isElement(null)).toBe(false);
+    expect(_.isElement(1)).toBe(false);
+    expect(_.isElement('foo')).toBe(false);
+    expect(_.isElement(true)).toBe(false);
 
-    expect($util.isElement(document.createElement('div'))).toBe(true);
+    expect(_.isElement(document.createElement('div'))).toBe(true);
   });
 
   it('should check if object is a string', function() {
-    expect($util.isString(undefined)).toBe(false);
-    expect($util.isString(null)).toBe(false);
-    expect($util.isString(1)).toBe(false);
-    expect($util.isString(true)).toBe(false);
+    expect(_.isString(undefined)).toBe(false);
+    expect(_.isString(null)).toBe(false);
+    expect(_.isString(1)).toBe(false);
+    expect(_.isString(true)).toBe(false);
 
-    expect($util.isString('foo')).toBe(true);
-    expect($util.isString(String('foo'))).toBe(true);
-    expect($util.isString(new String('foo'))).toBe(true);
+    expect(_.isString('foo')).toBe(true);
+    expect(_.isString(String('foo'))).toBe(true);
+    expect(_.isString(new String('foo'))).toBe(true);
   });
 
   it('should clone to new array', function() {
     var array = [1, 2, 3];
 
-    var newArray = $util.clone(array);
+    var newArray = _.clone(array);
 
     expect(array).toEqual([1, 2, 3]);
     expect(newArray).toEqual(array);
@@ -94,7 +94,7 @@ describe('$util', function() {
     var callback = jasmine.createSpy('callback');
     var array = [1, 2, 3];
 
-    $util.forEach(array, callback);
+    _.forEach(array, callback);
 
     expect(array).toEqual([1, 2, 3]);
     expect(callback).toHaveBeenCalledWith(1, 0, array);
@@ -109,7 +109,7 @@ describe('$util', function() {
 
     var array = [1, 2, 3];
 
-    var results = $util.map(array, callback);
+    var results = _.map(array, callback);
 
     expect(results).toEqual([2, 4, 6]);
     expect(array).toEqual([1, 2, 3]);
@@ -126,14 +126,14 @@ describe('$util', function() {
     var array1 = [1, 2, 3];
     var array2 = [2, 4, 6];
 
-    var r1 = $util.every(array1, callback);
+    var r1 = _.every(array1, callback);
 
     expect(r1).toBe(false);
     expect(callback).toHaveBeenCalledWith(1, 0, array1);
     expect(callback).not.toHaveBeenCalledWith(2, 1, array1);
     expect(callback).not.toHaveBeenCalledWith(3, 2, array1);
 
-    var r2 = $util.every(array2, callback);
+    var r2 = _.every(array2, callback);
 
     expect(r2).toBe(true);
     expect(callback).toHaveBeenCalledWith(2, 0, array2);
@@ -149,14 +149,14 @@ describe('$util', function() {
     var array1 = [1, 3, 5];
     var array2 = [2, 4, 6];
 
-    var r1 = $util.some(array1, callback);
+    var r1 = _.some(array1, callback);
 
     expect(r1).toBe(false);
     expect(callback).toHaveBeenCalledWith(1, 0, array1);
     expect(callback).toHaveBeenCalledWith(3, 1, array1);
     expect(callback).toHaveBeenCalledWith(5, 2, array1);
 
-    var r2 = $util.some(array2, callback);
+    var r2 = _.some(array2, callback);
 
     expect(r2).toBe(true);
     expect(callback).toHaveBeenCalledWith(2, 0, array2);
@@ -170,7 +170,7 @@ describe('$util', function() {
     });
 
     var array = [0, 1, 2, 3, 4];
-    var result = $util.reduce(array, callback);
+    var result = _.reduce(array, callback);
 
     expect(result).toBe(10);
 
@@ -186,7 +186,7 @@ describe('$util', function() {
     });
 
     var array = [0, 1, 2, 3, 4];
-    var result = $util.reduce(array, callback, 10);
+    var result = _.reduce(array, callback, 10);
 
     expect(result).toBe(20);
 
@@ -203,7 +203,7 @@ describe('$util', function() {
     });
 
     var array = [0, 1, 2, 3, 4];
-    var result = $util.reduceRight(array, callback);
+    var result = _.reduceRight(array, callback);
 
     expect(result).toBe(10);
     expect(callback).toHaveBeenCalledWith(4, 3, 3, array);
@@ -218,7 +218,7 @@ describe('$util', function() {
     });
 
     var array = [0, 1, 2, 3, 4];
-    var result = $util.reduceRight(array, callback, 10);
+    var result = _.reduceRight(array, callback, 10);
 
     expect(result).toBe(20);
     expect(callback).toHaveBeenCalledWith(10, 4, 4, array);
@@ -233,7 +233,7 @@ describe('$util', function() {
     });
 
     var array = [1, 2, 3, 4];
-    var newArray = $util.filter(array, callback, 10);
+    var newArray = _.filter(array, callback, 10);
 
     expect(newArray).toEqual([2, 4]);
     expect(callback).toHaveBeenCalledWith(1, 0, array);
@@ -250,8 +250,8 @@ describe('$util', function() {
     var a1 = [1, 2, 3, 4];
     var a2 = [1, 3, 5];
 
-    var r1 = $util.find(a1, callback);
-    var r2 = $util.find(a2, callback);
+    var r1 = _.find(a1, callback);
+    var r2 = _.find(a2, callback);
 
     expect(r1).toBe(2);
     expect(r2).toBeUndefined();

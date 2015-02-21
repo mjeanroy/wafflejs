@@ -34,8 +34,13 @@ var wrap = require('gulp-wrap');
 var taskListing = require('gulp-task-listing');
 var karma = require('karma').server;
 
-var underscoreLite = 'src/underscore-lite.js';
+<<<<<<< Updated upstream
+var underscoreLite = 'src/utils.js';
 var jqLite = 'src/jq-lite.js';
+=======
+var underscoreLite = 'src/underscore-lite.js';
+var jqLite = 'src/jqLite.js';
+>>>>>>> Stashed changes
 var commonsFiles = [
   'src/constants.js',
   'src/dom.js',

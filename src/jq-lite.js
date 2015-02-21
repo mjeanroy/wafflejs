@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-/* global $util */
+/* global _ */
 
 var $ = function(nodes) {
   if (nodes instanceof $) {
@@ -33,11 +33,11 @@ var $ = function(nodes) {
     return new $(nodes);
   }
 
-  if ($util.isElement(nodes)) {
+  if (_.isElement(nodes)) {
     nodes = [nodes];
   }
 
-  $util.forEach(nodes, function(node, idx) {
+  _.forEach(nodes, function(node, idx) {
     this[idx] = node;
   }, this);
 
@@ -122,7 +122,7 @@ $.prototype = {
 
   // Add css class
   addClass: function(classes) {
-    var css = $util.isArray(classes) ? classes.join(' ') : classes;
+    var css = _.isArray(classes) ? classes.join(' ') : classes;
     return this.$$each(function(node) {
       node.className = node.className + ' ' + css;
     });

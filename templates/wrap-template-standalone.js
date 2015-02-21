@@ -22,10 +22,29 @@
  * SOFTWARE.
  */
 
-(function(window, document, _, undefined) {
+(function(window, document, undefined) {
+
+  (function (factory) {
+
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        module.exports = factory();
+    } else {
+        // Browser globals
+        window.Grid = factory();
+    }
+
+  }(function () {
 
 'use strict';
 
 <%= contents %>
 
-})(window, document, _, void 0);
+return Grid;
+
+  }));
+
+})(window, document, void 0);

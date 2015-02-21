@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,29 @@
  * SOFTWARE.
  */
 
-// TODO rajouter les wrapper requirejs / commonjs
+(function(window, document, undefined) {
 
-(function(window, document, $, undefined) {
+  (function (factory) {
+
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['underscore'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        module.exports = factory(require('underscore'));
+    } else {
+        // Browser globals
+        window.Grid = factory(_);
+    }
+
+  }(function (_) {
 
 'use strict';
 
 <%= contents %>
 
-})(window, document, jQuery, void 0);
+return Grid;
+
+  }));
+
+})(window, document, void 0);

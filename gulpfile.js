@@ -101,7 +101,7 @@ TARGETS.forEach(function(target) {
     return gulp.src(files[target])
       .pipe(concat('waffle-' + target + '.js'))
       .pipe(strip({ block: true }))
-      .pipe(wrap({src: 'wrap-template-' + target + '.js'}))
+      .pipe(wrap({src: 'templates/wrap-template-' + target + '.js'}))
       .pipe(gulp.dest(buildFolder));
   });
 

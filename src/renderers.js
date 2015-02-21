@@ -22,15 +22,10 @@
  * SOFTWARE.
  */
 
-/* global _ */
+/* jshint eqnull:true */
 /* exported $renderers */
 
 var $renderers = {
-  $$toString: function(value) {
-    var val = _.isUndefined(value) || _.isNull(value) ? '' : value;
-    return val.toString();
-  },
-
   // Simple renderer that just return same value
   identity: function(value) {
     return value;
@@ -44,11 +39,11 @@ var $renderers = {
 
   // Render a value as a lower case string
   lowercase: function(value) {
-    return this.$$toString(value).toLowerCase();
+    return (value == null ? '' : value).toString().toLowerCase();
   },
 
   // Render a value as an upper case string
   uppercase: function(value) {
-    return this.$$toString(value).toUpperCase();
+    return (value == null ? '' : value).toString().toUpperCase();
   }
 };

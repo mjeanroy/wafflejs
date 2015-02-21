@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* jshint eqnull:true */
+
 /* global _ */
 /* global $parse */
 /* global $sanitize */
@@ -69,12 +71,6 @@ var Column = function(column) {
 };
 
 Column.prototype = {
-
-  // Check if a value is defined (i.e not undefined and not null)
-  $$isDefined: function(val) {
-    return !_.isUndefined(val) && !_.isNull(val);
-  },
-
   // Get css class to append to each cell
   cssClasses: function() {
     var classes = [this.css];
@@ -95,7 +91,7 @@ Column.prototype = {
   // Render object using column settings
   render: function(object) {
     // Extract value
-    var value = this.$$isDefined(object) ? this.$parser(object) : '';
+    var value = object == null ? '' : this.$parser(object);
 
     // Give extracted value as the first parameter
     // Give object as the second parameter to allow more flexibility
@@ -104,7 +100,7 @@ Column.prototype = {
     var rendererValue = this.renderer.call($renderers, value, object, this.field);
 
     // If value is null or undefined, fallback to an empty string
-    if (!this.$$isDefined(rendererValue)) {
+    if (rendererValue == null) {
       return '';
     }
 

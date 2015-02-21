@@ -22,20 +22,21 @@
  * SOFTWARE.
  */
 
+/* jshint eqnull:true */
 /* global _ */
 
 var $parse = function(key) {
   var parts = $parse.$split(key);
   var size = parts.length;
-  var isDefined = _.isObject;
 
   return function(object) {
     var current = object;
 
     for (var i = 0; i < size; ++i) {
-      if (!isDefined(current)) {
+      if (current == null || !_.isObject(current)) {
         return undefined;
       }
+
       current = current[parts[i]];
     }
 

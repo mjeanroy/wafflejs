@@ -124,7 +124,8 @@ $.prototype = {
   addClass: function(classes) {
     var css = _.isArray(classes) ? classes.join(' ') : classes;
     return this.$$each(function(node) {
-      node.className = node.className + ' ' + css;
+      var actualCss = node.className;
+      node.className = (actualCss ? actualCss + ' ' : '') + css;
     });
   },
 

@@ -100,13 +100,13 @@ describe('$', function() {
     it('should add class to node', function() {
       var $result = $div.addClass('foo');
       expect($result).toBe($div);
-      expect($div[0].className).toBe(' foo');
+      expect($div[0].className).toBe('foo');
     });
 
     it('should add array of classes to node', function() {
       var $result = $div.addClass(['foo', 'bar']);
       expect($result).toBe($div);
-      expect($div[0].className).toBe(' foo bar');
+      expect($div[0].className).toBe('foo bar');
     });
 
     it('should bind and unbind event', function() {

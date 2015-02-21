@@ -14,18 +14,22 @@ for (var i = 0; i < 1000; i++) {
   generatedData[i] = randomPerson;
 };
 
-var newColumn = function(id, title) {
+var newColumn = function(id, title, renderer) {
   return {
     id: id,
-    title: title
+    title: title,
+    renderer: renderer
   };
 };
 
+var fullNameRenderer = function(value, object) {
+  return value + ' ' + object.lastName;
+};
+
 var columns = [
-  newColumn('firstName', 'Firstname'),
-  newColumn('lastName', 'Lastname'),
+  newColumn('firstName', 'Name', fullNameRenderer),
   newColumn('userName', 'Login'),
-  newColumn('email', 'Email')
+  newColumn('email', 'Email', 'lowercase')
 ];
 
 var table = new Grid(document.getElementById('waffle'), {

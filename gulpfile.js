@@ -35,7 +35,7 @@ var taskListing = require('gulp-task-listing');
 var karma = require('karma').server;
 
 var underscoreLite = 'src/utils.js';
-var jqLite = 'src/jq.js';
+var jqLite = 'src/jq-lite.js';
 var commonsFiles = [
   'src/constants.js',
   'src/dom.js',

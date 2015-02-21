@@ -25,10 +25,10 @@
 /* global $doc */
 /* global Collection */
 /* global Column */
-/* global jq */
+/* global $ */
 
 var Grid = function(table, options) {
-  this.$table = jq(table);
+  this.$table = $(table);
 
   this.$data = new Collection(options.data || []);
   this.$columns = new Collection(options.columns || [], {
@@ -45,18 +45,18 @@ Grid.prototype = {
   //  - Create or retrieve tbody element
   init: function() {
     var table = this.$table[0];
-    this.$tbody = jq($doc.byTagName('tbody', table));
-    this.$thead = jq($doc.byTagName('thead', table));
+    this.$tbody = $($doc.byTagName('tbody', table));
+    this.$thead = $($doc.byTagName('thead', table));
 
     if (!this.$thead.length) {
       var thead = $doc.thead();
-      this.$thead = jq(thead);
+      this.$thead = $(thead);
       this.$table.append(thead);
     }
 
     if (!this.$tbody.length) {
       var tbody = $doc.tbody();
-      this.$tbody = jq(tbody);
+      this.$tbody = $(tbody);
       this.$table.append(tbody);
     }
 
@@ -74,7 +74,7 @@ Grid.prototype = {
     var tr = $doc.tr();
 
     this.$columns.forEach(function(column) {
-      var $node = jq($doc.th())
+      var $node = $($doc.th())
         .addClass(column.cssClasses())
         .html(column.title);
 
@@ -117,7 +117,7 @@ Grid.prototype = {
     var tr = $doc.tr();
 
     this.$columns.forEach(function(column) {
-      var $node = jq($doc.td())
+      var $node = $($doc.td())
         .addClass(column.cssClasses())
         .html(column.render(data));
 

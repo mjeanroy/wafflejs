@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-describe('jq', function() {
+describe('$', function() {
 
   var fixtures;
   var node1;
@@ -34,18 +34,18 @@ describe('jq', function() {
     node2 = document.createElement('div');
   });
 
-  it('should return instance of jq', function() {
-    var $div = jq([node1, node2]);
+  it('should return instance of $', function() {
+    var $div = $([node1, node2]);
     expect($div).toBeDefined();
-    expect($div).toBeInstanceOf(jq);
+    expect($div).toBeInstanceOf($);
 
     expect($div[0]).toBe(node1);
     expect($div[1]).toBe(node2);
   });
 
-  it('should return exact instance of jq', function() {
-    var $div = jq([node1, node2]);
-    var $other = jq($div);
+  it('should return exact instance of $', function() {
+    var $div = $([node1, node2]);
+    var $other = $($div);
     expect($other).toBe($div);
   });
 
@@ -53,7 +53,7 @@ describe('jq', function() {
     var $div;
 
     beforeEach(function() {
-      $div = jq([node1, node2]);
+      $div = $([node1, node2]);
     });
 
     it('should clear node content', function() {

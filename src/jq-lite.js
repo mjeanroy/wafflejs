@@ -24,13 +24,13 @@
 
 /* global $util */
 
-var jq = function(nodes) {
-  if (nodes instanceof jq) {
+var $ = function(nodes) {
+  if (nodes instanceof $) {
   	return nodes;
   }
 
-  if (!(this instanceof jq)) {
-    return new jq(nodes);
+  if (!(this instanceof $)) {
+    return new $(nodes);
   }
 
   if ($util.isElement(nodes)) {
@@ -49,7 +49,7 @@ var jq = function(nodes) {
   this.$$events = [];
 };
 
-jq.prototype = {
+$.prototype = {
   $$each: function(fn) {
     for (var i = 0; i < this.length; ++i) {
       fn.call(this, this[i], i, this);

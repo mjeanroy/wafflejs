@@ -24,7 +24,7 @@
 
 // TODO rajouter les wrapper requirejs / commonjs
 
-(function(window, document, jq, undefined) {
+(function(window, document, $, undefined) {
 
 'use strict';
 

@@ -71,8 +71,8 @@ var Column = function(column) {
   // If it is not a function, switch to default renderer
   // TODO Is it really a good idea ? Should we allow more flexibility ?
   var defaultRenderer = 'identity';
-  var columnRenderer = column.renderer || [defaultRenderer];
-  var renderers = _.isArray(column.renderer) ? column.renderer : [column.renderer];
+  var columnRenderer = column.renderer || defaultRenderer;
+  var renderers = _.isArray(columnRenderer) ? columnRenderer : [columnRenderer];
   this.renderer = _.map(renderers, function(r) {
     return __searchIn(r, $renderers, defaultRenderer);
   });

@@ -80,6 +80,39 @@ describe('_', function() {
     expect(_.isString(new String('foo'))).toBe(true);
   });
 
+  it('should check if object is a boolean', function() {
+    expect(_.isBoolean(true)).toBe(true);
+    expect(_.isBoolean(false)).toBe(true);
+    expect(_.isBoolean(Boolean(''))).toBe(true);
+
+    expect(_.isBoolean(undefined)).toBe(false);
+    expect(_.isBoolean(null)).toBe(false);
+    expect(_.isBoolean(1)).toBe(false);
+  });
+
+  it('should check if object is a number', function() {
+    expect(_.isNumber(0)).toBe(true);
+    expect(_.isNumber(1)).toBe(true);
+    expect(_.isNumber(NaN)).toBe(true);
+
+    expect(_.isNumber(false)).toBe(false);
+    expect(_.isNumber(Boolean(''))).toBe(false);
+    expect(_.isNumber(undefined)).toBe(false);
+    expect(_.isNumber(null)).toBe(false);
+  });
+
+  it('should check if object is a date', function() {
+    expect(_.isDate(new Date())).toBe(true);
+
+    expect(_.isDate(0)).toBe(false);
+    expect(_.isDate(1)).toBe(false);
+    expect(_.isDate(NaN)).toBe(false);
+    expect(_.isDate(false)).toBe(false);
+    expect(_.isDate(Boolean(''))).toBe(false);
+    expect(_.isDate(undefined)).toBe(false);
+    expect(_.isDate(null)).toBe(false);
+  });
+
   it('should clone to new array', function() {
     var array = [1, 2, 3];
 
@@ -88,6 +121,27 @@ describe('_', function() {
     expect(array).toEqual([1, 2, 3]);
     expect(newArray).toEqual(array);
     expect(newArray).not.toBe(array);
+  });
+
+  it('should check if object contains key', function() {
+    expect(_.has({ foo: 'foo' }, 'foo')).toBe(true);
+    expect(_.has({ foo: 'foo' }, 'bar')).toBe(false);
+
+    expect(_.has([1, 2], '0')).toBe(true);
+    expect(_.has([1, 2], '1')).toBe(true);
+    expect(_.has([1, 2], '2')).toBe(false);
+  });
+
+  it('should check get object keys', function() {
+    var k1 = _.keys({ foo: '0', 'bar': '1' });
+    expect(k1).toHaveLength(2);
+    expect(k1).toContain('foo');
+    expect(k1).toContain('bar');
+
+    var k2 = _.keys([1, 2]);
+    expect(k2).toHaveLength(2);
+    expect(k2).toContain('0');
+    expect(k2).toContain('1');
   });
 
   it('should apply callback for each array element', function() {

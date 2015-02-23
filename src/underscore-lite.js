@@ -33,6 +33,11 @@
  * replace this utility object by underscore or lodash.
  */
 
+var __ObjectProto = Object.prototype;
+var __nativeKeys = Object.keys;
+var __hasOwnProperty = __ObjectProto.hasOwnProperty;
+var __toString = __ObjectProto.toString;
+
 var _ = {
   // Check if given object is undefined
   isUndefined: function(obj) {
@@ -52,17 +57,32 @@ var _ = {
 
   // Check if given object is an array
   isArray: function(obj) {
-    return Object.prototype.toString.call(obj) === '[object Array]';
+    return __toString.call(obj) === '[object Array]';
   },
 
   // Check if given object is a string
   isString: function(obj) {
-    return Object.prototype.toString.call(obj) === '[object String]';
+    return __toString.call(obj) === '[object String]';
   },
 
   // Check if given object is a function
   isFunction: function(obj) {
     return typeof obj === 'function';
+  },
+
+  // Check if given object is a boolean
+  isBoolean: function(obj) {
+    return obj === true || obj === false || __toString.call(obj) === '[object Boolean]';
+  },
+
+  // Check if given object is a number (including NaN)
+  isNumber: function(obj) {
+    return __toString.call(obj) === '[object Number]';
+  },
+
+  // Check if given object is a date
+  isDate: function(obj) {
+    return __toString.call(obj) === '[object Date]';
   },
 
   // Check that given object is a DOM element
@@ -72,7 +92,36 @@ var _ = {
 
   // Clone array
   clone: function(array) {
-    return [].slice.call(array);
+    var newArray = [];
+    for (var i = 0, size = array.length; i < size; ++i) {
+      newArray[i] = array[i];
+    }
+    return newArray;
+  },
+
+  // Check if object has given key
+  has: function(object, key) {
+    return __hasOwnProperty.call(object, key);
+  },
+
+  // Get all keys of object
+  keys: function(object) {
+    if (!_.isObject(object)) {
+      return [];
+    }
+
+    if (__nativeKeys) {
+      return __nativeKeys(object);
+    }
+
+    var keys = [];
+    for (var key in object) {
+      if (_.has(object, key)) {
+        keys.push(key);
+      }
+    }
+
+    return keys;
   },
 
   // Apply callback for each item of array

@@ -58,19 +58,19 @@ describe('Column', function() {
   it('should initialize column with pre-built renderer', function() {
     var column = new Column({
       id: 'foo',
-      renderer: 'lowercase'
+      renderer: '$lowercase'
     });
 
-    expect(column.renderer).toEqual([$renderers.lowercase]);
+    expect(column.$renderer).toEqual([$renderers.$lowercase]);
   });
 
   it('should initialize column with pre-built renderer as an array of pre-built renderers', function() {
     var column = new Column({
       id: 'foo',
-      renderer: ['lowercase', 'capitalize']
+      renderer: ['$lowercase', '$capitalize']
     });
 
-    expect(column.renderer).toEqual([$renderers.lowercase, $renderers.capitalize]);
+    expect(column.$renderer).toEqual([$renderers.$lowercase, $renderers.$capitalize]);
   });
 
   it('should initialize column with pre-built renderer as an array of renderers', function() {
@@ -80,10 +80,10 @@ describe('Column', function() {
 
     var column = new Column({
       id: 'foo',
-      renderer: [customRenderer, 'lowercase']
+      renderer: [customRenderer, '$lowercase']
     });
 
-    expect(column.renderer).toEqual([customRenderer, $renderers.lowercase]);
+    expect(column.$renderer).toEqual([customRenderer, $renderers.$lowercase]);
   });
 
   it('should initialize column with pre-built comparator', function() {
@@ -92,7 +92,7 @@ describe('Column', function() {
       comparator: '$number'
     });
 
-    expect(column.comparator).toBe($comparators.$number);
+    expect(column.$comparator).toBe($comparators.$number);
   });
 
   it('should initialize column with custom comparator', function() {
@@ -103,7 +103,7 @@ describe('Column', function() {
       comparator: comparator
     });
 
-    expect(column.comparator).toBe(comparator);
+    expect(column.$comparator).toBe(comparator);
   });
 
   it('should render value of object', function() {
@@ -183,7 +183,7 @@ describe('Column', function() {
     var column = new Column({
       id: 'nested.name',
       escape: true,
-      renderer: [renderer, 'uppercase']
+      renderer: [renderer, '$uppercase']
     });
 
     var object = {
@@ -223,7 +223,7 @@ describe('Column', function() {
   it('should render value using pre-built renderer', function() {
     var column = new Column({
       id: 'nested.name',
-      renderer: 'empty'
+      renderer: '$empty'
     });
 
     var object = {
@@ -239,7 +239,7 @@ describe('Column', function() {
   it('should render value using pre-built lowercase renderer', function() {
     var column = new Column({
       id: 'nested.name',
-      renderer: 'lowercase'
+      renderer: '$lowercase'
     });
 
     var object = {
@@ -255,7 +255,7 @@ describe('Column', function() {
   it('should render value using pre-built uppercase renderer', function() {
     var column = new Column({
       id: 'nested.name',
-      renderer: 'uppercase'
+      renderer: '$uppercase'
     });
 
     var object = {

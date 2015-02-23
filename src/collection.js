@@ -70,15 +70,15 @@ var $$callOnArray = function(fn, ctx, args) {
 };
 
 var Collection = function(data, options) {
-  this.$map = {};
+  this.$$map = {};
 
   var opts = options || {};
 
-  this.$key = opts.key || 'id';
-  this.$model = opts.model;
+  this.$$key = opts.key || 'id';
+  this.$$model = opts.model;
 
-  if (!_.isFunction(this.$key)) {
-    this.$key = $parse(this.$key);
+  if (!_.isFunction(this.$$key)) {
+    this.$$key = $parse(this.$$key);
   }
 
   // Initialize collection
@@ -93,9 +93,9 @@ Collection.prototype = {
     var collectionSize = this.length;
     for (var i = start; i < collectionSize; ++i) {
       var newIndex = i + size;
-      var id = this.$key(this[i]);
+      var id = this.$$key(this[i]);
       this[newIndex] = this[i];
-      this.$map[id] = newIndex;
+      this.$$map[id] = newIndex;
     }
   },
 
@@ -106,12 +106,12 @@ Collection.prototype = {
 
     for (var i = 0, size = models.length; i < size; ++i) {
       var current = models[i];
-      var model = this.$model ? new this.$model(current) : current;
+      var model = this.$$model ? new this.$$model(current) : current;
       var modelIdx = start + i;
-      var id = this.$key(model);
+      var id = this.$$key(model);
 
       this[modelIdx] = model;
-      this.$map[id] = modelIdx;
+      this.$$map[id] = modelIdx;
       this.length++;
     }
 
@@ -125,7 +125,7 @@ Collection.prototype = {
 
     var lastIndex = this.length - 1;
     var value = this[index];
-    var id = this.$key(value);
+    var id = this.$$key(value);
 
     if (index < lastIndex) {
       this.$$move(index, -1);
@@ -133,7 +133,7 @@ Collection.prototype = {
 
     this.length--;
     delete this[lastIndex];
-    delete this.$map[id];
+    delete this.$$map[id];
 
     return value;
   },
@@ -141,14 +141,14 @@ Collection.prototype = {
   $$replaceAll: function(array) {
     var oldSize = this.length;
     var newSize = array.length;
-    this.$map = {};
+    this.$$map = {};
 
     for (var i = 0; i < newSize; ++i) {
       var current = array[i];
-      var model = this.$model ? new this.$model(current) : current;
-      var id = this.$key(model);
+      var model = this.$$model ? new this.$$model(current) : current;
+      var id = this.$$key(model);
       this[i] = model;
-      this.$map[id] = i;
+      this.$$map[id] = i;
     }
 
     for (; i < oldSize; ++i) {
@@ -180,7 +180,7 @@ Collection.prototype = {
 
   // Get index of item by its key
   indexByKey: function(key) {
-    return _.has(this.$map, key) ? this.$map[key] : -1;
+    return _.has(this.$$map, key) ? this.$$map[key] : -1;
   },
 
   // Returns an index in the array, if an element in the array
@@ -237,8 +237,8 @@ Collection.prototype = {
   concat: function() {
     var newArray = $$ArrayProto.concat.apply(this.toArray(), arguments);
     return new Collection(newArray, {
-      key: this.$key,
-      model: this.$model
+      key: this.$$key,
+      model: this.$$model
     });
   },
 
@@ -247,8 +247,8 @@ Collection.prototype = {
   slice: function() {
     var results = $$callOnArray('slice', this, arguments);
     return new Collection(results, {
-      key: this.$key,
-      model: this.$model
+      key: this.$$key,
+      model: this.$$model
     });
   },
 

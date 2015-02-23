@@ -27,11 +27,11 @@ describe('collection', function() {
   it('should initialize empty collection', function() {
     var collection = new Collection();
     expect(collection.length).toBe(0);
-    expect(collection.$map).toEqual({});
-    expect(collection.$model).toBeUndefined();
-    expect(collection.$key).toEqual(jasmine.any(Function));
+    expect(collection.$$map).toEqual({});
+    expect(collection.$$model).toBeUndefined();
+    expect(collection.$$key).toEqual(jasmine.any(Function));
 
-    var id = collection.$key({ id: 1 });
+    var id = collection.$$key({ id: 1 });
     expect(id).toBe(1);
   });
 
@@ -41,11 +41,11 @@ describe('collection', function() {
     });
 
     expect(collection.length).toBe(0);
-    expect(collection.$map).toEqual({});
-    expect(collection.$model).toBeUndefined();
-    expect(collection.$key).toEqual(jasmine.any(Function));
+    expect(collection.$$map).toEqual({});
+    expect(collection.$$model).toBeUndefined();
+    expect(collection.$$key).toEqual(jasmine.any(Function));
 
-    var name = collection.$key({ id: 1, name: 'foo' });
+    var name = collection.$$key({ id: 1, name: 'foo' });
     expect(name).toBe('foo');
   });
 
@@ -58,9 +58,9 @@ describe('collection', function() {
     });
 
     expect(collection.length).toBe(0);
-    expect(collection.$map).toEqual({});
-    expect(collection.$model).toBe(Model);
-    expect(collection.$key).toEqual(jasmine.any(Function));
+    expect(collection.$$map).toEqual({});
+    expect(collection.$$model).toBe(Model);
+    expect(collection.$$key).toEqual(jasmine.any(Function));
   });
 
   it('should initialize collection with array', function() {
@@ -74,8 +74,8 @@ describe('collection', function() {
     expect(collection[0]).toBe(o1);
     expect(collection[1]).toBe(o2);
 
-    expect(collection.$map[1]).toBe(0);
-    expect(collection.$map[2]).toBe(1);
+    expect(collection.$$map[1]).toBe(0);
+    expect(collection.$$map[2]).toBe(1);
   });
 
   it('should initialize collection with array and model constructor', function() {
@@ -99,11 +99,11 @@ describe('collection', function() {
     expect(collection[0]).toEqual(jasmine.objectContaining(o1));
     expect(collection[1]).toEqual(jasmine.objectContaining(o2));
 
-    expect(collection.$map[1]).not.toBe(o1);
-    expect(collection.$map[2]).not.toBe(o2);
+    expect(collection.$$map[1]).not.toBe(o1);
+    expect(collection.$$map[2]).not.toBe(o2);
 
-    expect(collection.$map[1]).toBe(0);
-    expect(collection.$map[2]).toBe(1);
+    expect(collection.$$map[1]).toBe(0);
+    expect(collection.$$map[2]).toBe(1);
   });
 
   describe('once initialized', function() {
@@ -189,7 +189,7 @@ describe('collection', function() {
       expect(collection.length).toBe(1);
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBeUndefined();
-      expect(collection.$map).toEqual({
+      expect(collection.$$map).toEqual({
       	1: 0
       });
     });
@@ -200,7 +200,7 @@ describe('collection', function() {
       expect(collection.length).toBe(1);
       expect(collection[0]).toBe(o2);
       expect(collection[1]).toBeUndefined();
-      expect(collection.$map).toEqual({
+      expect(collection.$$map).toEqual({
         2: 0
       });
     });
@@ -221,7 +221,7 @@ describe('collection', function() {
       expect(collection[2]).toBe(o2);
       expect(collection[3]).toBe(o1);
 
-      expect(collection.$map).toEqual({
+      expect(collection.$$map).toEqual({
         1: 3,
         2: 2,
         3: 1,
@@ -242,7 +242,7 @@ describe('collection', function() {
       expect(collection[2]).toBe(o3);
       expect(collection[3]).toBe(o4);
 
-      expect(collection.$map).toEqual({
+      expect(collection.$$map).toEqual({
         1: 0,
         2: 1,
         3: 2,
@@ -263,7 +263,7 @@ describe('collection', function() {
       expect(collection[2]).toBe(o1);
       expect(collection[3]).toBe(o2);
 
-      expect(collection.$map).toEqual({
+      expect(collection.$$map).toEqual({
         1: 2,
         2: 3,
         3: 0,
@@ -283,7 +283,7 @@ describe('collection', function() {
       expect(newCollection[1]).toBe(o2);
       expect(newCollection[2]).toBe(o3);
       expect(newCollection[3]).toBe(o4);
-      expect(newCollection.$map).toEqual({
+      expect(newCollection.$$map).toEqual({
         1: 0,
         2: 1,
         3: 2,
@@ -301,7 +301,7 @@ describe('collection', function() {
       var results = collection.slice(0, 1);
       expect(results.length).toBe(1);
       expect(results[0]).toBe(collection[0]);
-      expect(results.$map).toEqual({
+      expect(results.$$map).toEqual({
         1: 0
       });
     });

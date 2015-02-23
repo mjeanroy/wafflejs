@@ -27,29 +27,29 @@
 
 var $renderers = {
   // Simple renderer that just return same value
-  identity: function(value) {
+  $identity: function(value) {
     return value;
   },
 
   // Simple renderer that just return an empty value
   // Could be used to renderer a cell with always an empty value
-  empty: function() {
+  $empty: function() {
     return '';
   },
 
   // Render a value as a lower case string
-  lowercase: function(value) {
+  $lowercase: function(value) {
     return (value == null ? '' : value).toString().toLowerCase();
   },
 
   // Render a value as an upper case string
-  uppercase: function(value) {
+  $uppercase: function(value) {
     return (value == null ? '' : value).toString().toUpperCase();
   },
 
   // Render a value as a capitalized string
   // First character is changed to an uppercase character, other characters remains unchanged
-  capitalize: function(value) {
+  $capitalize: function(value) {
     var str = value == null ? '' : value.toString();
     return str.charAt(0).toUpperCase() + str.substr(1);
   }

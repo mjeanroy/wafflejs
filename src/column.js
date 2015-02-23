@@ -70,17 +70,17 @@ var Column = function(column) {
   // Or it could be defined a string which is a shortcut to a pre-built renderer
   // If it is not a function, switch to default renderer
   // TODO Is it really a good idea ? Should we allow more flexibility ?
-  var defaultRenderer = 'identity';
+  var defaultRenderer = '$identity';
   var columnRenderer = column.renderer || defaultRenderer;
   var renderers = _.isArray(columnRenderer) ? columnRenderer : [columnRenderer];
-  this.renderer = _.map(renderers, function(r) {
+  this.$renderer = _.map(renderers, function(r) {
     return __searchIn(r, $renderers, defaultRenderer);
   });
 
   // Comparator can be defined as a custom function
   // Or it could be defined a string which is a shortcut to a pre-built comparator
   // If it is not a function, switch to default comparator
-  this.comparator = __searchIn(column.comparator, $comparators, '$auto');
+  this.$comparator = __searchIn(column.comparator, $comparators, '$auto');
 
   // Parse that will be used to extract data value from plain old javascript object
   this.$parser = $parse(this.field);
@@ -115,7 +115,7 @@ Column.prototype = {
     // Give object as the second parameter to allow more flexibility
     // Give field to display as the third parameter to allow more flexibility
     // Use '$renderers' as this context, this way renderers can be easy compose
-    var rendererValue = _.reduce(this.renderer, function(val, r) {
+    var rendererValue = _.reduce(this.$renderer, function(val, r) {
       return r.call($renderers, val, object, field);
     }, value);
 

@@ -154,7 +154,7 @@ Grid.prototype = {
 
       return {
         parser: column.$parser || $parse(id),
-        fn: column.comparator || $comparators.$auto,
+        fn: column.$comparator || $comparators.$auto,
         desc: !column.asc
       };
     }, this);

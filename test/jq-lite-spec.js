@@ -109,6 +109,28 @@ describe('$', function() {
       expect($div[0].className).toBe('foo bar');
     });
 
+    it('should get element at given index', function() {
+      var $node1 = $div.eq(1);
+      expect($node1).toBeInstanceOf($);
+      expect($node1[0]).toBe($div[1]);
+    });
+
+    it('should get children', function() {
+      var span1 = document.createElement('span');
+      span1.setAttribute('id', 'span1');
+      var span2 = document.createElement('span');
+      span2.setAttribute('id', 'span2');
+
+      $div[0].appendChild(span1);
+      $div[1].appendChild(span2);
+
+      var $children = $div.children();
+      expect($children).toBeInstanceOf($);
+      expect($children.length).toBe(2);
+      expect($children[0].getAttribute('id')).toBe('span1');
+      expect($children[1].getAttribute('id')).toBe('span2');
+    });
+
     it('should bind and unbind event', function() {
       // Bind and check callbacks
       var callback = jasmine.createSpy('callback');
@@ -169,6 +191,22 @@ describe('$', function() {
 
       expect($div[1].getAttribute(a1)).toBe(v1);
       expect($div[1].getAttribute(a2)).toBe(v2);
+    });
+
+    it('should remove node attributes', function() {
+      var name = 'data-foo';
+      var value = '1';
+
+      $div[0].setAttribute(name, value);
+      $div[1].setAttribute(name, value);
+
+      expect($div[0].getAttribute(name)).toBe(value);
+      expect($div[1].getAttribute(name)).toBe(value);
+
+      $div.removeAttr(name);
+
+      expect($div[0].getAttribute(name)).toBeNull();
+      expect($div[1].getAttribute(name)).toBeNull();
     });
   });
 });

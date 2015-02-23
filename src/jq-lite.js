@@ -79,6 +79,26 @@ $.prototype = {
     node.removeEventListener(event, callback);
   },
 
+  // Get the children of each element in the set of matched elements.
+  children: function() {
+    var children = [];
+
+    this.$$each(function(node) {
+      _.forEach(node.childNodes, function(childNode) {
+        if (childNode.nodeType === 1) {
+          children.push(childNode);
+        }
+      });
+    });
+
+    return $(children);
+  },
+
+  // Reduce the set of matched elements to the one at the specified index.
+  eq: function(index) {
+    return $(this[index]);
+  },
+
   // Attach event
   on: function(event, callback) {
     return this.$$each(function(node) {
@@ -153,6 +173,13 @@ $.prototype = {
       _.forEach(keys, function(k) {
         node.setAttribute(k, values[k]);
       });
+    });
+  },
+
+  // Remove attribute
+  removeAttr: function(name) {
+    return this.$$each(function(node) {
+      node.removeAttribute(name);
     });
   }
 };

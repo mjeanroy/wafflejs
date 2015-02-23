@@ -22,12 +22,20 @@
  * SOFTWARE.
  */
 
+/* jshint eqnull: true */
 /* global $doc */
 /* global Collection */
 /* global Column */
 /* global $ */
+/* global _ */
+/* global $parse */
+/* global $comparators */
+/* global $$createComparisonFunction */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_IDX */
+/* global DATA_WAFFLE_ORDER */
+/* global CHAR_ORDER_ASC */
+/* global CHAR_ORDER_DESC */
 
 
 var Grid = function(table, options) {
@@ -77,9 +85,15 @@ Grid.prototype = {
     var tr = $doc.tr();
 
     this.$columns.forEach(function(column) {
+      var attributes = {};
+      attributes[DATA_WAFFLE_ID] = column.id;
+      if (column.asc != null) {
+        attributes[DATA_WAFFLE_ORDER] = column.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+      }
+
       var $node = $($doc.th())
         .addClass(column.cssClasses())
-        .attr(DATA_WAFFLE_ID, column.id)
+        .attr(attributes)
         .html(column.title);
 
       tr.appendChild($node[0]);
@@ -104,6 +118,53 @@ Grid.prototype = {
     return this;
   },
 
+  // Sort grid by fields
+  sortBy: function(columnIds) {
+    if (!_.isArray(columnIds)) {
+      columnIds = [columnIds];
+    }
+
+    // Create comparators object that will be used to create comparison function
+    var comparators = _.map(columnIds, function(id) {
+      var firstChar = id.charAt(0);
+      var columnId = firstChar === CHAR_ORDER_DESC || firstChar === CHAR_ORDER_ASC ? id.substr(1) : id;
+      var flag = firstChar === CHAR_ORDER_DESC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
+
+      var index = this.$columns.indexByKey(columnId);
+
+      var $tr = this.$thead.children().eq(0);
+      var $th = $tr.children();
+
+      // Remove order flag
+      $th.removeAttr(DATA_WAFFLE_ORDER);
+
+      var column;
+      if (index >= 0) {
+        column = this.$columns.at(index);
+
+        // Update order flag
+        $th.eq(index)
+           .attr(DATA_WAFFLE_ORDER, flag);
+
+      } else {
+        column = {};
+      }
+
+      column.asc = flag === CHAR_ORDER_ASC;
+
+      return {
+        parser: column.$parser || $parse(id),
+        fn: column.comparator || $comparators.$auto,
+        desc: !column.asc
+      };
+    }, this);
+
+    this.$data.sort($$createComparisonFunction(comparators));
+
+    // Body need to be rendered since data is now sorted
+    return this.renderBody();
+  },
+
   // Destroy datagrid
   destroy: function() {
     return this.$$unbind().$$destroy();
@@ -123,7 +184,13 @@ Grid.prototype = {
   // Bind user events
   // Should be a private function
   $$bind: function() {
-    this.$thead.on('click', function() {
+    var that = this;
+    this.$thead.on('click', function(e) {
+      var th = e.target;
+      var id = th.getAttribute(DATA_WAFFLE_ID);
+      var currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
+      var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
+      that.sortBy([newOrder + id]);
     });
     return this;
   },

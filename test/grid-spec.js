@@ -203,6 +203,10 @@ describe('Grid', function() {
     expect(ths).toVerify(function(node, idx) {
       return node.getAttribute('data-waffle-id') === columns[idx].id;
     });
+
+    expect(ths).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-order') === null;
+    });
   });
 
   it('should render data', function() {
@@ -264,6 +268,103 @@ describe('Grid', function() {
       var tds = node.childNodes;
       return tds[0].getAttribute('data-waffle-idx') === idx.toString() &&
              tds[1].getAttribute('data-waffle-idx') === idx.toString();
+    });
+  });
+
+  it('should sort data when column header is clicked', function() {
+    var columns = [
+      { id: 'id', title: 'Foo' },
+      { id: 'name', title: 'Boo' }
+    ];
+
+    var data = [
+      { id: 2, name: 'foo2 '},
+      { id: 1, name: 'foo1 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    // Check that grid is not sorted
+    var tbody = grid.$tbody[0];
+    var thead = grid.$thead[0];
+
+    var tr = thead.childNodes[0];
+    var ths = tr.childNodes;
+    expect(ths).toVerify(function(th) {
+      return th.getAttribute('data-waffle-order') === null;
+    });
+
+    var trs = tbody.childNodes;
+    expect(trs).toVerify(function(node, idx) {
+      return node.childNodes[0].innerHTML === data[idx].id.toString();
+    });
+
+    expect(grid.$columns.toArray()).toVerify(function(c) {
+      return c.asc === null;
+    });
+
+    // Data should not be sorted yet
+    expect(grid.$data.toArray()).not.toBeSorted(function(o1, o2) {
+      return o1.id - o2.id;
+    });
+
+    // Trigger click
+    var evt1 = document.createEvent('MouseEvent');
+    evt1.initEvent('click', true, true);
+    ths[0].dispatchEvent(evt1);
+
+    // Th should have flag
+    expect(ths[0].getAttribute('data-waffle-order')).toBe('+');
+
+    // Data should be sorted
+    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
+      return o1.id - o2.id;
+    });
+
+    expect(grid.$columns[0].asc).toBe(true);
+    expect(grid.$columns[1].asc).toBeNull();
+
+    // Sort data
+    data.sort(function(o1, o2) {
+      return o1.id - o2.id
+    });
+
+    var trs = tbody.childNodes;
+    expect(trs).toVerify(function(node, idx) {
+      return node.childNodes[0].innerHTML === data[idx].id.toString();
+    });
+
+    // New click should reverse order
+    var evt2 = document.createEvent('MouseEvent');
+    evt2.initEvent('click', true, true);
+    ths[0].dispatchEvent(evt2);
+
+    // Th should have flag
+    expect(ths[0].getAttribute('data-waffle-order')).toBe('-');
+
+    // Data should be sorted
+    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
+      return o2.id - o1.id;
+    });
+
+    expect(grid.$columns[0].asc).toBe(false);
+    expect(grid.$columns[1].asc).toBeNull();
+
+    // Sort data
+    data.sort(function(o1, o2) {
+      return o2.id - o1.id
+    });
+
+    var trs = tbody.childNodes;
+    expect(trs).toVerify(function(node, idx) {
+      return node.childNodes[0].innerHTML === data[idx].id.toString();
     });
   });
 });

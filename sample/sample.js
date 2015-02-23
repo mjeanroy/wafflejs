@@ -19,6 +19,7 @@ var newColumn = function(id, title, renderer) {
     id: id,
     title: title,
     escape: false,
+    comparator: '$string',
     renderer: renderer
   };
 };

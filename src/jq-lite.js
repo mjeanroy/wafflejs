@@ -133,5 +133,25 @@ $.prototype = {
     return this.$$each(function(node) {
       node.innerHTML = html;
     });
+  },
+
+  // Set attribute to value
+  attr: function(name, value) {
+    var values = name;
+    var keys;
+
+    if (arguments.length === 2) {
+      values = {};
+      values[name] = value;
+      keys = [name];
+    } else {
+      keys = _.keys(values);
+    }
+
+    return this.$$each(function(node) {
+      _.forEach(keys, function(k) {
+        node.setAttribute(k, values[k]);
+      });
+    });
   }
 };

@@ -141,5 +141,34 @@ describe('$', function() {
       $div[1].dispatchEvent(e2);
       expect(callback).not.toHaveBeenCalled();
     });
+
+    it('should set node attribute', function() {
+      var attrName = 'data-foo';
+      var attrValue = '1';
+
+      $div.attr('data-foo', '1');
+
+      expect($div[0].getAttribute(attrName)).toBe(attrValue);
+      expect($div[1].getAttribute(attrName)).toBe(attrValue);
+    });
+
+    it('should set node attributes', function() {
+      var a1 = 'data-foo';
+      var v1 = '1';
+      var a2 = 'data-bar';
+      var v2 = '2';
+
+      var attributes = {};
+      attributes[a1] = v1;
+      attributes[a2] = v2;
+
+      $div.attr(attributes);
+
+      expect($div[0].getAttribute(a1)).toBe(v1);
+      expect($div[0].getAttribute(a2)).toBe(v2);
+
+      expect($div[1].getAttribute(a1)).toBe(v1);
+      expect($div[1].getAttribute(a2)).toBe(v2);
+    });
   });
 });

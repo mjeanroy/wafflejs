@@ -31,6 +31,8 @@
 /* global $parse */
 /* global $comparators */
 /* global $$createComparisonFunction */
+/* global CSS_SORTABLE_ASC */
+/* global CSS_SORTABLE_DESC */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_IDX */
 /* global DATA_WAFFLE_ORDER */
@@ -124,38 +126,39 @@ Grid.prototype = {
       columnIds = [columnIds];
     }
 
+    // Remove order flag
+    var $tr = this.$thead.children().eq(0);
+    var $th = $tr.children();
+    $th.removeClass([CSS_SORTABLE_ASC, CSS_SORTABLE_DESC])
+       .removeAttr(DATA_WAFFLE_ORDER);
+
     // Create comparators object that will be used to create comparison function
     var comparators = _.map(columnIds, function(id) {
       var firstChar = id.charAt(0);
       var columnId = firstChar === CHAR_ORDER_DESC || firstChar === CHAR_ORDER_ASC ? id.substr(1) : id;
       var flag = firstChar === CHAR_ORDER_DESC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
-
+      var asc = flag === CHAR_ORDER_ASC;
       var index = this.$columns.indexByKey(columnId);
 
-      var $tr = this.$thead.children().eq(0);
-      var $th = $tr.children();
-
-      // Remove order flag
-      $th.removeAttr(DATA_WAFFLE_ORDER);
-
       var column;
+
       if (index >= 0) {
         column = this.$columns.at(index);
+        column.asc = asc;
 
         // Update order flag
         $th.eq(index)
-           .attr(DATA_WAFFLE_ORDER, flag);
+            .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
+            .attr(DATA_WAFFLE_ORDER, flag);
 
       } else {
         column = {};
       }
 
-      column.asc = flag === CHAR_ORDER_ASC;
-
       return {
         parser: column.$parser || $parse(id),
         fn: column.$comparator || $comparators.$auto,
-        desc: !column.asc
+        desc: !asc
       };
     }, this);
 

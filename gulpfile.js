@@ -32,6 +32,7 @@ var strip = require('gulp-strip-comments');
 var uglify = require('gulp-uglify');
 var wrap = require('gulp-wrap');
 var taskListing = require('gulp-task-listing');
+var less = require('gulp-less');
 var karma = require('karma').server;
 
 var underscoreLite = 'src/underscore-lite.js';
@@ -99,7 +100,7 @@ TARGETS.forEach(function(target) {
   var concatTask = CONCAT_PREFIX + target;
   var minifyTask = MINIFY_PREFIX + target;
 
-  gulp.task(concatTask, ['clean', 'lint', 'test'], function(done) {
+  gulp.task(concatTask, ['lint', 'test'], function(done) {
     return gulp.src(files[target])
       .pipe(concat('waffle-' + target + '.js'))
       .pipe(strip({ block: true }))
@@ -123,7 +124,13 @@ gulp.task('minify', TARGETS.map(function(t) {
   return 'minify:' + t;
 }));
 
-gulp.task('build', ['clean', 'lint', 'test', 'minify']);
+gulp.task('less', function() {
+  return gulp.src(__dirname + '/src/less/*.less')
+    .pipe(less())
+    .pipe(gulp.dest(buildFolder));
+});
+
+gulp.task('build', ['lint', 'test', 'less', 'minify']);
 gulp.task('default', ['build']);
 
 gulp.task('server', ['concat'], function () {
@@ -131,8 +138,13 @@ gulp.task('server', ['concat'], function () {
     file:'sample-server.js'
   });
 
-  gulp.watch(['src/**/*'], function(event) {
+  gulp.watch(['src/**/*.js'], function(event) {
     gulp.run('concat');
+    server.notify(event);
+  });
+
+  gulp.watch(['src/less/*.less'], function(event) {
+    gulp.run('less');
     server.notify(event);
   });
 

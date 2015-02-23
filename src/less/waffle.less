@@ -22,7 +22,72 @@
  * SOFTWARE.
  */
 
-// Css class added to sortable column
-th.waffle-sortable {
-  cursor: pointer;
+/**
+ * --------------------------------------------------------------------------*\
+ * Mixins use to user-select effect.                                         *\
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/user-select              *\
+ * http://css-tricks.com/almanac/properties/u/user-select/                   *\
+ * --------------------------------------------------------------------------*\
+ */
+.drop-select() {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+       -o-user-select: none;
+          user-select: none;
+}
+
+/**
+ * --------------------------------------------------------------------------*\
+ * Mixins use to create arrows in pure css.                                  *\
+ * http://css-tricks.com/snippets/css/css-triangle/                          *\
+ * @param size Size of arrow                                                 *\
+ * @param direction Direction of arrow (top or bottom)                       *\
+ * --------------------------------------------------------------------------*\
+ */
+.arrow(@size, @direction) {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: @size solid transparent;
+  border-right: @size solid transparent;
+  top: 50%;
+  right: @size;
+  content: ' ';
+
+  & when (@direction = 'top') {
+    border-top: @size solid black;
+    margin-bottom: -@size;
+  }
+  & when (@direction = 'bottom') {
+    border-bottom: @size solid black;
+    margin-top: -@size;
+  }
+}
+
+th {
+  @arrow-size: 5px;
+
+  // Css class added to sortable column
+  &.waffle-sortable {
+    cursor: pointer;
+    position: relative;
+
+    // Drop user selection
+    .drop-select();
+  }
+
+  // Css class added to column sorted in ascendant order
+  &.waffle-sortable-asc {
+    &:before {
+      .arrow(5px, 'top');
+    }
+  }
+
+  // Css class added to column sorted in descendant order
+  &.waffle-sortable-desc {
+    &:after {
+      .arrow(5px, 'bottom');
+    }
+  }
 }

@@ -298,7 +298,11 @@ describe('Grid', function() {
     var tr = thead.childNodes[0];
     var ths = tr.childNodes;
     expect(ths).toVerify(function(th) {
-      return th.getAttribute('data-waffle-order') === null;
+      var classes = th.className.split(' ');
+      return th.getAttribute('data-waffle-order') === null &&
+             classes.indexOf('waffle-sortable') >= 0 &&
+             classes.indexOf('waffle-sortable-asc') === -1 &&
+             classes.indexOf('waffle-sortable-desc') === -1;
     });
 
     var trs = tbody.childNodes;
@@ -322,6 +326,11 @@ describe('Grid', function() {
 
     // Th should have flag
     expect(ths[0].getAttribute('data-waffle-order')).toBe('+');
+
+    var classes = ths[0].className.split(' ');
+    expect(classes).toContain('waffle-sortable');
+    expect(classes).toContain('waffle-sortable-asc');
+    expect(classes).not.toContain('waffle-sortable-desc');
 
     // Data should be sorted
     expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
@@ -348,6 +357,11 @@ describe('Grid', function() {
 
     // Th should have flag
     expect(ths[0].getAttribute('data-waffle-order')).toBe('-');
+
+    classes = ths[0].className.split(' ');
+    expect(classes).toContain('waffle-sortable');
+    expect(classes).toContain('waffle-sortable-desc');
+    expect(classes).not.toContain('waffle-sortable-asc');
 
     // Data should be sorted
     expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {

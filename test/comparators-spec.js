@@ -146,4 +146,33 @@ describe('comparators', function() {
   it('should use automatic comparison with null and undefined', function() {
     expect($comparators.$auto(null, undefined)).toBeZero();
   });
+
+  it('should compare two objects', function() {
+    var comparators = [
+      { parser: $parse('name'), fn: $comparators.$string, desc: false },
+      { parser: $parse('id'), fn: $comparators.$number, desc: true }
+    ];
+
+    var o1 = { id: 1, name: 'foo' };
+    var o2 = { id: 2, name: 'bar' };
+    var o3 = { id: 3, name: 'bar' };
+    var o4 = { id: 1, name: 'foo' };
+
+    var compareFn = $$createComparisonFunction(comparators);
+
+    // o1 === o1 => should return zero
+    expect(compareFn(o1, o1)).toBeZero();
+
+    // foo > bar => should return positive value
+    expect(compareFn(o1, o2)).toBePositive();
+
+    // bar < foo => should return negative value
+    expect(compareFn(o2, o1)).toBeNegative();
+
+    // o2.name === o3.name && o2.id < o3.id => should return negative value because id is in descendant order
+    expect(compareFn(o2, o3)).toBePositive();
+
+    // o1 !== o4 but o1.id === o4.id && o1.name === o4.name => should return zero
+    expect(compareFn(o1, o4)).toBeZero();
+  });
 });

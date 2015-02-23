@@ -25,6 +25,7 @@
 /* jshint eqnull:true */
 /* global _ */
 /* exported $comparators */
+/* exported $$createComparisonFunction */
 
 var $comparators = {
   // Compare two strings
@@ -77,4 +78,36 @@ var $comparators = {
     // Just do a simple comparison... (strict equality is already checked)
     return a < b ? -1 : 1;
   }
+};
+
+// Create a comparison function using array of comparator
+// Comparison function take two object in parameters and iterate
+// over comparators to return zero, a negative value or a positive value
+// Comparison stop when a comparator return a non-zero value (it means that
+// first most precise comparison is used to compute the final result).
+var $$createComparisonFunction = function(comparators) {
+  if (!_.isArray(comparators)) {
+    comparators = [comparators];
+  }
+
+  return function(o1, o2) {
+    if (o1 === o2 || (o1 == null && o2 == null)) {
+      return 0;
+    }
+
+    for (var i = 0, size = comparators.length; i < size; ++i) {
+      var current = comparators[i];
+      var a1 = current.parser(o1);
+      var a2 = current.parser(o2);
+      var result = current.fn.call($comparators, a1, a2);
+
+      // Return first result that is not zero
+      if (result) {
+        return current.desc ? result * -1 : result;
+      }
+    }
+
+    // Each comparator return zero, so compare function must return zero
+    return 0;
+  };
 };

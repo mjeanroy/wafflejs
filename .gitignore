@@ -1,3 +1,6 @@
+# git
+*.orig
+
 # Logs
 logs
 *.log

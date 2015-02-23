@@ -43,6 +43,7 @@ var commonsFiles = [
   'src/sanitize.js',
   'src/collection.js',
   'src/renderers.js',
+  'src/comparators.js',
   'src/column.js',
   'src/grid.js'
 ];
@@ -91,7 +92,7 @@ gulp.task('test', function(done) {
 
 var MINIFY_PREFIX = 'minify:';
 var CONCAT_PREFIX = 'concat:';
-var TARGETS = ['standalone', 'jquery', 'underscore'];
+var TARGETS = Object.keys(files);
 
 TARGETS.forEach(function(target) {
   var concatTask = CONCAT_PREFIX + target;

@@ -55,6 +55,26 @@ describe('Column', function() {
     expect(column.css).toBe('foo-bar');
   });
 
+  it('should initialize column with pre-built comparator', function() {
+    var column = new Column({
+      id: 'foo',
+      comparator: '$number'
+    });
+
+    expect(column.comparator).toBe($comparators.$number);
+  });
+
+  it('should initialize column with custom comparator', function() {
+    var comparator = jasmine.createSpy('comparator');
+
+    var column = new Column({
+      id: 'foo',
+      comparator: comparator
+    });
+
+    expect(column.comparator).toBe(comparator);
+  });
+
   it('should render value of object', function() {
     var column = new Column({
       id: 'id'

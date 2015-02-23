@@ -28,9 +28,24 @@
 /* global $parse */
 /* global $sanitize */
 /* global $renderers */
+/* global $comparators */
 /* global CSS_SORTABLE */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SORTABLE_ASC */
+
+var __searchIn = function(value, dictionary, def) {
+  // If value is a string, search in given dictionary
+  if (_.isString(value)) {
+    value = dictionary[value];
+  }
+
+  // If it is not a function then use default value in dictionary
+  if (!_.isFunction(value)) {
+    value = dictionary[def];
+  }
+
+  return value;
+};
 
 var Column = function(column) {
   var isUndefined = _.isUndefined;
@@ -52,19 +67,16 @@ var Column = function(column) {
   }
 
   // Renderer can be defined as a custom function
-  this.renderer = column.renderer;
-
   // Or it could be defined a string which is a shortcut to a pre-built renderer
-  if (_.isString(this.renderer)) {
-    this.renderer = $renderers[this.renderer];
-  }
-
   // If it is not a function, switch to default renderer
   // TODO Is it really a good idea ? Should we allow more flexibility ?
   // TODO Should we define a way to chain renderers ?
-  if (!_.isFunction(this.renderer)) {
-    this.renderer = $renderers.identity;
-  }
+  this.renderer = __searchIn(column.renderer, $renderers, 'identity');
+
+  // Comparator can be defined as a custom function
+  // Or it could be defined a string which is a shortcut to a pre-built comparator
+  // If it is not a function, switch to default comparator
+  this.comparator = __searchIn(column.comparator, $comparators, '$auto');
 
   // Parse that will be used to extract data value from plain old javascript object
   this.$parser = $parse(this.field);

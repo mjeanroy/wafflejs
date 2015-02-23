@@ -103,6 +103,16 @@ describe('$', function() {
       expect($div[0].className).toBe('foo');
     });
 
+    it('should remove class of node', function() {
+      $div[0].className = 'foo bar foobar';
+      $div[1].className = 'foo foobar';
+
+      $div.removeClass(['foo', 'foobar']);
+
+      expect($div[0].className).toBe('bar');
+      expect($div[1].className).toBe('');
+    });
+
     it('should add array of classes to node', function() {
       var $result = $div.addClass(['foo', 'bar']);
       expect($result).toBe($div);

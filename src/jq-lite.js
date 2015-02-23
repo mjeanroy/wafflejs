@@ -149,6 +149,24 @@ $.prototype = {
     });
   },
 
+  // Remove a single class, multiple classes in the set of matched elements.
+  removeClass: function(classes) {
+    var css = _.isArray(classes) ? classes : [classes];
+
+    var map = _.indexBy(css, function(c) {
+      return c;
+    });
+
+    return this.$$each(function(node) {
+      var actualClasses = node.className;
+      var newClasses = _.filter(actualClasses.split(' '), function(c) {
+        return !map[c];
+      });
+
+      node.className = newClasses.join(' ');
+    });
+  },
+
   // Replace html content
   html: function(html) {
     return this.$$each(function(node) {

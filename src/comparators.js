@@ -74,7 +74,7 @@ var $comparators = {
       return $comparators['$' + value.toLowerCase()](a, b);
     }
 
-    // Just do a simple comparison...
-    return a === b ? 0 : (a < b ? -1 : 1);
+    // Just do a simple comparison... (strict equality is already checked)
+    return a < b ? -1 : 1;
   }
 };

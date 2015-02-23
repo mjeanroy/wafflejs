@@ -127,7 +127,7 @@ describe('collection', function() {
       expect(collection.length).toBe(2);
     });
 
-    it('get element by bey', function() {
+    it('get element by key', function() {
       var o1 = { id: 1, name: 'foo' };
       var o2 = { id: 2, name: 'bar' };
       var items = [o1, o2];
@@ -137,6 +137,18 @@ describe('collection', function() {
       expect(collection.byKey(1)).toBe(o1);
       expect(collection.byKey(2)).toBe(o2);
       expect(collection.byKey(3)).toBe(undefined);
+    });
+
+    it('get element index by key', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var items = [o1, o2];
+
+      var collection = new Collection(items);
+
+      expect(collection.indexByKey(1)).toBe(0);
+      expect(collection.indexByKey(2)).toBe(1);
+      expect(collection.indexByKey(3)).toBe(-1);
     });
 
     it('should join elements', function() {
@@ -189,7 +201,31 @@ describe('collection', function() {
       expect(collection[0]).toBe(o2);
       expect(collection[1]).toBeUndefined();
       expect(collection.$map).toEqual({
-      	2: 0
+        2: 0
+      });
+    });
+
+    it('should sort collection', function() {
+      var o3 = { id: 3, name: 'foobar' };
+      var o4 = { id: 4, name: 'foobar' };
+      collection.push(o3, o4);
+
+      var result = collection.sort(function(o1, o2) {
+        return o2.id - o1.id
+      });
+
+      expect(result).toBe(collection);
+      expect(collection.length).toBe(4);
+      expect(collection[0]).toBe(o4);
+      expect(collection[1]).toBe(o3);
+      expect(collection[2]).toBe(o2);
+      expect(collection[3]).toBe(o1);
+
+      expect(collection.$map).toEqual({
+        1: 3,
+        2: 2,
+        3: 1,
+        4: 0
       });
     });
 

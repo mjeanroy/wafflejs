@@ -109,7 +109,28 @@ Collection.prototype = {
     delete this.$map[id];
 
     return value;
+  },
 
+  $$replaceAll: function(array) {
+    var oldSize = this.length;
+    var newSize = array.length;
+    this.$map = {};
+
+    for (var i = 0; i < newSize; ++i) {
+      var current = array[i];
+      var model = this.$model ? new this.$model(current) : current;
+      var id = this.$key(model);
+      this[i] = model;
+      this.$map[id] = i;
+    }
+
+    for (; i < oldSize; ++i) {
+      delete this[i];
+    }
+
+    this.length = newSize;
+
+    return this;
   },
 
   // Get size of collection
@@ -126,7 +147,13 @@ Collection.prototype = {
 
   // Get item by its key value
   byKey: function(key) {
-    return this[this.$map[key]];
+    var index = this.indexByKey(key);
+    return index >= 0 ? this[index] : undefined;
+  },
+
+  // Get index of item by its key
+  indexByKey: function(key) {
+    return _.has(this.$map, key) ? this.$map[key] : -1;
   },
 
   // Returns an index in the array, if an element in the array
@@ -203,6 +230,12 @@ Collection.prototype = {
   // Need JSON.stringify to be available
   toJSON: function() {
     return JSON.stringify(this.toArray());
+  },
+
+  // Sort given collection
+  sort: function(sortFn) {
+    var array = this.toArray().sort(sortFn);
+    return this.$$replaceAll(array);
   }
 };
 

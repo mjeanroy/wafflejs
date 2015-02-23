@@ -124,6 +124,11 @@ Collection.prototype = {
     return this[index];
   },
 
+  // Get item by its key value
+  byKey: function(key) {
+    return this[this.$map[key]];
+  },
+
   // Returns an index in the array, if an element in the array
   // satisfies the provided testing function. Otherwise -1 is returned.
   findIndex: function(callback, ctx) {

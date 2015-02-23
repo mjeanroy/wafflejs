@@ -127,6 +127,18 @@ describe('collection', function() {
       expect(collection.length).toBe(2);
     });
 
+    it('get element by bey', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var items = [o1, o2];
+
+      var collection = new Collection(items);
+
+      expect(collection.byKey(1)).toBe(o1);
+      expect(collection.byKey(2)).toBe(o2);
+      expect(collection.byKey(3)).toBe(undefined);
+    });
+
     it('should join elements', function() {
       expect(collection.join()).toBe('1,2');
       expect(collection.join(';')).toBe('1;2');

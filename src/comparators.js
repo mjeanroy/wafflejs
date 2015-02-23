@@ -43,8 +43,8 @@ var $comparators = {
 
   // Compare two booleans
   $boolean: function(a, b) {
-  	var b1 = a === 'false' ? 0 : (Boolean(a) ? 1 : 0);
-  	var b2 = b === 'false' ? 0 : (Boolean(b) ? 1 : 0);
+    var b1 = a === 'false' ? 0 : (Boolean(a) ? 1 : 0);
+    var b2 = b === 'false' ? 0 : (Boolean(b) ? 1 : 0);
     return b1 - b2;
   },
 

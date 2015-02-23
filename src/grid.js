@@ -26,6 +26,9 @@
 /* global Collection */
 /* global Column */
 /* global $ */
+/* global DATA_WAFFLE_ID */
+/* global DATA_WAFFLE_IDX */
+
 
 var Grid = function(table, options) {
   this.$table = $(table);
@@ -61,7 +64,7 @@ Grid.prototype = {
     }
 
     // Render grid on initialization
-    return this.render();
+    return this.$$bind().render();
   },
 
   // Render entire grid
@@ -76,6 +79,7 @@ Grid.prototype = {
     this.$columns.forEach(function(column) {
       var $node = $($doc.th())
         .addClass(column.cssClasses())
+        .attr(DATA_WAFFLE_ID, column.id)
         .html(column.title);
 
       tr.appendChild($node[0]);
@@ -91,8 +95,8 @@ Grid.prototype = {
   renderBody: function() {
     var fragment = $doc.createFragment();
 
-    this.$data.forEach(function(data) {
-      var row = this.$renderRow(data);
+    this.$data.forEach(function(data, idx) {
+      var row = this.$$renderRow(data, idx);
       fragment.appendChild(row);
     }, this);
 
@@ -101,24 +105,50 @@ Grid.prototype = {
   },
 
   // Destroy datagrid
-  // This method should be call to clear memory when datagrid is removed from DOM
   destroy: function() {
+    return this.$$unbind().$$destroy();
+  },
+
+  // Destroy internal data
+  // Should be a private function
+  $$destroy: function() {
     for (var i in this) {
       if (this.hasOwnProperty(i)) {
         this[i] = null;
       }
     }
+    return this;
+  },
 
+  // Bind user events
+  // Should be a private function
+  $$bind: function() {
+    this.$thead.on('click', function() {
+    });
+    return this;
+  },
+
+  // Unbind user events
+  // Should be a private function
+  $$unbind: function() {
+    this.$thead.off();
     return this;
   },
 
   // Build row and return it
-  $renderRow: function(data) {
+  // Should be a private function
+  $$renderRow: function(data, idx) {
     var tr = $doc.tr();
+    tr.setAttribute(DATA_WAFFLE_IDX, idx);
 
     this.$columns.forEach(function(column) {
+      var attributes = {};
+      attributes[DATA_WAFFLE_ID] = column.id;
+      attributes[DATA_WAFFLE_IDX] = idx;
+
       var $node = $($doc.td())
         .addClass(column.cssClasses())
+        .attr(attributes)
         .html(column.render(data));
 
       tr.appendChild($node[0]);

@@ -30,6 +30,8 @@ describe('Grid', function() {
     fixtures = document.createElement('div');
     fixtures.setAttribute('id', 'fixtures');
     document.body.appendChild(fixtures);
+
+    jasmine.spyAll($);
   });
 
   afterEach(function() {
@@ -59,7 +61,7 @@ describe('Grid', function() {
     expect(grid.$thead[0]).toBe(thead);
   });
 
-  it('should retrieve thead and tbody element', function() {
+  it('should create thead and tbody element', function() {
     var table = document.createElement('table');
 
     var grid = new Grid(table, {
@@ -80,6 +82,81 @@ describe('Grid', function() {
     var childs = table.childNodes;
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
+  });
+
+  it('should bind click on header when grid is initialized', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.$thead.on).toHaveBeenCalledWith('click', jasmine.any(Function));
+  });
+
+  it('should destroy grid', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.$table).toBeDefined();
+    expect(grid.$thead).toBeDefined();
+    expect(grid.$tbody).toBeDefined();
+    expect(grid.$data).toBeDefined();
+    expect(grid.$columns).toBeDefined();
+
+    grid.destroy();
+
+    expect(grid.$table).toBeNull();
+    expect(grid.$thead).toBeNull();
+    expect(grid.$tbody).toBeNull();
+    expect(grid.$data).toBeNull();
+    expect(grid.$columns).toBeNull();
+  });
+
+  it('should unbind events when grid is destroyed', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.$table).toBeDefined();
+    expect(grid.$thead).toBeDefined();
+    expect(grid.$tbody).toBeDefined();
+    expect(grid.$data).toBeDefined();
+    expect(grid.$columns).toBeDefined();
+
+    expect(grid.$thead.on).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
+    expect(grid.$thead.off).not.toHaveBeenCalled();
+
+    var $thead = grid.$thead;
+    $thead.on.calls.reset();
+
+    grid.destroy();
+
+    expect(grid.$table).toBeNull();
+    expect(grid.$thead).toBeNull();
+    expect(grid.$tbody).toBeNull();
+    expect(grid.$data).toBeNull();
+    expect(grid.$columns).toBeNull();
+
+    expect($thead.on).not.toHaveBeenCalled();
+    expect($thead.off).toHaveBeenCalledOnce();
   });
 
   it('should render column header', function() {
@@ -122,6 +199,10 @@ describe('Grid', function() {
 
       return node.className === ' ' + cssClasses.join(' ');
     });
+
+    expect(ths).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-id') === columns[idx].id;
+    });
   });
 
   it('should render data', function() {
@@ -156,25 +237,33 @@ describe('Grid', function() {
     });
 
     expect(trs).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-idx') === idx.toString();
+    });
+
+    expect(trs).toVerify(function(node, idx) {
       var tds = node.childNodes;
       return tds[0].innerHTML === data[idx].id.toString() &&
              tds[1].innerHTML === data[idx].name.toString();
     });
 
     expect(trs).toVerify(function(node) {
-      var css1 = [
-        columns[0].id,
-        'waffle-sortable'
-      ];
-
-      var css2 = [
-        columns[1].id,
-        'waffle-sortable'
-      ];
-
+      var css1 = [columns[0].id, 'waffle-sortable'];
+      var css2 = [columns[1].id, 'waffle-sortable'];
       var tds = node.childNodes;
       return tds[0].className === ' '+ css1.join(' ') &&
              tds[1].className === ' ' + css2.join(' ');
+    });
+
+    expect(trs).toVerify(function(node, idx) {
+      var tds = node.childNodes;
+      return tds[0].getAttribute('data-waffle-id') === columns[0].id &&
+             tds[1].getAttribute('data-waffle-id') === columns[1].id;
+    });
+
+    expect(trs).toVerify(function(node, idx) {
+      var tds = node.childNodes;
+      return tds[0].getAttribute('data-waffle-idx') === idx.toString() &&
+             tds[1].getAttribute('data-waffle-idx') === idx.toString();
     });
   });
 });

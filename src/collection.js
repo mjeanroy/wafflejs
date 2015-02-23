@@ -51,7 +51,7 @@ var Collection = function(data, options) {
   this.$model = opts.model;
 
   if (!_.isFunction(this.$key)) {
-  	this.$key = $parse(this.$key);
+    this.$key = $parse(this.$key);
   }
 
   // Initialize collection

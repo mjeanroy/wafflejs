@@ -42,6 +42,33 @@
  * TODO splice ; reverse
  */
 
+var $$ArrayProto = Array.prototype;
+
+var $$keepNativeArray = (function() {
+  try {
+    var obj = {};
+    obj[0] = 1;
+    return !!$$ArrayProto.toString.call(obj);
+  } catch(error) {
+    return false;
+  }
+})();
+
+var $$callOnArrayFn = function(fn) {
+  return function() {
+    // Some browsers, including phantomjs 1.x need a real array
+    // to be called as the context of Array prototype function (array like
+    // object are not permitted)
+    // Newer browsers does not need this, so keep it fast for them !
+    var array = $$keepNativeArray ? this : _.clone(this);
+    return $$ArrayProto[fn].apply(array, arguments);
+  };
+};
+
+var $$callOnArray = function(fn, ctx, args) {
+  return $$callOnArrayFn(fn).apply(ctx, args);
+};
+
 var Collection = function(data, options) {
   this.$map = {};
 
@@ -208,7 +235,7 @@ Collection.prototype = {
   // Returns a new collection comprised of the collection on which it is called
   // joined with the collection(s) and/or value(s) provided as arguments.
   concat: function() {
-    var newArray = Array.prototype.concat.apply(this.toArray(), arguments);
+    var newArray = $$ArrayProto.concat.apply(this.toArray(), arguments);
     return new Collection(newArray, {
       key: this.$key,
       model: this.$model
@@ -218,8 +245,7 @@ Collection.prototype = {
   // returns a shallow copy of a portion of the collection
   // into a new collection object.
   slice: function() {
-    // Make PhantomJS 1.x happy: context need to be a "real" array.
-    var results = Array.prototype.slice.apply(this.toArray(), arguments);
+    var results = $$callOnArray('slice', this, arguments);
     return new Collection(results, {
       key: this.$key,
       model: this.$model
@@ -232,9 +258,10 @@ Collection.prototype = {
     return JSON.stringify(this.toArray());
   },
 
-  // Sort given collection
+  // Sort given collection in place
+  // Sorted collection is returned
   sort: function(sortFn) {
-    var array = this.toArray().sort(sortFn);
+    var array = $$callOnArray('sort', this, [sortFn]);
     return this.$$replaceAll(array);
   }
 };
@@ -247,8 +274,5 @@ _.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter',
 });
 
 _.forEach(['toString', 'toLocaleString', 'join', 'indexOf', 'lastIndexOf'], function(fn) {
-  Collection.prototype[fn] = function() {
-    // Make PhantomJS 1.x happy: context need to be a "real" array.
-    return Array.prototype[fn].apply(this.toArray(), arguments);
-  };
+  Collection.prototype[fn] = $$callOnArrayFn(fn);
 });

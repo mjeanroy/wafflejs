@@ -70,8 +70,12 @@ var Column = function(column) {
   // Or it could be defined a string which is a shortcut to a pre-built renderer
   // If it is not a function, switch to default renderer
   // TODO Is it really a good idea ? Should we allow more flexibility ?
-  // TODO Should we define a way to chain renderers ?
-  this.renderer = __searchIn(column.renderer, $renderers, 'identity');
+  var defaultRenderer = 'identity';
+  var columnRenderer = column.renderer || [defaultRenderer];
+  var renderers = _.isArray(column.renderer) ? column.renderer : [column.renderer];
+  this.renderer = _.map(renderers, function(r) {
+    return __searchIn(r, $renderers, defaultRenderer);
+  });
 
   // Comparator can be defined as a custom function
   // Or it could be defined a string which is a shortcut to a pre-built comparator
@@ -103,13 +107,16 @@ Column.prototype = {
   // Render object using column settings
   render: function(object) {
     // Extract value
+    var field = this.field;
     var value = object == null ? '' : this.$parser(object);
 
     // Give extracted value as the first parameter
     // Give object as the second parameter to allow more flexibility
     // Give field to display as the third parameter to allow more flexibility
     // Use '$renderers' as this context, this way renderers can be easy compose
-    var rendererValue = this.renderer.call($renderers, value, object, this.field);
+    var rendererValue = _.reduce(this.renderer, function(val, r) {
+      return r.call($renderers, val, object, field);
+    }, value);
 
     // If value is null or undefined, fallback to an empty string
     if (rendererValue == null) {

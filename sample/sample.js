@@ -18,18 +18,23 @@ var newColumn = function(id, title, renderer) {
   return {
     id: id,
     title: title,
+    escape: false,
     renderer: renderer
   };
 };
 
 var fullNameRenderer = function(value, object) {
-  return value + ' ' + object.lastName;
+  return value + ' ' + this.uppercase(object.lastName);
+};
+
+var showEmailLink = function(value) {
+  return '<a href="mailto:' + value + '">' + value + '</a>';
 };
 
 var columns = [
-  newColumn('firstName', 'Name', fullNameRenderer),
+  newColumn('firstName', 'Name', [fullNameRenderer, 'capitalize']),
   newColumn('userName', 'Login'),
-  newColumn('email', 'Email', 'lowercase')
+  newColumn('email', 'Email', ['lowercase', showEmailLink])
 ];
 
 var table = new Grid(document.getElementById('waffle'), {

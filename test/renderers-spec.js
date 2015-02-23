@@ -46,7 +46,7 @@ describe('renderers', function() {
     expect($renderers.uppercase(false)).toBe('FALSE');
   });
 
-  it('should turn exact value', function() {
+  it('should return exact value', function() {
     expect($renderers.identity('FOO')).toBe('FOO');
     expect($renderers.identity(undefined)).toBe(undefined);
     expect($renderers.identity(null)).toBe(null);
@@ -54,11 +54,20 @@ describe('renderers', function() {
     expect($renderers.identity(false)).toBe(false);
   });
 
-  it('should turn empty value', function() {
+  it('should return empty value', function() {
     expect($renderers.empty('FOO')).toBe('');
     expect($renderers.empty(undefined)).toBe('');
     expect($renderers.empty(null)).toBe('');
     expect($renderers.empty(0)).toBe('');
     expect($renderers.empty(false)).toBe('');
+  });
+
+  it('should capitalize string', function() {
+    expect($renderers.capitalize('foo')).toBe('Foo');
+    expect($renderers.capitalize('FOO')).toBe('FOO');
+    expect($renderers.capitalize(0)).toBe('0');
+    expect($renderers.capitalize(false)).toBe('False');
+    expect($renderers.capitalize(null)).toBe('');
+    expect($renderers.capitalize(undefined)).toBe('');
   });
 });

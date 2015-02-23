@@ -55,6 +55,37 @@ describe('Column', function() {
     expect(column.css).toBe('foo-bar');
   });
 
+  it('should initialize column with pre-built renderer', function() {
+    var column = new Column({
+      id: 'foo',
+      renderer: 'lowercase'
+    });
+
+    expect(column.renderer).toEqual([$renderers.lowercase]);
+  });
+
+  it('should initialize column with pre-built renderer as an array of pre-built renderers', function() {
+    var column = new Column({
+      id: 'foo',
+      renderer: ['lowercase', 'capitalize']
+    });
+
+    expect(column.renderer).toEqual([$renderers.lowercase, $renderers.capitalize]);
+  });
+
+  it('should initialize column with pre-built renderer as an array of renderers', function() {
+    var customRenderer = jasmine.createSpy('customRenderer').and.callFake(function(value) {
+      return value + ' FOO';
+    });
+
+    var column = new Column({
+      id: 'foo',
+      renderer: [customRenderer, 'lowercase']
+    });
+
+    expect(column.renderer).toEqual([customRenderer, $renderers.lowercase]);
+  });
+
   it('should initialize column with pre-built comparator', function() {
     var column = new Column({
       id: 'foo',
@@ -141,6 +172,28 @@ describe('Column', function() {
     };
 
     expect(column.render(object)).toBe('foofoo');
+    expect(renderer).toHaveBeenCalledWith('foo', object, 'nested.name');
+  });
+
+  it('should render value using array of renderers', function() {
+    var renderer = jasmine.createSpy('renderer').and.callFake(function(value) {
+      return value += 'foo';
+    });
+
+    var column = new Column({
+      id: 'nested.name',
+      escape: true,
+      renderer: [renderer, 'uppercase']
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'foo'
+      }
+    };
+
+    expect(column.render(object)).toBe('FOOFOO');
     expect(renderer).toHaveBeenCalledWith('foo', object, 'nested.name');
   });
 

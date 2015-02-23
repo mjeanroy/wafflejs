@@ -45,5 +45,12 @@ var $renderers = {
   // Render a value as an upper case string
   uppercase: function(value) {
     return (value == null ? '' : value).toString().toUpperCase();
+  },
+
+  // Render a value as a capitalized string
+  // First character is changed to an uppercase character, other characters remains unchanged
+  capitalize: function(value) {
+    var str = value == null ? '' : value.toString();
+    return str.charAt(0).toUpperCase() + str.substr(1);
   }
 };

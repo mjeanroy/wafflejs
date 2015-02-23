@@ -59,7 +59,7 @@ var Column = function(column) {
   this.escape = isUndefined(escape) ? true : !!escape;
 
   this.sortable = isUndefined(sortable) ? true : !!sortable;
-  this.order = column.order || '';
+  this.asc = isUndefined(column.asc) ? null : !!column.asc;
 
   // Sanitize input at construction
   if (escape) {
@@ -96,8 +96,9 @@ Column.prototype = {
       classes.push(CSS_SORTABLE);
 
       // Add css to display current sort
-      if (this.order) {
-        classes.push(this.order === '-' ? CSS_SORTABLE_DESC : CSS_SORTABLE_ASC);
+      var asc = this.asc;
+      if (asc != null) {
+        classes.push(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC);
       }
     }
 

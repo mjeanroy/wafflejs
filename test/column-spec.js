@@ -288,7 +288,7 @@ describe('Column', function() {
   it('should get css classes if column is sorted in ascendant order', function() {
     var column = new Column({
       id: 'id',
-      order: '+'
+      asc: true
     });
 
     var classes = column.cssClasses();
@@ -301,7 +301,7 @@ describe('Column', function() {
   it('should get css classes if column is sorted in descendant order', function() {
     var column = new Column({
       id: 'id',
-      order: '-'
+      asc: false
     });
 
     var classes = column.cssClasses();

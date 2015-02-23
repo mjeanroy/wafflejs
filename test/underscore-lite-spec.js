@@ -319,4 +319,25 @@ describe('_', function() {
     expect(callback).toHaveBeenCalledWith(3, 1, a2);
     expect(callback).toHaveBeenCalledWith(5, 2, a2);
   });
+
+  it('should index element in array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value.id;
+    });
+
+    var o1 = { id: 1 };
+    var o2 = { id: 2 };
+    var o3 = { id: 3 };
+    var o4 = { id: 4 };
+    var a = [o1, o2, o3, o4];
+
+    var index = _.indexBy(a, callback);
+
+    expect(index).toEqual({
+      1: o1,
+      2: o2,
+      3: o3,
+      4: o4
+    });
+  });
 });

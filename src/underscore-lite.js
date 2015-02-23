@@ -214,5 +214,17 @@ var _ = {
       }
     }
     return undefined;
+  },
+
+  // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
+  // returns an object with an index of each item.
+  indexBy: function(array, callback, ctx) {
+    var result = {};
+    for (var i = 0, size = array.length; i < size; ++i) {
+      var current = array[i];
+      var key = callback.call(ctx, current, i, array);
+      result[key] = current;
+    }
+    return result;
   }
 };

@@ -197,7 +197,7 @@ describe('Grid', function() {
         'waffle-sortable'
       ];
 
-      return node.className === ' ' + cssClasses.join(' ');
+      return node.className === cssClasses.join(' ');
     });
 
     expect(ths).toVerify(function(node, idx) {
@@ -250,8 +250,8 @@ describe('Grid', function() {
       var css1 = [columns[0].id, 'waffle-sortable'];
       var css2 = [columns[1].id, 'waffle-sortable'];
       var tds = node.childNodes;
-      return tds[0].className === ' '+ css1.join(' ') &&
-             tds[1].className === ' ' + css2.join(' ');
+      return tds[0].className === css1.join(' ') &&
+             tds[1].className === css2.join(' ');
     });
 
     expect(trs).toVerify(function(node, idx) {

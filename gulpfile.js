@@ -46,7 +46,8 @@ var commonsFiles = [
   'src/renderers.js',
   'src/comparators.js',
   'src/column.js',
-  'src/grid.js'
+  'src/grid.js',
+  'src/waffle.js'
 ];
 
 var files = {

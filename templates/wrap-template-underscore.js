@@ -34,7 +34,7 @@
         module.exports = factory(require('underscore'));
     } else {
         // Browser globals
-        window.Grid = factory(_);
+        window.Waffle = factory(_);
     }
 
   }(function (_) {
@@ -43,7 +43,7 @@
 
 <%= contents %>
 
-return Grid;
+return Waffle;
 
   }));
 

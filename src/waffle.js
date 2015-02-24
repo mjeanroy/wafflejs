@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +22,18 @@
  * SOFTWARE.
  */
 
-(function(window, document, undefined) {
+var Waffle = {
+  Grid: Grid,
 
-  (function (factory) {
+  // Add new "global" renderer
+  addRenderer: function(id, fn) {
+    $renderers[id] = fn;
+    return Waffle;
+  },
 
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(factory);
-    } else if (typeof exports === 'object') {
-        // Node/CommonJS
-        module.exports = factory();
-    } else {
-        // Browser globals
-        window.Waffle = factory();
-    }
-
-  }(function () {
-
-'use strict';
-
-<%= contents %>
-
-return Waffle;
-
-  }));
-
-})(window, document, void 0);
+  // Add new "global" comparator
+  addComparator: function(id, fn) {
+    $comparators[id] = fn;
+    return Waffle;
+  }
+};

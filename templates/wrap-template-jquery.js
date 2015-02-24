@@ -34,13 +34,14 @@
         module.exports = factory(require('jquery'));
     } else {
         // Browser globals
-        factory(jQuery);
+        window.Waffle = factory(jQuery);
     }
 
   }(function ($) {
 
 'use strict';
 <%= contents %>
+return Waffle;
 
   }));
 

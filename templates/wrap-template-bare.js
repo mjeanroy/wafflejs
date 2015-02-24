@@ -34,14 +34,14 @@
         module.exports = factory(require('jquery'), require('underscore'));
     } else {
         // Browser globals
-        factory(jQuery, _);
+        window.Waffle = factory(jQuery, _);
     }
 
   }(function ($, _) {
 
 'use strict';
 <%= contents %>
-
+return Waffle;
   }));
 
 })(window, document, void 0);

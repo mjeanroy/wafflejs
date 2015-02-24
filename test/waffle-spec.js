@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +22,27 @@
  * SOFTWARE.
  */
 
-(function(window, document, undefined) {
+describe('waffle', function() {
 
-  (function (factory) {
+  it('should define Grid', function() {
+    expect(Waffle.Grid).toBe(Grid);
+  });
 
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(factory);
-    } else if (typeof exports === 'object') {
-        // Node/CommonJS
-        module.exports = factory();
-    } else {
-        // Browser globals
-        window.Waffle = factory();
-    }
+  it('should add new global renderer', function() {
+    expect($renderers.foo).toBeUndefined();
+    var renderer = jasmine.createSpy('renderer').and.returnValue('foo');
 
-  }(function () {
+    Waffle.addRenderer('foo', renderer);
 
-'use strict';
+    expect($renderers.foo).toBe(renderer);
+  });
 
-<%= contents %>
+  it('should add new global comparator', function() {
+    expect($comparators.foo).toBeUndefined();
+    var comparator = jasmine.createSpy('comparator').and.returnValue(0);
 
-return Waffle;
+    Waffle.addComparator('foo', comparator);
 
-  }));
-
-})(window, document, void 0);
+    expect($comparators.foo).toBe(comparator);
+  });
+});

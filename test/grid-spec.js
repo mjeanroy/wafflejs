@@ -207,6 +207,49 @@ describe('Grid', function() {
     expect(ths).toVerify(function(node, idx) {
       return node.getAttribute('data-waffle-order') === null;
     });
+
+    expect(ths).toVerify(function(node) {
+      return node.getAttribute('data-waffle-sortable') === 'true';
+    });
+  });
+
+  it('should render column header with unsortable column', function() {
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo', sortable: false }
+    ];
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: columns
+    });
+
+    var tbody = grid.$tbody[0];
+    expect(tbody.childNodes).toHaveLength(0);
+
+    var thead = grid.$thead[0];
+    var tr = thead.childNodes;
+    expect(tr).toHaveLength(1);
+    expect(tr[0]).toBeDOMElement('tr');
+
+    var ths = tr[0].childNodes;
+    expect(ths).toHaveLength(2);
+
+    expect(ths).toVerify(function(node) {
+      return node.tagName === 'TH';
+    });
+
+    expect(ths).toVerify(function(node, idx) {
+      return node.innerHTML === columns[idx].title;
+    });
+
+    expect(ths[0].className.split(' ')).toContain('waffle-sortable');
+    expect(ths[1].className.split(' ')).not.toContain('waffle-sortable');
+
+    expect(ths[0].getAttribute('data-waffle-sortable')).toBe('true');
+    expect(ths[1].getAttribute('data-waffle-sortable')).toBeNull();
   });
 
   it('should render data', function() {
@@ -507,6 +550,38 @@ describe('Grid', function() {
     // Th should have flag
     expect(grid.sortBy).toHaveBeenCalledWith(['-id']);
     expect(grid.$sortBy).toEqual(['-id']);
+  });
+
+  it('should sort data when column header is clicked and column is not sortable', function() {
+    var columns = [
+      { id: 'id', title: 'Foo', sortable: false },
+      { id: 'name', title: 'Boo' }
+    ];
+
+    var data = [
+      { id: 2, name: 'foo2 '},
+      { id: 1, name: 'foo1 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    spyOn(grid, 'sortBy').and.callThrough();
+
+    // Trigger click
+    var ths = grid.$thead[0].childNodes[0].childNodes;
+    var evt1 = document.createEvent('MouseEvent');
+    evt1.initEvent('click', true, true);
+    ths[0].dispatchEvent(evt1);
+
+    expect(grid.sortBy).not.toHaveBeenCalled();
+    expect(grid.$sortBy).toEqual([]);
   });
 
   it('should sort data when column header is clicked using two field if shift key is pressed', function() {

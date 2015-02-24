@@ -36,6 +36,7 @@
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_IDX */
 /* global DATA_WAFFLE_ORDER */
+/* global DATA_WAFFLE_SORTABLE */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
 
@@ -90,8 +91,11 @@ Grid.prototype = {
     this.$columns.forEach(function(column) {
       var attributes = {};
       attributes[DATA_WAFFLE_ID] = column.id;
-      if (column.asc != null) {
-        attributes[DATA_WAFFLE_ORDER] = column.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+      if (column.sortable) {
+        attributes[DATA_WAFFLE_SORTABLE] = true;
+        if (column.asc != null) {
+          attributes[DATA_WAFFLE_ORDER] = column.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+        }
       }
 
       var $node = $($doc.th())
@@ -198,33 +202,35 @@ Grid.prototype = {
     var that = this;
     this.$thead.on('click', function(e) {
       var th = e.target;
-      var id = th.getAttribute(DATA_WAFFLE_ID);
-      var currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
-      var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
+      if (th.getAttribute(DATA_WAFFLE_SORTABLE)) {
+        var id = th.getAttribute(DATA_WAFFLE_ID);
+        var currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
+        var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
 
-      var newPredicate = newOrder + id;
+        var newPredicate = newOrder + id;
 
-      var newSortBy;
+        var newSortBy;
 
-      if (e.shiftKey) {
-        newSortBy = that.$sortBy.slice();
+        if (e.shiftKey) {
+          newSortBy = that.$sortBy.slice();
 
-        // We need to remove old predicate
-        var oldPredicate = currentOrder + id;
-        var idx = newSortBy.indexOf(oldPredicate);
-        if (idx >= 0) {
-          newSortBy.splice(idx, 1);
+          // We need to remove old predicate
+          var oldPredicate = currentOrder + id;
+          var idx = newSortBy.indexOf(oldPredicate);
+          if (idx >= 0) {
+            newSortBy.splice(idx, 1);
+          }
+
+          // And append new predicate
+          newSortBy.push(newPredicate);
+
+        }
+        else {
+          newSortBy = [newPredicate];
         }
 
-        // And append new predicate
-        newSortBy.push(newPredicate);
-
+        that.sortBy(newSortBy);
       }
-      else {
-        newSortBy = [newPredicate];
-      }
-
-      that.sortBy(newSortBy);
     });
     return this;
   },

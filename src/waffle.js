@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+/* global Grid */
+/* global $renderers */
+/* global $comparators */
+
 var Waffle = {
   Grid: Grid,
 

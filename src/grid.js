@@ -43,6 +43,7 @@
 var Grid = function(table, options) {
   this.$table = $(table);
 
+  this.$sortBy = [];
   this.$data = new Collection(options.data || []);
   this.$columns = new Collection(options.columns || [], {
     key: 'id',
@@ -126,6 +127,12 @@ Grid.prototype = {
       columnIds = [columnIds];
     }
 
+    // Store new sort
+    this.$sortBy = _.map(columnIds, function(current) {
+      var firstChar = current.charAt(0);
+      return firstChar !== CHAR_ORDER_ASC && firstChar !== CHAR_ORDER_DESC ? CHAR_ORDER_ASC + current : current;
+    });
+
     // Remove order flag
     var $tr = this.$thead.children().eq(0);
     var $th = $tr.children();
@@ -133,23 +140,24 @@ Grid.prototype = {
        .removeAttr(DATA_WAFFLE_ORDER);
 
     // Create comparators object that will be used to create comparison function
-    var comparators = _.map(columnIds, function(id) {
-      var firstChar = id.charAt(0);
-      var columnId = firstChar === CHAR_ORDER_DESC || firstChar === CHAR_ORDER_ASC ? id.substr(1) : id;
-      var flag = firstChar === CHAR_ORDER_DESC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
+    var $columns = this.$columns;
+    var comparators = _.map(this.$sortBy, function(id) {
+      var flag = id.charAt(0);
+      var columnId = id.substr(1);
       var asc = flag === CHAR_ORDER_ASC;
-      var index = this.$columns.indexByKey(columnId);
+
+      var index = $columns.indexByKey(columnId);
 
       var column;
 
       if (index >= 0) {
-        column = this.$columns.at(index);
+        column = $columns.at(index);
         column.asc = asc;
 
         // Update order flag
         $th.eq(index)
-            .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
-            .attr(DATA_WAFFLE_ORDER, flag);
+           .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
+           .attr(DATA_WAFFLE_ORDER, flag);
 
       } else {
         column = {};
@@ -160,7 +168,7 @@ Grid.prototype = {
         fn: column.$comparator || $comparators.$auto,
         desc: !asc
       };
-    }, this);
+    });
 
     this.$data.sort($$createComparisonFunction(comparators));
 
@@ -193,7 +201,30 @@ Grid.prototype = {
       var id = th.getAttribute(DATA_WAFFLE_ID);
       var currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
       var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
-      that.sortBy([newOrder + id]);
+
+      var newPredicate = newOrder + id;
+
+      var newSortBy;
+
+      if (e.shiftKey) {
+        newSortBy = that.$sortBy.slice();
+
+        // We need to remove old predicate
+        var oldPredicate = currentOrder + id;
+        var idx = newSortBy.indexOf(oldPredicate);
+        if (idx >= 0) {
+          newSortBy.splice(idx, 1);
+        }
+
+        // And append new predicate
+        newSortBy.push(newPredicate);
+
+      }
+      else {
+        newSortBy = [newPredicate];
+      }
+
+      that.sortBy(newSortBy);
     });
     return this;
   },

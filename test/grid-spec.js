@@ -271,6 +271,201 @@ describe('Grid', function() {
     });
   });
 
+  it('should not sort grid by default', function() {
+    var columns = [
+      { id: 'id', title: 'Foo' },
+      { id: 'name', title: 'Boo' }
+    ];
+
+    // Data is not sorted
+    var data = [
+      { id: 2, name: 'foo2 '},
+      { id: 1, name: 'foo1 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+     expect(grid.$sortBy).toEqual([]);
+
+    var ths = grid.$thead[0].childNodes[0].childNodes;
+
+    expect(ths).toVerify(function(th) {
+      return th.getAttribute('data-waffle-order') === null;
+    });
+
+    expect(ths).toVerify(function(th) {
+      return th.className.split(' ').indexOf('waffle-sortable') >= 0;
+    });
+
+    expect(ths).toVerify(function(th) {
+      return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
+    });
+
+    expect(ths).toVerify(function(th) {
+      return th.className.split(' ').indexOf('waffle-sortable-desc') < 0;
+    });
+
+    expect(grid.$data.toArray()).not.toBeSorted(function(o1, o2) {
+      return o1.id - o2.id;
+    });
+
+    expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
+      return tr.childNodes[0].innerHTML === data[idx].id.toString();
+    });
+  });
+
+  it('should sort grid in ascendant order using one field', function() {
+    var columns = [
+      { id: 'id', title: 'Foo' },
+      { id: 'name', title: 'Boo' }
+    ];
+
+    // Data is not sorted
+    var data = [
+      { id: 2, name: 'foo2 '},
+      { id: 1, name: 'foo1 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    grid.sortBy('id');
+
+    expect(grid.$sortBy).toEqual(['+id']);
+
+    var ths = grid.$thead[0].childNodes[0].childNodes;
+    expect(ths[0].getAttribute('data-waffle-order')).toBe('+');
+    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+
+    var classes0 = ths[0].className.split(' ');
+    expect(classes0).toContain('waffle-sortable');
+    expect(classes0).toContain('waffle-sortable-asc');
+    expect(classes0).not.toContain('waffle-sortable-desc');
+
+    var classes1 = ths[1].className.split(' ');
+    expect(classes1).toContain('waffle-sortable');
+    expect(classes1).not.toContain('waffle-sortable-asc');
+    expect(classes1).not.toContain('waffle-sortable-desc');
+
+    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
+      return o1.id - o2.id;
+    });
+
+    expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
+      return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+    });
+  });
+
+  it('should sort grid in descendant order using one field', function() {
+    var columns = [
+      { id: 'id', title: 'Foo' },
+      { id: 'name', title: 'Boo' }
+    ];
+
+    // Data is not sorted
+    var data = [
+      { id: 2, name: 'foo2 '},
+      { id: 1, name: 'foo1 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    grid.sortBy('-id');
+
+    expect(grid.$sortBy).toEqual(['-id']);
+
+    var ths = grid.$thead[0].childNodes[0].childNodes;
+    expect(ths[0].getAttribute('data-waffle-order')).toBe('-');
+    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+
+    var classes0 = ths[0].className.split(' ');
+    expect(classes0).toContain('waffle-sortable');
+    expect(classes0).toContain('waffle-sortable-desc');
+    expect(classes0).not.toContain('waffle-sortable-asc');
+
+    var classes1 = ths[1].className.split(' ');
+    expect(classes1).toContain('waffle-sortable');
+    expect(classes1).not.toContain('waffle-sortable-asc');
+    expect(classes1).not.toContain('waffle-sortable-desc');
+
+    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
+      return (o1.id - o2.id) * -1;
+    });
+
+    expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
+      return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+    });
+  });
+
+  it('should sort grid in ascendant using two fields', function() {
+    var columns = [
+      { id: 'firstName' },
+      { id: 'lastName' }
+    ];
+
+    // Data is not sorted
+    var data = [
+      { id: 2, firstName: 'foo2', lastName: 'bar2' },
+      { id: 1, firstName: 'foo1', lastName: 'bar1' },
+      { id: 3, firstName: 'foo2', lastName: 'bar3' }
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    grid.sortBy(['firstName', '-lastName']);
+
+    expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
+
+    var ths = grid.$thead[0].childNodes[0].childNodes;
+    expect(ths[0].getAttribute('data-waffle-order')).toBe('+');
+    expect(ths[1].getAttribute('data-waffle-order')).toBe('-');
+
+    var classes0 = ths[0].className.split(' ');
+    expect(classes0).toContain('waffle-sortable');
+    expect(classes0).toContain('waffle-sortable-asc');
+    expect(classes0).not.toContain('waffle-sortable-desc');
+
+    var classes1 = ths[1].className.split(' ');
+    expect(classes1).toContain('waffle-sortable');
+    expect(classes1).toContain('waffle-sortable-desc');
+    expect(classes1).not.toContain('waffle-sortable-asc');
+
+    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
+      return (o1.firstName.localeCompare(o2.firstName)) ||
+             (o1.lastName.localeCompare(o2.lastName) * -1);
+    });
+
+    expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
+      return tr.childNodes[1].innerHTML === grid.$data[idx].lastName.toString();
+    });
+  });
+
   it('should sort data when column header is clicked', function() {
     var columns = [
       { id: 'id', title: 'Foo' },
@@ -291,64 +486,18 @@ describe('Grid', function() {
       columns: columns
     });
 
-    // Check that grid is not sorted
-    var tbody = grid.$tbody[0];
-    var thead = grid.$thead[0];
-
-    var tr = thead.childNodes[0];
-    var ths = tr.childNodes;
-    expect(ths).toVerify(function(th) {
-      var classes = th.className.split(' ');
-      return th.getAttribute('data-waffle-order') === null &&
-             classes.indexOf('waffle-sortable') >= 0 &&
-             classes.indexOf('waffle-sortable-asc') === -1 &&
-             classes.indexOf('waffle-sortable-desc') === -1;
-    });
-
-    var trs = tbody.childNodes;
-    expect(trs).toVerify(function(node, idx) {
-      return node.childNodes[0].innerHTML === data[idx].id.toString();
-    });
-
-    expect(grid.$columns.toArray()).toVerify(function(c) {
-      return c.asc === null;
-    });
-
-    // Data should not be sorted yet
-    expect(grid.$data.toArray()).not.toBeSorted(function(o1, o2) {
-      return o1.id - o2.id;
-    });
+    spyOn(grid, 'sortBy').and.callThrough();
 
     // Trigger click
+    var ths = grid.$thead[0].childNodes[0].childNodes;
     var evt1 = document.createEvent('MouseEvent');
     evt1.initEvent('click', true, true);
     ths[0].dispatchEvent(evt1);
 
-    // Th should have flag
-    expect(ths[0].getAttribute('data-waffle-order')).toBe('+');
+    expect(grid.sortBy).toHaveBeenCalledWith(['+id']);
+    expect(grid.$sortBy).toEqual(['+id']);
 
-    var classes = ths[0].className.split(' ');
-    expect(classes).toContain('waffle-sortable');
-    expect(classes).toContain('waffle-sortable-asc');
-    expect(classes).not.toContain('waffle-sortable-desc');
-
-    // Data should be sorted
-    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-      return o1.id - o2.id;
-    });
-
-    expect(grid.$columns[0].asc).toBe(true);
-    expect(grid.$columns[1].asc).toBeNull();
-
-    // Sort data
-    data.sort(function(o1, o2) {
-      return o1.id - o2.id
-    });
-
-    var trs = tbody.childNodes;
-    expect(trs).toVerify(function(node, idx) {
-      return node.childNodes[0].innerHTML === data[idx].id.toString();
-    });
+    grid.sortBy.calls.reset();
 
     // New click should reverse order
     var evt2 = document.createEvent('MouseEvent');
@@ -356,29 +505,92 @@ describe('Grid', function() {
     ths[0].dispatchEvent(evt2);
 
     // Th should have flag
-    expect(ths[0].getAttribute('data-waffle-order')).toBe('-');
+    expect(grid.sortBy).toHaveBeenCalledWith(['-id']);
+    expect(grid.$sortBy).toEqual(['-id']);
+  });
 
-    classes = ths[0].className.split(' ');
-    expect(classes).toContain('waffle-sortable');
-    expect(classes).toContain('waffle-sortable-desc');
-    expect(classes).not.toContain('waffle-sortable-asc');
+  it('should sort data when column header is clicked using two field if shift key is pressed', function() {
+    var columns = [
+      { id: 'id', title: 'Foo' },
+      { id: 'name', title: 'Boo' }
+    ];
 
-    // Data should be sorted
-    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-      return o2.id - o1.id;
+    var data = [
+      { id: 2, name: 'foo2 '},
+      { id: 1, name: 'foo1 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
     });
 
-    expect(grid.$columns[0].asc).toBe(false);
-    expect(grid.$columns[1].asc).toBeNull();
+    spyOn(grid, 'sortBy').and.callThrough();
 
-    // Sort data
-    data.sort(function(o1, o2) {
-      return o2.id - o1.id
-    });
+    // Trigger click
+    var ths = grid.$thead[0].childNodes[0].childNodes;
+    var evt1 = document.createEvent('MouseEvent');
+    evt1.initEvent('click', true, true);
+    ths[0].dispatchEvent(evt1);
 
-    var trs = tbody.childNodes;
-    expect(trs).toVerify(function(node, idx) {
-      return node.childNodes[0].innerHTML === data[idx].id.toString();
-    });
+    expect(grid.sortBy).toHaveBeenCalledWith(['+id']);
+    expect(grid.$sortBy).toEqual(['+id']);
+
+    grid.sortBy.calls.reset();
+
+    // New click should reverse order
+    var evt2 = document.createEvent('MouseEvent');
+    evt2.initMouseEvent(
+        'click',    // type
+        true,       // canBubble
+        true,       // cancelable,
+        window,     // 'view'
+        0,          // detail
+        0,          // screenX,
+        0,          // screenY,
+        0,          // clientX,
+        0,          // clientY,
+        false,      // ctrlKey,
+        false,      // altKey,
+        true,       // shiftKey,
+        false,      // metaKey,
+        'left',     // button,
+        ths         // relatedTarget
+    );
+
+    ths[1].dispatchEvent(evt2);
+
+    expect(grid.sortBy).toHaveBeenCalledWith(['+id', '+name']);
+    expect(grid.$sortBy).toEqual(['+id', '+name']);
+
+    grid.sortBy.calls.reset();
+
+    // New click on id should reverse order of id column
+    var evt3 = document.createEvent('MouseEvent');
+    evt3.initMouseEvent(
+        'click',    // type
+        true,       // canBubble
+        true,       // cancelable,
+        window,     // 'view'
+        0,          // detail
+        0,          // screenX,
+        0,          // screenY,
+        0,          // clientX,
+        0,          // clientY,
+        false,      // ctrlKey,
+        false,      // altKey,
+        true,       // shiftKey,
+        false,      // metaKey,
+        'left',     // button,
+        ths         // relatedTarget
+    );
+
+    ths[0].dispatchEvent(evt3);
+    expect(grid.sortBy).toHaveBeenCalledWith(['+name', '-id']);
+    expect(grid.$sortBy).toEqual(['+name', '-id']);
   });
 });

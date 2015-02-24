@@ -80,14 +80,14 @@ th {
   // Css class added to column sorted in ascendant order
   &.waffle-sortable-asc {
     &:before {
-      .arrow(5px, 'top');
+      .arrow(@arrow-size, 'bottom');
     }
   }
 
   // Css class added to column sorted in descendant order
   &.waffle-sortable-desc {
-    &:after {
-      .arrow(5px, 'bottom');
+    &:before {
+      .arrow(@arrow-size, 'top');
     }
   }
 }

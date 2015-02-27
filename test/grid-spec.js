@@ -369,6 +369,83 @@ describe('Grid', function() {
       });
     });
 
+    it('should sort grid by default using one field', function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        sortBy: 'firstName'
+      });
+
+      expect(grid.$sortBy).toEqual(['+firstName']);
+
+      var ths = grid.$thead[0].childNodes[0].childNodes;
+      expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
+      expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
+      expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+
+      var classes0 = ths[0].className.split(' ');
+      expect(classes0).not.toContain('waffle-sortable');
+      expect(classes0).not.toContain('waffle-sortable-asc');
+      expect(classes0).not.toContain('waffle-sortable-desc');
+
+      var classes1 = ths[1].className.split(' ');
+      expect(classes1).toContain('waffle-sortable');
+      expect(classes1).toContain('waffle-sortable-asc');
+      expect(classes1).not.toContain('waffle-sortable-desc');
+
+      var classes2 = ths[2].className.split(' ');
+      expect(classes2).toContain('waffle-sortable');
+      expect(classes2).not.toContain('waffle-sortable-asc');
+      expect(classes2).not.toContain('waffle-sortable-desc');
+
+      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
+        return o1.firstName.localeCompare(o2.firstName);
+      });
+
+      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
+        return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+      });
+    });
+
+    it('should sort grid by default using two fields', function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        sortBy: ['firstName', '-lastName']
+      });
+
+      expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
+
+      var ths = grid.$thead[0].childNodes[0].childNodes;
+      expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
+      expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
+      expect(ths[2].getAttribute('data-waffle-order')).toBe('-');
+
+      var classes0 = ths[0].className.split(' ');
+      expect(classes0).not.toContain('waffle-sortable');
+      expect(classes0).not.toContain('waffle-sortable-asc');
+      expect(classes0).not.toContain('waffle-sortable-desc');
+
+      var classes1 = ths[1].className.split(' ');
+      expect(classes1).toContain('waffle-sortable');
+      expect(classes1).toContain('waffle-sortable-asc');
+      expect(classes1).not.toContain('waffle-sortable-desc');
+
+      var classes2 = ths[2].className.split(' ');
+      expect(classes2).toContain('waffle-sortable');
+      expect(classes2).not.toContain('waffle-sortable-asc');
+      expect(classes2).toContain('waffle-sortable-desc');
+
+      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
+        return (o1.firstName.localeCompare(o2.firstName)) ||
+               (o1.lastName.localeCompare(o2.lastName)) * -1;
+      });
+
+      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
+        return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+      });
+    });
+
     it('should sort grid in ascendant order using one field', function() {
       grid.sortBy('id');
 
@@ -377,6 +454,7 @@ describe('Grid', function() {
       var ths = grid.$thead[0].childNodes[0].childNodes;
       expect(ths[0].getAttribute('data-waffle-order')).toBe('+');
       expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+      expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
 
       var classes0 = ths[0].className.split(' ');
       expect(classes0).not.toContain('waffle-sortable');
@@ -387,6 +465,11 @@ describe('Grid', function() {
       expect(classes1).toContain('waffle-sortable');
       expect(classes1).not.toContain('waffle-sortable-asc');
       expect(classes1).not.toContain('waffle-sortable-desc');
+
+      var classes2 = ths[1].className.split(' ');
+      expect(classes2).toContain('waffle-sortable');
+      expect(classes2).not.toContain('waffle-sortable-asc');
+      expect(classes2).not.toContain('waffle-sortable-desc');
 
       expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
         return o1.id - o2.id;

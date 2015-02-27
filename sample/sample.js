@@ -40,5 +40,6 @@ var columns = [
 
 var table = new Waffle.Grid(document.getElementById('waffle'), {
   data: generatedData,
-  columns: columns
+  columns: columns,
+  sortBy: 'firstName'
 });

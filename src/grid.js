@@ -40,45 +40,44 @@
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
 
+// Normalize sort predicate
+// This function will return an array of id preprended with sort order
+// For exemple:
+//   $$parseSort('foo') => ['+foo']
+//   $$parseSort(['foo', 'bar']) => ['+foo', '+bar']
+//   $$parseSort(['-foo', 'bar']) => ['-foo', '+bar']
+//   $$parseSort(['-foo', '+bar']) => ['-foo', '+bar']
+var $$parseSort = function(ids) {
+  var array = ids || [];
+  if (!_.isArray(array)) {
+    array = [array];
+  }
+
+  return _.map(array, function(current) {
+    var firstChar = current.charAt(0);
+    return firstChar !== CHAR_ORDER_ASC && firstChar !== CHAR_ORDER_DESC ? CHAR_ORDER_ASC + current : current;
+  });
+};
 
 var Grid = function(table, options) {
   this.$table = $(table);
 
-  this.$sortBy = [];
   this.$data = new Collection(options.data || []);
+
   this.$columns = new Collection(options.columns || [], {
     key: 'id',
     model: Column
   });
 
-  this.init();
+  this.$sortBy = [];
+
+  this.$$createNodes()
+      .$$bind()
+      .renderHeader()
+      .sortBy(options.sortBy);
 };
 
 Grid.prototype = {
-  // Initialize grid:
-  //  - Create or retrieve thead element
-  //  - Create or retrieve tbody element
-  init: function() {
-    var table = this.$table[0];
-    this.$tbody = $($doc.byTagName('tbody', table));
-    this.$thead = $($doc.byTagName('thead', table));
-
-    if (!this.$thead.length) {
-      var thead = $doc.thead();
-      this.$thead = $(thead);
-      this.$table.append(thead);
-    }
-
-    if (!this.$tbody.length) {
-      var tbody = $doc.tbody();
-      this.$tbody = $(tbody);
-      this.$table.append(tbody);
-    }
-
-    // Render grid on initialization
-    return this.$$bind().render();
-  },
-
   // Render entire grid
   render: function() {
     return this.renderHeader().renderBody();
@@ -126,16 +125,17 @@ Grid.prototype = {
   },
 
   // Sort grid by fields
-  sortBy: function(columnIds) {
-    if (!_.isArray(columnIds)) {
-      columnIds = [columnIds];
+  sortBy: function(sortBy) {
+    // Store new sort
+    var normalizedSortBy = $$parseSort(sortBy);
+
+    // Check if sort predicate has changed
+    // Compare array instance, or serialized array to string and compare string values (faster than array comparison)
+    if (this.$sortBy === normalizedSortBy || this.$sortBy.join() === normalizedSortBy.join()) {
+      return this.renderBody();
     }
 
-    // Store new sort
-    this.$sortBy = _.map(columnIds, function(current) {
-      var firstChar = current.charAt(0);
-      return firstChar !== CHAR_ORDER_ASC && firstChar !== CHAR_ORDER_DESC ? CHAR_ORDER_ASC + current : current;
-    });
+    this.$sortBy = normalizedSortBy;
 
     // Remove order flag
     var $tr = this.$thead.children().eq(0);
@@ -183,6 +183,30 @@ Grid.prototype = {
   // Destroy datagrid
   destroy: function() {
     return this.$$unbind().$$destroy();
+  },
+
+  // Initialize grid:
+  //  - Create or retrieve thead element
+  //  - Create or retrieve tbody element
+  $$createNodes: function() {
+    var table = this.$table[0];
+    this.$tbody = $($doc.byTagName('tbody', table));
+    this.$thead = $($doc.byTagName('thead', table));
+
+    if (!this.$thead.length) {
+      var thead = $doc.thead();
+      this.$thead = $(thead);
+      this.$table.append(thead);
+    }
+
+    if (!this.$tbody.length) {
+      var tbody = $doc.tbody();
+      this.$tbody = $(tbody);
+      this.$table.append(tbody);
+    }
+
+    // Render grid on initialization
+    return this;
   },
 
   // Destroy internal data

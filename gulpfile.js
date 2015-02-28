@@ -168,15 +168,8 @@ gulp.task('server', ['concat'], function () {
     file:'sample-server.js'
   });
 
-  gulp.watch(['src/**/*.js'], function(event) {
-    gulp.run('concat');
-    server.notify(event);
-  });
-
-  gulp.watch(['src/less/*.less'], function(event) {
-    gulp.run('less');
-    server.notify(event);
-  });
-
+  gulp.watch(['src/**/*.js'], ['concat']);
+  gulp.watch(['src/less/*.less'], ['less']);
+  gulp.watch(['dist/**/*'], server.notify);
   gulp.watch(['sample/**/*'], server.notify);
 });

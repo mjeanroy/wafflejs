@@ -113,10 +113,10 @@ describe('$', function() {
       expect($div[1].className).toBe('');
     });
 
-    it('should add array of classes to node', function() {
+    it('should not add array of classes to node', function() {
       var $result = $div.addClass(['foo', 'bar']);
       expect($result).toBe($div);
-      expect($div[0].className).toBe('foo bar');
+      expect($div[0].className).not.toBe('foo bar');
     });
 
     it('should get element at given index', function() {

@@ -51,16 +51,34 @@ var commonsFiles = [
 ];
 
 var files = {
-  standalone: [underscoreLite, jqLite].concat(commonsFiles),
-  jquery: [underscoreLite].concat(commonsFiles),
-  underscore: [jqLite].concat(commonsFiles),
-  bare: commonsFiles
+  standalone: {
+    src: [underscoreLite, jqLite].concat(commonsFiles),
+    vendor: []
+  },
+  jquery: {
+    src: [underscoreLite].concat(commonsFiles),
+    vendor: [
+      'node_modules/jquery/dist/jquery.js'
+    ]
+  },
+  underscore: {
+    src: [jqLite].concat(commonsFiles),
+    vendor: [
+      'node_modules/underscore/underscore.js'
+    ]
+  },
+  bare: {
+    src: commonsFiles,
+    vendor: [
+      'node_modules/underscore/underscore.js',
+      'node_modules/jquery/dist/jquery.js'
+    ]
+  }
 };
 
-var testFiles = files.standalone.concat([
-  'node_modules/jasmine-utils/src/jasmine-utils.js',
-  'test/**/*.js'
-]);
+var testLibs = [
+  'node_modules/jasmine-utils/src/jasmine-utils.js'
+];
 
 var buildFolder = 'dist';
 
@@ -77,38 +95,52 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter("default"));
 });
 
-gulp.task('tdd', function(done) {
-  karma.start({
-    configFile: __dirname + '/karma.conf.js',
-    files: testFiles
-  }, done);
-});
+var minifyPrefix = 'minify:';
+var concatPrefix = 'concat:';
+var tddPrefix = 'tdd:';
+var testPrefix = 'test:';
+var targets = Object.keys(files);
 
-gulp.task('test', function(done) {
-  karma.start({
-    configFile: __dirname + '/karma.conf.js',
-    files: testFiles,
-    singleRun: true,
-    browsers: ['PhantomJS']
-  }, done);
-});
+targets.forEach(function(target) {
+  var concatTask = concatPrefix + target;
+  var minifyTask = minifyPrefix + target;
+  var tddTask = tddPrefix + target;
+  var testTask = testPrefix + target;
+  var karmaFiles = []
+    .concat(files[target].vendor)         // Vendor libs
+    .concat(files[target].src)            // Waffle sourcees
+    .concat(testLibs)                     // Test libs
+    .concat('test/' + target + '/*.js')   // Unit tests
+    .concat('test/*.js');                 // Test relative to current target
 
-var MINIFY_PREFIX = 'minify:';
-var CONCAT_PREFIX = 'concat:';
-var TARGETS = Object.keys(files);
+  // Create tdd task for each target
+  gulp.task(tddTask, function(done) {
+    karma.start({
+      configFile: __dirname + '/karma.conf.js',
+      files: karmaFiles
+    }, done);
+  });
 
-TARGETS.forEach(function(target) {
-  var concatTask = CONCAT_PREFIX + target;
-  var minifyTask = MINIFY_PREFIX + target;
+  // Create test task for each target
+  gulp.task(testTask, function(done) {
+    karma.start({
+      configFile: __dirname + '/karma.conf.js',
+      files: karmaFiles,
+      singleRun: true,
+      browsers: ['PhantomJS']
+    }, done);
+  });
 
-  gulp.task(concatTask, ['lint', 'test'], function(done) {
-    return gulp.src(files[target])
+  // Create concat task for each target
+  gulp.task(concatTask, function(done) {
+    return gulp.src(files[target].src)
       .pipe(concat('waffle-' + target + '.js'))
       .pipe(strip({ block: true }))
       .pipe(wrap({src: 'templates/wrap-template-' + target + '.js'}))
       .pipe(gulp.dest(buildFolder));
   });
 
+  // Create minify task for each target
   gulp.task(minifyTask, [concatTask], function(done) {
     return gulp.src(buildFolder + '/waffle-' + target + '.js')
       .pipe(uglify())
@@ -117,13 +149,10 @@ TARGETS.forEach(function(target) {
   });
 });
 
-gulp.task('concat', TARGETS.map(function(t) {
-  return 'concat:' + t;
-}));
-
-gulp.task('minify', TARGETS.map(function(t) {
-  return 'minify:' + t;
-}));
+gulp.task('concat', targets.map(function(t) { return 'concat:' + t; }));
+gulp.task('minify', targets.map(function(t) { return 'minify:' + t; }));
+gulp.task('tdd', targets.map(function(t) { return 'tdd:' + t; }));
+gulp.task('test', targets.map(function(t) { return 'test:' + t; }));
 
 gulp.task('less', function() {
   return gulp.src(__dirname + '/src/less/*.less')

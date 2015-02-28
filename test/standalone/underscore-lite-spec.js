@@ -123,6 +123,16 @@ describe('_', function() {
     expect(newArray).not.toBe(array);
   });
 
+  it('should transmute arguments object to an array', function() {
+    var foo = function() {
+      return _.toArray(arguments);
+    };
+
+    var newArray = foo(1, 2, 3);
+
+    expect(newArray).toEqual([1, 2, 3]);
+  });
+
   it('should check if object contains key', function() {
     expect(_.has({ foo: 'foo' }, 'foo')).toBe(true);
     expect(_.has({ foo: 'foo' }, 'bar')).toBe(false);

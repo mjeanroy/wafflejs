@@ -30,8 +30,6 @@ describe('Grid', function() {
     fixtures = document.createElement('div');
     fixtures.setAttribute('id', 'fixtures');
     document.body.appendChild(fixtures);
-
-    jasmine.spyAll($);
   });
 
   afterEach(function() {
@@ -85,6 +83,8 @@ describe('Grid', function() {
   });
 
   it('should bind click on header when grid is initialized', function() {
+    spyOn($.fn, 'on').and.callThrough();
+
     var table = document.createElement('table');
 
     var grid = new Grid(table, {
@@ -125,6 +125,9 @@ describe('Grid', function() {
   });
 
   it('should unbind events when grid is destroyed', function() {
+    spyOn($.fn || $, 'on').and.callThrough();
+    spyOn($.fn || $, 'off').and.callThrough();
+
     var table = document.createElement('table');
 
     var grid = new Grid(table, {

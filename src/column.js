@@ -94,15 +94,15 @@ Column.prototype = {
     if (this.sortable) {
       // Add css to display that column is sortable
       classes.push(CSS_SORTABLE);
-
-      // Add css to display current sort
-      var asc = this.asc;
-      if (asc != null) {
-        classes.push(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC);
-      }
     }
 
-    return classes;
+    // Add css to display current sort
+    var asc = this.asc;
+    if (asc != null) {
+      classes.push(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC);
+    }
+
+    return classes.join(' ');
   },
 
   // Render object using column settings

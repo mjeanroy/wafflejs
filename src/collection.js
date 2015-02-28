@@ -60,7 +60,7 @@ var $$callOnArrayFn = function(fn) {
     // to be called as the context of Array prototype function (array like
     // object are not permitted)
     // Newer browsers does not need this, so keep it fast for them !
-    var array = $$keepNativeArray ? this : _.clone(this);
+    var array = $$keepNativeArray ? this : _.toArray(this);
     return $$ArrayProto[fn].apply(array, arguments);
   };
 };
@@ -198,7 +198,7 @@ Collection.prototype = {
   // and returns the new length of the collection.
   // Semantic is the same as [].push function
   push: function() {
-    var models = _.clone(arguments);
+    var models = _.toArray(arguments);
     return this.$$add(models, this.length);
   },
 
@@ -206,7 +206,7 @@ Collection.prototype = {
   // and returns the new length of the collection.
   // Semantic is the same as [].unshift function
   unshift: function() {
-    var models = _.clone(arguments);
+    var models = _.toArray(arguments);
     return this.$$add(models, 0);
   },
 
@@ -225,11 +225,6 @@ Collection.prototype = {
   // and returns that element.
   shift: function() {
     return this.$$removeAt(0);
-  },
-
-  // Return array object
-  toArray: function() {
-    return _.clone(this);
   },
 
   // Returns a new collection comprised of the collection on which it is called
@@ -266,9 +261,9 @@ Collection.prototype = {
   }
 };
 
-_.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'find'], function(fn) {
+_.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'find', 'toArray'], function(fn) {
   Collection.prototype[fn] = function() {
-    var args = [this].concat(_.clone(arguments));
+    var args = [this].concat(_.toArray(arguments));
     return _[fn].apply(_, args);
   };
 });

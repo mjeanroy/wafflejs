@@ -49,7 +49,7 @@ var $ = function(nodes) {
   this.$$events = [];
 };
 
-$.prototype = {
+$.prototype = $.fn = {
   $$each: function(fn) {
     for (var i = 0; i < this.length; ++i) {
       fn.call(this, this[i], i, this);
@@ -141,8 +141,7 @@ $.prototype = {
   },
 
   // Add css class
-  addClass: function(classes) {
-    var css = _.isArray(classes) ? classes.join(' ') : classes;
+  addClass: function(css) {
     return this.$$each(function(node) {
       var actualCss = node.className;
       node.className = (actualCss ? actualCss + ' ' : '') + css;

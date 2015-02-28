@@ -90,6 +90,14 @@ var _ = {
     return !!(obj && obj.nodeType === 1);
   },
 
+  // Creates a real Array from the list (anything that can be iterated over).
+  // Useful for transmuting the arguments object.
+  toArray: function(obj) {
+    return _.map(obj, function(value) {
+      return value;
+    });
+  },
+
   // Clone array
   clone: function(array) {
     var newArray = [];

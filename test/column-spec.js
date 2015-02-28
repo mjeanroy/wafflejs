@@ -273,7 +273,7 @@ describe('Column', function() {
       id: 'id'
     });
 
-    expect(column.cssClasses()).toEqual(['id', 'waffle-sortable']);
+    expect(column.cssClasses()).toEqual('id waffle-sortable');
   });
 
   it('should get default custom css classes to apply', function() {
@@ -282,7 +282,7 @@ describe('Column', function() {
       css: 'foo'
     });
 
-    expect(column.cssClasses()).toEqual(['foo', 'waffle-sortable']);
+    expect(column.cssClasses()).toEqual('foo waffle-sortable');
   });
 
   it('should get css classes if column is sorted in ascendant order', function() {

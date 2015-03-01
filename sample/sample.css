@@ -1,0 +1,13 @@
+/**
+ * Css used on sample files
+ */
+
+/* Override top arrow color. */
+th.waffle-sortable-asc:before {
+   border-bottom: 5px solid blue;
+}
+
+/* Override bottom arrow color. */
+th.waffle-sortable-desc:before {
+  border-top: 5px solid blue;
+}

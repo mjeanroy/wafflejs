@@ -37,9 +37,3 @@ var columns = [
   newColumn('userName', 'Login'),
   newColumn('email', 'Email', ['$lowercase', 'email'])
 ];
-
-var table = new Waffle.Grid(document.getElementById('waffle'), {
-  data: generatedData,
-  columns: columns,
-  sortBy: 'firstName'
-});

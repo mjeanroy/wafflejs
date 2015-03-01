@@ -5,10 +5,10 @@ var generatedData = [];
 for (var i = 0; i < 1000; i++) {
   var randomPerson = {
     id: i,
-    firstName: Faker.Name.firstName(),
-    lastName: Faker.Name.lastName(),
-    userName: Faker.Internet.userName(),
-    email: Faker.Internet.email()
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    userName: faker.internet.userName(),
+    email: faker.internet.email()
   };
 
   generatedData[i] = randomPerson;

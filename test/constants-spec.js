@@ -22,29 +22,41 @@
  * SOFTWARE.
  */
 
-describe('waffle', function() {
+describe('constants', function() {
 
-  it('should define Grid', function() {
-    expect(Waffle.Grid).toBe(Grid);
+  it('should define css sortable class', function() {
+    expect(CSS_SORTABLE).toBe('waffle-sortable');
   });
 
-  it('should add new global renderer', function() {
-    expect($renderers.foo).toBeUndefined();
-    var renderer = jasmine.createSpy('renderer').and.returnValue('foo');
-
-    Waffle.addRenderer('foo', renderer);
-
-    expect($renderers.foo).toBe(renderer);
-    delete $renderers.foo;
+  it('should define css sortable asc class', function() {
+    expect(CSS_SORTABLE_ASC).toBe('waffle-sortable-asc');
   });
 
-  it('should add new global comparator', function() {
-    expect($comparators.foo).toBeUndefined();
-    var comparator = jasmine.createSpy('comparator').and.returnValue(0);
+  it('should define css sortable desc class', function() {
+    expect(CSS_SORTABLE_DESC).toBe('waffle-sortable-desc');
+  });
 
-    Waffle.addComparator('foo', comparator);
+  it('should define data attribute name for id value', function() {
+    expect(DATA_WAFFLE_ID).toBe('data-waffle-id');
+  });
 
-    expect($comparators.foo).toBe(comparator);
-    delete $comparators.foo;
+  it('should define data attribute name for idx value', function() {
+    expect(DATA_WAFFLE_IDX).toBe('data-waffle-idx');
+  });
+
+  it('should define data attribute name for sortable value', function() {
+    expect(DATA_WAFFLE_SORTABLE).toBe('data-waffle-sortable');
+  });
+
+  it('should define data attribute name for order value', function() {
+    expect(DATA_WAFFLE_ORDER).toBe('data-waffle-order');
+  });
+
+  it('should define order flag for ascendant order', function() {
+    expect(CHAR_ORDER_ASC).toBe('+');
+  });
+
+  it('should define order flag for descendant order', function() {
+    expect(CHAR_ORDER_DESC).toBe('-');
   });
 });

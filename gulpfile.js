@@ -33,59 +33,15 @@ var uglify = require('gulp-uglify');
 var wrap = require('gulp-wrap');
 var taskListing = require('gulp-task-listing');
 var less = require('gulp-less');
+var files = require('./waffle-files');
 var karma = require('karma').server;
 
-var underscoreLite = 'src/underscore-lite.js';
-var jqLite = 'src/jq-lite.js';
-var commonsFiles = [
-  'src/constants.js',
-  'src/dom.js',
-  'src/parser.js',
-  'src/sanitize.js',
-  'src/collection.js',
-  'src/renderers.js',
-  'src/comparators.js',
-  'src/column.js',
-  'src/grid.js',
-  'src/waffle.js'
-];
-
-var files = {
-  standalone: {
-    src: [underscoreLite, jqLite].concat(commonsFiles),
-    vendor: []
-  },
-  jquery: {
-    src: [underscoreLite].concat(commonsFiles),
-    vendor: [
-      'node_modules/jquery/dist/jquery.js'
-    ]
-  },
-  underscore: {
-    src: [jqLite].concat(commonsFiles),
-    vendor: [
-      'node_modules/underscore/underscore.js'
-    ]
-  },
-  bare: {
-    src: commonsFiles,
-    vendor: [
-      'node_modules/underscore/underscore.js',
-      'node_modules/jquery/dist/jquery.js'
-    ]
-  }
-};
-
-var testLibs = [
-  'node_modules/jasmine-utils/src/jasmine-utils.js'
-];
-
-var buildFolder = 'dist';
+var BUILD_FOLDER = 'dist';
 
 gulp.task('help', taskListing);
 
 gulp.task('clean', function() {
-  return gulp.src(buildFolder, { read : false })
+  return gulp.src(BUILD_FOLDER, { read : false })
     .pipe(clean());
 });
 
@@ -107,11 +63,9 @@ targets.forEach(function(target) {
   var tddTask = tddPrefix + target;
   var testTask = testPrefix + target;
   var karmaFiles = []
-    .concat(files[target].vendor)         // Vendor libs
-    .concat(files[target].src)            // Waffle sourcees
-    .concat(testLibs)                     // Test libs
-    .concat('test/' + target + '/*.js')   // Unit tests
-    .concat('test/*.js');                 // Test relative to current target
+    .concat(files[target].vendor)  // Vendor libs
+    .concat(files[target].src)     // Waffle sources
+    .concat(files[target].test);   // Test sources
 
   // Create tdd task for each target
   gulp.task(tddTask, function(done) {
@@ -137,15 +91,15 @@ targets.forEach(function(target) {
       .pipe(concat('waffle-' + target + '.js'))
       .pipe(strip({ block: true }))
       .pipe(wrap({src: 'templates/wrap-template-' + target + '.js'}))
-      .pipe(gulp.dest(buildFolder));
+      .pipe(gulp.dest(BUILD_FOLDER));
   });
 
   // Create minify task for each target
   gulp.task(minifyTask, [concatTask], function(done) {
-    return gulp.src(buildFolder + '/waffle-' + target + '.js')
+    return gulp.src(BUILD_FOLDER + '/waffle-' + target + '.js')
       .pipe(uglify())
       .pipe(rename('waffle-' + target + '.min.js'))
-      .pipe(gulp.dest(buildFolder));
+      .pipe(gulp.dest(BUILD_FOLDER));
   });
 });
 
@@ -157,7 +111,7 @@ gulp.task('test', targets.map(function(t) { return 'test:' + t; }));
 gulp.task('less', function() {
   return gulp.src(__dirname + '/src/less/*.less')
     .pipe(less())
-    .pipe(gulp.dest(buildFolder));
+    .pipe(gulp.dest(BUILD_FOLDER));
 });
 
 gulp.task('build', ['lint', 'test', 'less', 'minify']);

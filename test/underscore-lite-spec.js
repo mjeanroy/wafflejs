@@ -133,6 +133,18 @@ describe('_', function() {
     expect(newArray).toEqual([1, 2, 3]);
   });
 
+  it('should get all functions of given object', function() {
+    var obj = {
+      foo: function() {},
+      bar: function() {},
+      foobar: 2
+    };
+
+    var functions = _.functions(obj);
+
+    expect(functions).toEqual(['bar', 'foo']);
+  });
+
   it('should check if object contains key', function() {
     expect(_.has({ foo: 'foo' }, 'foo')).toBe(true);
     expect(_.has({ foo: 'foo' }, 'bar')).toBe(false);

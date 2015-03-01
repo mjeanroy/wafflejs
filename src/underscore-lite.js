@@ -67,7 +67,7 @@ var _ = {
 
   // Check if given object is a function
   isFunction: function(obj) {
-    return typeof obj === 'function';
+    return __toString.call(obj) === '[object Function]';
   },
 
   // Check if given object is a boolean
@@ -130,6 +130,17 @@ var _ = {
     }
 
     return keys;
+  },
+
+  // Returns a sorted list of the names of every method in an object.
+  functions: function(obj) {
+    var names = [];
+    for (var key in obj) {
+      if (_.isFunction(obj[key])) {
+        names.push(key);
+      }
+    }
+    return names.sort();
   },
 
   // Apply callback for each item of array

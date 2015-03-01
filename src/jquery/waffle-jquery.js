@@ -23,20 +23,29 @@
  */
 
 /* global $ */
-/* global $util */
+/* global _ */
 /* global Grid */
+/* global Waffle */
 
 $.fn.waffle = function(options) {
 
   var PLUGIN_NAME = 'wafflejs';
 
-  $.each(['destroy', 'render', 'renderHeader', 'renderBody'], function(fn) {
+  var functions = _.functions(Grid.prototype);
+  var publicFunctions = _.filter(functions, function(fn) {
+    return fn.charAt(0) !== '$';
+  });
+
+  _.forEach(publicFunctions, function(fn) {
 
     this[fn] = function() {
       var $waffle = $(this).data(PLUGIN_NAME);
       if ($waffle) {
-        return $waffle[fn].apply($waffle, arguments);
+        var result = $waffle[fn].apply($waffle, arguments);
+        return result instanceof Grid ? this : result;
       }
+
+      return this;
     };
 
   }, this);
@@ -45,7 +54,7 @@ $.fn.waffle = function(options) {
     var $waffle = $(this).data(PLUGIN_NAME);
     if (!$waffle) {
       var opts = $.extend({}, $.fn.waffle.options);
-      if ($util.isObjec(options)) {
+      if (_.isObject(options)) {
         opts = $.extend(opts, options);
       }
 
@@ -60,3 +69,7 @@ $.fn.waffle = function(options) {
 // Default options
 $.fn.waffle.options = {
 };
+
+_.forEach(_.functions(Waffle), function(prop) {
+  $.fn.waffle[prop] = Waffle[prop];
+});

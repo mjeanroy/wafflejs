@@ -60,6 +60,10 @@ var $$parseSort = function(ids) {
 };
 
 var Grid = function(table, options) {
+  if (!(this instanceof Grid)) {
+    return new Grid(table, options);
+  }
+
   this.$table = $(table);
 
   this.$data = new Collection(options.data || []);
@@ -75,6 +79,11 @@ var Grid = function(table, options) {
       .$$bind()
       .renderHeader()
       .sortBy(options.sortBy);
+};
+
+// Create new grid
+Grid.create = function(table, options) {
+  return new Grid(table, options);
 };
 
 Grid.prototype = {

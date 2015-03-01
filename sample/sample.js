@@ -28,10 +28,6 @@ var fullNameRenderer = function(value, object) {
   return value + ' ' + this.$uppercase(object.lastName);
 };
 
-Waffle.addRenderer('email', function(value) {
-  return '<a href="mailto:' + value + '">' + value + '</a>';
-});
-
 var columns = [
   newColumn('firstName', 'Name', [fullNameRenderer, '$capitalize']),
   newColumn('userName', 'Login'),

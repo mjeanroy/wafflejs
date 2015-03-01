@@ -1,0 +1,32 @@
+<html ng-app="SampleApp">
+<head>
+  <title>WaffleJS sample</title>
+
+  <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="/waffle.css">
+  <link rel="stylesheet" href="/sample.css">
+
+  <script type="text/javascript" src="/faker/build/build/faker.js"></script>
+  <script type="text/javascript" src="/angular/angular.js"></script>
+  <script type="text/javascript" src="/waffle-angular.js"></script>
+</head>
+<body style="padding-top: 70px">
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">WaffleJS</a>
+      </div>
+    </div>
+  </nav>
+  <div class="col-md-8 col-md-offset-2" ng-controller="SampleController">
+    <table class="table table-striped table-hover table-bordered"
+            waffle
+            waffle-options="grid">
+    </table>
+  </div>
+</body>
+
+<script type="text/javascript" src="/sample.js"></script>
+<script type="text/javascript" src="/angular/sample.js"></script>
+
+</html>

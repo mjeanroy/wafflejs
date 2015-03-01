@@ -35,6 +35,12 @@ var $files = {
     SRC + 'waffle.js'
   ],
 
+  $angularPlugin: [
+    SRC + 'angular/waffle-angular.js',
+    SRC + 'angular/waffle-jq-angular.js',
+    SRC + 'angular/waffle-grid-angular.js'
+  ],
+
   $jqueryPlugin: [
     SRC + 'jquery/waffle-jquery.js',
   ]
@@ -43,7 +49,8 @@ var $files = {
 // Core vendor (i.e required external libraries for tests)
 var $vendor = {
   $jquery: VENDOR_SRC + 'jquery/dist/jquery.js',
-  $underscore: VENDOR_SRC + 'underscore/underscore.js'
+  $underscore: VENDOR_SRC + 'underscore/underscore.js',
+  $angular: VENDOR_SRC + 'angular/angular.js'
 };
 
 var $test = [
@@ -84,6 +91,15 @@ var $targets = {
       '$jqueryPlugin'
     ],
     vendor: ['$jquery', '$underscore']
+  },
+
+  angular: {
+    src: [
+      '$underscore',
+      '$core',
+      '$angularPlugin'
+    ],
+    vendor: ['$angular']
   }
 };
 

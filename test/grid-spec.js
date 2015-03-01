@@ -553,6 +553,21 @@ describe('Grid', function() {
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
       expect(grid.$sortBy).toEqual(['+firstName']);
 
+      var ths = grid.$thead[0].childNodes[0].childNodes;
+      expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
+      expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
+      expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+
+      var classes0 = ths[1].className.split(' ');
+      expect(classes0).toContain('waffle-sortable');
+      expect(classes0).toContain('waffle-sortable-asc');
+      expect(classes0).not.toContain('waffle-sortable-desc');
+
+      var classes1 = ths[2].className.split(' ');
+      expect(classes1).toContain('waffle-sortable');
+      expect(classes1).not.toContain('waffle-sortable-desc');
+      expect(classes1).not.toContain('waffle-sortable-asc');
+
       grid.sortBy.calls.reset();
 
       // New click should reverse order
@@ -563,9 +578,24 @@ describe('Grid', function() {
       // Th should have flag
       expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
       expect(grid.$sortBy).toEqual(['-firstName']);
+
+      ths = grid.$thead[0].childNodes[0].childNodes;
+      expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
+      expect(ths[1].getAttribute('data-waffle-order')).toBe('-');
+      expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+
+      classes0 = ths[1].className.split(' ');
+      expect(classes0).toContain('waffle-sortable');
+      expect(classes0).not.toContain('waffle-sortable-asc');
+      expect(classes0).toContain('waffle-sortable-desc');
+
+      classes1 = ths[2].className.split(' ');
+      expect(classes1).toContain('waffle-sortable');
+      expect(classes1).not.toContain('waffle-sortable-desc');
+      expect(classes1).not.toContain('waffle-sortable-asc'); 
     });
 
-    it('should sort data when column header is clicked and column is not sortable', function() {
+    it('should not sort data when column header is clicked and column is not sortable', function() {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click

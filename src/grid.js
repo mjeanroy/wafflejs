@@ -140,7 +140,7 @@ Grid.prototype = {
     // Remove order flag
     var $tr = this.$thead.children().eq(0);
     var $th = $tr.children();
-    $th.removeClass([CSS_SORTABLE_ASC, CSS_SORTABLE_DESC])
+    $th.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC)
        .removeAttr(DATA_WAFFLE_ORDER);
 
     // Create comparators object that will be used to create comparison function

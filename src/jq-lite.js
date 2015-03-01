@@ -150,8 +150,7 @@ $.prototype = $.fn = {
 
   // Remove a single class, multiple classes in the set of matched elements.
   removeClass: function(classes) {
-    var css = _.isArray(classes) ? classes : [classes];
-
+    var css = classes.split(' ');
     var map = _.indexBy(css, function(c) {
       return c;
     });

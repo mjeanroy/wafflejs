@@ -107,7 +107,7 @@ describe('$', function() {
       $div[0].className = 'foo bar foobar';
       $div[1].className = 'foo foobar';
 
-      $div.removeClass(['foo', 'foobar']);
+      $div.removeClass('foo foobar');
 
       expect($div[0].className).toBe('bar');
       expect($div[1].className).toBe('');

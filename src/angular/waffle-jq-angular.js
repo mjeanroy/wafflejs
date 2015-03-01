@@ -28,4 +28,6 @@
 var $ = angular.element;
 
 // Define $.fn as $.prototype for unit tests
-$.fn = $.prototype;
+if (!$.fn) {
+  $.fn = $.prototype;
+}

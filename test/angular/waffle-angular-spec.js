@@ -22,32 +22,12 @@
  * SOFTWARE.
  */
 
-/* global waffleModule */
-/* global Grid */
+describe('waffle-angular', function() {
 
-waffleModule.directive('waffle', function() {
-  return {
-    restrict: 'AE',
-    replace: false,
-    template: '<table><thead></thead><tbody></tbody></table>',
+  beforeEach(angular.mock.module('waffle'));
 
-    link: function(scope, element, attrs) {
-      var opts = {};
-      if (attrs.waffleOptions) {
-        opts = scope.$eval(attrs.waffleOptions);
-      }
-
-      var table = element;
-      if (table[0].tagName.toLowerCase() !== 'table') {
-        table = table.children().eq(0);
-      }
-
-      var grid = Grid.create(table, opts);
-
-      // Destroy grid when scope is destroyed
-      scope.$on('$destroy', function() {
-        grid.destroy();
-      });
-    }
-  };
+  it('should define waffle service', inject(function(_Waffle_) {
+    expect(_Waffle_).toBeDefined();
+    expect(_Waffle_).toBe(Waffle);
+  }));
 });

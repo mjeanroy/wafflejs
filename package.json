@@ -4,7 +4,8 @@
   "main": "src/waffle.js",
   "version": "0.1.0",
   "devDependencies": {
-    "angular": "1.3.13",
+    "angular": "1.3.14",
+    "angular-mocks": "1.3.14",
     "connect-livereload": "0.5.3",
     "express": "4.11.2",
     "gulp": "3.8.11",

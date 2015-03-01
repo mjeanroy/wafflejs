@@ -65,7 +65,10 @@ var $targets = {
       '$underscore',
       '$core'
     ],
-    vendor: []
+    vendor: [
+    ],
+    test: [
+    ]
   },
 
   jquery: {
@@ -74,7 +77,11 @@ var $targets = {
       '$core',
       '$jqueryPlugin'
     ],
-    vendor: ['$jquery']
+    vendor: [
+      '$jquery'
+    ],
+    test: [
+    ]
   },
 
   underscore: {
@@ -82,7 +89,11 @@ var $targets = {
       '$jq',
       '$core'
     ],
-    vendor: ['$underscore']
+    vendor: [
+      '$underscore'
+    ],
+    test: [
+    ]
   },
 
   bare: {
@@ -90,7 +101,12 @@ var $targets = {
       '$core',
       '$jqueryPlugin'
     ],
-    vendor: ['$jquery', '$underscore']
+    vendor: [
+      '$jquery',
+      '$underscore'
+    ],
+    test: [
+    ]
   },
 
   angular: {
@@ -99,7 +115,15 @@ var $targets = {
       '$core',
       '$angularPlugin'
     ],
-    vendor: ['$angular']
+    vendor: [
+      '$angular'
+    ],
+    test: [
+      VENDOR_SRC + 'angular-mocks/angular-mocks.js',
+
+      // Add jq-Lite spec to check compatibilty with angular jq-Lite
+      TEST + 'jq-lite-spec.js'
+    ]
   }
 };
 
@@ -107,7 +131,6 @@ var $targets = {
 var targets = _.mapObject($targets, function(target) {
   var src = target.src.concat('$core');
   var vendor = target.vendor;
-  var specs, test;
 
   // Create array of source files
   src = _.map(src, function(val) {
@@ -132,12 +155,14 @@ var targets = _.mapObject($targets, function(target) {
 
   // Create array of spec files
   // Each source file should have a spec file
-  specs = _.map(src, function(f) {
+  var specs = _.map(src, function(f) {
     return f.replace(SRC, TEST)
             .replace('.js', '-spec.js');
   });
 
-  test = $test.concat(specs);
+  var test = $test
+    .concat(target.test)
+    .concat(specs);
 
   return {
     src: src,

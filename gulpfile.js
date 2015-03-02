@@ -117,7 +117,7 @@ gulp.task('less', function() {
 gulp.task('build', ['lint', 'test', 'less', 'minify']);
 gulp.task('default', ['build']);
 
-gulp.task('server', ['concat'], function () {
+gulp.task('server', ['concat', 'less'], function () {
   server.run({
     file:'sample-server.js'
   });

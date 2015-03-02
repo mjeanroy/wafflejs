@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 /* exported CSS_SORTABLE */
 /* exported CSS_SORTABLE_ASC */
 /* exported CSS_SORTABLE_DESC */
+/* exported CSS_SELECTED */
 /* exported DATA_WAFFLE_ID */
 /* exported DATA_WAFFLE_IDX */
 /* exported DATA_WAFFLE_SORTABLE */
@@ -37,6 +38,7 @@ var CSS_PREFIX = 'waffle-';
 var CSS_SORTABLE = CSS_PREFIX + 'sortable';
 var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
 var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
+var CSS_SELECTED = CSS_PREFIX + 'selected';
 
 var DATA_PREFIX = 'data-waffle-';
 var DATA_WAFFLE_ID = DATA_PREFIX + 'id';

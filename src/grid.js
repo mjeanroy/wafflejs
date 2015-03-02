@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@
 /* global $$createComparisonFunction */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
+/* global CSS_SELECTED */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_IDX */
 /* global DATA_WAFFLE_ORDER */
@@ -124,6 +125,7 @@ Grid.prototype = {
   renderBody: function() {
     var fragment = $doc.createFragment();
 
+    this.$selection = {};
     this.$data.forEach(function(data, idx) {
       var row = this.$$renderRow(data, idx);
       fragment.appendChild(row);
@@ -187,6 +189,40 @@ Grid.prototype = {
 
     // Body need to be rendered since data is now sorted
     return this.renderBody();
+  },
+
+  select: function(newSelection) {
+    var that = this;
+    if (!_.isObject(newSelection)) {
+      newSelection = {};
+    }
+
+    var previousSelection = this.$selection;
+
+    var toggle = function(idx) {
+        var select = !that.$data[idx].$$selected
+        that.$data[idx].$$selected = select;
+        var tr = that.$tbody[0].rows[idx];
+        if (select) {
+          tr.setAttribute('class', CSS_SELECTED);
+        } else {
+          tr.removeAttribute('class');
+        }
+    };
+
+    _.keys(newSelection).forEach(function(idx) {
+      if (!newSelection[idx].$$selected) {
+        toggle(idx);
+      }
+    });
+
+    _.keys(previousSelection).forEach(function(idx) {
+      if (!newSelection[idx]) {
+        toggle(idx);
+      }
+    });
+
+    this.$selection = newSelection;
   },
 
   // Destroy datagrid
@@ -265,6 +301,22 @@ Grid.prototype = {
         that.sortBy(newSortBy);
       }
     });
+
+    this.$tbody.on('click', function(e) {
+      var getTrParent = function(node) {
+        return node.tagName === 'TR' ? node : getTrParent(node.parentNode);
+      };
+      var tr = getTrParent(e.target);
+      var idx = tr.getAttribute(DATA_WAFFLE_IDX);
+      var data = that.$data[idx];
+      var previouslySelected = data.$$selected;
+      var newSelection = {};
+      if (!previouslySelected) {
+        newSelection[idx] = data;
+      }
+      that.select(newSelection);
+    });
+
     return this;
   },
 
@@ -272,6 +324,7 @@ Grid.prototype = {
   // Should be a private function
   $$unbind: function() {
     this.$thead.off();
+    this.$tbody.off();
     return this;
   },
 
@@ -280,6 +333,11 @@ Grid.prototype = {
   $$renderRow: function(data, idx) {
     var tr = $doc.tr();
     tr.setAttribute(DATA_WAFFLE_IDX, idx);
+
+    if (data.$$selected) {
+      $(tr).addClass(CSS_SELECTED);
+      this.$selection[idx] = data;
+    }
 
     this.$columns.forEach(function(column) {
       var attributes = {};

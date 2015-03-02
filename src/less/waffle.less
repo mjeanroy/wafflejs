@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -89,5 +89,14 @@ th {
     &:before {
       .arrow(@arrow-size, 'top');
     }
+  }
+}
+
+tr {
+  @row-selected: #d9edf7;
+
+  // Css class added to selected row
+  &.waffle-selected > td {
+    background-color: @row-selected;
   }
 }

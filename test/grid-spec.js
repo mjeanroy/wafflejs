@@ -83,7 +83,7 @@ describe('Grid', function() {
   });
 
   it('should bind click on header when grid is initialized', function() {
-    spyOn($.fn, 'on').and.callThrough();
+    spyOn($.fn || $.prototype, 'on').and.callThrough();
 
     var table = document.createElement('table');
 
@@ -125,8 +125,8 @@ describe('Grid', function() {
   });
 
   it('should unbind events when grid is destroyed', function() {
-    spyOn($.fn || $, 'on').and.callThrough();
-    spyOn($.fn || $, 'off').and.callThrough();
+    spyOn($.fn || $.prototype, 'on').and.callThrough();
+    spyOn($.fn || $.prototype, 'off').and.callThrough();
 
     var table = document.createElement('table');
 

@@ -49,7 +49,7 @@ var $ = function(nodes) {
   this.$$events = [];
 };
 
-$.prototype = $.fn = {
+$.prototype = {
   $$each: function(fn) {
     for (var i = 0; i < this.length; ++i) {
       fn.call(this, this[i], i, this);

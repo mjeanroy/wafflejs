@@ -37,14 +37,14 @@ var $files = {
   ],
 
   $angularDirective: [
+    SRC + 'angular/waffle-angular-service.js',
     SRC + 'angular/grid-angular.js'
   ],
 
   $angularPlugin: [
-    SRC + 'angular/waffle-angular.js',
+    SRC + 'angular/waffle-angular-module.js',
     SRC + 'angular/jq-angular.js',
     SRC + 'underscore-base-lite.js',
-    SRC + 'angular/underscore-angular.js',
     SRC + 'angular/underscore-angular.js'
   ],
 

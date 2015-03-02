@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-/* global angular */
-/* global Waffle */
-/* exported waffleModule */
+describe('waffle-angular', function() {
 
-var waffleModule = angular.module('waffle', []);
+  beforeEach(angular.mock.module('waffle'));
 
-// Define Waffle as a global service
-waffleModule.service('Waffle', function() {
-  return Waffle;
+  it('should define waffle module', inject(function(_Waffle_) {
+    // Test will fail if module is not available because of beforeEach function
+    expect(_Waffle_).toBeDefined();
+  }));
+ 
 });

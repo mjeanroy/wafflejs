@@ -18,6 +18,7 @@ var $files = {
 
   // underscore lite
   $underscore: [
+    SRC + 'underscore-base-lite.js',
     SRC + 'underscore-lite.js'
   ],
 
@@ -35,10 +36,16 @@ var $files = {
     SRC + 'waffle.js'
   ],
 
+  $angularDirective: [
+    SRC + 'angular/grid-angular.js'
+  ],
+
   $angularPlugin: [
     SRC + 'angular/waffle-angular.js',
-    SRC + 'angular/waffle-jq-angular.js',
-    SRC + 'angular/waffle-grid-angular.js'
+    SRC + 'angular/jq-angular.js',
+    SRC + 'underscore-base-lite.js',
+    SRC + 'angular/underscore-angular.js',
+    SRC + 'angular/underscore-angular.js'
   ],
 
   $jqueryPlugin: [
@@ -111,9 +118,9 @@ var $targets = {
 
   angular: {
     src: [
-      '$underscore',
+      '$angularPlugin',
       '$core',
-      '$angularPlugin'
+      '$angularDirective'
     ],
     vendor: [
       '$angular'
@@ -122,7 +129,10 @@ var $targets = {
       VENDOR_SRC + 'angular-mocks/angular-mocks.js',
 
       // Add jq-Lite spec to check compatibilty with angular jq-Lite
-      TEST + 'jq-lite-spec.js'
+      TEST + 'jq-lite-spec.js',
+
+      // Add underscore-Lite spec to check compatibilty with angular jq-Lite
+      TEST + 'underscore-lite-spec.js'
     ]
   }
 };

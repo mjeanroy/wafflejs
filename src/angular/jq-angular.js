@@ -23,6 +23,7 @@
  */
 
 /* global angular */
+/* exported $ */
 
 // Just define $ variable
 var $ = angular.element;

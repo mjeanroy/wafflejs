@@ -24,6 +24,11 @@
 
 describe('waffle-jq-angular', function() {
 
+  it('should define _.noop with angular function', function() {
+    expect(_.noop).toBeAFunction();
+    expect(_.noop).toBe(angular.noop);
+  });
+
   it('should define _.isString with angular function', function() {
     expect(_.isString).toBeAFunction();
     expect(_.isString).toBe(angular.isString);

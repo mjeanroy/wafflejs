@@ -57,7 +57,7 @@ describe('waffle-jq-angular', function() {
     };
   }));
 
-  it('should build table from using directive', function() {
+  it('should build table using directive with immutable option', function() {
     $scope.options = options;
     var table = '<table waffle waffle-options="options"></table>';
     var $table = compileTable(table, $scope);
@@ -85,6 +85,72 @@ describe('waffle-jq-angular', function() {
       return tds[0].innerHTML === data.id.toString() &&
              tds[1].innerHTML === data.name.toString();
     });
+  });
+
+  it('should build table using directive with immutable option and set grid object', function() {
+    $scope.options = options;
+    var table = '<table waffle waffle-options="options" waffle-grid="grid"></table>';
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+
+    var childNodes = $table[0].childNodes;
+    expect(childNodes.length).toBe(2);
+    expect(childNodes[0]).toBeDOMElement('thead');
+    expect(childNodes[1]).toBeDOMElement('tbody');
+
+    var thead = childNodes[0];
+    var ths = thead.childNodes[0].childNodes;
+    expect(ths.length).toBe(2);
+    expect(ths).toVerify(function(node, idx) {
+      return node.innerHTML === $scope.options.columns[idx].title;
+    });
+
+    var tbody = childNodes[1];
+    var trs = tbody.childNodes;
+    expect(trs.length).toBe(3);
+    expect(trs).toVerify(function(node, idx) {
+      var tds = node.childNodes;
+      var data = $scope.options.data[idx];
+      return tds[0].innerHTML === data.id.toString() &&
+             tds[1].innerHTML === data.name.toString();
+    });
+
+    expect($scope.grid).toBeDefined();
+    expect($scope.grid.$data.toArray()).toEqual(options.data);
+  });
+
+  it('should build table using directive with grid options', function() {
+    $scope.grid = options;
+    var table = '<table waffle waffle-grid="grid"></table>';
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+
+    var childNodes = $table[0].childNodes;
+    expect(childNodes.length).toBe(2);
+    expect(childNodes[0]).toBeDOMElement('thead');
+    expect(childNodes[1]).toBeDOMElement('tbody');
+
+    var thead = childNodes[0];
+    var ths = thead.childNodes[0].childNodes;
+    expect(ths.length).toBe(2);
+    expect(ths).toVerify(function(node, idx) {
+      return node.innerHTML === options.columns[idx].title;
+    });
+
+    var tbody = childNodes[1];
+    var trs = tbody.childNodes;
+    expect(trs.length).toBe(3);
+    expect(trs).toVerify(function(node, idx) {
+      var tds = node.childNodes;
+      var data = options.data[idx];
+      return tds[0].innerHTML === data.id.toString() &&
+             tds[1].innerHTML === data.name.toString();
+    });
+
+    expect($scope.grid).toBeInstanceOf(Grid);
+    expect($scope.grid.$data.toArray()).toEqual(options.data);
   });
 
   it('should destroy grid when scope is destroyed', function() {

@@ -34,6 +34,10 @@
  * replace this utility object by underscore or lodash.
  */
 
+// Returns undefined irrespective of the arguments passed to it
+_.noop = function() {};
+
+// Check if given object is undefined
 _.isUndefined = function(obj) {
   return typeof obj === 'undefined';
 };

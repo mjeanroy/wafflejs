@@ -24,30 +24,42 @@
 
 /* global waffleModule */
 /* global Grid */
+/* global _ */
 
-waffleModule.directive('waffle', function() {
+waffleModule.directive('waffle', ['$parse', function($parse) {
   return {
     restrict: 'AE',
     replace: false,
     template: '<table><thead></thead><tbody></tbody></table>',
 
     link: function(scope, element, attrs) {
-      var opts = {};
-      if (attrs.waffleOptions) {
-        opts = scope.$eval(attrs.waffleOptions);
-      }
-
       var table = element;
       if (table[0].tagName.toLowerCase() !== 'table') {
         table = table.children().eq(0);
       }
 
-      var grid = Grid.create(table, opts);
+      // Options can be defined in two ways
+      // - Using waffle-options: one way binding, given option will never be updated
+      // - Using waffle-grid: two way binding, grid attribute will be update with grid object
+      var options = (function() {
+        var attr = attrs.waffleOptions || attrs.waffleGrid;
+        return $parse(attr)(scope) || {};
+      })();
+
+      // Create setter for two ways binding
+      var setter = $parse(attrs.waffleGrid).assign || _.noop;
+
+      // Create grid object
+      var grid = Grid.create(table, options);
+
+      // Implement two-ways binding and set it to grid attribute
+      setter(scope, grid);
 
       // Destroy grid when scope is destroyed
       scope.$on('$destroy', function() {
         grid.destroy();
+        grid = options = setter = table = null;
       });
     }
   };
-});
+}]);

@@ -24,6 +24,15 @@
 
 describe('_', function() {
 
+  it('should define noop function that always return undefined', function() {
+    expect(_.noop(undefined)).toBeUndefined();
+    expect(_.noop(null)).toBeUndefined();
+    expect(_.noop(0)).toBeUndefined();
+    expect(_.noop('')).toBeUndefined();
+    expect(_.noop(NaN)).toBeUndefined();
+    expect(_.noop([])).toBeUndefined();
+  });
+
   it('should check if object is undefined', function() {
     expect(_.isUndefined(undefined)).toBe(true);
     expect(_.isUndefined(null)).toBe(false);

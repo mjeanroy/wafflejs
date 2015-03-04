@@ -76,6 +76,8 @@ var Grid = function(table, options) {
 
   this.$sortBy = [];
 
+  this.$multiSelect = options.multiSelect;
+
   this.$$createNodes()
       .$$bind()
       .renderHeader()
@@ -97,7 +99,7 @@ Grid.prototype = {
   renderHeader: function() {
     var tr = $doc.tr();
 
-    this.$columns.forEach(function(column) {
+    this.$columns.forEach(function(column) {
       var attributes = {};
       attributes[DATA_WAFFLE_ID] = column.id;
       if (column.sortable) {
@@ -200,14 +202,14 @@ Grid.prototype = {
     var previousSelection = this.$selection;
 
     var toggle = function(idx) {
-        var select = !that.$data[idx].$$selected
-        that.$data[idx].$$selected = select;
-        var tr = that.$tbody[0].rows[idx];
-        if (select) {
-          tr.setAttribute('class', CSS_SELECTED);
-        } else {
-          tr.removeAttribute('class');
-        }
+      var select = !that.$data[idx].$$selected
+      that.$data[idx].$$selected = select;
+      var tr = that.$tbody[0].rows[idx];
+      if (select) {
+        tr.setAttribute('class', CSS_SELECTED);
+      } else {
+        tr.removeAttribute('class');
+      }
     };
 
     _.keys(newSelection).forEach(function(idx) {
@@ -270,6 +272,9 @@ Grid.prototype = {
   $$bind: function() {
     var that = this;
     this.$thead.on('click', function(e) {
+      // If target is thead it means click was pressed in a th and released in another
+      if (e.target.tagName === 'THEAD') return;
+
       var th = e.target;
       if (th.getAttribute(DATA_WAFFLE_SORTABLE)) {
         var id = th.getAttribute(DATA_WAFFLE_ID);
@@ -293,8 +298,7 @@ Grid.prototype = {
           // And append new predicate
           newSortBy.push(newPredicate);
 
-        }
-        else {
+        } else {
           newSortBy = [newPredicate];
         }
 
@@ -302,7 +306,11 @@ Grid.prototype = {
       }
     });
 
+    this.$$selectAnchor = 0;
     this.$tbody.on('click', function(e) {
+      // If target is tbody it means click was pressed in a tr and released in another
+      if (e.target.tagName === 'TBODY') return;
+
       var getTrParent = function(node) {
         return node.tagName === 'TR' ? node : getTrParent(node.parentNode);
       };
@@ -311,9 +319,35 @@ Grid.prototype = {
       var data = that.$data[idx];
       var previouslySelected = data.$$selected;
       var newSelection = {};
-      if (!previouslySelected) {
-        newSelection[idx] = data;
+
+      if (that.$multiSelect) {
+        if (e.shiftKey) {
+          var idxF = parseFloat(idx);
+          var selectAnchorF = parseFloat(that.$$selectAnchor);
+          var lowerBound = idxF > selectAnchorF ? selectAnchorF : idxF;
+          var upperBound = idxF > selectAnchorF ? idxF : selectAnchorF;
+          for (var i = lowerBound; i <= upperBound; ++i) {
+            newSelection[i] = that.$data[i];
+          };
+        } else if (e.ctrlKey) {
+          _.keys(that.$selection).forEach(function(currIdx) {
+            if (idx !== currIdx) {
+              newSelection[currIdx] = that.$data[currIdx];
+            }
+          });
+          if (!previouslySelected) {
+            newSelection[idx] = data;
+          }
+        } else if (!previouslySelected || (_.keys(that.$selection).length > 1)) {
+          newSelection[idx] = data;
+          that.$$selectAnchor = idx;
+        }
+      } else {
+        if (!previouslySelected) {
+          newSelection[idx] = data;
+        }
       }
+
       that.select(newSelection);
     });
 

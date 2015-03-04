@@ -7,5 +7,6 @@ $.fn.waffle.addRenderer('email', function(value) {
 $('#waffle').waffle({
   data: generatedData,
   columns: columns,
-  sortBy: 'firstName'
+  sortBy: 'firstName',
+  multiSelect: true
 });

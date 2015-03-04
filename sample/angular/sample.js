@@ -13,7 +13,8 @@ angular.module('SampleApp', ['waffle'])
     $scope.grid = {
       data: generatedData,
       columns: columns,
-      sortBy: 'firstName'
+      sortBy: 'firstName',
+      multiSelect: true
     };
 
   }]);

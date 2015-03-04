@@ -7,5 +7,6 @@ Waffle.addRenderer('email', function(value) {
 var grid = new Waffle.Grid(document.getElementById('waffle'), {
   data: generatedData,
   columns: columns,
-  sortBy: 'firstName'
+  sortBy: 'firstName',
+  multiSelect: true
 });

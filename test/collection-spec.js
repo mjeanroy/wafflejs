@@ -127,6 +127,98 @@ describe('collection', function() {
       expect(collection.length).toBe(2);
     });
 
+    it('should register observer', function() {
+      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
+        return current.id === 2;
+      });
+
+      collection.observe(callback);
+
+      expect(collection.$$observers).toEqual([
+        { ctx: null, callback: callback }
+      ]);
+    });
+
+    it('should register observer with context', function() {
+      var ctx = {
+        foo: 'bar'
+      };
+
+      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
+        return current.id === 2;
+      });
+
+      collection.observe(callback, ctx);
+
+      expect(collection.$$observers).toEqual([
+        { ctx: ctx, callback: callback }
+      ]);
+    });
+
+    it('should unregister everything', function() {
+      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
+        return current.id === 2;
+      });
+
+      collection.$$observers.push({
+        ctx: null,
+        callback: callback
+      });
+
+      collection.unobserve();
+
+      expect(collection.$$observers).toEqual([]);
+    });
+
+    it('should unregister callback', function() {
+      var c1 = jasmine.createSpy('callback 1');
+      var c2 = jasmine.createSpy('callback 2');
+
+      collection.$$observers.push({
+        ctx: null,
+        callback: c1
+      });
+
+      collection.$$observers.push({
+        ctx: null,
+        callback: c2
+      });
+
+      collection.unobserve(c1);
+
+      expect(collection.$$observers).toEqual([
+        { ctx: null, callback: c2 }
+      ]);
+    });
+
+    it('should unregister callback with context', function() {
+      var ctx1 = {
+        foo: 'bar'
+      };
+
+      var ctx2 = {
+        bar: 'foo'
+      };
+
+      var c1 = jasmine.createSpy('callback 1');
+
+      collection.$$observers.push({
+        ctx: ctx1,
+        callback: c1
+      });
+
+      collection.$$observers.push({
+        ctx: ctx2,
+        callback: c1
+      });
+
+      collection.unobserve(c1, ctx1);
+
+      expect(collection.$$observers).toEqual([
+        { ctx: ctx2, callback: c1 }
+      ]);
+    });
+
     it('get element by key', function() {
       var o1 = { id: 1, name: 'foo' };
       var o2 = { id: 2, name: 'bar' };

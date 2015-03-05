@@ -86,6 +86,8 @@ var Collection = function(data, options) {
   if (data && data.length) {
     this.push.apply(this, data);
   }
+
+  this.$$observers = [];
 };
 
 Collection.prototype = {
@@ -258,6 +260,30 @@ Collection.prototype = {
   sort: function(sortFn) {
     var array = $$callOnArray('sort', this, [sortFn]);
     return this.$$replaceAll(array);
+  },
+
+  // Add new observer
+  observe: function(callback, observer) {
+    this.$$observers.push({
+      ctx: observer || null,
+      callback: callback
+    });
+  },
+
+  // Remove observer
+  unobserve: function(callback, observer) {
+    if (arguments.length === 0) {
+      // Unobserve everything
+      this.$$observers = [];
+    }
+    else {
+      var ctx = observer || null;
+      this.$$observers = _.filter(this.$$observers, function(o) {
+        return !(o.ctx === ctx && callback === o.callback);
+      });
+    }
+
+    return this;
   }
 };
 

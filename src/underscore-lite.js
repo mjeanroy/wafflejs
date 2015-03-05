@@ -37,6 +37,11 @@
 // Returns undefined irrespective of the arguments passed to it
 _.noop = function() {};
 
+// Returns the same value that is used as the argument
+_.identity = function(value) {
+  return value;
+};
+
 // Check if given object is undefined
 _.isUndefined = function(obj) {
   return typeof obj === 'undefined';

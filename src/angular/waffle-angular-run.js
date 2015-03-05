@@ -22,10 +22,27 @@
  * SOFTWARE.
  */
 
-describe('waffle-angular', function() {
+/* exported $parse */
+/* exported $sanitize */
+/* global _ */
+/* global waffleModule */
 
-  it('should define waffle service', inject(function(_Waffle_) {
-    expect(_Waffle_).toBeDefined();
-    expect(_Waffle_).toBe(Waffle);
-  }));
-});
+// Use $parse and $sanitize services from angularjs framework
+
+var $parse;
+var $sanitize;
+
+waffleModule.run(['$injector', '$log', function($injector, $log) {
+  // Service $parse is a mandatory module
+  $parse = $injector.get('$parse');
+
+  try {
+    $sanitize = $injector.get('$sanitize');
+  } catch(e) {
+    // At least, log a warning
+    $log.warn('Module ngSanitize is not available, you should add this module to avoid xss injection');
+
+    // Fallback to identity function, should it be better ?
+    $sanitize = _.identity;
+  }
+}]);

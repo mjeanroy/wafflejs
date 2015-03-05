@@ -22,13 +22,15 @@
  * SOFTWARE.
  */
 
+// This will define modules for each test
+beforeEach(angular.mock.module('ngSanitize'));
+beforeEach(angular.mock.module('waffle'));
+
 describe('waffle-angular', function() {
 
-  beforeEach(angular.mock.module('waffle'));
-
-  it('should define waffle module', inject(function(_Waffle_) {
+  it('should define waffle module', function() {
     // Test will fail if module is not available because of beforeEach function
-    expect(_Waffle_).toBeDefined();
-  }));
+    expect(waffleModule).toBeDefined();
+  });
  
 });

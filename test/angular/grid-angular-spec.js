@@ -31,8 +31,6 @@ describe('waffle-jq-angular', function() {
   var options;
   var compileTable;
 
-  beforeEach(angular.mock.module('waffle'));
-
   beforeEach(inject(function(_$rootScope_, _$compile_) {
     $rootScope = _$rootScope_;
     $compile = _$compile_;

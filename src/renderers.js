@@ -23,13 +23,12 @@
  */
 
 /* jshint eqnull:true */
+/* global _ */
 /* exported $renderers */
 
 var $renderers = {
   // Simple renderer that just return same value
-  $identity: function(value) {
-    return value;
-  },
+  $identity: _.identity,
 
   // Simple renderer that just return an empty value
   // Could be used to renderer a cell with always an empty value

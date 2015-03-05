@@ -33,6 +33,15 @@ describe('_', function() {
     expect(_.noop([])).toBeUndefined();
   });
 
+  it('should define identity function that always return undefined', function() {
+    expect(_.identity(undefined)).toEqual(undefined);
+    expect(_.identity(null)).toEqual(null);
+    expect(_.identity(0)).toEqual(0);
+    expect(_.identity('')).toEqual('');
+    expect(_.identity(NaN)).toEqual(NaN);
+    expect(_.identity([])).toEqual([]);
+  });
+
   it('should check if object is undefined', function() {
     expect(_.isUndefined(undefined)).toBe(true);
     expect(_.isUndefined(null)).toBe(false);

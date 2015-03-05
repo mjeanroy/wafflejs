@@ -39,25 +39,6 @@ describe('parse', function() {
     };
   });
 
-  it('should normalize key', function() {
-    expect($parse.$normalize('[0]')).toBe('0');
-    expect($parse.$normalize('foo')).toBe('foo');
-    expect($parse.$normalize('foo.bar')).toBe('foo.bar');
-    expect($parse.$normalize('foo[0]')).toBe('foo.0');
-    expect($parse.$normalize('foo[\'0\']')).toBe('foo.0');
-    expect($parse.$normalize('foo["0"]')).toBe('foo.0');
-    expect($parse.$normalize('foo.bar["0"].id')).toBe('foo.bar.0.id');
-  });
-
-  it('should split key', function() {
-    expect($parse.$split('foo')).toEqual(['foo']);
-    expect($parse.$split('foo.bar')).toEqual(['foo', 'bar']);
-    expect($parse.$split('foo[0]')).toEqual(['foo', '0']);
-    expect($parse.$split('foo[\'0\']')).toEqual(['foo', '0']);
-    expect($parse.$split('foo["0"]')).toEqual(['foo', '0']);
-    expect($parse.$split('foo.bar["0"].id')).toEqual(['foo', 'bar', '0', 'id']);
-  });
-
   it('should return undefined for undefined object', function() {
     expect($parse('id')(undefined)).toBeUndefined();
   });
@@ -86,17 +67,6 @@ describe('parse', function() {
     expect($parse('id')(obj)).toBe(1);
   });
 
-  it('should return value of attribute of simple array', function() {
-    expect($parse('[0]')([1, 2, 3])).toBe(1);
-    expect($parse('[1]')([1, 2, 3])).toBe(2);
-    expect($parse('[2]')([1, 2, 3])).toBe(3);
-  });
-
-  it('should return value of attribute of simple object using bracket notation', function() {
-    expect($parse('["id"]')(obj)).toBe(1);
-    expect($parse('[\'id\']')(obj)).toBe(1);
-  });
-
   it('should return value of attribute of nested object', function() {
     expect($parse('nested.id')(nestedObj)).toBe(1);
   });
@@ -105,4 +75,43 @@ describe('parse', function() {
     expect($parse('nested["id"]')(nestedObj)).toBe(1);
     expect($parse('nested[\'id\']')(nestedObj)).toBe(1);
   });
+
+  // Internal parse define custom behavior
+  if (typeof angular === 'undefined') {
+    describe('without angular', function() {
+      // Test internal '$normalize' function
+      it('should normalize key', function() {
+        expect($parse.$normalize('[0]')).toBe('0');
+        expect($parse.$normalize('foo')).toBe('foo');
+        expect($parse.$normalize('foo.bar')).toBe('foo.bar');
+        expect($parse.$normalize('foo[0]')).toBe('foo.0');
+        expect($parse.$normalize('foo[\'0\']')).toBe('foo.0');
+        expect($parse.$normalize('foo["0"]')).toBe('foo.0');
+        expect($parse.$normalize('foo.bar["0"].id')).toBe('foo.bar.0.id');
+      });
+
+      // Test internal '$split' function
+      it('should split key', function() {
+        expect($parse.$split('foo')).toEqual(['foo']);
+        expect($parse.$split('foo.bar')).toEqual(['foo', 'bar']);
+        expect($parse.$split('foo[0]')).toEqual(['foo', '0']);
+        expect($parse.$split('foo[\'0\']')).toEqual(['foo', '0']);
+        expect($parse.$split('foo["0"]')).toEqual(['foo', '0']);
+        expect($parse.$split('foo.bar["0"].id')).toEqual(['foo', 'bar', '0', 'id']);
+      });
+
+      // Internal parser allow array notation as first key
+      it('should return value of attribute of simple array', function() {
+        expect($parse('[0]')([1, 2, 3])).toBe(1);
+        expect($parse('[1]')([1, 2, 3])).toBe(2);
+        expect($parse('[2]')([1, 2, 3])).toBe(3);
+      });
+
+      // Internal parser allow bracket notation as first key
+      it('should return value of attribute of simple object using bracket notation', function() {
+        expect($parse('["id"]')(obj)).toBe(1);
+        expect($parse('[\'id\']')(obj)).toBe(1);
+      });
+    });
+  }
 });

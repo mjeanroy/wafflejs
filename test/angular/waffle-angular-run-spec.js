@@ -22,10 +22,15 @@
  * SOFTWARE.
  */
 
-describe('waffle-angular', function() {
+describe('waffle-angular-run', function() {
 
-  it('should define waffle service', inject(function(_Waffle_) {
-    expect(_Waffle_).toBeDefined();
-    expect(_Waffle_).toBe(Waffle);
+  it('should define $parse service', inject(function(_$parse_) {
+    expect($parse).toBeDefined();
+    expect($parse).toBe(_$parse_);
+  }));
+
+  it('should define $sanitize service', inject(function(_$sanitize_) {
+    expect($sanitize).toBeDefined();
+    expect($sanitize).toBe(_$sanitize_);
   }));
 });

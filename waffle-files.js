@@ -22,10 +22,16 @@ var $files = {
     SRC + 'underscore-lite.js'
   ],
 
+  $coreParser: [
+    SRC + 'parser.js'
+  ],
+
+  $coreSanitize: [
+    SRC + 'sanitize.js'
+  ],
+
   // Core source, mandatory source files appended to each target
   $core: [
-    SRC + 'parser.js',
-    SRC + 'sanitize.js',
     SRC + 'constants.js',
     SRC + 'dom.js',
     SRC + 'collection.js',
@@ -42,10 +48,11 @@ var $files = {
   ],
 
   $angularPlugin: [
-    SRC + 'angular/waffle-angular-module.js',
-    SRC + 'angular/jq-angular.js',
     SRC + 'underscore-base-lite.js',
-    SRC + 'angular/underscore-angular.js'
+    SRC + 'angular/underscore-angular.js',
+    SRC + 'angular/jq-angular.js',
+    SRC + 'angular/waffle-angular-module.js',
+    SRC + 'angular/waffle-angular-run.js',
   ],
 
   $jqueryPlugin: [
@@ -55,9 +62,29 @@ var $files = {
 
 // Core vendor (i.e required external libraries for tests)
 var $vendor = {
-  $jquery: VENDOR_SRC + 'jquery/dist/jquery.js',
-  $underscore: VENDOR_SRC + 'underscore/underscore.js',
-  $angular: VENDOR_SRC + 'angular/angular.js'
+  $jquery: {
+    src: [
+      VENDOR_SRC + 'jquery/dist/jquery.js'
+    ],
+    test: [
+    ]
+  },
+  $underscore: {
+    src: [
+      VENDOR_SRC + 'underscore/underscore.js'
+    ],
+    test: [
+    ]
+  },
+  $angular: {
+    src: [
+      VENDOR_SRC + 'angular/angular.js',
+      VENDOR_SRC + 'angular-sanitize/angular-sanitize.js'
+    ],
+    test: [
+      VENDOR_SRC + 'angular-mocks/angular-mocks.js'
+    ]
+  }
 };
 
 var $test = [
@@ -70,6 +97,8 @@ var $targets = {
     src: [
       '$jq',
       '$underscore',
+      '$coreParser',
+      '$coreSanitize',
       '$core'
     ],
     vendor: [
@@ -81,6 +110,8 @@ var $targets = {
   jquery: {
     src: [
       '$underscore',
+      '$coreParser',
+      '$coreSanitize',
       '$core',
       '$jqueryPlugin'
     ],
@@ -94,6 +125,8 @@ var $targets = {
   underscore: {
     src: [
       '$jq',
+      '$coreParser',
+      '$coreSanitize',
       '$core'
     ],
     vendor: [
@@ -105,6 +138,8 @@ var $targets = {
 
   bare: {
     src: [
+      '$coreParser',
+      '$coreSanitize',
       '$core',
       '$jqueryPlugin'
     ],
@@ -126,19 +161,20 @@ var $targets = {
       '$angular'
     ],
     test: [
-      VENDOR_SRC + 'angular-mocks/angular-mocks.js',
-
-      // Add jq-Lite spec to check compatibilty with angular jq-Lite
+      // Add jq-Lite spec to check compatibilty with angular
       TEST + 'jq-lite-spec.js',
 
-      // Add underscore-Lite spec to check compatibilty with angular jq-Lite
-      TEST + 'underscore-lite-spec.js'
+      // Add underscore-Lite spec to check compatibilty with angular
+      TEST + 'underscore-lite-spec.js',
+
+      // Add parser spec to check compatibilty with angular
+      TEST + 'parser-spec.js'
     ]
   }
 };
 
 // Build files needed for each targets
-var targets = _.mapObject($targets, function(target) {
+var targets = _.mapObject($targets, function(target, key) {
   var src = target.src.concat('$core');
   var vendor = target.vendor;
 
@@ -147,21 +183,26 @@ var targets = _.mapObject($targets, function(target) {
     return $files[val];
   });
 
+  // Create array of vendor test dependencies
+  var vdrTests = _.map(vendor, function(val) {
+    return $vendor[val].test;
+  });
+
   // Create array of vendor files
   vendor = _.map(vendor, function(val) {
-    return $vendor[val];
+    return $vendor[val].src;
   });
 
   // Create array of test files
-  test = _.map(src, function(val) {
+  var test = _.map(src, function(val) {
     return _.map($files[val], function(f) {
-    	console.log(f);
       return TEST + f.replace('.js', '-spec.js');
     });
   });
 
   src = _.flatten(src);
   vendor = _.flatten(vendor);
+  vdrTests = _.flatten(vdrTests);
 
   // Create array of spec files
   // Each source file should have a spec file
@@ -170,9 +211,10 @@ var targets = _.mapObject($targets, function(target) {
             .replace('.js', '-spec.js');
   });
 
-  var test = $test
-    .concat(target.test)
-    .concat(specs);
+  test = $test
+    .concat(vdrTests)
+    .concat(specs)
+    .concat(target.test);
 
   return {
     src: src,

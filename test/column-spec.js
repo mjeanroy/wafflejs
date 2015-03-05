@@ -129,12 +129,14 @@ describe('Column', function() {
       escape: true
     });
 
+    var input = '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>';
     var object = {
       id: 1,
-      name: '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>'
+      name: input
     };
 
-    expect(column.render(object)).toBe('&lt;em onmouseover="this.textContent=\'PWN3D!\'"&gt;click here&lt;/em&gt;');
+    var sanitizedInput = $sanitize(input);
+    expect(column.render(object)).toBe(sanitizedInput);
   });
 
   it('should render value of complex object', function() {

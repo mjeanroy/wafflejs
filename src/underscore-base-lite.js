@@ -149,6 +149,17 @@ var _ = {
     return newArray;
   },
 
+  // Returns the values in list without the elements that the truth test (predicate) passes. 
+  reject: function(array, callback, ctx) {
+    var newArray = [];
+    for (var i = 0, size = array.length; i < size; ++i) {
+      if (!callback.call(ctx, array[i], i, array)) {
+        newArray.push(array[i]);
+      }
+    }
+    return newArray;
+  },
+
   // Applies a function against an accumulator and each value
   // of the array (from left-to-right) has to reduce it to a single value.
   reduce: function(array, callback, initialValue) {

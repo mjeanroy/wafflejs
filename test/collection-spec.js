@@ -651,6 +651,18 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
+    it('should reject collection', function() {
+      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
+        return current.id === 2;
+      });
+
+      var results = collection.reject(callback);
+
+      expect(results).toEqual([collection[0]]);
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
+
     it('should find element in collection', function() {
       var callback = jasmine.createSpy('callback').and.callFake(function(current) {
         return current.id === 2;

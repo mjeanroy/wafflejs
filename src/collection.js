@@ -314,8 +314,8 @@ Collection.prototype = {
     }
     else {
       var ctx = observer || null;
-      this.$$observers = _.filter(this.$$observers, function(o) {
-        return !(o.ctx === ctx && callback === o.callback);
+      this.$$observers = _.reject(this.$$observers, function(o) {
+        return o.ctx === ctx && callback === o.callback;
       });
     }
 
@@ -345,7 +345,7 @@ Collection.prototype = {
   }
 };
 
-_.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'find', 'toArray'], function(fn) {
+_.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
   Collection.prototype[fn] = function() {
     var args = [this].concat(_.toArray(arguments));
     return _[fn].apply(_, args);

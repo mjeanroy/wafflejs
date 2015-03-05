@@ -239,6 +239,21 @@ describe('_', function() {
     expect(callback).toHaveBeenCalledWith(4, 3, array);
   });
 
+  it('should reject value in array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 === 0;
+    });
+
+    var array = [1, 2, 3, 4];
+    var newArray = _.reject(array, callback, 10);
+
+    expect(newArray).toEqual([1, 3]);
+    expect(callback).toHaveBeenCalledWith(1, 0, array);
+    expect(callback).toHaveBeenCalledWith(2, 1, array);
+    expect(callback).toHaveBeenCalledWith(3, 2, array);
+    expect(callback).toHaveBeenCalledWith(4, 3, array);
+  });
+
   it('should find element in array', function() {
     var callback = jasmine.createSpy('callback').and.callFake(function(value) {
       return value % 2 === 0;

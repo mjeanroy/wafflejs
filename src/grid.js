@@ -87,6 +87,16 @@ Grid.create = function(table, options) {
 };
 
 Grid.prototype = {
+  // Get data collection
+  data: function() {
+    return this.$data;
+  },
+
+  // Get columns collection
+  columns: function() {
+    return this.$columns;
+  },
+
   // Render entire grid
   render: function() {
     return this.renderHeader().renderBody();

@@ -50,8 +50,8 @@ describe('waffle-jquery', function() {
     var $result = $table.waffle();
 
     expect($result).toBe($table);
-    expect($table.data('wafflejs')).not.toBeUndefined();
-    expect($table.data('wafflejs')).toBeInstanceOf(Grid);
+    expect($.data(table, 'wafflejs')).not.toBeUndefined();
+    expect($.data(table, 'wafflejs')).toBeInstanceOf(Grid);
   });
 
   it('should instantiate grid with options', function() {
@@ -70,7 +70,7 @@ describe('waffle-jquery', function() {
       columns: columns
     });
 
-    var grid = $table.data('wafflejs');
+    var grid = $.data(table, 'wafflejs');
 
     expect(grid.$data.length).toBe(data.length);
     expect(grid.$data).toVerify(function(current, idx) {

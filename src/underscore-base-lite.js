@@ -37,6 +37,7 @@ var __ObjectProto = Object.prototype;
 var __nativeKeys = Object.keys;
 var __hasOwnProperty = __ObjectProto.hasOwnProperty;
 var __toString = __ObjectProto.toString;
+var __nativeBind = Function.prototype.bind;
 
 var _ = {
   // Check if given object is null
@@ -47,6 +48,18 @@ var _ = {
   // Check if given object is a boolean
   isBoolean: function(obj) {
     return obj === true || obj === false || __toString.call(obj) === '[object Boolean]';
+  },
+
+  // Bind a function to an object, meaning that whenever the function is called,
+  // the value of this will be the object.
+  bind: function(fn, ctx) {
+    if (__nativeBind) {
+      return fn.bind(ctx);
+    }
+
+    return function() {
+      return fn.apply(ctx, arguments);
+    };
   },
 
   // Creates a real Array from the list (anything that can be iterated over).

@@ -42,6 +42,20 @@ describe('_', function() {
     expect(_.isBoolean(1)).toBe(false);
   });
 
+  it('should bind function with context', function() {
+    var fn = function() {
+      return this;
+    };
+
+    var ctx = {
+      foo: 'bar'
+    };
+
+    fn = _.bind(fn, ctx);
+
+    expect(fn()).toBe(ctx);
+  });
+
   it('should transmute arguments object to an array', function() {
     var foo = function() {
       return _.toArray(arguments);

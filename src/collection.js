@@ -81,13 +81,15 @@ var Collection = function(data, options) {
     this.$$key = $parse(this.$$key);
   }
 
+  this.$$observers = [];
+  this.$$changes = [];
+  this.$$trigger = _.bind(this.$$trigger, this);
+
   // Initialize collection
   this.length = 0;
   if (data && data.length) {
     this.push.apply(this, data);
   }
-
-  this.$$observers = [];
 };
 
 Collection.prototype = {
@@ -106,6 +108,9 @@ Collection.prototype = {
       this.$$move(start, models.length);
     }
 
+    var changes = [];
+    var type = 'splice';
+
     for (var i = 0, size = models.length; i < size; ++i) {
       var current = models[i];
       var model = this.$$model ? new this.$$model(current) : current;
@@ -115,7 +120,16 @@ Collection.prototype = {
       this[modelIdx] = model;
       this.$$map[id] = modelIdx;
       this.length++;
+
+      changes.push({
+        addedCount: 1,
+        index: modelIdx,
+        removed: [],
+        type: type
+      });
     }
+
+    this.trigger(changes);
 
     return this.length;
   },
@@ -136,6 +150,13 @@ Collection.prototype = {
     this.length--;
     delete this[lastIndex];
     delete this.$$map[id];
+
+    this.trigger({
+      addedCount: 0,
+      index: index,
+      removed: [value],
+      type: 'splice'
+    });
 
     return value;
   },
@@ -268,6 +289,8 @@ Collection.prototype = {
       ctx: observer || null,
       callback: callback
     });
+
+    return this;
   },
 
   // Remove observer
@@ -281,6 +304,28 @@ Collection.prototype = {
       this.$$observers = _.filter(this.$$observers, function(o) {
         return !(o.ctx === ctx && callback === o.callback);
       });
+    }
+
+    return this;
+  },
+
+  // Trigger changes
+  // Note that callbacks will be called asynchronously
+  trigger: function(changes) {
+    this.$$changes = this.$$changes.concat(changes);
+    setTimeout(this.$$trigger);
+    return this;
+  },
+
+  // Trigger changes to observers
+  // Private function
+  $$trigger: function() {
+    if (this.$$changes.length > 0) {
+      _.forEach(this.$$observers, function(o) {
+        o.callback.call(o.ctx, this.$$changes);
+      }, this);
+
+      this.$$changes = [];
     }
 
     return this;

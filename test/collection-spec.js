@@ -24,6 +24,32 @@
 
 describe('collection', function() {
 
+  beforeEach(function() {
+    jasmine.addCustomEqualityTester(function(actual, expected) {
+      if (actual instanceof Collection && expected instanceof Collection) {
+        var t1 = actual.$$trigger;
+        var t2 = expected.$$trigger;
+
+        actual.$$trigger = expected.$$trigger = function() {};
+
+        var result = jasmine.matchersUtil.equals(actual, expected);
+
+        actual.$$trigger = t1;
+        expected.$$trigger = t2;
+
+        return result;
+      }
+    });
+  });
+
+  beforeEach(function() {
+    jasmine.clock().install();
+  });
+
+  afterEach(function() {
+    jasmine.clock().uninstall();
+  });
+
   it('should initialize empty collection', function() {
     var collection = new Collection();
     expect(collection.length).toBe(0);
@@ -125,6 +151,8 @@ describe('collection', function() {
 
       collection = new Collection([o1, o2]);
       expect(collection.length).toBe(2);
+
+      jasmine.clock().tick(1);
     });
 
     it('should register observer', function() {
@@ -144,9 +172,7 @@ describe('collection', function() {
         foo: 'bar'
       };
 
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id === 2;
-      });
+      var callback = jasmine.createSpy('callback');
 
       collection.observe(callback, ctx);
 
@@ -156,9 +182,7 @@ describe('collection', function() {
     });
 
     it('should unregister everything', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id === 2;
-      });
+      var callback = jasmine.createSpy('callback');
 
       collection.$$observers.push({
         ctx: null,
@@ -219,6 +243,91 @@ describe('collection', function() {
       ]);
     });
 
+    it('should trigger changes asynchronously', function() {
+      var callback = jasmine.createSpy('callback');
+
+      collection.$$observers.push({
+        ctx: null,
+        callback: callback
+      });
+
+      var changes = [
+        { type: 'splice', addedCount: 1, index: 3, object: collection, removed: [] },
+        { type: 'splice', addedCount: 1, index: 4, object: collection, removed: [] }
+      ];
+
+      collection.trigger(changes);
+
+      expect(collection.$$changes).toEqual(changes);
+      expect(callback).not.toHaveBeenCalled();
+
+      var $$changes = collection.$$changes;
+      jasmine.clock().tick(1);
+
+      expect(callback).toHaveBeenCalledWith($$changes);
+      expect(collection.$$changes).toEqual([]);
+    });
+
+    it('should trigger single change', function() {
+      var callback = jasmine.createSpy('callback');
+
+      collection.$$observers.push({
+        ctx: null,
+        callback: callback
+      });
+
+      var change = {
+        type: 'splice',
+        addedCount: 1,
+        index: 3,
+        object: collection,
+        removed: []
+      };
+
+      collection.trigger(change);
+
+      expect(collection.$$changes).toEqual([change]);
+      expect(callback).not.toHaveBeenCalled();
+
+      var $$changes = collection.$$changes;
+      jasmine.clock().tick(1);
+
+      expect(callback).toHaveBeenCalledWith($$changes);
+      expect(collection.$$changes).toEqual([]);
+    });
+
+    it('should trigger all changes once asynchronously', function() {
+      var callback = jasmine.createSpy('callback');
+
+      collection.$$observers.push({
+        ctx: null,
+        callback: callback
+      });
+
+      var changes1 = [
+        { type: 'splice', addedCount: 1, index: 3, object: collection, removed: [] },
+        { type: 'splice', addedCount: 1, index: 4, object: collection, removed: [] }
+      ];
+
+      collection.trigger(changes1);
+
+      var changes2 = [
+        { type: 'splice', addedCount: 1, index: 5, object: collection, removed: [] },
+        { type: 'splice', addedCount: 1, index: 6, object: collection, removed: [] }
+      ];
+
+      collection.trigger(changes2);
+
+      expect(collection.$$changes).toEqual(changes1.concat(changes2));
+      expect(callback).not.toHaveBeenCalled();
+
+      var $$changes = collection.$$changes;
+      jasmine.clock().tick(1);
+
+      expect(callback).toHaveBeenCalledWith($$changes);
+      expect(collection.$$changes).toEqual([]);
+    });
+
     it('get element by key', function() {
       var o1 = { id: 1, name: 'foo' };
       var o2 = { id: 2, name: 'bar' };
@@ -276,7 +385,10 @@ describe('collection', function() {
     });
 
     it('should remove last element', function() {
+      spyOn(collection, 'trigger').and.callThrough();
+
       var removedElement = collection.pop();
+
       expect(removedElement).toBe(o2);
       expect(collection.length).toBe(1);
       expect(collection[0]).toBe(o1);
@@ -284,10 +396,20 @@ describe('collection', function() {
       expect(collection.$$map).toEqual({
       	1: 0
       });
+
+      expect(collection.trigger).toHaveBeenCalledWith({
+        addedCount: 0,
+        index: 1,
+        removed: [o2],
+        type: 'splice'
+      });
     });
 
     it('should remove first element', function() {
+      spyOn(collection, 'trigger').and.callThrough();
+
       var removedElement = collection.shift();
+
       expect(removedElement).toBe(o1);
       expect(collection.length).toBe(1);
       expect(collection[0]).toBe(o2);
@@ -295,9 +417,17 @@ describe('collection', function() {
       expect(collection.$$map).toEqual({
         2: 0
       });
+
+      expect(collection.trigger).toHaveBeenCalledWith({
+        addedCount: 0,
+        index: 0,
+        removed: [o1],
+        type: 'splice'
+      });
     });
 
     it('should sort collection', function() {
+
       var o3 = { id: 3, name: 'foobar' };
       var o4 = { id: 4, name: 'foobar' };
       collection.push(o3, o4);
@@ -322,6 +452,8 @@ describe('collection', function() {
     });
 
     it('should push new elements', function() {
+      spyOn(collection, 'trigger').and.callThrough();
+
       var o3 = { id: 3, name: 'foobar' };
       var o4 = { id: 4, name: 'foobar' };
 
@@ -340,9 +472,16 @@ describe('collection', function() {
         3: 2,
         4: 3
       });
+
+      expect(collection.trigger).toHaveBeenCalledWith([
+        { type: 'splice', addedCount: 1, index: 2, removed: [] },
+        { type: 'splice', addedCount: 1, index: 3, removed: [] }
+      ]);
     });
 
     it('should unshift new elements', function() {
+      spyOn(collection, 'trigger').and.callThrough();
+
       var o3 = { id: 3, name: 'foobar' };
       var o4 = { id: 4, name: 'foobar' };
 
@@ -361,6 +500,11 @@ describe('collection', function() {
         3: 0,
         4: 1
       });
+
+      expect(collection.trigger).toHaveBeenCalledWith([
+        { type: 'splice', addedCount: 1, index: 0, removed: [] },
+        { type: 'splice', addedCount: 1, index: 1, removed: [] }
+      ]);
     });
 
     it('should concat collections', function() {
@@ -384,9 +528,17 @@ describe('collection', function() {
     });
 
     it('should slice entire collection', function() {
-      expect(collection.slice()).toEqual(collection);
-      expect(collection.slice(0)).toEqual(collection);
-      expect(collection.slice(0, collection.length)).toEqual(collection);
+      var c1 = collection.slice();
+      jasmine.clock().tick(1);
+      expect(c1).toEqual(collection);
+
+      var c2 = collection.slice(0);
+      jasmine.clock().tick(1);
+      expect(c2).toEqual(collection);
+
+      var c3 = collection.slice(0, collection.length);
+      jasmine.clock().tick(1);
+      expect(c3).toEqual(collection);
     });
 
     it('should slice part of collection', function() {

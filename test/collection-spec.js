@@ -81,7 +81,7 @@ describe('collection', function() {
   });
 
   it('should initialize empty collection with model constructor', function() {
-  	var Model = function() { };
+    var Model = function() { };
 
     var collection = new Collection([], {
       key: 'name',
@@ -160,177 +160,459 @@ describe('collection', function() {
       jasmine.clock().tick(1);
     });
 
-    it('should register observer', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id === 2;
+    describe('without sort', function() {
+      var o0;
+      var o3;
+      var o4;
+
+      beforeEach(function() {
+        spyOn(collection, 'trigger').and.callThrough();
+
+        o0 = { id: 0, name: 'foobar' };
+        o3 = { id: 3, name: 'foobar' };
+        o4 = { id: 4, name: 'foobar' };
       });
 
-      collection.observe(callback);
+      it('should remove last element', function() {
+        var removedElement = collection.pop();
 
-      expect(collection.$$observers).toEqual([
-        { ctx: null, callback: callback }
-      ]);
+        expect(removedElement).toBe(o2);
+        expect(collection.length).toBe(1);
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBeUndefined();
+        expect(collection.$$map).toEqual({
+          1: 0
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith({
+          addedCount: 0,
+          index: 1,
+          removed: [o2],
+          type: 'splice',
+          object: collection
+        });
+      });
+
+      it('should remove first element', function() {
+        var removedElement = collection.shift();
+
+        expect(removedElement).toBe(o1);
+        expect(collection.length).toBe(1);
+        expect(collection[0]).toBe(o2);
+        expect(collection[1]).toBeUndefined();
+        expect(collection.$$map).toEqual({
+          2: 0
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith({
+          addedCount: 0,
+          index: 0,
+          removed: [o1],
+          type: 'splice',
+          object: collection
+        });
+      });
+
+      it('should push new elements at the end', function() {
+        var newLength = collection.push(o0, o3);
+
+        expect(newLength).toBe(4);
+        expect(collection.length).toBe(4);
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBe(o2);
+        expect(collection[2]).toBe(o0);
+        expect(collection[3]).toBe(o3);
+
+        expect(collection.$$map).toEqual({
+          1: 0,
+          2: 1,
+          0: 2,
+          3: 3
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'splice', addedCount: 2, index: 2, removed: [], object: collection }
+        ]);
+      });
+
+      it('should unshift new elements', function() {
+        var newLength = collection.unshift(o3, o4);
+
+        expect(newLength).toBe(4);
+        expect(collection.length).toBe(4);
+        expect(collection[0]).toBe(o3);
+        expect(collection[1]).toBe(o4);
+        expect(collection[2]).toBe(o1);
+        expect(collection[3]).toBe(o2);
+
+        expect(collection.$$map).toEqual({
+          1: 2,
+          2: 3,
+          3: 0,
+          4: 1
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'splice', addedCount: 2, index: 0, removed: [], object: collection }
+        ]);
+      });
     });
 
-    it('should register observer with context', function() {
-      var ctx = {
-        foo: 'bar'
-      };
+    describe('once sorted', function() {
+      var sortFn;
+      var o5;
+      var o10;
 
-      var callback = jasmine.createSpy('callback');
+      beforeEach(function() {
+        o5 = { id: 5, name: 'foobar' };
+        o10 = { id: 10, name: 'foobar' };
 
-      collection.observe(callback, ctx);
+        collection = new Collection([o1, o10, o5, o2]);
 
-      expect(collection.$$observers).toEqual([
-        { ctx: ctx, callback: callback }
-      ]);
+        var sortFn = jasmine.createSpy('sortFn').and.callFake(function(o1, o2) {
+          return o1.id - o2.id
+        });
+
+        collection.sort(sortFn);
+
+        spyOn(collection, 'trigger').and.callThrough();
+      });
+
+      it('should sort collection', function() {
+        var result = collection.sort(sortFn);
+
+        expect(result).toBe(collection);
+
+        expect(collection.length).toBe(4);
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBe(o2);
+        expect(collection[2]).toBe(o5);
+        expect(collection[3]).toBe(o10);
+
+        expect(collection.$$map).toEqual({
+          1: 0,
+          2: 1,
+          5: 2,
+          10: 3
+        });
+
+        expect(collection.$$sortFn).toBe(sortFn);
+      });
+
+      it('should compute sorted index of collection', function() {
+        var o3 = { id: 3, name: 'foobar' };
+        var o4 = { id: -1, name: 'foobar' };
+        var o6 = { id: 6, name: 'foobar' };
+        var o11 = { id: 11, name: 'foobar' };
+
+        expect(collection.sortedIndex(o3)).toBe(2);
+        expect(collection.sortedIndex(o4)).toBe(0);
+        expect(collection.sortedIndex(o6)).toBe(3);
+        expect(collection.sortedIndex(o11)).toBe(4);
+      });
+
+      it('should return sorted index as next available index', function() {
+        var o3 = { id: 2, name: 'foobar' };
+        expect(collection.sortedIndex(o3, true)).toBe(2);
+      });
+
+      it('should return sorted index as previous available index', function() {
+        var o3 = { id: 2, name: 'foobar' };
+        expect(collection.sortedIndex(o3, false)).toBe(1);
+      });
+
+      it('should return sorted index equal to last element + 1 if collection is not sorted', function() {
+        collection.$$sortFn = undefined;
+
+        var o3 = { id: 3, name: 'foobar' };
+        var o4 = { id: -1, name: 'foobar' };
+
+        expect(collection.sortedIndex(o3)).toBe(4);
+        expect(collection.sortedIndex(o4)).toBe(4);
+      });
+
+      it('should return sorted index equal to default value if collection is not sorted', function() {
+        collection.$$sortFn = undefined;
+
+        var o3 = { id: 3, name: 'foobar' };
+        var o4 = { id: -1, name: 'foobar' };
+
+        expect(collection.sortedIndex(o3, false)).toBe(0);
+        expect(collection.sortedIndex(o4, true)).toBe(4);
+      });
+
+      it('should push elements in order', function() {
+        var o6 = { id: 6, name: 'foobar' };
+        var o7 = { id: 7, name: 'foobar' };
+
+        var newLength = collection.push(o6, o7);
+
+        expect(newLength).toBe(6);
+        expect(collection.length).toBe(6);
+
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBe(o2);
+        expect(collection[2]).toBe(o5);
+        expect(collection[3]).toBe(o6);
+        expect(collection[4]).toBe(o7);
+        expect(collection[5]).toBe(o10);
+
+        expect(collection.$$map).toEqual({
+          1: 0,
+          2: 1,
+          5: 2,
+          6: 3,
+          7: 4,
+          10: 5
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'splice', addedCount: 2, index: 3, removed: [], object: collection }
+        ]);
+      });
+
+      it('should unshift elements in order', function() {
+        var o6 = { id: 6, name: 'foobar' };
+        var o7 = { id: 7, name: 'foobar' };
+
+        var newLength = collection.unshift(o6, o7);
+
+        expect(newLength).toBe(6);
+        expect(collection.length).toBe(6);
+
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBe(o2);
+        expect(collection[2]).toBe(o5);
+        expect(collection[3]).toBe(o6);
+        expect(collection[4]).toBe(o7);
+        expect(collection[5]).toBe(o10);
+
+        expect(collection.$$map).toEqual({
+          1: 0,
+          2: 1,
+          5: 2,
+          6: 3,
+          7: 4,
+          10: 5
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'splice', addedCount: 2, index: 3, removed: [], object: collection }
+        ]);
+      });
+
+      it('should push elements, keep order and trigger changes by index', function() {
+        var o6 = { id: 6, name: 'foobar' };
+        var o11 = { id: 11, name: 'foobar' };
+
+        var newLength = collection.push(o6, o11);
+
+        expect(newLength).toBe(6);
+        expect(collection.length).toBe(6);
+
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBe(o2);
+        expect(collection[2]).toBe(o5);
+        expect(collection[3]).toBe(o6);
+        expect(collection[4]).toBe(o10);
+        expect(collection[5]).toBe(o11);
+
+        expect(collection.$$map).toEqual({
+          1: 0,
+          2: 1,
+          5: 2,
+          6: 3,
+          10: 4,
+          11: 5
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection },
+          { type: 'splice', addedCount: 1, index: 5, removed: [], object: collection }
+        ]);
+      });
+
+      it('should unshift elements in order and group changes', function() {
+        var o6 = { id: 6, name: 'foobar' };
+        var o11 = { id: 11, name: 'foobar' };
+
+        var newLength = collection.unshift(o6, o11);
+
+        expect(newLength).toBe(6);
+        expect(collection.length).toBe(6);
+
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBe(o2);
+        expect(collection[2]).toBe(o5);
+        expect(collection[3]).toBe(o6);
+        expect(collection[4]).toBe(o10);
+        expect(collection[5]).toBe(o11);
+
+        expect(collection.$$map).toEqual({
+          1: 0,
+          2: 1,
+          5: 2,
+          6: 3,
+          10: 4,
+          11: 5
+        });
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection },
+          { type: 'splice', addedCount: 1, index: 5, removed: [], object: collection }
+        ]);
+      });
     });
 
-    it('should unregister everything', function() {
-      var callback = jasmine.createSpy('callback');
+    describe('observer', function() {
+      var callback1;
+      var callback2;
 
-      collection.$$observers.push({
-        ctx: null,
-        callback: callback
+      var ctx1;
+      var ctx2;
+
+      var change1;
+      var change2;
+
+      beforeEach(function() {
+        callback1 = jasmine.createSpy('callback1');
+        callback2 = jasmine.createSpy('callback2');
+
+        ctx1 = { foo: 'bar' };
+        ctx2 = { bar: 'foo' };
+
+        change1 = { type: 'splice', addedCount: 1, index: 3, object: collection, removed: [] };
+        change2 = { type: 'splice', addedCount: 1, index: 4, object: collection, removed: [] };
       });
 
-      collection.unobserve();
+      it('should register observer', function() {
+        collection.observe(callback1);
 
-      expect(collection.$$observers).toEqual([]);
-    });
-
-    it('should unregister callback', function() {
-      var c1 = jasmine.createSpy('callback 1');
-      var c2 = jasmine.createSpy('callback 2');
-
-      collection.$$observers.push({
-        ctx: null,
-        callback: c1
+        expect(collection.$$observers).toEqual([
+          { ctx: null, callback: callback1 }
+        ]);
       });
 
-      collection.$$observers.push({
-        ctx: null,
-        callback: c2
+      it('should register observer with context', function() {
+        collection.observe(callback1, ctx1);
+
+        expect(collection.$$observers).toEqual([
+          { ctx: ctx1, callback: callback1 }
+        ]);
       });
 
-      collection.unobserve(c1);
+      it('should unregister everything', function() {
+        collection.$$observers.push({
+          ctx: null,
+          callback: callback1
+        });
 
-      expect(collection.$$observers).toEqual([
-        { ctx: null, callback: c2 }
-      ]);
-    });
+        collection.unobserve();
 
-    it('should unregister callback with context', function() {
-      var ctx1 = {
-        foo: 'bar'
-      };
-
-      var ctx2 = {
-        bar: 'foo'
-      };
-
-      var c1 = jasmine.createSpy('callback 1');
-
-      collection.$$observers.push({
-        ctx: ctx1,
-        callback: c1
+        expect(collection.$$observers).toEqual([]);
       });
 
-      collection.$$observers.push({
-        ctx: ctx2,
-        callback: c1
+      it('should unregister callback', function() {
+
+        collection.$$observers.push({
+          ctx: null,
+          callback: callback1
+        });
+
+        collection.$$observers.push({
+          ctx: null,
+          callback: callback2
+        });
+
+        collection.unobserve(callback1);
+
+        expect(collection.$$observers).toEqual([
+          { ctx: null, callback: callback2 }
+        ]);
       });
 
-      collection.unobserve(c1, ctx1);
+      it('should unregister callback with context', function() {
+        collection.$$observers.push({
+          ctx: ctx1,
+          callback: callback1
+        });
 
-      expect(collection.$$observers).toEqual([
-        { ctx: ctx2, callback: c1 }
-      ]);
-    });
+        collection.$$observers.push({
+          ctx: ctx2,
+          callback: callback1
+        });
 
-    it('should trigger changes asynchronously', function() {
-      var callback = jasmine.createSpy('callback');
+        collection.unobserve(callback1, ctx1);
 
-      collection.$$observers.push({
-        ctx: null,
-        callback: callback
+        expect(collection.$$observers).toEqual([
+          { ctx: ctx2, callback: callback1 }
+        ]);
       });
 
-      var changes = [
-        { type: 'splice', addedCount: 1, index: 3, object: collection, removed: [] },
-        { type: 'splice', addedCount: 1, index: 4, object: collection, removed: [] }
-      ];
+      it('should trigger changes asynchronously', function() {
+        collection.$$observers.push({
+          ctx: null,
+          callback: callback1
+        });
 
-      collection.trigger(changes);
+        var changes = [change1, change2];
 
-      expect(collection.$$changes).toEqual(changes);
-      expect(callback).not.toHaveBeenCalled();
+        collection.trigger(changes);
 
-      var $$changes = collection.$$changes;
-      jasmine.clock().tick(1);
+        expect(collection.$$changes).toEqual(changes);
+        expect(callback1).not.toHaveBeenCalled();
 
-      expect(callback).toHaveBeenCalledWith($$changes);
-      expect(collection.$$changes).toEqual([]);
-    });
+        var $$changes = collection.$$changes;
 
-    it('should trigger single change', function() {
-      var callback = jasmine.createSpy('callback');
+        jasmine.clock().tick(1);
 
-      collection.$$observers.push({
-        ctx: null,
-        callback: callback
+        expect(callback1).toHaveBeenCalledWith($$changes);
+        expect(collection.$$changes).toEqual([]);
       });
 
-      var change = {
-        type: 'splice',
-        addedCount: 1,
-        index: 3,
-        object: collection,
-        removed: []
-      };
+      it('should trigger single change', function() {
+        collection.$$observers.push({
+          ctx: null,
+          callback: callback1
+        });
 
-      collection.trigger(change);
+        collection.trigger(change1);
 
-      expect(collection.$$changes).toEqual([change]);
-      expect(callback).not.toHaveBeenCalled();
+        expect(collection.$$changes).toEqual([change1]);
+        expect(callback1).not.toHaveBeenCalled();
 
-      var $$changes = collection.$$changes;
-      jasmine.clock().tick(1);
+        var $$changes = collection.$$changes;
 
-      expect(callback).toHaveBeenCalledWith($$changes);
-      expect(collection.$$changes).toEqual([]);
-    });
+        jasmine.clock().tick(1);
 
-    it('should trigger all changes once asynchronously', function() {
-      var callback = jasmine.createSpy('callback');
-
-      collection.$$observers.push({
-        ctx: null,
-        callback: callback
+        expect(callback1).toHaveBeenCalledWith($$changes);
+        expect(collection.$$changes).toEqual([]);
       });
 
-      var changes1 = [
-        { type: 'splice', addedCount: 1, index: 3, object: collection, removed: [] },
-        { type: 'splice', addedCount: 1, index: 4, object: collection, removed: [] }
-      ];
+      it('should trigger all changes once asynchronously', function() {
+        collection.$$observers.push({
+          ctx: null,
+          callback: callback1
+        });
 
-      collection.trigger(changes1);
+        var changes1 = [change1];
 
-      var changes2 = [
-        { type: 'splice', addedCount: 1, index: 5, object: collection, removed: [] },
-        { type: 'splice', addedCount: 1, index: 6, object: collection, removed: [] }
-      ];
+        collection.trigger(changes1);
 
-      collection.trigger(changes2);
+        var changes2 = [change2];
 
-      expect(collection.$$changes).toEqual(changes1.concat(changes2));
-      expect(callback).not.toHaveBeenCalled();
+        collection.trigger(changes2);
 
-      var $$changes = collection.$$changes;
-      jasmine.clock().tick(1);
+        expect(collection.$$changes).toEqual(changes1.concat(changes2));
+        expect(callback1).not.toHaveBeenCalled();
 
-      expect(callback).toHaveBeenCalledWith($$changes);
-      expect(collection.$$changes).toEqual([]);
+        var $$changes = collection.$$changes;
+
+        jasmine.clock().tick(1);
+
+        expect(callback1).toHaveBeenCalledWith($$changes);
+        expect(collection.$$changes).toEqual([]);
+      });
     });
 
     it('get element by key', function() {
@@ -387,129 +669,6 @@ describe('collection', function() {
     it('should get element at index', function() {
       expect(collection.at(0)).toBe(o1);
       expect(collection.at(1)).toBe(o2);
-    });
-
-    it('should remove last element', function() {
-      spyOn(collection, 'trigger').and.callThrough();
-
-      var removedElement = collection.pop();
-
-      expect(removedElement).toBe(o2);
-      expect(collection.length).toBe(1);
-      expect(collection[0]).toBe(o1);
-      expect(collection[1]).toBeUndefined();
-      expect(collection.$$map).toEqual({
-      	1: 0
-      });
-
-      expect(collection.trigger).toHaveBeenCalledWith({
-        addedCount: 0,
-        index: 1,
-        removed: [o2],
-        type: 'splice',
-        object: collection
-      });
-    });
-
-    it('should remove first element', function() {
-      spyOn(collection, 'trigger').and.callThrough();
-
-      var removedElement = collection.shift();
-
-      expect(removedElement).toBe(o1);
-      expect(collection.length).toBe(1);
-      expect(collection[0]).toBe(o2);
-      expect(collection[1]).toBeUndefined();
-      expect(collection.$$map).toEqual({
-        2: 0
-      });
-
-      expect(collection.trigger).toHaveBeenCalledWith({
-        addedCount: 0,
-        index: 0,
-        removed: [o1],
-        type: 'splice',
-        object: collection
-      });
-    });
-
-    it('should sort collection', function() {
-
-      var o3 = { id: 3, name: 'foobar' };
-      var o4 = { id: 4, name: 'foobar' };
-      collection.push(o3, o4);
-
-      var result = collection.sort(function(o1, o2) {
-        return o2.id - o1.id
-      });
-
-      expect(result).toBe(collection);
-      expect(collection.length).toBe(4);
-      expect(collection[0]).toBe(o4);
-      expect(collection[1]).toBe(o3);
-      expect(collection[2]).toBe(o2);
-      expect(collection[3]).toBe(o1);
-
-      expect(collection.$$map).toEqual({
-        1: 3,
-        2: 2,
-        3: 1,
-        4: 0
-      });
-    });
-
-    it('should push new elements', function() {
-      spyOn(collection, 'trigger').and.callThrough();
-
-      var o3 = { id: 3, name: 'foobar' };
-      var o4 = { id: 4, name: 'foobar' };
-
-      var newLength = collection.push(o3, o4);
-
-      expect(newLength).toBe(4);
-      expect(collection.length).toBe(4);
-      expect(collection[0]).toBe(o1);
-      expect(collection[1]).toBe(o2);
-      expect(collection[2]).toBe(o3);
-      expect(collection[3]).toBe(o4);
-
-      expect(collection.$$map).toEqual({
-        1: 0,
-        2: 1,
-        3: 2,
-        4: 3
-      });
-
-      expect(collection.trigger).toHaveBeenCalledWith([
-        { type: 'splice', addedCount: 2, index: 2, removed: [], object: collection }
-      ]);
-    });
-
-    it('should unshift new elements', function() {
-      spyOn(collection, 'trigger').and.callThrough();
-
-      var o3 = { id: 3, name: 'foobar' };
-      var o4 = { id: 4, name: 'foobar' };
-
-      var newLength = collection.unshift(o3, o4);
-
-      expect(newLength).toBe(4);
-      expect(collection.length).toBe(4);
-      expect(collection[0]).toBe(o3);
-      expect(collection[1]).toBe(o4);
-      expect(collection[2]).toBe(o1);
-      expect(collection[3]).toBe(o2);
-
-      expect(collection.$$map).toEqual({
-        1: 2,
-        2: 3,
-        3: 0,
-        4: 1
-      });
-
-      expect(collection.trigger).toHaveBeenCalledWith([
-        { type: 'splice', addedCount: 2, index: 0, removed: [], object: collection }
-      ]);
     });
 
     it('should concat collections', function() {

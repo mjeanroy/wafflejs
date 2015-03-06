@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* jshint eqnull:true */
+
 /* global _ */
 /* global $parse */
 
@@ -104,7 +106,21 @@ Collection.prototype = {
   },
 
   $$add: function(models, start) {
-    if (start < this.length) {
+    if (this.$$model) {
+      models = _.map(models, function(m) {
+        return m instanceof this.$$model ? m : new this.$$model(m);
+      }, this);
+    }
+
+    var sort = !!this.$$sortFn;
+    var goUp = start > 0;
+
+    // First sort array if needed
+    if (sort) {
+      models.sort(this.$$sortFn);
+    }
+    else if (start < this.length) {
+      // Otherwise, make space for new data
       this.$$move(start, models.length);
     }
 
@@ -121,24 +137,37 @@ Collection.prototype = {
     };
 
     var currentChange = null;
+    var oldIndex = -1;
 
     for (var i = 0, size = models.length; i < size; ++i) {
-      var current = models[i];
-      var model = this.$$model ? new this.$$model(current) : current;
-      var modelIdx = start + i;
+      var model = models[i];
       var id = this.$$key(model);
+
+      // If collection is sorted, we need to keep sort, so compute
+      // sorted index, and move items to make space
+      // If collection is not sorted, index is already computed and
+      // space is already available
+
+      var modelIdx;
+      if (sort) {
+        modelIdx = this.sortedIndex(model, goUp);
+        this.$$move(modelIdx, 1);
+      } else {
+        modelIdx = start + i;
+      }
 
       this[modelIdx] = model;
       this.$$map[id] = modelIdx;
       this.length++;
 
       // Group changes
-      if (!currentChange) {
+      if (!currentChange || modelIdx !== (oldIndex + 1)) {
         currentChange = newChange(modelIdx, this);
         changes.push(currentChange);
       }
 
       currentChange.addedCount++;
+      oldIndex = modelIdx;
     }
 
     this.trigger(changes);
@@ -293,7 +322,58 @@ Collection.prototype = {
   // Sorted collection is returned
   sort: function(sortFn) {
     var array = $$callOnArray('sort', this, [sortFn]);
-    return this.$$replaceAll(array);
+    this.$$replaceAll(array);
+    this.$$sortFn = sortFn;
+    return this;
+  },
+
+  // Use a binary search to compute sorted index of item
+  // If collection is not sorted, it does not know how to compare
+  // values, so sorted index is the default index given as second parameter.
+  // If second parameter is not defined, sorted index is the last element + 1.
+  sortedIndex: function(item, asc) {
+    /* jshint bitwise:false */
+
+    var high = this.length;
+    var goUp = asc == null ? true : !!asc;
+
+    if (!this.$$sortFn) {
+      return goUp ? high : 0;
+    }
+
+    // Convert to model instance
+    var model = item;
+    if (this.$$model && !(model instanceof this.$$model)) {
+      model = new this.$$model(model);
+    }
+
+    var low = 0;
+
+    // Use binary search
+    while (low < high) {
+      var mid = (low + high) >>> 1;
+      var current = this[mid];
+      if (this.$$sortFn(current, model) < 0) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+
+    // If low index is "equivalent" to low index, search for first
+    // next or previous available index.
+    var eq = false;
+    if (low < this.length && (eq = this.$$sortFn(this[low], model) === 0)) {
+      var inc = goUp ? 1 : -1;
+      while (low && low < this.length && eq) {
+        low += inc;
+        eq = this.$$sortFn(this[low], model) === 0;
+      }
+
+      low = goUp ? low : low + 1;
+    }
+
+    return low;
   },
 
   // Add new observer

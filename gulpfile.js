@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ var clean = require('gulp-clean');
 var concat = require('gulp-concat');
 var server = require('gulp-express');
 var jshint = require('gulp-jshint');
+var open = require('gulp-open');
 var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
 var uglify = require('gulp-uglify');
@@ -121,6 +122,12 @@ gulp.task('server', ['concat', 'less'], function () {
   server.run({
     file:'sample-server.js'
   });
+
+  var options = {
+    url: 'http://localhost:8080'
+  };
+  gulp.src('./sample/index.html')
+      .pipe(open('', options));
 
   gulp.watch(['src/**/*.js'], ['concat']);
   gulp.watch(['src/less/*.less'], ['less']);

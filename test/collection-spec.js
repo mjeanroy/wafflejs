@@ -27,6 +27,11 @@ describe('collection', function() {
   beforeEach(function() {
     jasmine.addCustomEqualityTester(function(actual, expected) {
       if (actual instanceof Collection && expected instanceof Collection) {
+        if (actual === expected) {
+          return true;
+        }
+
+        // Perform equal comparison without $$trigger function
         var t1 = actual.$$trigger;
         var t2 = expected.$$trigger;
 
@@ -401,7 +406,8 @@ describe('collection', function() {
         addedCount: 0,
         index: 1,
         removed: [o2],
-        type: 'splice'
+        type: 'splice',
+        object: collection
       });
     });
 
@@ -422,7 +428,8 @@ describe('collection', function() {
         addedCount: 0,
         index: 0,
         removed: [o1],
-        type: 'splice'
+        type: 'splice',
+        object: collection
       });
     });
 
@@ -474,7 +481,7 @@ describe('collection', function() {
       });
 
       expect(collection.trigger).toHaveBeenCalledWith([
-        { type: 'splice', addedCount: 2, index: 2, removed: [] }
+        { type: 'splice', addedCount: 2, index: 2, removed: [], object: collection }
       ]);
     });
 
@@ -501,7 +508,7 @@ describe('collection', function() {
       });
 
       expect(collection.trigger).toHaveBeenCalledWith([
-        { type: 'splice', addedCount: 2, index: 0, removed: [] }
+        { type: 'splice', addedCount: 2, index: 0, removed: [], object: collection }
       ]);
     });
 

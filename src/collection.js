@@ -110,12 +110,13 @@ Collection.prototype = {
 
     var changes = [];
 
-    var newChange = function(index) {
+    var newChange = function(index, object) {
       return {
         type: 'splice',
         addedCount: 0,
         index: index,
-        removed: []
+        removed: [],
+        object: object
       };
     };
 
@@ -133,7 +134,7 @@ Collection.prototype = {
 
       // Group changes
       if (!currentChange) {
-        currentChange = newChange(modelIdx);
+        currentChange = newChange(modelIdx, this);
         changes.push(currentChange);
       }
 
@@ -166,7 +167,8 @@ Collection.prototype = {
       addedCount: 0,
       index: index,
       removed: [value],
-      type: 'splice'
+      type: 'splice',
+      object: this
     });
 
     return value;

@@ -109,7 +109,17 @@ Collection.prototype = {
     }
 
     var changes = [];
-    var type = 'splice';
+
+    var newChange = function(index) {
+      return {
+        type: 'splice',
+        addedCount: 0,
+        index: index,
+        removed: []
+      };
+    };
+
+    var currentChange = null;
 
     for (var i = 0, size = models.length; i < size; ++i) {
       var current = models[i];
@@ -121,12 +131,13 @@ Collection.prototype = {
       this.$$map[id] = modelIdx;
       this.length++;
 
-      changes.push({
-        addedCount: 1,
-        index: modelIdx,
-        removed: [],
-        type: type
-      });
+      // Group changes
+      if (!currentChange) {
+        currentChange = newChange(modelIdx);
+        changes.push(currentChange);
+      }
+
+      currentChange.addedCount++;
     }
 
     this.trigger(changes);

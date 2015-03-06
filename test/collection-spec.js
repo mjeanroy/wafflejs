@@ -474,8 +474,7 @@ describe('collection', function() {
       });
 
       expect(collection.trigger).toHaveBeenCalledWith([
-        { type: 'splice', addedCount: 1, index: 2, removed: [] },
-        { type: 'splice', addedCount: 1, index: 3, removed: [] }
+        { type: 'splice', addedCount: 2, index: 2, removed: [] }
       ]);
     });
 
@@ -502,8 +501,7 @@ describe('collection', function() {
       });
 
       expect(collection.trigger).toHaveBeenCalledWith([
-        { type: 'splice', addedCount: 1, index: 0, removed: [] },
-        { type: 'splice', addedCount: 1, index: 1, removed: [] }
+        { type: 'splice', addedCount: 2, index: 0, removed: [] }
       ]);
     });
 

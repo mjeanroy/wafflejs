@@ -134,9 +134,17 @@ $.prototype = {
 
   // Append node
   append: function(childNode) {
-    return this.$$each(function(node, idx) {
-      var child = idx ? childNode.cloneNode(true) : childNode;
-      node.appendChild(child);
+    return this.$$each(function(node, idx, collection) {
+      var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+      node.appendChild(clone);
+    });
+  },
+
+  // Append node after element
+  after: function(childNode) {
+    return this.$$each(function(node, idx, collection) {
+      var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+      node.parentNode.insertBefore(clone, node.nextSibling);
     });
   },
 

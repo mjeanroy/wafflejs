@@ -32,6 +32,15 @@ describe('$', function() {
     fixtures = document.createElement('div');
     node1 = document.createElement('div');
     node2 = document.createElement('div');
+
+    fixtures.appendChild(node1);
+    fixtures.appendChild(node2);
+
+    document.body.appendChild(fixtures);
+  });
+
+  afterEach(function() {
+    document.body.removeChild(fixtures);
   });
 
   it('should return instance of $', function() {
@@ -94,6 +103,21 @@ describe('$', function() {
       // With angular.js, jqLite append only to last element
       // Bug ?
       // expect(node1.childNodes.length).toBe(1);
+    });
+
+    it('should append node after element', function() {
+      var childNode = document.createElement('span');
+      childNode.innerHTML = 'foo';
+
+      expect(node1.childNodes.length).toBe(0);
+      expect(node2.childNodes.length).toBe(0);
+
+      var $n1 = $($div[0]);
+      var $result = $n1.after(childNode);
+
+      expect($result).toBe($n1);
+      expect(node1.nextSibling).toBe(childNode);
+      expect(node2.nextSibling).toBeNull();
     });
 
     it('should set html content', function() {

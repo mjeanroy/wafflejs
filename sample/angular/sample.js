@@ -9,11 +9,19 @@ angular.module('SampleApp', ['waffle'])
   }])
 
   .controller('SampleController', ['$scope', function($scope) {
-
-    $scope.grid = {
+    $scope.options = {
       data: generatedData,
       columns: columns,
       sortBy: 'firstName'
     };
 
+    $scope.grid = null;
+
+    $scope.add = function() {
+      $scope.grid.data().push(createFakePerson());
+    };
+
+    $scope.pop = function() {
+      $scope.grid.data().pop();
+    };
   }]);

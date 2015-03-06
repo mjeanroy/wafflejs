@@ -40,10 +40,6 @@ describe('constants', function() {
     expect(DATA_WAFFLE_ID).toBe('data-waffle-id');
   });
 
-  it('should define data attribute name for idx value', function() {
-    expect(DATA_WAFFLE_IDX).toBe('data-waffle-idx');
-  });
-
   it('should define data attribute name for sortable value', function() {
     expect(DATA_WAFFLE_SORTABLE).toBe('data-waffle-sortable');
   });

@@ -2,16 +2,20 @@
 
 var generatedData = [];
 
-for (var i = 0; i < 1000; i++) {
-  var randomPerson = {
-    id: i,
+var uid = 0;
+
+var createFakePerson = function() {
+  return {
+    id: ++uid,
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
     userName: faker.internet.userName(),
     email: faker.internet.email()
   };
+};
 
-  generatedData[i] = randomPerson;
+for (var i = 0; i < 2; i++) {
+  generatedData[i] = createFakePerson();
 };
 
 var newColumn = function(id, title, renderer) {

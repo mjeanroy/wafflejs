@@ -98,6 +98,23 @@ describe('Grid', function() {
     expect(grid.$thead.on).toHaveBeenCalledWith('click', jasmine.any(Function));
   });
 
+  it('should observe data collection', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.$data.$$observers).toContain(jasmine.objectContaining({
+      ctx: grid,
+      callback: grid.$$onDataChange
+    }));
+  });
+
   it('should destroy grid', function() {
     var table = document.createElement('table');
 
@@ -287,10 +304,6 @@ describe('Grid', function() {
     });
 
     expect(trs).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-idx') === idx.toString();
-    });
-
-    expect(trs).toVerify(function(node, idx) {
       var tds = node.childNodes;
       return tds[0].innerHTML === data[idx].id.toString() &&
              tds[1].innerHTML === data[idx].name.toString();
@@ -308,12 +321,6 @@ describe('Grid', function() {
       var tds = node.childNodes;
       return tds[0].getAttribute('data-waffle-id') === columns[0].id &&
              tds[1].getAttribute('data-waffle-id') === columns[1].id;
-    });
-
-    expect(trs).toVerify(function(node, idx) {
-      var tds = node.childNodes;
-      return tds[0].getAttribute('data-waffle-idx') === idx.toString() &&
-             tds[1].getAttribute('data-waffle-idx') === idx.toString();
     });
   });
 
@@ -348,6 +355,185 @@ describe('Grid', function() {
 
     it('should get column collection', function() {
       expect(grid.columns()).toBe(grid.$columns);
+    });
+
+    describe('observe', function() {
+      var change;
+      var changes;
+      var newData;
+
+      beforeEach(function() {
+        spyOn(grid, '$$on_splice').and.callThrough();
+      });
+
+      describe('add', function() {
+
+        beforeEach(function() {
+          change = {
+            type: 'splice',
+            index: 3,
+            addedCount: 1,
+            removed: [],
+            object: grid.$data
+          };
+
+          newData = {
+            id: 4,
+            firstName: 'foo4',
+            lastName: 'bar4'
+          };
+
+          changes = [change];
+        });
+
+        it('should add row at the end with a splice change', function() {
+          grid.$data[3] = newData;
+          grid.$data.length = 4;
+          change.index = 3;
+
+          grid.$$onDataChange(changes);
+
+          expect(grid.$$on_splice).toHaveBeenCalledWith(change);
+
+          var trs = grid.$tbody[0].childNodes;
+          expect(trs.length).toBe(4);
+          expect(trs).toVerify(function(tr, idx) {
+            return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+          });
+        });
+
+        it('should add row at the beginning with a splice change', function() {
+          grid.$data[3] = grid.$data[2];
+          grid.$data[2] = grid.$data[1];
+          grid.$data[1] = grid.$data[0];
+          grid.$data[0] = newData;
+          grid.$data.length = 4;
+          change.index = 0;
+
+          grid.$$onDataChange(changes);
+
+          expect(grid.$$on_splice).toHaveBeenCalledWith(change);
+
+          var trs = grid.$tbody[0].childNodes;
+          expect(trs.length).toBe(4);
+          expect(trs).toVerify(function(tr, idx) {
+            return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+          });
+        });
+
+        it('should add row at the middle with a splice change', function() {
+          grid.$data[3] = grid.$data[2];
+          grid.$data[2] = grid.$data[1];
+          grid.$data[1] = newData;
+          grid.$data.length = 4;
+          change.index = 1;
+
+          grid.$$onDataChange(changes);
+
+          expect(grid.$$on_splice).toHaveBeenCalledWith(change);
+
+          var trs = grid.$tbody[0].childNodes;
+          expect(trs.length).toBe(4);
+          expect(trs).toVerify(function(tr, idx) {
+            return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+          });
+        });
+      });
+
+      describe('remove', function() {
+        beforeEach(function() {
+          change = {
+            type: 'splice',
+            index: 0,
+            addedCount: 0,
+            removed: [],
+            object: grid.$data
+          };
+
+          newData = {
+            id: 4,
+            firstName: 'foo4',
+            lastName: 'bar4'
+          };
+
+          changes = [change];
+        });
+
+        it('should remove first row with a splice change', function() {
+          change.index = 0;
+          change.removed = [grid.$data[0]];
+
+          grid.$data[0] = grid.$data[1];
+          grid.$data[1] = grid.$data[2];
+
+          delete grid.$data[2];
+          grid.$data.length = 2;
+
+          grid.$$onDataChange(changes);
+
+          expect(grid.$$on_splice).toHaveBeenCalledWith(change);
+
+          var trs = grid.$tbody[0].childNodes;
+          expect(trs.length).toBe(2);
+          expect(trs).toVerify(function(tr, idx) {
+            return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+          });
+        });
+
+        it('should remove last row with a splice change', function() {
+          change.index = 2;
+          change.removed = [grid.$data[2]];
+
+          delete grid.$data[2];
+          grid.$data.length = 2;
+
+          grid.$$onDataChange(changes);
+
+          expect(grid.$$on_splice).toHaveBeenCalledWith(change);
+
+          var trs = grid.$tbody[0].childNodes;
+          expect(trs.length).toBe(2);
+          expect(trs).toVerify(function(tr, idx) {
+            return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+          });
+        });
+
+        it('should middle row with a splice change', function() {
+          change.index = 1;
+          change.removed = [grid.$data[1]];
+
+          grid.$data[1] = grid.$data[2];
+          delete grid.$data[2];
+          grid.$data.length = 2;
+
+          grid.$$onDataChange(changes);
+
+          expect(grid.$$on_splice).toHaveBeenCalledWith(change);
+
+          var trs = grid.$tbody[0].childNodes;
+          expect(trs.length).toBe(2);
+          expect(trs).toVerify(function(tr, idx) {
+            return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+          });
+        });
+
+        it('should remove everything', function() {
+          change.index = 0;
+          change.removed = [grid.$data[0], grid.$data[1], grid.$data[2]];
+
+          delete grid.$data[0];
+          delete grid.$data[1];
+          delete grid.$data[2];
+          grid.$data.length = 0;
+
+          grid.$$onDataChange(changes);
+
+          expect(grid.$$on_splice).toHaveBeenCalledWith(change);
+
+          var trs = grid.$tbody[0].childNodes;
+          expect(trs.length).toBe(0);
+        });
+      });
     });
 
     describe('sort', function() {

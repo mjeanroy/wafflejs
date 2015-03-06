@@ -27,7 +27,6 @@
 /* exported CSS_SORTABLE_ASC */
 /* exported CSS_SORTABLE_DESC */
 /* exported DATA_WAFFLE_ID */
-/* exported DATA_WAFFLE_IDX */
 /* exported DATA_WAFFLE_SORTABLE */
 /* exported DATA_WAFFLE_ORDER */
 /* exported CHAR_ORDER_ASC */
@@ -40,7 +39,6 @@ var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
 
 var DATA_PREFIX = 'data-waffle-';
 var DATA_WAFFLE_ID = DATA_PREFIX + 'id';
-var DATA_WAFFLE_IDX = DATA_PREFIX + 'idx';
 var DATA_WAFFLE_SORTABLE = DATA_PREFIX + 'sortable';
 var DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';
 

@@ -34,7 +34,6 @@
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
 /* global DATA_WAFFLE_ID */
-/* global DATA_WAFFLE_IDX */
 /* global DATA_WAFFLE_ORDER */
 /* global DATA_WAFFLE_SORTABLE */
 /* global CHAR_ORDER_ASC */
@@ -77,8 +76,10 @@ var Grid = function(table, options) {
 
   this.$$createNodes()
       .$$bind()
+      .$$observe()
       .renderHeader()
-      .sortBy(options.sortBy);
+      .sortBy(options.sortBy, false)
+      .renderBody();
 };
 
 // Create new grid
@@ -134,24 +135,29 @@ Grid.prototype = {
   renderBody: function() {
     var fragment = $doc.createFragment();
 
-    this.$data.forEach(function(data, idx) {
-      var row = this.$$renderRow(data, idx);
+    this.$data.forEach(function(data) {
+      var row = this.$$renderRow(data);
       fragment.appendChild(row);
     }, this);
 
     this.$tbody.empty().append(fragment);
+
+    // Clear changes since data is now synchronized with grid
+    this.$data.$$changes = [];
+
     return this;
   },
 
   // Sort grid by fields
-  sortBy: function(sortBy) {
+  // Second parameter is a parameter used internally to disable automatic rendering after sort
+  sortBy: function(sortBy, $$render) {
     // Store new sort
     var normalizedSortBy = $$parseSort(sortBy);
 
     // Check if sort predicate has changed
     // Compare array instance, or serialized array to string and compare string values (faster than array comparison)
     if (this.$sortBy === normalizedSortBy || this.$sortBy.join() === normalizedSortBy.join()) {
-      return this.renderBody();
+      return this;
     }
 
     this.$sortBy = normalizedSortBy;
@@ -195,13 +201,19 @@ Grid.prototype = {
 
     this.$data.sort($$createComparisonFunction(comparators));
 
-    // Body need to be rendered since data is now sorted
-    return this.renderBody();
+    if ($$render !== false) {
+      // Body need to be rendered since data is now sorted
+      this.renderBody();
+    }
+
+    return this;
   },
 
   // Destroy datagrid
   destroy: function() {
-    return this.$$unbind().$$destroy();
+    return this.$$unbind()
+               .$$unobserve()
+               .$$destroy();
   },
 
   // Initialize grid:
@@ -224,7 +236,6 @@ Grid.prototype = {
       this.$table.append(tbody);
     }
 
-    // Render grid on initialization
     return this;
   },
 
@@ -285,16 +296,82 @@ Grid.prototype = {
     return this;
   },
 
+  // Observe data collection
+  $$observe: function() {
+    this.$data.observe(this.$$onDataChange, this);
+    return this;
+  },
+
+  // Delete all observers on data collection
+  $$unobserve: function() {
+    this.$data.unobserve();
+    return this;
+  },
+
+  // Listener on changes on data collection
+  $$onDataChange: function(changes) {
+    _.forEach(changes, function(change) {
+      var type = change.type;
+      var method = '$$on_' + type;
+      this[method](change);
+    }, this);
+
+    return this;
+  },
+
+  // Data collection has been spliced
+  // It means that elements have been added or removed
+  $$on_splice: function(change) {
+    var index = change.index;
+    var addedCount = change.addedCount;
+    var collection = change.object;
+
+    var removedCount = change.removed.length;
+    if (removedCount > 0) {
+      if (index === 0 && removedCount === this.$tbody[0].childNodes.length) {
+        this.$tbody.empty();
+      } else {
+        for (var k = 0; k < removedCount; ++k) {
+          var removedIndex = k + index;
+          this.$tbody.children()
+                     .eq(removedIndex)
+                     .remove();
+        }
+      }
+    }
+
+    // Append new added data
+    if (addedCount > 0) {
+      var fragment = $doc.createFragment();
+      for (var i = 0; i < addedCount; ++i) {
+        var rowIdx = i + index;
+        var data = collection.at(rowIdx);
+        var $tr = this.$$renderRow(data);
+        fragment.appendChild($tr);
+      }
+
+      if (index > 0) {
+        // Add after existing node
+        this.$tbody.children()
+                   .eq(index - 1)
+                   .after(fragment);
+      } else {
+        // Add at the beginning
+        this.$tbody.prepend(fragment);
+      }
+    }
+
+    return this;
+  },
+
   // Build row and return it
   // Should be a private function
-  $$renderRow: function(data, idx) {
+  $$renderRow: function(data) {
     var tr = $doc.tr();
-    tr.setAttribute(DATA_WAFFLE_IDX, idx);
 
     this.$columns.forEach(function(column) {
       var attributes = {};
       attributes[DATA_WAFFLE_ID] = column.id;
-      attributes[DATA_WAFFLE_IDX] = idx;
 
       var $node = $($doc.td())
         .addClass(column.cssClasses())

@@ -105,6 +105,23 @@ describe('$', function() {
       // expect(node1.childNodes.length).toBe(1);
     });
 
+    it('should prepend node', function() {
+      var childNode = document.createElement('span');
+      childNode.innerHTML = 'foo';
+
+      expect(node1.childNodes.length).toBe(0);
+      expect(node2.childNodes.length).toBe(0);
+
+      var $result = $div.prepend(childNode);
+
+      expect($result).toBe($div);
+      expect(node2.childNodes[0]).toBe(childNode);
+
+      // With angular.js, jqLite append only to last element
+      // Bug ?
+      // expect(node1.childNodes.length).toBe(1);
+    });
+
     it('should append node after element', function() {
       var childNode = document.createElement('span');
       childNode.innerHTML = 'foo';

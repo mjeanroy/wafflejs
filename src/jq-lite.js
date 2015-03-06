@@ -140,6 +140,14 @@ $.prototype = {
     });
   },
 
+  // Prepend node
+  prepend: function(childNode) {
+    return this.$$each(function(node, idx, collection) {
+      var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+      node.insertBefore(clone, node.childNodes[0]);
+    });
+  },
+
   // Append node after element
   after: function(childNode) {
     return this.$$each(function(node, idx, collection) {

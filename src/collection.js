@@ -426,10 +426,12 @@ Collection.prototype = {
 };
 
 _.forEach(['indexOf', 'lastIndexOf', 'first', 'last', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
-  Collection.prototype[fn] = function() {
-    var args = [this].concat(_.toArray(arguments));
-    return _[fn].apply(_, args);
-  };
+  if (_[fn]) {
+    Collection.prototype[fn] = function() {
+      var args = [this].concat(_.toArray(arguments));
+      return _[fn].apply(_, args);
+    };
+  }
 });
 
 _.forEach(['toString', 'toLocaleString', 'join'], function(fn) {

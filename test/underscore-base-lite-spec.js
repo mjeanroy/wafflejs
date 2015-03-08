@@ -254,6 +254,34 @@ describe('_', function() {
     expect(callback).toHaveBeenCalledWith(4, 3, array);
   });
 
+  it('should get first elements of array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 === 0;
+    });
+
+    var array = [1, 2, 3, 4];
+
+    expect(_.first(array)).toBe(1);
+    expect(_.first(array, 1)).toEqual([1]);
+    expect(_.first(array, 2)).toEqual([1, 2]);
+    expect(_.first(array, 3)).toEqual([1, 2, 3]);
+    expect(_.first(array, 4)).toEqual([1, 2, 3, 4]);
+  });
+
+  it('should get last elements of array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 === 0;
+    });
+
+    var array = [1, 2, 3, 4];
+
+    expect(_.last(array)).toBe(4);
+    expect(_.last(array, 1)).toEqual([4]);
+    expect(_.last(array, 2)).toEqual([3, 4]);
+    expect(_.last(array, 3)).toEqual([2, 3, 4]);
+    expect(_.last(array, 4)).toEqual([1, 2, 3, 4]);
+  });
+
   it('should find element in array', function() {
     var callback = jasmine.createSpy('callback').and.callFake(function(value) {
       return value % 2 === 0;

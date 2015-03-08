@@ -345,7 +345,7 @@ Collection.prototype = {
   }
 };
 
-_.forEach(['forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
+_.forEach(['first', 'last', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
   Collection.prototype[fn] = function() {
     var args = [this].concat(_.toArray(arguments));
     return _[fn].apply(_, args);

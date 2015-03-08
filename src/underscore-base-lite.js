@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+/* jshint eqnull:true */
 /* exported _ */
 
 /**
@@ -33,6 +34,8 @@
  * replace this utility object by underscore or lodash.
  */
 
+var __ArrayProto = Array.prototype;
+var __slice = __ArrayProto.slice;
 var __ObjectProto = Object.prototype;
 var __nativeKeys = Object.keys;
 var __hasOwnProperty = __ObjectProto.hasOwnProperty;
@@ -73,6 +76,24 @@ var _ = {
   // Check if object has given key
   has: function(object, key) {
     return __hasOwnProperty.call(object, key);
+  },
+
+  // Returns the first element of an array.
+  // Passing n will return the first n elements of the array.
+  first: function(array, n) {
+    if (n == null) {
+      return array[0];
+    }
+    return __slice.call(array, 0, n);
+  },
+
+  // Returns the last element of an array.
+  // Passing n will return the last n elements of the array.
+  last: function(array, n) {
+    if (n == null) {
+      return array[array.length - 1];
+    }
+    return __slice.call(array, array.length - n, array.length);
   },
 
   // Get all keys of object

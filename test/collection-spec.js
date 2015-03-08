@@ -567,6 +567,18 @@ describe('collection', function() {
       expect(collection.lastIndexOf({ id: 3 })).toBe(-1);
     });
 
+    it('should get first element of collection', function() {
+      expect(collection.first()).toBe(o1);
+      expect(collection.first(1)).toEqual([o1]);
+      expect(collection.first(2)).toEqual([o1, o2]);
+    });
+
+    it('should get last element of collection', function() {
+      expect(collection.last()).toBe(o2);
+      expect(collection.last(1)).toEqual([o2]);
+      expect(collection.last(2)).toEqual([o1, o2]);
+    });
+
     it('should apply callback on each elements', function() {
       var callback = jasmine.createSpy('callback');
 

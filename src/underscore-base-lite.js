@@ -245,6 +245,24 @@ var _ = {
     return undefined;
   },
 
+  // Split a collection into two arrays: one whose elements all
+  // satisfy the given predicate, and one whose elements all
+  // do not satisfy the predicate.
+  partition: function(array, iteratee) {
+    var pass = [];
+    var fail = [];
+
+    for (var i = 0, size = array.length; i < size; ++i) {
+      if (iteratee.call(null, array[i], i, array)) {
+        pass.push(array[i]);
+      } else {
+        fail.push(array[i]);
+      }
+    }
+
+    return [pass, fail];
+  },
+
   // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
   // returns an object with an index of each item.
   indexBy: function(array, callback, ctx) {

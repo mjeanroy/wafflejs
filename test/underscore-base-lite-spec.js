@@ -348,4 +348,22 @@ describe('_', function() {
       4: o4
     });
   });
+
+  it('should partition array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value % 2 !== 0;
+    });
+
+    var a = [0, 1, 2, 3, 4, 5];
+
+    var partition = _.partition(a, callback);
+
+    expect(partition).toEqual([
+      [1, 3, 5],
+      [0, 2, 4]
+    ]);
+
+    expect(callback).toHaveBeenCalledWith(a[0], 0, a);
+    expect(callback).toHaveBeenCalledWith(a[1], 1, a);
+  });
 });

@@ -857,5 +857,23 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
+
+    it('should partition array', function() {
+      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+        return value.id % 2 === 0;
+      });
+
+      var a = [0, 1, 2, 3, 4, 5];
+
+      var partition = collection.partition(callback);
+
+      expect(partition).toEqual([
+        [collection[1]],
+        [collection[0]]
+      ]);
+
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
   });
 });

@@ -434,6 +434,17 @@ _.forEach(['indexOf', 'lastIndexOf', 'first', 'last', 'partition', 'forEach', 'm
   }
 });
 
+_.forEach(['countBy', 'groupBy', 'indexBy'], function(fn) {
+  Collection.prototype[fn] = function(callback, ctx) {
+    // Support nested property in collection object
+    if (_.isString(callback)) {
+      callback = $parse(callback);
+    }
+
+    return _[fn].call(_, this, callback, ctx);
+  };
+});
+
 _.forEach(['toString', 'toLocaleString', 'join'], function(fn) {
   Collection.prototype[fn] = $$callOnArrayFn(fn);
 });

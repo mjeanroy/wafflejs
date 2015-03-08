@@ -42,7 +42,34 @@ var __hasOwnProperty = __ObjectProto.hasOwnProperty;
 var __toString = __ObjectProto.toString;
 var __nativeBind = Function.prototype.bind;
 
-var _ = {
+var _;
+
+var __callback = function(callback) {
+  if (_.isString(callback)) {
+    return function(value) {
+      return value[callback];
+    };
+  }
+
+  return callback;
+};
+
+var __group = function(behavior) {
+  return function(array, callback, ctx) {
+    var result = {};
+
+    var iteratee = __callback(callback);
+
+    for (var i = 0, size = array.length; i < size; ++i) {
+      var key = iteratee.call(ctx, array[i], i, array);
+      behavior(result, array[i], key);
+    }
+
+    return result;
+  };
+};
+
+_ = {
   // Check if given object is null
   isNull: function(obj) {
     return obj === null;
@@ -265,13 +292,22 @@ var _ = {
 
   // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
   // returns an object with an index of each item.
-  indexBy: function(array, callback, ctx) {
-    var result = {};
-    for (var i = 0, size = array.length; i < size; ++i) {
-      var current = array[i];
-      var key = callback.call(ctx, current, i, array);
-      result[key] = current;
-    }
-    return result;
-  }
+  indexBy: __group(function(result, value, key) {
+    result[key] = value;
+  }),
+
+  // Splits a collection into sets, grouped by the result of
+  // running each value through iteratee.
+  // If iteratee is a string instead of a function, groups by the property
+  // named by iteratee on each of the values.
+  groupBy: __group(function(result, value, key) {
+    (result[key] = result[key] || []).push(value);
+  }),
+
+  // Sorts a list into groups and returns a count for the number of objects
+  // in each group. Similar to groupBy, but instead of returning a list of values,
+  // returns a count for the number of values in that group.
+  countBy: __group(function(result, value, key) {
+    result[key] = (result[key] || 0) + 1;
+  })
 };

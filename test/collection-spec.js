@@ -863,14 +863,81 @@ describe('collection', function() {
         return value.id % 2 === 0;
       });
 
-      var a = [0, 1, 2, 3, 4, 5];
-
       var partition = collection.partition(callback);
 
       expect(partition).toEqual([
         [collection[1]],
         [collection[0]]
       ]);
+
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
+
+    it('should index collection', function() {
+      collection[0].foo = { id: 1 };
+      collection[1].foo = { id: 2 };
+
+      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+        return value.id;
+      });
+
+      var result1 = collection.indexBy(callback);
+      var result2 = collection.indexBy('id');
+      var result3 = collection.indexBy('foo.id');
+
+      expect(result1).toEqual(result2);
+      expect(result1).toEqual(result3);
+      expect(result1).toEqual({
+        1: collection[0],
+        2: collection[1]
+      });
+
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
+
+    it('should group collection', function() {
+      collection[0].foo = { id: 1 };
+      collection[1].foo = { id: 2 };
+
+      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+        return value.id;
+      });
+
+      var result1 = collection.groupBy(callback);
+      var result2 = collection.groupBy('id');
+      var result3 = collection.groupBy('foo.id');
+
+      expect(result1).toEqual(result2);
+      expect(result1).toEqual(result3);
+      expect(result1).toEqual({
+        1: [collection[0]],
+        2: [collection[1]]
+      });
+
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
+
+    it('should group collection', function() {
+      collection[0].foo = { id: 1 };
+      collection[1].foo = { id: 2 };
+
+      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+        return value.id;
+      });
+
+      var result1 = collection.countBy(callback);
+      var result2 = collection.countBy('id');
+      var result3 = collection.countBy('foo.id');
+
+      expect(result1).toEqual(result2);
+      expect(result1).toEqual(result3);
+      expect(result1).toEqual({
+        1: 1,
+        2: 1
+      });
 
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);

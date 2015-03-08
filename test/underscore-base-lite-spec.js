@@ -339,13 +339,56 @@ describe('_', function() {
     var o4 = { id: 4 };
     var a = [o1, o2, o3, o4];
 
-    var index = _.indexBy(a, callback);
+    var i1 = _.indexBy(a, callback);
+    var i2 = _.indexBy(a, 'id');
 
-    expect(index).toEqual({
+    expect(i1).toEqual(i2);
+    expect(i1).toEqual({
       1: o1,
       2: o2,
       3: o3,
       4: o4
+    });
+  });
+
+  it('should group element in array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value.name;
+    });
+
+    var o1 = { id: 1, name: 'foo' };
+    var o2 = { id: 2, name: 'bar' };
+    var o3 = { id: 3, name: 'foo' };
+    var o4 = { id: 4, name: 'bar' };
+    var a = [o1, o2, o3, o4];
+
+    var g1 = _.groupBy(a, callback);
+    var g2 = _.groupBy(a, 'name');
+
+    expect(g1).toEqual(g2);
+    expect(g1).toEqual({
+      foo: [o1, o3],
+      bar: [o2, o4]
+    });
+  });
+
+  it('should count element in array', function() {
+    var callback = jasmine.createSpy('callback').and.callFake(function(value) {
+      return value.name;
+    });
+
+    var o1 = { id: 1, name: 'foo' };
+    var o2 = { id: 2, name: 'bar' };
+    var o3 = { id: 3, name: 'foo' };
+    var a = [o1, o2, o3];
+
+    var c1 = _.countBy(a, callback);
+    var c2 = _.countBy(a, callback);
+
+    expect(c1).toEqual(c2);
+    expect(c1).toEqual({
+      foo: 2,
+      bar: 1
     });
   });
 

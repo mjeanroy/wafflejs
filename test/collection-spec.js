@@ -874,6 +874,17 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
+    it('should pluck collection', function() {
+      collection[0].foo = { id: 1 };
+      collection[1].foo = { id: 2 };
+
+      var result1 = collection.pluck('id');
+      var result2 = collection.pluck('foo.id');
+
+      expect(result1).toEqual(result2);
+      expect(result1).toEqual([1, 2]);
+    });
+
     it('should index collection', function() {
       collection[0].foo = { id: 1 };
       collection[1].foo = { id: 2 };

@@ -376,6 +376,11 @@ Collection.prototype = {
     return low;
   },
 
+  // Extract property of collection items
+  pluck: function(name) {
+    return this.map($parse(name));
+  },
+
   // Add new observer
   observe: function(callback, observer) {
     this.$$observers.push({

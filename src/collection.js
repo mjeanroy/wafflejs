@@ -345,13 +345,13 @@ Collection.prototype = {
   }
 };
 
-_.forEach(['first', 'last', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
+_.forEach(['indexOf', 'lastIndexOf', 'first', 'last', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
   Collection.prototype[fn] = function() {
     var args = [this].concat(_.toArray(arguments));
     return _[fn].apply(_, args);
   };
 });
 
-_.forEach(['toString', 'toLocaleString', 'join', 'indexOf', 'lastIndexOf'], function(fn) {
+_.forEach(['toString', 'toLocaleString', 'join'], function(fn) {
   Collection.prototype[fn] = $$callOnArrayFn(fn);
 });

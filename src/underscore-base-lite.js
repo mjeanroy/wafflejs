@@ -96,6 +96,28 @@ var _ = {
     return __slice.call(array, array.length - n, array.length);
   },
 
+  // Return the position of the first occurrence of an item in an array, or -1
+  // if the item is not included in the array.
+  indexOf: function(array, item) {
+    for (var i = 0, size = array.length; i < size; ++i) {
+      if (array[i] === item) {
+        return i;
+      }
+    }
+    return -1;
+  },
+
+  // Return the position of the last occurrence of an item in an array, or -1
+  // if the item is not included in the array.
+  lastIndexOf: function(array, item) {
+    for (var i = array.length - 1; i >= 0; --i) {
+      if (array[i] === item) {
+        return i;
+      }
+    }
+    return -1;
+  },
+
   // Get all keys of object
   keys: function(object) {
     if (!_.isObject(object)) {

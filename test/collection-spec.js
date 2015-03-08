@@ -705,6 +705,28 @@ describe('collection', function() {
       expect(c3).toEqual(collection);
     });
 
+    it('should clear collection', function() {
+      spyOn(collection, 'trigger').and.callThrough();
+
+      var old1 = collection[0];
+      var old2 = collection[1];
+
+      collection.clear();
+
+      expect(collection.$$map).toEqual({});
+      expect(collection.length).toBe(0);
+      expect(collection[0]).toBeUndefined();
+      expect(collection[1]).toBeUndefined();
+
+      expect(collection.trigger).toHaveBeenCalledWith({
+        type: 'splice',
+        removed: [old1, old2],
+        index: 0,
+        addedCount: 0,
+        object: collection
+      });
+    });
+
     it('should slice part of collection', function() {
       var results = collection.slice(0, 1);
       expect(results.length).toBe(1);

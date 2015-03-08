@@ -267,6 +267,30 @@ Collection.prototype = {
     return this.$$add(models, this.length);
   },
 
+  // Clear collection
+  clear: function() {
+    if (this.length > 0) {
+      var array = [];
+      for (var i = 0, size = this.length; i < size; ++i) {
+        array[i] = this[i];
+        delete this[i];
+      }
+
+      this.$$map = {};
+      this.length = 0;
+
+      this.trigger({
+        type: 'splice',
+        removed: array,
+        index: 0,
+        addedCount: 0,
+        object: this
+      });
+    }
+
+    return this;
+  },
+
   // adds one or more elements to the beginning of the collection
   // and returns the new length of the collection.
   // Semantic is the same as [].unshift function

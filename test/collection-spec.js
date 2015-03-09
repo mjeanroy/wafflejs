@@ -615,6 +615,141 @@ describe('collection', function() {
       });
     });
 
+    it('should move data from one index', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var o3 = { id: 3, name: 'foobar' };
+      var items = [o1, o2, o3];
+
+      var collection = new Collection(items);
+
+      collection.$$move(0, 1);
+
+      expect(collection[0]).toBeUndefined();
+      expect(collection[1]).toBe(o1);
+      expect(collection[2]).toBe(o2);
+      expect(collection[3]).toBe(o3);
+      expect(collection[4]).toBeUndefined();
+      expect(collection.length).toBe(4);
+
+      expect(collection.$$map).toEqual({
+        1: 1,
+        2: 2,
+        3: 3
+      });
+    });
+
+    it('should move data from two index', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var o3 = { id: 3, name: 'foobar' };
+      var items = [o1, o2, o3];
+
+      var collection = new Collection(items);
+
+      collection.$$move(0, 2);
+
+      expect(collection[0]).toBeUndefined();
+      expect(collection[1]).toBeUndefined();
+      expect(collection[2]).toBe(o1);
+      expect(collection[3]).toBe(o2);
+      expect(collection[4]).toBe(o3);
+      expect(collection.length).toBe(5);
+
+      expect(collection.$$map).toEqual({
+        1: 2,
+        2: 3,
+        3: 4
+      });
+    });
+
+    it('should move data from two index and start in the middle', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var o3 = { id: 3, name: 'foobar' };
+      var items = [o1, o2, o3];
+
+      var collection = new Collection(items);
+
+      collection.$$move(2, 2);
+
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
+      expect(collection[2]).toBeUndefined();
+      expect(collection[3]).toBeUndefined();
+      expect(collection[4]).toBe(o3);
+      expect(collection.length).toBe(5);
+
+      expect(collection.$$map).toEqual({
+        1: 0,
+        2: 1,
+        3: 4
+      });
+    });
+
+    it('should move data from one negative index', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var o3 = { id: 3, name: 'foobar' };
+      var items = [o1, o2, o3];
+
+      var collection = new Collection(items);
+
+      collection.$$move(0, -1);
+
+      expect(collection[0]).toBe(o2);
+      expect(collection[1]).toBe(o3);
+      expect(collection[3]).toBeUndefined();
+      expect(collection.length).toBe(2);
+
+      expect(collection.$$map).toEqual({
+        2: 0,
+        3: 1
+      });
+    });
+
+    it('should move data from one negative index and start in the middle', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var o3 = { id: 3, name: 'foobar' };
+      var items = [o1, o2, o3];
+
+      var collection = new Collection(items);
+
+      collection.$$move(1, -1);
+
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o3);
+      expect(collection[3]).toBeUndefined();
+      expect(collection.length).toBe(2);
+
+      expect(collection.$$map).toEqual({
+        1: 0,
+        3: 1
+      });
+    });
+
+    it('should move data from one negative index and start in the end', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var o3 = { id: 3, name: 'foobar' };
+      var items = [o1, o2, o3];
+
+      var collection = new Collection(items);
+
+      collection.$$move(2, -1);
+
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
+      expect(collection[2]).toBeUndefined();
+      expect(collection.length).toBe(2);
+
+      expect(collection.$$map).toEqual({
+        1: 0,
+        2: 1
+      });
+    });
+
     it('get element by key', function() {
       var o1 = { id: 1, name: 'foo' };
       var o2 = { id: 2, name: 'bar' };

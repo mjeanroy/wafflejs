@@ -95,14 +95,53 @@ var Collection = function(data, options) {
 };
 
 Collection.prototype = {
-  $$move: function(start, size) {
-    var collectionSize = this.length;
-    for (var i = start; i < collectionSize; ++i) {
-      var newIndex = i + size;
-      var id = this.$$key(this[i]);
-      this[newIndex] = this[i];
+  $$move_right: function(start, size) {
+    for (var i = this.length; i > start; --i) {
+      var oldIndex = i - 1;
+      var newIndex = oldIndex + size;
+      var id = this.$$key(this[oldIndex]);
+
+      this[newIndex] = this[oldIndex];
       this.$$map[id] = newIndex;
+
+      delete this[oldIndex];
     }
+
+    this.length += size;
+  },
+
+  $$move_left: function(start, size) {
+    var startIndex = start + Math.abs(size);
+    var length = this.length;
+    if (startIndex < length) {
+      for (var i = startIndex; i < length; ++i) {
+        var oldIndex = i;
+        var newIndex = oldIndex + size;
+
+        var id = this.$$key(this[oldIndex]);
+        var idToDelete = this.$$key(this[newIndex]);
+
+        this[newIndex] = this[oldIndex];
+        this.$$map[id] = newIndex;
+
+        delete this.$$map[idToDelete];
+        delete this[oldIndex];
+      }
+      this.length--;
+    }
+    else {
+      // Remove last element only !
+      var oldId = this.$$key(this[length - 1]);
+      delete this[length - 1];
+      delete this.$$map[oldId];
+      this.length--;
+    }
+  },
+
+  $$move: function(start, size) {
+    var direction = size > 0 ? 'right' : 'left';
+    this['$$move_' + direction](start, size);
+    return this;
   },
 
   $$add: function(models, start) {
@@ -114,6 +153,7 @@ Collection.prototype = {
 
     var sort = !!this.$$sortFn;
     var goUp = start > 0;
+    var oldLength = this.length;
 
     // First sort array if needed
     if (sort) {
@@ -138,6 +178,7 @@ Collection.prototype = {
 
     var currentChange = null;
     var oldIndex = -1;
+    var size = models.length;
 
     for (var i = 0, size = models.length; i < size; ++i) {
       var model = models[i];
@@ -158,7 +199,6 @@ Collection.prototype = {
 
       this[modelIdx] = model;
       this.$$map[id] = modelIdx;
-      this.length++;
 
       // Group changes
       if (!currentChange || modelIdx !== (oldIndex + 1)) {
@@ -170,6 +210,7 @@ Collection.prototype = {
       oldIndex = modelIdx;
     }
 
+    this.length = oldLength + size;
     this.trigger(changes);
 
     return this.length;
@@ -180,7 +221,8 @@ Collection.prototype = {
       return undefined;
     }
 
-    var lastIndex = this.length - 1;
+    var oldLength = this.length;
+    var lastIndex = oldLength - 1;
     var value = this[index];
     var id = this.$$key(value);
 
@@ -188,7 +230,7 @@ Collection.prototype = {
       this.$$move(index, -1);
     }
 
-    this.length--;
+    this.length = oldLength - 1;
     delete this[lastIndex];
     delete this.$$map[id];
 

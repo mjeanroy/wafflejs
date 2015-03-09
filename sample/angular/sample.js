@@ -24,4 +24,8 @@ angular.module('SampleApp', ['waffle'])
     $scope.pop = function() {
       $scope.grid.data().pop();
     };
+
+    $scope.clear = function() {
+      $scope.grid.data().clear();
+    };
   }]);

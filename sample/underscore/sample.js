@@ -9,3 +9,15 @@ var grid = new Waffle.Grid(document.getElementById('waffle'), {
   columns: columns,
   sortBy: 'firstName'
 });
+
+document.getElementById('add').addEventListener('click', function() {
+  grid.data().push(createFakePerson());
+});
+
+document.getElementById('remove').addEventListener('click', function() {
+  grid.data().pop();
+});
+
+document.getElementById('clear').addEventListener('click', function() {
+  grid.data().clear();
+});

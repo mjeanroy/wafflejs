@@ -22,28 +22,30 @@
  * SOFTWARE.
  */
 
+var del = require('del');
+
 var gulp = require('gulp');
-var clean = require('gulp-clean');
 var concat = require('gulp-concat');
 var server = require('gulp-express');
 var jshint = require('gulp-jshint');
+var less = require('gulp-less');
 var open = require('gulp-open');
 var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
+var taskListing = require('gulp-task-listing');
 var uglify = require('gulp-uglify');
 var wrap = require('gulp-wrap');
-var taskListing = require('gulp-task-listing');
-var less = require('gulp-less');
-var files = require('./waffle-files');
+
 var karma = require('karma').server;
+
+var files = require('./waffle-files');
 
 var BUILD_FOLDER = 'dist';
 
 gulp.task('help', taskListing);
 
-gulp.task('clean', function() {
-  return gulp.src(BUILD_FOLDER, { read : false })
-    .pipe(clean());
+gulp.task('clean', function(done) {
+  del(BUILD_FOLDER, done);
 });
 
 gulp.task('lint', function() {
@@ -119,9 +121,7 @@ gulp.task('build', ['lint', 'test', 'less', 'minify']);
 gulp.task('default', ['build']);
 
 gulp.task('server', ['concat', 'less'], function () {
-  server.run({
-    file:'sample-server.js'
-  });
+  server.run(['sample-server.js']);
 
   var options = {
     url: 'http://localhost:8080'

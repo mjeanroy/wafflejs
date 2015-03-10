@@ -95,53 +95,139 @@ var Collection = function(data, options) {
 };
 
 Collection.prototype = {
-  $$move_right: function(start, size) {
-    for (var i = this.length; i > start; --i) {
-      var oldIndex = i - 1;
-      var newIndex = oldIndex + size;
-      var id = this.$$key(this[oldIndex]);
+  // Clean data from collection:
+  // - Remove index where data is put
+  // - Remove entry in map of entries
+  $$clean: function(obj) {
+    var id = this.$$key(obj);
+    var idx = this.$$map[id];
 
-      this[newIndex] = this[oldIndex];
-      this.$$map[id] = newIndex;
+    if (idx != null) {
+      delete this.$$map[id];
+      delete this[idx];
+    }
+  },
 
-      delete this[oldIndex];
+  // Put object at given index.
+  // Last parameter is used internall to check if previous
+  // value at given index must be clean (i.e entry in map by
+  // id should be deleted).
+  // Should be a private function.
+  $$put: function(obj, i, clean) {
+    var previous = this[i];
+    var id = this.$$key(obj);
+
+    // Update only if we detect a change with previous value
+    if (previous !== obj) {
+      if (clean && previous != null && previous !== obj) {
+        this.$$clean(previous);
+        this.$$clean(obj);
+      }
+
+      // Update index value and update internal map
+      this[i] = obj;
+      this.$$map[id] = i;
+    }
+  },
+
+  // Merge collection and array to keep sort.
+  // This function should be call if and only a sort function
+  // is defined on collection.
+  // Array should be an array of model object if a constructor is defined
+  // in collection
+  // Should be a private function.
+  $$merge: function(array) {
+    var l1 = this.length - 1;
+    var l2 = array.length - 1;
+    var max = l1 + l2 + 1;
+
+    for (var i = l1, k = l2; k >= 0 && i >= 0;) {
+      var o1 = this[i];
+      var o2 = array[k];
+
+      if (this.$$sortFn(o1, o2) > 0) {
+        this.$$put(o1, max);
+        i--;
+      } else {
+        this.$$put(o2, max);
+        k--;
+      }
+
+      max--;
+    }
+
+    // Append remaining data from array
+    while (k >= 0) {
+      this.$$put(array[k--], max--);
+    }
+
+    // And update length
+    this.length += array.length;
+  },
+
+  // Move all elements of collection to the right.
+  // Start index is specified by first parameter.
+  // Number of move is specified by second parameter.
+  // Size of collection is automatically updated.
+  // Exemple:
+  //   [0, 1, 2] => $$move_righ(0, 2) => [undefined, undefined, 0, 1, 2]
+  //   [0, 1, 2] => $$move_righ(1, 2) => [0, undefined, undefined, 1, 2]
+  //   [0, 1, 2] => $$move_righ(2, 2) => [0, 1, undefined, undefined, 2]
+  // Should be a private function.
+  $$move_right: function(start, size, clean) {
+    size = Math.abs(size);
+
+    for (var i = this.length - 1; i >= start; --i) {
+      this.$$put(this[i], i + size, false);
+    }
+
+    // Clean beginning of array
+    if (clean) {
+      for (var k = start; k < (size + start); ++k) {
+        delete this[k];
+      }
     }
 
     this.length += size;
   },
 
-  $$move_left: function(start, size) {
-    var startIndex = start + Math.abs(size);
+  // Move all elements of collection to the left.
+  // Start index is specified by first parameter.
+  // Number of move is specified by second parameter.
+  // Size of collection is automatically updated.
+  // Exemple:
+  //   [0, 1, 2] => $$move_left(0, 2) => [2]
+  //   [0, 1, 2] => $$move_left(1, 1) => [0, 2]
+  //   [0, 1, 2] => $$move_left(2, 1) => [0, 1]
+  // Should be a private function.
+  $$move_left: function(start, size, clean) {
+    size = Math.abs(size);
+
     var length = this.length;
-    if (startIndex < length) {
-      for (var i = startIndex; i < length; ++i) {
-        var oldIndex = i;
-        var newIndex = oldIndex + size;
+    var max = start + size;
 
-        var id = this.$$key(this[oldIndex]);
-        var idToDelete = this.$$key(this[newIndex]);
-
-        this[newIndex] = this[oldIndex];
-        this.$$map[id] = newIndex;
-
-        delete this.$$map[idToDelete];
-        delete this[oldIndex];
+    if (max < length) {
+      // Translate array to the left
+      for (var i = max; i < length; ++i) {
+        this.$$put(this[i], i - size, true);
       }
-      this.length--;
+      this.length -= size;
     }
     else {
-      // Remove last element only !
-      var oldId = this.$$key(this[length - 1]);
-      delete this[length - 1];
-      delete this.$$map[oldId];
-      this.length--;
+      // Truncate end of array
+      for (var k = start; k < length; k++) {
+        this.$$clean(this[k]);
+        this.length--;
+      }
     }
   },
 
+  // Move elements of collection
+  // If size is positive, it will move elements to the right
+  // If size is negative, it will move elements to the left
+  // Should be a private function.
   $$move: function(start, size) {
-    var direction = size > 0 ? 'right' : 'left';
-    this['$$move_' + direction](start, size);
-    return this;
+    this['$$move_' + (size > 0 ? 'right' : 'left')](start, size);
   },
 
   $$add: function(models, start) {
@@ -180,7 +266,7 @@ Collection.prototype = {
     var oldIndex = -1;
     var size = models.length;
 
-    for (var i = 0, size = models.length; i < size; ++i) {
+    for (var i = 0; i < size; ++i) {
       var model = models[i];
       var id = this.$$key(model);
 

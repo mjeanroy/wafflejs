@@ -323,7 +323,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_left(1, -1);
+      collection.$$move_left(1, -1, true);
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o3);
@@ -344,7 +344,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_left(2, -1);
+      collection.$$move_left(2, -1, true);
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
@@ -368,9 +368,9 @@ describe('collection', function() {
       spyOn(collection, '$$move_left');
       spyOn(collection, '$$move_right');
 
-      collection.$$move(2, 1);
+      collection.$$move(2, 1, true);
 
-      expect(collection.$$move_right).toHaveBeenCalledWith(2, 1);
+      expect(collection.$$move_right).toHaveBeenCalledWith(2, 1, true);
       expect(collection.$$move_left).not.toHaveBeenCalled();
     });
 
@@ -385,9 +385,9 @@ describe('collection', function() {
       spyOn(collection, '$$move_left');
       spyOn(collection, '$$move_right');
 
-      collection.$$move(2, -1);
+      collection.$$move(2, -1, true);
 
-      expect(collection.$$move_left).toHaveBeenCalledWith(2, -1);
+      expect(collection.$$move_left).toHaveBeenCalledWith(2, -1, true);
       expect(collection.$$move_right).not.toHaveBeenCalled();
     });
 

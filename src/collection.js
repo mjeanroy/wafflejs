@@ -209,14 +209,17 @@ Collection.prototype = {
     if (max < length) {
       // Translate array to the left
       for (var i = max; i < length; ++i) {
-        this.$$put(this[i], i - size, true);
+        this.$$put(this[i], i - size, clean);
       }
       this.length -= size;
     }
     else {
       // Truncate end of array
       for (var k = start; k < length; k++) {
-        this.$$clean(this[k]);
+        if (clean) {
+          this.$$clean(this[k]);
+        }
+
         this.length--;
       }
     }
@@ -226,8 +229,8 @@ Collection.prototype = {
   // If size is positive, it will move elements to the right
   // If size is negative, it will move elements to the left
   // Should be a private function.
-  $$move: function(start, size) {
-    this['$$move_' + (size > 0 ? 'right' : 'left')](start, size);
+  $$move: function(start, size, clean) {
+    this['$$move_' + (size > 0 ? 'right' : 'left')](start, size, clean);
   },
 
   $$add: function(models, start) {

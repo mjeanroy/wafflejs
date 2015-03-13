@@ -148,6 +148,15 @@ describe('waffle-jquery', function() {
       expect(Grid.prototype.renderBody).toHaveBeenCalledOnce();
       expect($result).toBe($table);
     });
+
+    it('should destroy grid when node is removed', function() {
+      expect(Grid.prototype.destroy).not.toHaveBeenCalled();
+
+      $table.remove();
+
+      expect(Grid.prototype.destroy).toHaveBeenCalled();
+      expect($table.data('wafflejs')).toBeUndefined();
+    });
   });
 
   describe('with several matcher', function() {
@@ -207,6 +216,17 @@ describe('waffle-jquery', function() {
       expect($result.length).toBe(2);
       expect($result[0]).toEqual($grid1.data());
       expect($result[1]).toEqual($grid2.data());
+    });
+
+    it('should destroy both grid when nodes are removed', function() {
+      expect(Grid.prototype.destroy).not.toHaveBeenCalled();
+
+      $tables.remove();
+
+      expect(Grid.prototype.destroy).toHaveBeenCalled();
+      expect(Grid.prototype.destroy.calls.count()).toBe(2);
+      expect($tables.eq(0).data('wafflejs')).toBeUndefined();
+      expect($tables.eq(1).data('wafflejs')).toBeUndefined();
     });
   });
 });

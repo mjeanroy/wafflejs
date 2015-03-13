@@ -49,6 +49,14 @@ $.fn.waffle = function(options) {
 
         $waffle = new Grid(this, opts);
         $this.data($PLUGIN_NAME, $waffle);
+
+        // Destroy grid when node is removed
+        $this.on('waffleDestroyed', function() {
+          var $table = $(this);
+          $table.data($PLUGIN_NAME).destroy();
+          $table.removeData($PLUGIN_NAME)
+                .off();
+        });
       }
     });
   }
@@ -64,6 +72,20 @@ $.fn.waffle = function(options) {
 
 // Default options
 $.fn.waffle.options = {
+};
+
+// Add special event to destroy grid when node is removed
+$.event.special.waffleDestroyed = {
+  add: function(o) {
+    if (o.handler) {
+      o.handler = _.bind(o.handler, this);
+    }
+  },
+  remove: function(o) {
+    if (o.handler) {
+      o.handler(o);
+    }
+  }
 };
 
 // Map public functions of grid

@@ -103,39 +103,55 @@ Collection.prototype = {
     return o instanceof this.$$model ? o : new this.$$model(o);
   },
 
+  // Unset data at given index.
+  // Private function.
+  $$unsetAt: function(idx) {
+    delete this[idx];
+    return this;
+  },
+
+  // Unset id entry in internal map of object index.
+  // Private function.
+  $$unsetId: function(id) {
+    delete this.$$map[id];
+    return this;
+  },
+
   // Clean data from collection:
   // - Remove index where data is put
   // - Remove entry in map of entries
-  $$clean: function(obj) {
+  // Private function.
+  $$unset: function(obj) {
     var id = this.$$key(obj);
     var idx = this.$$map[id];
 
     if (idx != null) {
-      delete this.$$map[id];
-      delete this[idx];
+      this.$$unsetAt(idx)
+          .$$unsetId(id);
     }
+
+    return this;
   },
 
-  // Put object at given index.
-  // Last parameter is used internall to check if previous
-  // value at given index must be clean (i.e entry in map by
-  // id should be deleted).
-  // Should be a private function.
-  $$put: function(obj, i, clean) {
-    var previous = this[i];
-    var id = this.$$key(obj);
-
-    // Update only if we detect a change with previous value
-    if (previous !== obj) {
-      if (clean && previous != null && previous !== obj) {
-        this.$$clean(previous);
-        this.$$clean(obj);
-      }
-
-      // Update index value and update internal map
-      this[i] = obj;
-      this.$$map[id] = i;
+  // Add entry at given index.
+  // Internal map is updated to keep track of indexes.
+  // Private function.
+  $$addAt: function(o, i) {
+    this[i] = o;
+    if (o != null) {
+      this.$$map[this.$$key(o)] = i;
     }
+
+    return this;
+  },
+
+  // Swap elements at given index
+  // Internal map is updated to keep track of indexes.
+  // Private function.
+  $$swap: function(i, j) {
+    var oj = this.at(j);
+    return this.$$addAt(this.at(i), j)
+               .$$addAt(oj, i);
   },
 
   // Merge collection and array to keep sort.
@@ -154,10 +170,10 @@ Collection.prototype = {
       var o2 = array[k];
 
       if (this.$$sortFn(o1, o2) > 0) {
-        this.$$put(o1, max);
+        this.$$addAt(o1, max);
         i--;
       } else {
-        this.$$put(o2, max);
+        this.$$addAt(o2, max);
         k--;
       }
 
@@ -166,7 +182,7 @@ Collection.prototype = {
 
     // Append remaining data from array
     while (k >= 0) {
-      this.$$put(array[k--], max--);
+      this.$$addAt(array[k--], max--);
     }
 
     // And update length
@@ -182,18 +198,11 @@ Collection.prototype = {
   //   [0, 1, 2] => $$move_righ(1, 2) => [0, undefined, undefined, 1, 2]
   //   [0, 1, 2] => $$move_righ(2, 2) => [0, 1, undefined, undefined, 2]
   // Should be a private function.
-  $$move_right: function(start, size, clean) {
+  $$moveRight: function(start, size) {
     size = Math.abs(size);
 
     for (var i = this.length - 1; i >= start; --i) {
-      this.$$put(this[i], i + size, false);
-    }
-
-    // Clean beginning of array
-    if (clean) {
-      for (var k = start; k < (size + start); ++k) {
-        delete this[k];
-      }
+      this.$$swap(i, i + size);
     }
 
     this.length += size;
@@ -208,29 +217,23 @@ Collection.prototype = {
   //   [0, 1, 2] => $$move_left(1, 1) => [0, 2]
   //   [0, 1, 2] => $$move_left(2, 1) => [0, 1]
   // Should be a private function.
-  $$move_left: function(start, size, clean) {
+  $$moveLeft: function(start, size) {
     size = Math.abs(size);
 
-    var length = this.length;
+    var oldLength = this.length;
+    var newLength = oldLength - size;
     var max = start + size;
 
-    if (max < length) {
-      // Translate array to the left
-      for (var i = max; i < length; ++i) {
-        this.$$put(this[i], i - size, clean);
-      }
-      this.length -= size;
+    for (var i = max; i < oldLength; ++i) {
+      this.$$swap(i, i - size);
     }
-    else {
-      // Truncate end of array
-      for (var k = start; k < length; k++) {
-        if (clean) {
-          this.$$clean(this[k]);
-        }
 
-        this.length--;
-      }
+    // Clean last elements of array
+    for (var k = newLength; k < oldLength; ++k) {
+      this.$$unset(this.at(k));
     }
+
+    this.length = newLength;
   },
 
   // Move elements of collection
@@ -238,13 +241,11 @@ Collection.prototype = {
   // If size is negative, it will move elements to the left
   // Should be a private function.
   $$move: function(start, size, clean) {
-    this['$$move_' + (size > 0 ? 'right' : 'left')](start, size, clean);
+    this['$$move' + (size > 0 ? 'Right' : 'Left')](start, size, clean);
   },
 
   $$add: function(models, start) {
-    if (this.$$model) {
-      models = _.map(models, this.$$toModel, this);
-    }
+    models = _.map(models, this.$$toModel, this);
 
     var sort = !!this.$$sortFn;
     var goUp = start > 0;
@@ -277,7 +278,6 @@ Collection.prototype = {
 
     for (var i = 0; i < size; ++i) {
       var model = models[i];
-      var id = this.$$key(model);
 
       // If collection is sorted, we need to keep sort, so compute
       // sorted index, and move items to make space
@@ -292,8 +292,7 @@ Collection.prototype = {
         modelIdx = start + i;
       }
 
-      this[modelIdx] = model;
-      this.$$map[id] = modelIdx;
+      this.$$addAt(model, modelIdx);
 
       // Group changes
       if (!currentChange || modelIdx !== (oldIndex + 1)) {
@@ -326,8 +325,9 @@ Collection.prototype = {
     }
 
     this.length = oldLength - 1;
-    delete this[lastIndex];
-    delete this.$$map[id];
+
+    this.$$unsetAt(lastIndex)
+        .$$unsetId(id);
 
     this.trigger({
       addedCount: 0,
@@ -346,15 +346,11 @@ Collection.prototype = {
     this.$$map = {};
 
     for (var i = 0; i < newSize; ++i) {
-      var current = array[i];
-      var model = this.$$toModel(current);
-      var id = this.$$key(model);
-      this[i] = model;
-      this.$$map[id] = i;
+      this.$$addAt(this.$$toModel(array[i]), i);
     }
 
     for (; i < oldSize; ++i) {
-      delete this[i];
+      this.$$unsetAt(i);
     }
 
     this.length = newSize;
@@ -404,7 +400,7 @@ Collection.prototype = {
       var array = [];
       for (var i = 0, size = this.length; i < size; ++i) {
         array[i] = this.at(i);
-        delete this[i];
+        this.$$unsetAt(i);
       }
 
       this.$$map = {};

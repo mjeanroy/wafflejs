@@ -155,62 +155,120 @@ describe('collection', function() {
       expect(collection.$$toModel(m)).toBe(m);
     });
 
-    it('should put data at index and do not clean old index', function() {
-      var array = [
-        { id: 1, name: 'foo1' },
-        { id: 2, name: 'foo3' },
-        { id: 3, name: 'foo5' }
-      ];
+    it('should unset data at given index', function() {
+      var o1 = { id: 1 };
+      var o2 = { id: 2 };
 
-      var collection = new Collection(array);
+      var collection = new Collection([o1, o2]);
 
-      expect(collection[0]).toBe(array[0]);
-      expect(collection[1]).toBe(array[1]);
-      expect(collection[2]).toBe(array[2]);
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
       expect(collection.$$map).toEqual({
         1: 0,
-        2: 1,
-        3: 2
+        2: 1
       });
 
-      collection.$$put(array[1], 0);
+      var result = collection.$$unsetAt(0);
 
-      expect(collection[0]).toBe(array[1]);
-      expect(collection[1]).toBe(array[1]);
-      expect(collection[2]).toBe(array[2]);
+      expect(result).toBe(collection);
+      expect(collection[0]).toBeUndefined();
+      expect(collection[1]).toBe(o2);
       expect(collection.$$map).toEqual({
         1: 0,
-        2: 0,
-        3: 2
+        2: 1
       });
     });
 
-    it('should put data at index and clean old index', function() {
-      var array = [
-        { id: 1, name: 'foo1' },
-        { id: 2, name: 'foo3' },
-        { id: 3, name: 'foo5' }
-      ];
+    it('should unset id entry', function() {
+      var o1 = { id: 1 };
+      var o2 = { id: 2 };
 
-      var collection = new Collection(array);
+      var collection = new Collection([o1, o2]);
 
-      expect(collection[0]).toBe(array[0]);
-      expect(collection[1]).toBe(array[1]);
-      expect(collection[2]).toBe(array[2]);
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
       expect(collection.$$map).toEqual({
         1: 0,
-        2: 1,
-        3: 2
+        2: 1
       });
 
-      collection.$$put(array[1], 0, true);
+      var result = collection.$$unsetId(1);
 
-      expect(collection[0]).toBe(array[1]);
-      expect(collection[1]).toBeUndefined();
-      expect(collection[2]).toBe(array[2]);
+      expect(result).toBe(collection);
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
       expect(collection.$$map).toEqual({
-        2: 0,
-        3: 2
+        2: 1
+      });
+    });
+
+    it('should unset data entry', function() {
+      var o1 = { id: 1 };
+      var o2 = { id: 2 };
+
+      var collection = new Collection([o1, o2]);
+
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
+      expect(collection.$$map).toEqual({
+        1: 0,
+        2: 1
+      });
+
+      var result = collection.$$unset(o1);
+
+      expect(result).toBe(collection);
+      expect(collection[0]).toBeUndefined();
+      expect(collection[1]).toBe(o2);
+      expect(collection.$$map).toEqual({
+        2: 1
+      });
+    });
+
+    it('should add data at given index', function() {
+      var o1 = { id: 1 };
+      var o2 = { id: 2 };
+
+      var collection = new Collection([o1]);
+
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBeUndefined();
+      expect(collection.$$map).toEqual({
+        1: 0
+      });
+
+      var result = collection.$$addAt(o2, 1);
+
+      expect(result).toBe(collection);
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
+      expect(collection.$$map).toEqual({
+        1: 0,
+        2: 1
+      });
+    });
+
+    it('should swap object', function() {
+      var o1 = { id: 1 };
+      var o2 = { id: 2 };
+
+      var collection = new Collection([o1, o2]);
+
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
+      expect(collection.$$map).toEqual({
+        1: 0,
+        2: 1
+      });
+
+      var result = collection.$$swap(0, 1);
+
+      expect(result).toBe(collection);
+      expect(collection[0]).toBe(o2);
+      expect(collection[1]).toBe(o1);
+      expect(collection.$$map).toEqual({
+        1: 1,
+        2: 0
       });
     });
 
@@ -222,7 +280,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_right(0, 1, true);
+      collection.$$moveRight(0, 1, true);
 
       expect(collection[0]).toBeUndefined();
       expect(collection[1]).toBe(o1);
@@ -246,7 +304,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_right(0, 2, true);
+      collection.$$moveRight(0, 2, true);
 
       expect(collection[0]).toBeUndefined();
       expect(collection[1]).toBeUndefined();
@@ -270,7 +328,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_right(0, 3, true);
+      collection.$$moveRight(0, 3, true);
 
       expect(collection[0]).toBeUndefined();
       expect(collection[1]).toBeUndefined();
@@ -295,7 +353,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_right(2, 2, true);
+      collection.$$moveRight(2, 2, true);
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
@@ -319,7 +377,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_left(0, -1, true);
+      collection.$$moveLeft(0, -1, true);
 
       expect(collection[0]).toBe(o2);
       expect(collection[1]).toBe(o3);
@@ -340,7 +398,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_left(1, -1, true);
+      collection.$$moveLeft(1, -1, true);
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o3);
@@ -361,7 +419,7 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      collection.$$move_left(2, -1, true);
+      collection.$$moveLeft(2, -1, true);
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
@@ -382,13 +440,13 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      spyOn(collection, '$$move_left');
-      spyOn(collection, '$$move_right');
+      spyOn(collection, '$$moveLeft');
+      spyOn(collection, '$$moveRight');
 
       collection.$$move(2, 1, true);
 
-      expect(collection.$$move_right).toHaveBeenCalledWith(2, 1, true);
-      expect(collection.$$move_left).not.toHaveBeenCalled();
+      expect(collection.$$moveRight).toHaveBeenCalledWith(2, 1, true);
+      expect(collection.$$moveLeft).not.toHaveBeenCalled();
     });
 
     it('should move data to the left if index is negative', function() {
@@ -399,13 +457,13 @@ describe('collection', function() {
 
       var collection = new Collection(items);
 
-      spyOn(collection, '$$move_left');
-      spyOn(collection, '$$move_right');
+      spyOn(collection, '$$moveLeft');
+      spyOn(collection, '$$moveRight');
 
       collection.$$move(2, -1, true);
 
-      expect(collection.$$move_left).toHaveBeenCalledWith(2, -1, true);
-      expect(collection.$$move_right).not.toHaveBeenCalled();
+      expect(collection.$$moveLeft).toHaveBeenCalledWith(2, -1, true);
+      expect(collection.$$moveRight).not.toHaveBeenCalled();
     });
 
     it('should merge an array with a sorted collection', function() {

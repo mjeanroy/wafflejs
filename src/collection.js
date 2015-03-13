@@ -585,7 +585,7 @@ Collection.prototype = {
   }
 };
 
-_.forEach(['indexOf', 'lastIndexOf', 'first', 'last', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
+_.forEach(['indexOf', 'lastIndexOf', 'first', 'last', 'initial', 'rest', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
   if (_[fn]) {
     Collection.prototype[fn] = function() {
       var args = [this].concat(_.toArray(arguments));

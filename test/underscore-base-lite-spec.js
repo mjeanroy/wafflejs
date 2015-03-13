@@ -304,6 +304,26 @@ describe('_', function() {
     expect(_.last(array, 4)).toEqual([1, 2, 3, 4]);
   });
 
+  it('should return rest of array', function() {
+    var array = [5, 4, 3, 2, 1];
+    expect(_.rest(array)).toEqual([4, 3, 2, 1]);
+    expect(_.rest(array, 1)).toEqual([4, 3, 2, 1]);
+    expect(_.rest(array, 2)).toEqual([3, 2, 1]);
+    expect(_.rest(array, 3)).toEqual([2, 1]);
+    expect(_.rest(array, 4)).toEqual([1]);
+    expect(_.rest(array, 5)).toEqual([]);
+  });
+
+  it('should return initial elements of array', function() {
+    var array = [5, 4, 3, 2, 1];
+    expect(_.initial(array)).toEqual([5, 4, 3, 2]);
+    expect(_.initial(array, 1)).toEqual([5, 4, 3, 2]);
+    expect(_.initial(array, 2)).toEqual([5, 4, 3]);
+    expect(_.initial(array, 3)).toEqual([5, 4]);
+    expect(_.initial(array, 4)).toEqual([5]);
+    expect(_.initial(array, 5)).toEqual([]);
+  });
+
   it('should find element in array', function() {
     var callback = jasmine.createSpy('callback').and.callFake(function(value) {
       return value % 2 === 0;

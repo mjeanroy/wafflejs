@@ -1156,6 +1156,18 @@ describe('collection', function() {
       expect(collection.last(2)).toEqual([o1, o2]);
     });
 
+    it('should get rest of collection', function() {
+      expect(collection.rest()).toEqual([o2]);
+      expect(collection.rest(1)).toEqual([o2]);
+      expect(collection.rest(2)).toEqual([]);
+    });
+
+    it('should get initial elements of collection', function() {
+      expect(collection.initial()).toEqual([o1]);
+      expect(collection.initial(1)).toEqual([o1]);
+      expect(collection.initial(2)).toEqual([]);
+    });
+
     it('should apply callback on each elements', function() {
       var callback = jasmine.createSpy('callback');
 

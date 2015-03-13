@@ -1,5 +1,6 @@
 'use strict';
 
+var open = require('open');
 var express = require('express');
 
 var app = express();
@@ -12,4 +13,5 @@ app.use('/', express.static('dist'));
 var port = 8080;
 app.listen(port, function () {
   console.log('Server listening on : http://localhost:' + port);
+  open('http://localhost:' + port);
 });

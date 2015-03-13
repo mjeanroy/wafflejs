@@ -29,7 +29,6 @@ var concat = require('gulp-concat');
 var server = require('gulp-express');
 var jshint = require('gulp-jshint');
 var less = require('gulp-less');
-var open = require('gulp-open');
 var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
 var taskListing = require('gulp-task-listing');
@@ -122,12 +121,6 @@ gulp.task('default', ['build']);
 
 gulp.task('server', ['concat', 'less'], function () {
   server.run(['sample-server.js']);
-
-  var options = {
-    url: 'http://localhost:8080'
-  };
-  gulp.src('./sample/index.html')
-      .pipe(open('', options));
 
   gulp.watch(['src/**/*.js'], ['concat']);
   gulp.watch(['src/less/*.less'], ['less']);

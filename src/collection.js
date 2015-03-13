@@ -356,12 +356,6 @@ Collection.prototype = {
     return this;
   },
 
-  // Get size of collection
-  // Shortcut to length property
-  size: function() {
-    return this.length;
-  },
-
   // Get element at given index
   // Shortcut to array notation
   at: function(index) {
@@ -585,7 +579,7 @@ Collection.prototype = {
   }
 };
 
-_.forEach(['indexOf', 'lastIndexOf', 'first', 'last', 'initial', 'rest', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
+_.forEach(['indexOf', 'size', 'lastIndexOf', 'first', 'last', 'initial', 'rest', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
   if (_[fn]) {
     Collection.prototype[fn] = function() {
       var args = [this].concat(_.toArray(arguments));

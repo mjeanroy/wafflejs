@@ -87,6 +87,12 @@ describe('_', function() {
     expect(_.has([1, 2], '2')).toBe(false);
   });
 
+  it('should get size of list', function() {
+    expect(_.size([])).toBe(0);
+    expect(_.size([1])).toBe(1);
+    expect(_.size([1, 2])).toBe(2);
+  });
+
   it('should check get object keys', function() {
     var k1 = _.keys({ foo: '0', 'bar': '1' });
     expect(k1).toHaveLength(2);

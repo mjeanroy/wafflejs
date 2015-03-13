@@ -105,6 +105,11 @@ _ = {
     return __hasOwnProperty.call(object, key);
   },
 
+  // Return the number of values in the list.
+  size: function(array) {
+    return array.length;
+  },
+
   // Returns the first element of an array.
   // Passing n will return the first n elements of the array.
   first: function(array, n) {

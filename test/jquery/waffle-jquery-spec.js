@@ -26,10 +26,14 @@ describe('waffle-jquery', function() {
 
   var table;
   var fixtures;
+  var css;
 
   beforeEach(function() {
+    css = 'waffle-grid';
+
     table = document.createElement('table');
     table.setAttribute('id', 'waffle-table');
+    table.className = css;
 
     fixtures = document.createElement('div');
     fixtures.appendChild(table);
@@ -85,11 +89,13 @@ describe('waffle-jquery', function() {
 
   describe('once initialized', function() {
     var $table;
-    var grid;
+    var $grid;
 
     beforeEach(function() {
       $table = $('#waffle-table').waffle();
-      grid = $table.data('wafflejs');
+      $grid = $table.data('wafflejs');
+
+      jasmine.spyEach(Grid.prototype);
     });
 
     it('should have public functions of Grid', function() {
@@ -97,7 +103,7 @@ describe('waffle-jquery', function() {
       for (var i in Grid.prototype) {
       	if (typeof Grid.prototype[i] === 'function' && i.charAt(0) !== '$') {
           functions.push(i);
-          expect($table[i]).toBeAFunction();
+          expect($.fn.waffle[i]).toBeAFunction();
         }
       }
 
@@ -105,10 +111,22 @@ describe('waffle-jquery', function() {
       expect(functions).not.toBeEmpty();
     });
 
+    it('should render grid and chain result', function() {
+      var $result = $table.waffle('renderBody');
+      expect(Grid.prototype.renderBody).toHaveBeenCalledOnce();
+      expect($result).toBe($table);
+    });
+
+    it('should get grid data', function() {
+      var $result = $table.waffle('data');
+      expect(Grid.prototype.data).toHaveBeenCalledOnce();
+      expect($result).toEqual($grid.data());
+    });
+
     it('should not instantiate Grid twice', function() {
       var $table2 = $('#waffle-table').waffle();
       var grid2 = $table2.data('wafflejs');
-      expect(grid).toBe(grid2);
+      expect($grid).toBe(grid2);
     });
 
     it('should define global renderer', function() {
@@ -123,6 +141,72 @@ describe('waffle-jquery', function() {
       $.fn.waffle.addComparator('foo', comparator);
       expect($comparators.foo).toBe(comparator);
       delete $comparators.foo;
+    });
+
+    it('should call waffle methods using static methods', function() {
+      var $result = $.fn.waffle.renderBody($table);
+      expect(Grid.prototype.renderBody).toHaveBeenCalledOnce();
+      expect($result).toBe($table);
+    });
+  });
+
+  describe('with several matcher', function() {
+    var table2;
+    var $tables;
+
+    var $grid1;
+    var $grid2;
+
+    beforeEach(function() {
+      table2 = document.createElement('table');
+      table2.className = css;
+
+      fixtures.appendChild(table2);
+
+      $tables = $('.' + css).waffle();
+      $grid1 = $tables.eq(0).data('wafflejs');
+      $grid2 = $tables.eq(1).data('wafflejs');
+
+      jasmine.spyEach(Grid.prototype);
+    });
+
+    it('should have public functions of Grid', function() {
+      var functions = [];
+      for (var i in Grid.prototype) {
+        if (typeof Grid.prototype[i] === 'function' && i.charAt(0) !== '$') {
+          functions.push(i);
+          expect($.fn.waffle[i]).toBeAFunction();
+        }
+      }
+
+      // Check that at least one public function is tested
+      expect(functions).not.toBeEmpty();
+    });
+
+    it('should render grid and chain result', function() {
+      Grid.prototype.renderBody.calls.reset();
+
+      var $result = $tables.waffle('renderBody');
+
+      expect($grid1.renderBody).toHaveBeenCalled();
+      expect($grid2.renderBody).toHaveBeenCalled();
+      expect(Grid.prototype.renderBody.calls.count()).toBe(2);
+
+      expect($result).toBe($tables);
+    });
+
+    it('should get grid data', function() {
+      Grid.prototype.renderBody.calls.reset();
+
+      var $result = $tables.waffle('data');
+
+      expect(Grid.prototype.data).toHaveBeenCalled();
+      expect(Grid.prototype.data.calls.count()).toBe(2);
+
+      expect($result).not.toBe($tables);
+      expect($result.length).toBe(2);
+      expect($result[0]).toEqual($grid1.data());
+      expect($result[1]).toEqual($grid2.data());
     });
   });
 });

@@ -27,48 +27,76 @@
 /* global Grid */
 /* global Waffle */
 
+// Plugin name used to register grid with $.fn.data method
+var $PLUGIN_NAME = 'wafflejs';
+
 $.fn.waffle = function(options) {
 
-  var PLUGIN_NAME = 'wafflejs';
+  var retValue = this;
+  var args = [retValue].concat(_.rest(arguments));
 
-  var functions = _.functions(Grid.prototype);
-  var publicFunctions = _.filter(functions, function(fn) {
-    return fn.charAt(0) !== '$';
-  });
+  // Initialize plugin
+  if (_.isUndefined(options) || _.isObject(options)) {
+    this.each(function() {
+      var $this = $(this);
+      var $waffle = $this.data($PLUGIN_NAME);
 
-  _.forEach(publicFunctions, function(fn) {
+      if (!$waffle) {
+        var opts = $.extend({}, $.fn.waffle.options);
+        if (_.isObject(options)) {
+          opts = $.extend(opts, options);
+        }
 
-    this[fn] = function() {
-      var $waffle = $(this).data(PLUGIN_NAME);
-      if ($waffle) {
-        var result = $waffle[fn].apply($waffle, arguments);
-        return result instanceof Grid ? this : result;
+        $waffle = new Grid(this, opts);
+        $this.data($PLUGIN_NAME, $waffle);
       }
+    });
+  }
 
-      return this;
-    };
+  // Call method
+  else if (_.isString(options)) {
+    retValue = $.fn.waffle[options].apply(null, args) || retValue;
+  }
 
-  }, this);
-
-  return this.each(function() {
-    var $waffle = $(this).data(PLUGIN_NAME);
-    if (!$waffle) {
-      var opts = $.extend({}, $.fn.waffle.options);
-      if (_.isObject(options)) {
-        opts = $.extend(opts, options);
-      }
-
-      $waffle = new Grid(this, opts);
-    }
-
-    $(this).data(PLUGIN_NAME, $waffle);
-  });
-
+  // Chain or return effective result
+  return retValue;
 };
 
 // Default options
 $.fn.waffle.options = {
 };
+
+// Map public functions of grid
+
+var $publicFunctions = _.filter(_.functions(Grid.prototype), function(fn) {
+  return fn.charAt(0) !== '$';
+});
+
+_.forEach($publicFunctions, function(fn) {
+  $.fn.waffle[fn] = function($selection) {
+    var args = _.rest(arguments);
+    var retValue = [];
+
+    $selection.each(function() {
+      var $table = $(this);
+      var $grid = $table.data($PLUGIN_NAME);
+      if ($grid) {
+        var result = $grid[fn].apply($grid, args);
+        var chainResult = result instanceof Grid ? $selection : result;
+
+        if (chainResult === $selection) {
+          retValue[0] = chainResult;
+        } else {
+          retValue.push(chainResult);
+        }
+      }
+    });
+
+    return retValue.length === 1 ? retValue[0] : retValue;
+  };
+});
+
+// Map static waffle methods
 
 _.forEach(_.functions(Waffle), function(prop) {
   $.fn.waffle[prop] = Waffle[prop];

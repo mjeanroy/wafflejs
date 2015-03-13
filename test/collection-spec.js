@@ -59,7 +59,7 @@ describe('collection', function() {
     var collection = new Collection();
     expect(collection.length).toBe(0);
     expect(collection.$$map).toEqual({});
-    expect(collection.$$model).toBeUndefined();
+    expect(collection.$$model).toBe(Object);
     expect(collection.$$key).toEqual(jasmine.any(Function));
 
     var id = collection.$$key({ id: 1 });
@@ -73,7 +73,7 @@ describe('collection', function() {
 
     expect(collection.length).toBe(0);
     expect(collection.$$map).toEqual({});
-    expect(collection.$$model).toBeUndefined();
+    expect(collection.$$model).toBe(Object);
     expect(collection.$$key).toEqual(jasmine.any(Function));
 
     var name = collection.$$key({ id: 1, name: 'foo' });
@@ -138,6 +138,23 @@ describe('collection', function() {
   });
 
   describe('private methods', function() {
+    it('should convert object to an instance of model', function() {
+      var Model = function() {};
+
+      var m = new Model();
+      var o = { id: 1 };
+
+      var collection = new Collection([]);
+
+      expect(collection.$$toModel(o)).toBe(o);
+      expect(collection.$$toModel(m)).toBe(m);
+
+      collection.$$model = Model;
+
+      expect(collection.$$toModel(o)).toBeInstanceOf(Model);
+      expect(collection.$$toModel(m)).toBe(m);
+    });
+
     it('should put data at index and do not clean old index', function() {
       var array = [
         { id: 1, name: 'foo1' },

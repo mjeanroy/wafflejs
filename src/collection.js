@@ -77,7 +77,9 @@ var Collection = function(data, options) {
   var opts = options || {};
 
   this.$$key = opts.key || 'id';
-  this.$$model = opts.model;
+
+  // Use Object as a fallback since every object is already an instance of Object !
+  this.$$model = opts.model || Object;
 
   if (!_.isFunction(this.$$key)) {
     this.$$key = $parse(this.$$key);
@@ -95,6 +97,12 @@ var Collection = function(data, options) {
 };
 
 Collection.prototype = {
+  // Convert parameter to a model instance.
+  // Private function.
+  $$toModel: function(o) {
+    return o instanceof this.$$model ? o : new this.$$model(o);
+  },
+
   // Clean data from collection:
   // - Remove index where data is put
   // - Remove entry in map of entries
@@ -235,9 +243,7 @@ Collection.prototype = {
 
   $$add: function(models, start) {
     if (this.$$model) {
-      models = _.map(models, function(m) {
-        return m instanceof this.$$model ? m : new this.$$model(m);
-      }, this);
+      models = _.map(models, this.$$toModel, this);
     }
 
     var sort = !!this.$$sortFn;
@@ -341,7 +347,7 @@ Collection.prototype = {
 
     for (var i = 0; i < newSize; ++i) {
       var current = array[i];
-      var model = this.$$model ? new this.$$model(current) : current;
+      var model = this.$$toModel(current);
       var id = this.$$key(model);
       this[i] = model;
       this.$$map[id] = i;

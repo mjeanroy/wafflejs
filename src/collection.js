@@ -365,7 +365,7 @@ Collection.prototype = {
   // Get item by its key value
   byKey: function(key) {
     var index = this.indexByKey(key);
-    return index >= 0 ? this[index] : undefined;
+    return index >= 0 ? this.at(index) : undefined;
   },
 
   // Get index of item by its key
@@ -377,7 +377,7 @@ Collection.prototype = {
   // satisfies the provided testing function. Otherwise -1 is returned.
   findIndex: function(callback, ctx) {
     for (var i = 0, size = this.length; i < size; ++i) {
-      if (callback.call(ctx, this[i], i, this)) {
+      if (callback.call(ctx, this.at(i), i, this)) {
         return i;
       }
     }
@@ -397,7 +397,7 @@ Collection.prototype = {
     if (this.length > 0) {
       var array = [];
       for (var i = 0, size = this.length; i < size; ++i) {
-        array[i] = this[i];
+        array[i] = this.at(i);
         delete this[i];
       }
 
@@ -501,7 +501,7 @@ Collection.prototype = {
     // Use binary search
     while (low < high) {
       var mid = (low + high) >>> 1;
-      var current = this[mid];
+      var current = this.at(mid);
       if (this.$$sortFn(current, model) < 0) {
         low = mid + 1;
       } else {
@@ -516,7 +516,7 @@ Collection.prototype = {
       var inc = goUp ? 1 : -1;
       while (low && low < this.length && eq) {
         low += inc;
-        eq = this.$$sortFn(this[low], model) === 0;
+        eq = this.$$sortFn(this.at(low), model) === 0;
       }
 
       low = goUp ? low : low + 1;

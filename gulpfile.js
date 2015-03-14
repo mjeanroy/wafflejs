@@ -53,6 +53,14 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter("default"));
 });
 
+gulp.task('ie8', ['lint'], function() {
+  gulp.src('src/ie8/*')
+    .pipe(gulp.dest(BUILD_FOLDER + '/ie8'))
+    .pipe(uglify())
+    .pipe(rename('waffle-ie8.min.js'))
+    .pipe(gulp.dest(BUILD_FOLDER + '/ie8'));
+});
+
 var minifyPrefix = 'minify:';
 var concatPrefix = 'concat:';
 var tddPrefix = 'tdd:';
@@ -118,7 +126,7 @@ gulp.task('less', function() {
     .pipe(gulp.dest(BUILD_FOLDER));
 });
 
-gulp.task('build', ['lint', 'test', 'less', 'minify']);
+gulp.task('build', ['lint', 'test', 'less', 'ie8', 'minify']);
 gulp.task('default', ['build']);
 
 gulp.task('server', ['concat', 'less'], function () {

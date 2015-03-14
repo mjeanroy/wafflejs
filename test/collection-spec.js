@@ -740,8 +740,8 @@ describe('collection', function() {
 
         collection = new Collection([o1, o10, o5, o2]);
 
-        var sortFn = jasmine.createSpy('sortFn').and.callFake(function(o1, o2) {
-          return o1.id - o2.id
+        sortFn = jasmine.createSpy('sortFn').and.callFake(function(o1, o2) {
+          return o1.id - o2.id;
         });
 
         collection.sort(sortFn);

@@ -85,7 +85,9 @@ targets.forEach(function(target) {
       files: karmaFiles,
       singleRun: true,
       browsers: ['PhantomJS']
-    }, done);
+    }, function() {
+      done();
+    });
   });
 
   // Create concat task for each target

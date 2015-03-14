@@ -57,6 +57,7 @@ var Column = function(column) {
   this.field = column.field || this.id;
   this.css = column.css || this.id;
   this.escape = isUndefined(escape) ? true : !!escape;
+  this.width = column.width;
 
   this.sortable = isUndefined(sortable) ? true : !!sortable;
   this.asc = isUndefined(column.asc) ? null : !!column.asc;

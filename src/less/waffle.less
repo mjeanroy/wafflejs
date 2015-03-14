@@ -91,3 +91,69 @@ th {
     }
   }
 }
+
+/**
+ * --------------------------------------------------------------------------*\
+ * Fixed header for scroll handling.                                         *\
+ * http://jsfiddle.net/drueter/yqgB5/16/                                     *\
+ * by https://github.com/DavidRueter                                         *\
+ * --------------------------------------------------------------------------*\
+ */
+// Set table elements display to block
+table.waffle-fixedheader,
+table.waffle-fixedheader>thead,
+table.waffle-fixedheader>tbody,
+table.waffle-fixedheader>thead>tr,
+table.waffle-fixedheader>tbody>tr,
+table.waffle-fixedheader>thead>tr>th,
+table.waffle-fixedheader>tbody>tr>td {
+  display: block;
+  float: left;
+}
+
+
+table.waffle-fixedheader>thead>tr:after,
+table.waffle-fixedheader>tbody>tr:after  {
+  content: ' ';
+  display: block;
+  visibility: hidden;
+  clear: both;
+}
+
+// Add scroll
+table.waffle-fixedheader>tbody:not(:empty) {
+  overflow-y: scroll;
+}
+
+// Set <th> and <td> elements to float left
+table.waffle-fixedheader>thead>tr>th,
+table.waffle-fixedheader>tbody>tr>td {
+  word-wrap: break-word;
+  vertical-align: middle;
+}
+
+/**
+ * --------------------------------------------------------------------------*\
+ * Borders handling.                                                         *\
+ * --------------------------------------------------------------------------*\
+ */
+// hide table border-left to simulate collapse with th and td border-left if present
+table.waffle-fixedheader {
+  border-left: 0;
+}
+
+// hide first tbody row border-top to simulate collaps with th border-bottom
+table.waffle-fixedheader>tbody>tr:first-child>td {
+  border-top: 0;
+}
+
+// hide ths&tds border-right to simulate collaps with ths&tds border-left
+table.waffle-fixedheader>thead>tr>th,
+table.waffle-fixedheader>tbody>tr>td:not(:last-child) {
+  border-right: 0;
+}
+
+// hide tbody rows border-bottom to simulate collaps with above row border-bottom
+table.waffle-fixedheader>tbody>tr>td {
+  border-bottom: 0;
+}

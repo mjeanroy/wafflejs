@@ -2,6 +2,10 @@
  * Css used on sample files
  */
 
+body {
+  padding-top: 70px;
+}
+
 /* Override top arrow color. */
 th.waffle-sortable-asc:before {
    border-bottom: 5px solid blue;

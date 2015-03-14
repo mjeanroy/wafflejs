@@ -4,11 +4,7 @@ Waffle.addRenderer('email', function(value) {
   return '<a href="mailto:' + value + '">' + value + '</a>';
 });
 
-var grid = new Waffle.Grid(document.getElementById('waffle'), {
-  data: generatedData,
-  columns: columns,
-  sortBy: 'firstName'
-});
+var grid = new Waffle.Grid(document.getElementById('waffle'), options);
 
 document.getElementById('add').addEventListener('click', function() {
   grid.data().push(createFakePerson());

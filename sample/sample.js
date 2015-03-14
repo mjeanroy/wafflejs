@@ -37,3 +37,9 @@ var columns = [
   newColumn('userName', 'Login'),
   newColumn('email', 'Email', ['$lowercase', 'email'])
 ];
+
+var options = {
+  data: generatedData,
+  columns: columns,
+  sortBy: 'firstName'
+};

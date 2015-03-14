@@ -7,10 +7,10 @@ var uid = 0;
 var createFakePerson = function() {
   return {
     id: ++uid,
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    userName: faker.internet.userName(),
-    email: faker.internet.email()
+    firstName: faker.Name.firstName(),
+    lastName: faker.Name.lastName(),
+    userName: faker.Internet.userName(),
+    email: faker.Internet.email()
   };
 };
 

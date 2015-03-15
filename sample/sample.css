@@ -4,10 +4,10 @@
 
 /* Override top arrow color. */
 th.waffle-sortable-asc:before {
-   border-bottom: 5px solid blue;
+  border-bottom-color: blue;
 }
 
 /* Override bottom arrow color. */
 th.waffle-sortable-desc:before {
-  border-top: 5px solid blue;
+  border-top-color: blue;
 }

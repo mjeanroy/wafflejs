@@ -129,10 +129,10 @@ gulp.task('less', function() {
 gulp.task('build', ['lint', 'test', 'less', 'ie8', 'minify']);
 gulp.task('default', ['build']);
 
-gulp.task('server', ['concat', 'less'], function () {
+gulp.task('server', ['ie8', 'concat', 'less'], function () {
   server.run(['sample-server.js']);
 
-  gulp.watch(['src/**/*.js'], ['concat']);
+  gulp.watch(['src/**/*.js'], ['ie8', 'concat']);
   gulp.watch(['src/less/*.less'], ['less']);
   gulp.watch(['dist/**/*'], server.notify);
   gulp.watch(['sample/**/*'], server.notify);

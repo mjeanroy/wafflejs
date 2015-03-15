@@ -9,7 +9,6 @@ app.use(require('connect-livereload')());
 app.use('/', express.static('node_modules'));
 app.use('/', express.static('sample'));
 app.use('/', express.static('dist'));
-app.use('/', express.static('src'));
 
 var port = 8080;
 app.listen(port, function () {

@@ -53,14 +53,16 @@
   border-right: @size solid transparent;
   top: 50%;
   right: @size;
-  content: ' ';
+  content: '';
 
-  & when (@direction = 'top') {
+  & when (@direction = 'bottom') {
     border-top: @size solid black;
+    border-bottom: 0;
     margin-bottom: -@size;
   }
-  & when (@direction = 'bottom') {
+  & when (@direction = 'top') {
     border-bottom: @size solid black;
+    border-top: 0;
     margin-top: -@size;
   }
 }
@@ -80,14 +82,14 @@ th {
   // Css class added to column sorted in ascendant order
   &.waffle-sortable-asc {
     &:before {
-      .arrow(@arrow-size, 'bottom');
+      .arrow(@arrow-size, 'top');
     }
   }
 
   // Css class added to column sorted in descendant order
   &.waffle-sortable-desc {
     &:before {
-      .arrow(@arrow-size, 'top');
+      .arrow(@arrow-size, 'bottom');
     }
   }
 }

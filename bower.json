@@ -1,0 +1,24 @@
+{
+  "name": "wafflejs",
+  "version": "0.0.0",
+  "authors": [
+    "Mickael Jeanroy <mickael.jeanroy@gmail.com>"
+  ],
+  "description": "Javascript Datagrid with zero dependency",
+  "main": "dist/waffle-standalone.js",
+  "keywords": [
+    "jasmine",
+    "datagrid",
+    "jquery",
+    "angular.js"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "gulpfile.js"
+  ],
+  "dependencies": {}
+}

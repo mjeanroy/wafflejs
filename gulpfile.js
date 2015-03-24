@@ -34,7 +34,10 @@ var strip = require('gulp-strip-comments');
 var taskListing = require('gulp-task-listing');
 var uglify = require('gulp-uglify');
 var wrap = require('gulp-wrap');
-
+var git = require('gulp-git');
+var bump = require('gulp-bump');
+var gulpFilter = require('gulp-filter');
+var tag_version = require('gulp-tag-version');
 var karma = require('karma').server;
 
 var files = require('./waffle-files');
@@ -126,6 +129,31 @@ gulp.task('less', function() {
     .pipe(gulp.dest(BUILD_FOLDER));
 });
 
+['minor', 'major', 'patch'].forEach(function(level) {
+  gulp.task('release:' + level, ['build'], function(done) {
+    var packageJsonFilter = gulpFilter(function(file) {
+      return file.relative === 'package.json';
+    });
+
+    var distFilter = gulpFilter(function(file) {
+      return file.relative === 'dist';
+    });
+
+    return gulp.src(['./package.json', './bower.json', './dist/'])
+      .pipe(bump({type: level}))
+      .pipe(gulp.dest('./'))
+      .pipe(git.add({args: '-f'}))
+      .pipe(git.commit('release: release version'))
+      .pipe(packageJsonFilter)
+      .pipe(tag_version())
+      .pipe(packageJsonFilter.restore())
+      .pipe(distFilter)
+      .pipe(git.rm({args: '-r'}))
+      .pipe(git.commit('release: start new release'));
+  });
+});
+
+gulp.task('release', ['release:minor']);
 gulp.task('build', ['lint', 'test', 'less', 'ie8', 'minify']);
 gulp.task('default', ['build']);
 

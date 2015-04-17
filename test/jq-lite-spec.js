@@ -144,6 +144,23 @@ describe('$', function() {
       expect($div[0].innerHTML).toBe('foo bar');
     });
 
+    it('should add inline style to node', function() {
+      var $result = $div.css('max-height', '10px');
+      expect($result).toBe($div);
+      expect($div[0].style['max-height']).toEqual('10px');
+    });
+
+    it('should add inline styles defined as object to node', function() {
+      var $result = $div.css({
+        'max-height': '10px',
+        'max-width': '20px'
+      });
+
+      expect($result).toBe($div);
+      expect($div[0].style['max-height']).toEqual('10px');
+      expect($div[0].style['max-width']).toEqual('20px');
+    });
+
     it('should add class to node', function() {
       var $result = $div.addClass('foo');
       expect($result).toBe($div);

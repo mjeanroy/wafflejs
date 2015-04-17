@@ -156,6 +156,26 @@ $.prototype = {
     });
   },
 
+  // Add inline style
+  css: function(propertyName, value) {
+    var styles, keys;
+
+    if (_.isObject(propertyName)) {
+      styles = propertyName;
+      keys = _.keys(styles);
+    } else {
+      styles = {};
+      styles[propertyName] = value;
+      keys = [propertyName];
+    }
+
+    return this.$$each(function(node) {
+      _.forEach(keys, function(propertyName) {
+        node.style[propertyName] = styles[propertyName];
+      });
+    });
+  },
+
   // Add css class
   addClass: function(css) {
     return this.$$each(function(node) {

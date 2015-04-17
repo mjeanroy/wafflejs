@@ -119,7 +119,9 @@ _.forEach($publicFunctions, function(fn) {
 });
 
 // Map static waffle methods
-
 _.forEach(_.functions(Waffle), function(prop) {
   $.fn.waffle[prop] = Waffle[prop];
 });
+
+// Map options with $.fn.waffle.options
+$.fn.waffle.options = Grid.options;

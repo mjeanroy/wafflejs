@@ -8,7 +8,7 @@ angular.module('SampleApp', ['waffle'])
     });
   }])
 
-  .controller('SampleController', ['$scope', function($scope) {
+  .controller('SampleController', ['$scope', '$log', function($scope, $log) {
     $scope.options = {
       data: generatedData,
       columns: columns,
@@ -27,5 +27,25 @@ angular.module('SampleApp', ['waffle'])
 
     $scope.clear = function() {
       $scope.grid.data().clear();
+    };
+
+    $scope.onInitialized = function() {
+      $log.debug('Grid initialized');
+    };
+
+    $scope.onRendered = function() {
+      $log.debug('Grid rendered');
+    };
+
+    $scope.onAdded = function() {
+      $log.debug('New row added');
+    };
+
+    $scope.onRemoved = function() {
+      $log.debug('Row removed');
+    };
+
+    $scope.onSorted = function() {
+      $log.debug('Sort updated');
     };
   }]);

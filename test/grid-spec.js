@@ -30,10 +30,192 @@ describe('Grid', function() {
     fixtures = document.createElement('div');
     fixtures.setAttribute('id', 'fixtures');
     document.body.appendChild(fixtures);
+
+    jasmine.clock().install();
   });
 
   afterEach(function() {
     fixtures.parentNode.removeChild(fixtures);
+    jasmine.clock().uninstall();
+  });
+
+  it('should define custom options', function() {
+    expect(Grid.options).toEqual({
+      key: 'id',
+      events: {
+        onInitialized: _.noop,
+        onRendered: _.noop,
+        onAdded: _.noop,
+        onRemoved: _.noop,
+        onSorted: _.noop
+      }
+    });
+  });
+
+  it('should create grid using default options', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options).not.toBe(Grid.options);
+    expect(grid.options).toEqual(jasmine.objectContaining(Grid.options));
+  });
+
+  it('should create grid with custom options', function() {
+    var table = document.createElement('table');
+    var onInitialized = jasmine.createSpy('onInitialized');
+    var onAdded = jasmine.createSpy('onAdded');
+
+    var grid = new Grid(table, {
+      key: 'title',
+      events: {
+        onInitialized: onInitialized,
+        onAdded: onAdded
+      },
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options).not.toBe(Grid.options);
+    expect(grid.options).not.toEqual(jasmine.objectContaining(Grid.options));
+    expect(grid.options).toEqual(jasmine.objectContaining({
+      key: 'title',
+      events: {
+        onInitialized: onInitialized,
+        onRendered: _.noop,
+        onAdded: onAdded,
+        onRemoved: _.noop,
+        onSorted: _.noop
+      }
+    }));
+  });
+
+  it('should call onInitialized after initialization', function() {
+    var table = document.createElement('table');
+    var onInitialized = jasmine.createSpy('onInitialized');
+
+    var grid = new Grid(table, {
+      events: {
+        onInitialized: onInitialized
+      },
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(onInitialized).toHaveBeenCalledWith();
+  });
+
+  it('should call onRendered callbacks after body rendering', function() {
+    var table = document.createElement('table');
+    var onRendered = jasmine.createSpy('onRendered');
+
+    var grid = new Grid(table, {
+      events: {
+        onRendered: onRendered
+      },
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(onRendered).toHaveBeenCalledWith(grid.$data, jasmine.any(NodeList));
+  });
+
+  it('should call onAdded callback after data has been pushed', function() {
+    var table = document.createElement('table');
+    var onAdded = jasmine.createSpy('onAdded');
+
+    var grid = new Grid(table, {
+      events: {
+        onAdded: onAdded
+      },
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    var data = [
+      { id: 1, name: 'foo' },
+      { id: 2, name: 'bar' }
+    ];
+
+    expect(onAdded).not.toHaveBeenCalled();
+
+    grid.data().push(data[0], data[1]);
+    jasmine.clock().tick();
+
+    expect(onAdded).toHaveBeenCalledWith(
+        [grid.$data[0], grid.$data[1]],
+        [grid.$tbody[0].childNodes[0], grid.$tbody[0].childNodes[1]],
+        0
+    );
+  });
+
+  it('should call onRemoved callback after data has been removed', function() {
+    var table = document.createElement('table');
+    var onRemoved = jasmine.createSpy('onRemoved');
+
+    var data = [
+      { id: 1, name: 'foo' },
+      { id: 2, name: 'bar' }
+    ];
+
+    var grid = new Grid(table, {
+      events: {
+        onRemoved: onRemoved
+      },
+      data: data,
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(onRemoved).not.toHaveBeenCalled();
+
+    var nodes = [].slice.call(grid.$tbody[0].childNodes);
+    grid.data().pop();
+    jasmine.clock().tick();
+
+    expect(onRemoved).toHaveBeenCalledWith(
+        [data[1]],
+        [nodes[1]],
+        1
+    );
+  });
+
+  it('should call onSorted callback when grid is sorted', function() {
+    var table = document.createElement('table');
+    var onSorted = jasmine.createSpy('onSorted');
+    var grid = new Grid(table, {
+      events: {
+        onSorted: onSorted
+      },
+      data: [
+        { id: 1, name: 'foo' },
+        { id: 2, name: 'bar' }
+      ],
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(onSorted).not.toHaveBeenCalled();
+    grid.sortBy('id');
+    expect(onSorted).toHaveBeenCalledWith();
   });
 
   it('should retrieve thead and tbody element', function() {

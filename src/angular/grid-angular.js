@@ -49,6 +49,22 @@ waffleModule.directive('waffle', ['$parse', function($parse) {
       // Create setter for two ways binding
       var setter = $parse(attrs.waffleGrid).assign || _.noop;
 
+      // Map callbacks to dom attribute
+      var events = options.events = options.events || {};
+
+      _.forEach(_.keys(Grid.options.events), function(f) {
+        var fn = events[f];
+        events[f] = function() {
+          if (_.isFunction(fn)) {
+            fn.apply(this, arguments);
+          }
+
+          if (attrs[f]) {
+            scope.$eval(attrs[f]);
+          }
+        };
+      });
+
       // Create grid object
       var grid = Grid.create(table, options);
 

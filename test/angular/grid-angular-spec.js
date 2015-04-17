@@ -31,6 +31,14 @@ describe('waffle-jq-angular', function() {
   var options;
   var compileTable;
 
+  beforeEach(function() {
+    jasmine.clock().install();
+  });
+
+  afterEach(function() {
+    jasmine.clock().uninstall();
+  });
+
   beforeEach(inject(function(_$rootScope_, _$compile_) {
     $rootScope = _$rootScope_;
     $compile = _$compile_;
@@ -149,6 +157,36 @@ describe('waffle-jq-angular', function() {
 
     expect($scope.grid).toBeInstanceOf(Grid);
     expect($scope.grid.$data.toArray()).toEqual(options.data);
+  });
+
+  it('should trigger callbacks', function() {
+    $scope.grid = options;
+
+    $scope.onInitialized = jasmine.createSpy('onInitialized');
+    $scope.onRendered = jasmine.createSpy('onRendered');
+    $scope.onAdded = jasmine.createSpy('onAdded');
+
+    var table = '' +
+      '<table waffle waffle-grid="grid" ' +
+      '       on-initialized="onInitialized()" ' +
+      '       on-rendered="onRendered()" ' +
+      '       on-added="onAdded()" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.onInitialized).toHaveBeenCalled();
+    expect($scope.onRendered).toHaveBeenCalled();
+    expect($scope.onAdded).not.toHaveBeenCalled();
+
+    $scope.grid.data().push([
+      { id: 10, name: 'foo' }
+    ]);
+
+    jasmine.clock().tick();
+
+    expect($scope.onAdded).toHaveBeenCalled();
   });
 
   it('should destroy grid when scope is destroyed', function() {

@@ -100,6 +100,17 @@ _ = {
     });
   },
 
+  // Fill in undefined properties in object with the first value present in the default objects.
+  defaults: function(o1, o2) {
+    _.forEach(_.keys(o2), function(k) {
+      if (_.isUndefined(o1[k])) {
+        o1[k] = o2[k];
+      }
+    });
+
+    return o1;
+  },
+
   // Check if object has given key
   has: function(object, key) {
     return __hasOwnProperty.call(object, key);

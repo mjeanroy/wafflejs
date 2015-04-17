@@ -63,9 +63,17 @@ var Grid = function(table, options) {
     return new Grid(table, options);
   }
 
+  // Initialize options with default values
+  _.defaults(options.events || {}, Grid.options.events);
+  this.options = _.defaults(options || {}, Grid.options);
+
+  // Initialize main table
   this.$table = $(table);
 
-  this.$data = new Collection(options.data || []);
+  // Initialize data and columns
+  this.$data = new Collection(options.data || [], {
+    key: options.key
+  });
 
   this.$columns = new Collection(options.columns || [], {
     key: 'id',
@@ -80,6 +88,8 @@ var Grid = function(table, options) {
       .renderHeader()
       .sortBy(options.sortBy, false)
       .renderBody();
+
+  this.$$call('onInitialized');
 };
 
 // Create new grid
@@ -88,6 +98,11 @@ Grid.create = function(table, options) {
 };
 
 Grid.prototype = {
+  $$call: function(name) {
+    this.options.events[name].apply(this, _.rest(arguments));
+    return this;
+  },
+
   // Get data collection
   data: function() {
     return this.$data;
@@ -145,7 +160,7 @@ Grid.prototype = {
     // Clear changes since data is now synchronized with grid
     this.$data.$$changes = [];
 
-    return this;
+    return this.$$call('onRendered', this.$data, this.$tbody[0].childNodes);
   },
 
   // Sort grid by fields
@@ -206,7 +221,7 @@ Grid.prototype = {
       this.renderBody();
     }
 
-    return this;
+    return this.$$call('onSorted');
   },
 
   // Destroy datagrid
@@ -328,26 +343,39 @@ Grid.prototype = {
 
     var removedCount = change.removed.length;
     if (removedCount > 0) {
+      var removedNodes;
+
       if (index === 0 && removedCount === this.$tbody[0].childNodes.length) {
+        removedNodes = _.toArray(this.$tbody[0].childNodes);
         this.$tbody.empty();
       } else {
+        removedNodes = [];
         for (var k = 0; k < removedCount; ++k) {
           var removedIndex = k + index;
-          this.$tbody.children()
-                     .eq(removedIndex)
-                     .remove();
+          var $node = this.$tbody.children().eq(removedIndex);
+          removedNodes.push($node[0]);
+          $node.remove();
         }
       }
+
+      // Trigger callback
+      this.$$call('onRemoved', change.removed, removedNodes, index);
     }
 
     // Append new added data
     if (addedCount > 0) {
       var fragment = $doc.createFragment();
+      var added = [];
+      var addedNodes = [];
+
       for (var i = 0; i < addedCount; ++i) {
         var rowIdx = i + index;
         var data = collection.at(rowIdx);
-        var $tr = this.$$renderRow(data);
-        fragment.appendChild($tr);
+        var tr = this.$$renderRow(data);
+
+        addedNodes.push(tr);
+        added.push(data);
+        fragment.appendChild(tr);
       }
 
       if (index > 0) {
@@ -359,6 +387,9 @@ Grid.prototype = {
         // Add at the beginning
         this.$tbody.prepend(fragment);
       }
+
+      // Trigger callback
+      this.$$call('onAdded', added, addedNodes, index);
     }
 
     return this;
@@ -384,3 +415,14 @@ Grid.prototype = {
     return tr;
   }
 };
+
+// Define some default options
+Grid.options = {
+  key: 'id',
+  events: {}
+};
+
+// Initialize events with noop
+_.forEach(['onInitialized', 'onRendered', 'onAdded', 'onRemoved', 'onSorted'], function(name) {
+  Grid.options.events[name] = _.noop;
+});

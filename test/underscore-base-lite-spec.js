@@ -67,6 +67,28 @@ describe('_', function() {
   });
 
   it('should get all functions of given object', function() {
+    var o1 = {
+      foo: 'custom',
+      bar: undefined
+    };
+
+    var o2 = {
+      foo: 'foo',
+      bar: 'bar',
+      baz: 'baz'
+    };
+
+    var result = _.defaults(o1, o2);
+
+    expect(result).toBe(o1);
+    expect(result).toEqual({
+      foo: 'custom',
+      bar: 'bar',
+      baz: 'baz'
+    });
+  });
+
+  it('should get all functions of given object', function() {
     var obj = {
       foo: function() {},
       bar: function() {},

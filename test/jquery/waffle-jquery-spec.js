@@ -58,6 +58,10 @@ describe('waffle-jquery', function() {
     expect($.data(table, 'wafflejs')).toBeInstanceOf(Grid);
   });
 
+  it('should have default options', function() {
+    expect($.fn.waffle.options).toBe(Grid.options);
+  });
+
   it('should instantiate grid with options', function() {
   	var data = [
       { id: 1, name: 'foo' },

@@ -129,7 +129,7 @@ describe('Grid', function() {
       ]
     });
 
-    expect(onRendered).toHaveBeenCalledWith(grid.$data, jasmine.any(NodeList));
+    expect(onRendered).toHaveBeenCalledWith(grid.$data, []);
   });
 
   it('should call onAdded callback after data has been pushed', function() {

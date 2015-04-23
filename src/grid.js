@@ -98,8 +98,12 @@ Grid.create = function(table, options) {
 };
 
 Grid.prototype = {
-  $$call: function(name) {
-    this.options.events[name].apply(this, _.rest(arguments));
+  $$call: function(name, argFn) {
+    var fn = this.options.events[name];
+    if (fn !== _.noop) {
+      fn.apply(this, (argFn || _.noop).call(this));
+    }
+
     return this;
   },
 
@@ -160,7 +164,9 @@ Grid.prototype = {
     // Clear changes since data is now synchronized with grid
     this.$data.$$changes = [];
 
-    return this.$$call('onRendered', this.$data, this.$tbody[0].childNodes);
+    return this.$$call('onRendered', function() {
+      return [this.$data, _.toArray(this.$tbody[0].childNodes)];
+    });
   },
 
   // Sort grid by fields
@@ -359,7 +365,9 @@ Grid.prototype = {
       }
 
       // Trigger callback
-      this.$$call('onRemoved', change.removed, removedNodes, index);
+      this.$$call('onRemoved', function() {
+        return [change.removed, removedNodes, index];
+      });
     }
 
     // Append new added data
@@ -389,7 +397,9 @@ Grid.prototype = {
       }
 
       // Trigger callback
-      this.$$call('onAdded', added, addedNodes, index);
+      this.$$call('onAdded', function() {
+        return [added, addedNodes, index];
+      });
     }
 
     return this;

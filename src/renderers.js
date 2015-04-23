@@ -26,30 +26,37 @@
 /* global _ */
 /* exported $renderers */
 
-var $renderers = {
-  // Simple renderer that just return same value
-  $identity: _.identity,
+var $renderers = (function() {
+  // Turn value to a valid string
+  var toString = function(value) {
+    return (value == null ? '' : value).toString();
+  };
 
-  // Simple renderer that just return an empty value
-  // Could be used to renderer a cell with always an empty value
-  $empty: function() {
-    return '';
-  },
+  return {
+    // Simple renderer that just return same value
+    $identity: _.identity,
 
-  // Render a value as a lower case string
-  $lowercase: function(value) {
-    return (value == null ? '' : value).toString().toLowerCase();
-  },
+    // Simple renderer that just return an empty value
+    // Could be used to renderer a cell with always an empty value
+    $empty: function() {
+      return '';
+    },
 
-  // Render a value as an upper case string
-  $uppercase: function(value) {
-    return (value == null ? '' : value).toString().toUpperCase();
-  },
+    // Render a value as a lower case string
+    $lowercase: function(value) {
+      return toString(value).toLowerCase();
+    },
 
-  // Render a value as a capitalized string
-  // First character is changed to an uppercase character, other characters remains unchanged
-  $capitalize: function(value) {
-    var str = value == null ? '' : value.toString();
-    return str.charAt(0).toUpperCase() + str.substr(1);
-  }
-};
+    // Render a value as an upper case string
+    $uppercase: function(value) {
+      return toString(value).toUpperCase();
+    },
+
+    // Render a value as a capitalized string
+    // First character is changed to an uppercase character, other characters remains unchanged
+    $capitalize: function(value) {
+      var str = toString(value);
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  };
+})();

@@ -32,98 +32,106 @@
 /* global CSS_SORTABLE */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SORTABLE_ASC */
+/* exported Column */
 
-var __searchIn = function(value, dictionary, def) {
-  // If value is a string, search in given dictionary
-  if (_.isString(value)) {
-    value = dictionary[value];
-  }
+var Column = (function() {
 
-  // If it is not a function then use default value in dictionary
-  if (!_.isFunction(value)) {
-    value = dictionary[def];
-  }
-
-  return value;
-};
-
-var Column = function(column) {
   var isUndefined = _.isUndefined;
-  var escape = column.escape;
-  var sortable = column.sortable;
-
-  this.id = column.id;
-  this.title = column.title || '';
-  this.field = column.field || this.id;
-  this.css = column.css || this.id;
-  this.escape = isUndefined(escape) ? true : !!escape;
-
-  this.sortable = isUndefined(sortable) ? true : !!sortable;
-  this.asc = isUndefined(column.asc) ? null : !!column.asc;
-
-  // Sanitize input at construction
-  if (escape) {
-    this.title = $sanitize(this.title);
-  }
-
-  // Renderer can be defined as a custom function
-  // Or it could be defined a string which is a shortcut to a pre-built renderer
-  // If it is not a function, switch to default renderer
-  // TODO Is it really a good idea ? Should we allow more flexibility ?
   var defaultRenderer = '$identity';
-  var columnRenderer = column.renderer || defaultRenderer;
-  var renderers = _.isArray(columnRenderer) ? columnRenderer : [columnRenderer];
-  this.$renderer = _.map(renderers, function(r) {
-    return __searchIn(r, $renderers, defaultRenderer);
-  });
+  var defaultComparator = '$auto';
 
-  // Comparator can be defined as a custom function
-  // Or it could be defined a string which is a shortcut to a pre-built comparator
-  // If it is not a function, switch to default comparator
-  this.$comparator = __searchIn(column.comparator, $comparators, '$auto');
-
-  // Parse that will be used to extract data value from plain old javascript object
-  this.$parser = $parse(this.field);
-};
-
-Column.prototype = {
-  // Get css class to append to each cell
-  cssClasses: function() {
-    var classes = [this.css];
-
-    if (this.sortable) {
-      // Add css to display that column is sortable
-      classes.push(CSS_SORTABLE);
+  var lookup = function(value, dictionary, defaultValue) {
+    // If value is a string, search in given dictionary
+    if (_.isString(value)) {
+      value = dictionary[value];
     }
 
-    // Add css to display current sort
-    var asc = this.asc;
-    if (asc != null) {
-      classes.push(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC);
+    // If it is not a function then use default value in dictionary
+    if (!_.isFunction(value)) {
+      value = dictionary[defaultValue];
     }
 
-    return classes.join(' ');
-  },
+    return value;
+  };
 
-  // Render object using column settings
-  render: function(object) {
-    // Extract value
-    var field = this.field;
-    var value = object == null ? '' : this.$parser(object);
+  var Constructor = function(column) {
+    var escape = column.escape;
+    var sortable = column.sortable;
 
-    // Give extracted value as the first parameter
-    // Give object as the second parameter to allow more flexibility
-    // Give field to display as the third parameter to allow more flexibility
-    // Use '$renderers' as this context, this way renderers can be easy compose
-    var rendererValue = _.reduce(this.$renderer, function(val, r) {
-      return r.call($renderers, val, object, field);
-    }, value);
+    this.id = column.id;
+    this.title = column.title || '';
+    this.field = column.field || this.id;
+    this.css = column.css || this.id;
+    this.escape = isUndefined(escape) ? true : !!escape;
 
-    // If value is null or undefined, fallback to an empty string
-    if (rendererValue == null) {
-      return '';
+    this.sortable = isUndefined(sortable) ? true : !!sortable;
+    this.asc = isUndefined(column.asc) ? null : !!column.asc;
+
+    // Sanitize input at construction
+    if (escape) {
+      this.title = $sanitize(this.title);
     }
 
-    return this.escape ? $sanitize(rendererValue) : rendererValue;
-  }
-};
+    // Renderer can be defined as a custom function
+    // Or it could be defined a string which is a shortcut to a pre-built renderer
+    // If it is not a function, switch to default renderer
+    // TODO Is it really a good idea ? Should we allow more flexibility ?
+    var columnRenderer = column.renderer || defaultRenderer;
+    var renderers = _.isArray(columnRenderer) ? columnRenderer : [columnRenderer];
+    this.$renderer = _.map(renderers, function(r) {
+      return lookup(r, $renderers, defaultRenderer);
+    });
+
+    // Comparator can be defined as a custom function
+    // Or it could be defined a string which is a shortcut to a pre-built comparator
+    // If it is not a function, switch to default comparator
+    this.$comparator = lookup(column.comparator, $comparators, defaultComparator);
+
+    // Parse that will be used to extract data value from plain old javascript object
+    this.$parser = $parse(this.field);
+  };
+
+  Constructor.prototype = {
+    // Get css class to append to each cell
+    cssClasses: function() {
+      var classes = [this.css];
+
+      if (this.sortable) {
+        // Add css to display that column is sortable
+        classes.push(CSS_SORTABLE);
+      }
+
+      // Add css to display current sort
+      var asc = this.asc;
+      if (asc != null) {
+        classes.push(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC);
+      }
+
+      return classes.join(' ');
+    },
+
+    // Render object using column settings
+    render: function(object) {
+      // Extract value
+      var field = this.field;
+      var value = object == null ? '' : this.$parser(object);
+
+      // Give extracted value as the first parameter
+      // Give object as the second parameter to allow more flexibility
+      // Give field to display as the third parameter to allow more flexibility
+      // Use '$renderers' as this context, this way renderers can be easy compose
+      var rendererValue = _.reduce(this.$renderer, function(val, r) {
+        return r.call($renderers, val, object, field);
+      }, value);
+
+      // If value is null or undefined, fallback to an empty string
+      if (rendererValue == null) {
+        return '';
+      }
+
+      return this.escape ? $sanitize(rendererValue) : rendererValue;
+    }
+  };
+
+  return Constructor;
+})();

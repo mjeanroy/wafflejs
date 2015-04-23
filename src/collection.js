@@ -26,6 +26,7 @@
 
 /* global _ */
 /* global $parse */
+/* global HashMap */
 
 /**
  * Collection implementation that can be used
@@ -72,7 +73,7 @@ var $$callOnArray = function(fn, ctx, args) {
 };
 
 var Collection = function(data, options) {
-  this.$$map = {};
+  this.$$map = new HashMap();
 
   var opts = options || {};
 
@@ -113,7 +114,7 @@ Collection.prototype = {
   // Unset id entry in internal map of object index.
   // Private function.
   $$unsetId: function(id) {
-    delete this.$$map[id];
+    this.$$map.remove(id);
     return this;
   },
 
@@ -123,7 +124,7 @@ Collection.prototype = {
   // Private function.
   $$unset: function(obj) {
     var id = this.$$key(obj);
-    var idx = this.$$map[id];
+    var idx = this.$$map.get(id);
 
     if (idx != null) {
       this.$$unsetAt(idx)
@@ -139,7 +140,7 @@ Collection.prototype = {
   $$addAt: function(o, i) {
     this[i] = o;
     if (o != null) {
-      this.$$map[this.$$key(o)] = i;
+      this.$$map.put(this.$$key(o), i);
     }
 
     return this;
@@ -343,7 +344,8 @@ Collection.prototype = {
   $$replaceAll: function(array) {
     var oldSize = this.length;
     var newSize = array.length;
-    this.$$map = {};
+
+    this.$$map.clear();
 
     for (var i = 0; i < newSize; ++i) {
       this.$$addAt(this.$$toModel(array[i]), i);
@@ -372,7 +374,7 @@ Collection.prototype = {
 
   // Get index of item by its key
   indexByKey: function(key) {
-    return _.has(this.$$map, key) ? this.$$map[key] : -1;
+    return this.$$map.contains(key) ? this.$$map.get(key) : -1;
   },
 
   // Returns an index in the array, if an element in the array
@@ -403,7 +405,7 @@ Collection.prototype = {
         this.$$unsetAt(i);
       }
 
-      this.$$map = {};
+      this.$$map.clear();
       this.length = 0;
 
       this.trigger({

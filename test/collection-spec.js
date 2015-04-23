@@ -24,6 +24,18 @@
 
 describe('collection', function() {
 
+  var createMap = function(entries) {
+    var map = new HashMap();
+
+    for (var i in entries) {
+      if (entries.hasOwnProperty(i)) {
+        map.put(i, entries[i]);
+      }
+    }
+
+    return map;
+  };
+
   beforeEach(function() {
     jasmine.addCustomEqualityTester(function(actual, expected) {
       if (actual instanceof Collection && expected instanceof Collection) {
@@ -58,7 +70,7 @@ describe('collection', function() {
   it('should initialize empty collection', function() {
     var collection = new Collection();
     expect(collection.length).toBe(0);
-    expect(collection.$$map).toEqual({});
+    expect(collection.$$map).toEqual(createMap());
     expect(collection.$$model).toBe(Object);
     expect(collection.$$key).toEqual(jasmine.any(Function));
 
@@ -72,7 +84,7 @@ describe('collection', function() {
     });
 
     expect(collection.length).toBe(0);
-    expect(collection.$$map).toEqual({});
+    expect(collection.$$map).toEqual(createMap());
     expect(collection.$$model).toBe(Object);
     expect(collection.$$key).toEqual(jasmine.any(Function));
 
@@ -89,7 +101,7 @@ describe('collection', function() {
     });
 
     expect(collection.length).toBe(0);
-    expect(collection.$$map).toEqual({});
+    expect(collection.$$map).toEqual(createMap());
     expect(collection.$$model).toBe(Model);
     expect(collection.$$key).toEqual(jasmine.any(Function));
   });
@@ -105,8 +117,8 @@ describe('collection', function() {
     expect(collection[0]).toBe(o1);
     expect(collection[1]).toBe(o2);
 
-    expect(collection.$$map[1]).toBe(0);
-    expect(collection.$$map[2]).toBe(1);
+    expect(collection.$$map.get(1)).toBe(0);
+    expect(collection.$$map.get(2)).toBe(1);
   });
 
   it('should initialize collection with array and model constructor', function() {
@@ -130,11 +142,11 @@ describe('collection', function() {
     expect(collection[0]).toEqual(jasmine.objectContaining(o1));
     expect(collection[1]).toEqual(jasmine.objectContaining(o2));
 
-    expect(collection.$$map[1]).not.toBe(o1);
-    expect(collection.$$map[2]).not.toBe(o2);
+    expect(collection.$$map.get(1)).not.toBe(o1);
+    expect(collection.$$map.get(2)).not.toBe(o2);
 
-    expect(collection.$$map[1]).toBe(0);
-    expect(collection.$$map[2]).toBe(1);
+    expect(collection.$$map.get(1)).toBe(0);
+    expect(collection.$$map.get(2)).toBe(1);
   });
 
   describe('private methods', function() {
@@ -163,20 +175,20 @@ describe('collection', function() {
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1
-      });
+      }));
 
       var result = collection.$$unsetAt(0);
 
       expect(result).toBe(collection);
       expect(collection[0]).toBeUndefined();
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1
-      });
+      }));
     });
 
     it('should unset id entry', function() {
@@ -187,19 +199,19 @@ describe('collection', function() {
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1
-      });
+      }));
 
       var result = collection.$$unsetId(1);
 
       expect(result).toBe(collection);
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         2: 1
-      });
+      }));
     });
 
     it('should unset data entry', function() {
@@ -210,19 +222,19 @@ describe('collection', function() {
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1
-      });
+      }));
 
       var result = collection.$$unset(o1);
 
       expect(result).toBe(collection);
       expect(collection[0]).toBeUndefined();
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         2: 1
-      });
+      }));
     });
 
     it('should add data at given index', function() {
@@ -233,19 +245,19 @@ describe('collection', function() {
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBeUndefined();
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0
-      });
+      }));
 
       var result = collection.$$addAt(o2, 1);
 
       expect(result).toBe(collection);
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1
-      });
+      }));
     });
 
     it('should swap object', function() {
@@ -256,20 +268,20 @@ describe('collection', function() {
 
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1
-      });
+      }));
 
       var result = collection.$$swap(0, 1);
 
       expect(result).toBe(collection);
       expect(collection[0]).toBe(o2);
       expect(collection[1]).toBe(o1);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 1,
         2: 0
-      });
+      }));
     });
 
     it('should move to the right data from one index', function() {
@@ -289,11 +301,11 @@ describe('collection', function() {
       expect(collection[4]).toBeUndefined();
       expect(collection.length).toBe(4);
 
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 1,
         2: 2,
         3: 3
-      });
+      }));
     });
 
     it('should move data to the right from two index', function() {
@@ -313,11 +325,11 @@ describe('collection', function() {
       expect(collection[4]).toBe(o3);
       expect(collection.length).toBe(5);
 
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 2,
         2: 3,
         3: 4
-      });
+      }));
     });
 
     it('should move data to the right from three index', function() {
@@ -338,11 +350,11 @@ describe('collection', function() {
       expect(collection[5]).toBe(o3);
       expect(collection.length).toBe(6);
 
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 3,
         2: 4,
         3: 5
-      });
+      }));
     });
 
     it('should move data to the right from two index and start in the middle', function() {
@@ -362,11 +374,11 @@ describe('collection', function() {
       expect(collection[4]).toBe(o3);
       expect(collection.length).toBe(5);
 
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1,
         3: 4
-      });
+      }));
     });
 
     it('should move data to the left from one negative index', function() {
@@ -384,10 +396,10 @@ describe('collection', function() {
       expect(collection[3]).toBeUndefined();
       expect(collection.length).toBe(2);
 
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         2: 0,
         3: 1
-      });
+      }));
     });
 
     it('should move data from one negative index and start in the middle', function() {
@@ -405,10 +417,10 @@ describe('collection', function() {
       expect(collection[3]).toBeUndefined();
       expect(collection.length).toBe(2);
 
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         3: 1
-      });
+      }));
     });
 
     it('should move data from one negative index and start in the end', function() {
@@ -426,10 +438,10 @@ describe('collection', function() {
       expect(collection[2]).toBeUndefined();
       expect(collection.length).toBe(2);
 
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1
-      });
+      }));
     });
 
     it('should move data to the right if index is positive', function() {
@@ -489,11 +501,11 @@ describe('collection', function() {
       expect(collection[0]).toBe(array1[0]);
       expect(collection[1]).toBe(array1[1]);
       expect(collection[2]).toBe(array1[2]);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         3: 1,
         5: 2
-      });
+      }));
 
       collection.$$merge(array2);
 
@@ -503,14 +515,14 @@ describe('collection', function() {
       expect(collection[3]).toBe(array2[1]);
       expect(collection[4]).toBe(array1[2]);
       expect(collection[5]).toBe(array2[2]);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1,
         3: 2,
         4: 3,
         5: 4,
         6: 5
-      });
+      }));
     });
 
     it('should merge and append an array with a sorted collection', function() {
@@ -536,11 +548,11 @@ describe('collection', function() {
       expect(collection[0]).toBe(array1[0]);
       expect(collection[1]).toBe(array1[1]);
       expect(collection[2]).toBe(array1[2]);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1,
         3: 2
-      });
+      }));
 
       collection.$$merge(array2);
 
@@ -550,14 +562,14 @@ describe('collection', function() {
       expect(collection[3]).toBe(array2[0]);
       expect(collection[4]).toBe(array2[1]);
       expect(collection[5]).toBe(array2[2]);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1,
         3: 2,
         4: 3,
         5: 4,
         6: 5
-      });
+      }));
     });
 
     it('should merge and prepend an array with a sorted collection', function() {
@@ -583,11 +595,11 @@ describe('collection', function() {
       expect(collection[0]).toBe(array1[0]);
       expect(collection[1]).toBe(array1[1]);
       expect(collection[2]).toBe(array1[2]);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         4: 0,
         5: 1,
         6: 2
-      });
+      }));
 
       collection.$$merge(array2);
 
@@ -597,14 +609,14 @@ describe('collection', function() {
       expect(collection[3]).toBe(array1[0]);
       expect(collection[4]).toBe(array1[1]);
       expect(collection[5]).toBe(array1[2]);
-      expect(collection.$$map).toEqual({
+      expect(collection.$$map).toEqual(createMap({
         1: 0,
         2: 1,
         3: 2,
         4: 3,
         5: 4,
         6: 5
-      });
+      }));
     });
   });
 
@@ -651,9 +663,9 @@ describe('collection', function() {
         expect(collection.length).toBe(1);
         expect(collection[0]).toBe(o1);
         expect(collection[1]).toBeUndefined();
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 0
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith({
           addedCount: 0,
@@ -671,9 +683,9 @@ describe('collection', function() {
         expect(collection.length).toBe(1);
         expect(collection[0]).toBe(o2);
         expect(collection[1]).toBeUndefined();
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           2: 0
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith({
           addedCount: 0,
@@ -694,12 +706,12 @@ describe('collection', function() {
         expect(collection[2]).toBe(o0);
         expect(collection[3]).toBe(o3);
 
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 0,
           2: 1,
           0: 2,
           3: 3
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
           { type: 'splice', addedCount: 2, index: 2, removed: [], object: collection }
@@ -716,12 +728,12 @@ describe('collection', function() {
         expect(collection[2]).toBe(o1);
         expect(collection[3]).toBe(o2);
 
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 2,
           2: 3,
           3: 0,
           4: 1
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
           { type: 'splice', addedCount: 2, index: 0, removed: [], object: collection }
@@ -760,12 +772,12 @@ describe('collection', function() {
         expect(collection[2]).toBe(o5);
         expect(collection[3]).toBe(o10);
 
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 0,
           2: 1,
           5: 2,
           10: 3
-        });
+        }));
 
         expect(collection.$$sortFn).toBe(sortFn);
       });
@@ -828,14 +840,14 @@ describe('collection', function() {
         expect(collection[4]).toBe(o7);
         expect(collection[5]).toBe(o10);
 
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 0,
           2: 1,
           5: 2,
           6: 3,
           7: 4,
           10: 5
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
           { type: 'splice', addedCount: 2, index: 3, removed: [], object: collection }
@@ -858,14 +870,14 @@ describe('collection', function() {
         expect(collection[4]).toBe(o7);
         expect(collection[5]).toBe(o10);
 
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 0,
           2: 1,
           5: 2,
           6: 3,
           7: 4,
           10: 5
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
           { type: 'splice', addedCount: 2, index: 3, removed: [], object: collection }
@@ -888,14 +900,14 @@ describe('collection', function() {
         expect(collection[4]).toBe(o10);
         expect(collection[5]).toBe(o11);
 
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 0,
           2: 1,
           5: 2,
           6: 3,
           10: 4,
           11: 5
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
           { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection },
@@ -919,14 +931,14 @@ describe('collection', function() {
         expect(collection[4]).toBe(o10);
         expect(collection[5]).toBe(o11);
 
-        expect(collection.$$map).toEqual({
+        expect(collection.$$map).toEqual(createMap({
           1: 0,
           2: 1,
           5: 2,
           6: 3,
           10: 4,
           11: 5
-        });
+        }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
           { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection },
@@ -1154,12 +1166,12 @@ describe('collection', function() {
       expect(newCollection[1]).toBe(o2);
       expect(newCollection[2]).toBe(o3);
       expect(newCollection[3]).toBe(o4);
-      expect(newCollection.$$map).toEqual({
+      expect(newCollection.$$map).toEqual(createMap({
         1: 0,
         2: 1,
         3: 2,
         4: 3
-      });
+      }));
     });
 
     it('should slice entire collection', function() {
@@ -1184,7 +1196,7 @@ describe('collection', function() {
 
       collection.clear();
 
-      expect(collection.$$map).toEqual({});
+      expect(collection.$$map).toEqual(createMap());
       expect(collection.length).toBe(0);
       expect(collection[0]).toBeUndefined();
       expect(collection[1]).toBeUndefined();
@@ -1202,9 +1214,9 @@ describe('collection', function() {
       var results = collection.slice(0, 1);
       expect(results.length).toBe(1);
       expect(results[0]).toBe(collection[0]);
-      expect(results.$$map).toEqual({
+      expect(results.$$map).toEqual(createMap({
         1: 0
-      });
+      }));
     });
 
     it('should get index of element', function() {

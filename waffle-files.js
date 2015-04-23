@@ -33,6 +33,7 @@ var $files = {
   // Core source, mandatory source files appended to each target
   $core: [
     SRC + 'constants.js',
+    SRC + 'map.js',
     SRC + 'dom.js',
     SRC + 'collection.js',
     SRC + 'renderers.js',

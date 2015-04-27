@@ -22,10 +22,18 @@
  * SOFTWARE.
  */
 
+/* global _ */
 /* global Waffle */
 /* global waffleModule */
 
 // Define Waffle as a global service
-waffleModule.service('Waffle', function() {
-  return Waffle;
+waffleModule.provider('Waffle', function() {
+  this.$get = function() {
+    return Waffle;
+  };
+
+  // Map functions of Waffle to the provider
+  _.forEach(_.keys(Waffle), function(fn) {
+    this[fn] = Waffle[fn];
+  }, this);
 });

@@ -2,7 +2,7 @@
 
 angular.module('SampleApp', ['waffle'])
 
-  .run(['Waffle', function(Waffle) {
+  .config(['WaffleProvider', function(Waffle) {
     Waffle.addRenderer('email', function(value) {
       return '<a href="mailto:' + value + '">' + value + '</a>';
     });

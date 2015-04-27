@@ -32,5 +32,5 @@ describe('waffle-angular', function() {
     // Test will fail if module is not available because of beforeEach function
     expect(waffleModule).toBeDefined();
   });
- 
+
 });

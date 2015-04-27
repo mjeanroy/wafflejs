@@ -99,157 +99,135 @@ var Collection = (function() {
     }
   };
 
+  // == Private functions
+
+  // Unset data at given index.
+  var unsetAt = function(collection, idx) {
+    delete collection[idx];
+  };
+
+  // Unset id entry in internal map of object index.
+  var unsetId = function(collection, id) {
+    collection.$$map.remove(id);
+  };
+
+  // Unset data from collection
+  var unset = function(collection, obj) {
+    var id = collection.$$key(obj);
+    var idx = collection.$$map.get(id);
+    if (idx != null) {
+      unsetAt(collection, idx);
+      unsetId(collection, id);
+    }
+  };
+
+  // Convert parameter to a model instance.
+  var toModel = function(collection, o) {
+    return o instanceof collection.$$model ? o : new collection.$$model(o);
+  };
+
+  // Add entry at given index.
+  // Internal map is updated to keep track of indexes.
+  var put = function(collection, o, i) {
+    collection[i] = o;
+    if (o != null) {
+      collection.$$map.put(collection.$$key(o), i);
+    }
+  };
+
+  // Swap elements at given index
+  // Internal map is updated to keep track of indexes.
+  var swap = function(collection, i, j) {
+    var oj = collection.at(j);
+    var oi = collection.at(i);
+    put(collection, oi, j);
+    put(collection, oj, i);
+  };
+
+  // Move all elements of collection to the right.
+  // Start index is specified by first parameter.
+  // Number of move is specified by second parameter.
+  // Size of collection is automatically updated.
+  // Exemple:
+  //   [0, 1, 2] => shiftRight(0, 2) => [undefined, undefined, 0, 1, 2]
+  //   [0, 1, 2] => shiftRight(1, 2) => [0, undefined, undefined, 1, 2]
+  //   [0, 1, 2] => shiftRight(2, 2) => [0, 1, undefined, undefined, 2]
+  var shiftRight = function(collection, start, size) {
+    var absSize = Math.abs(size);
+
+    // Swap elements index by index
+    for (var i = collection.length - 1; i >= start; --i) {
+      swap(collection, i, i + absSize);
+    }
+
+    collection.length += absSize;
+  };
+
+  // Move all elements of collection to the left.
+  // Start index is specified by first parameter.
+  // Number of move is specified by second parameter.
+  // Size of collection is automatically updated.
+  // Exemple:
+  //   [0, 1, 2] => shiftLeft(0, 2) => [2]
+  //   [0, 1, 2] => shiftLeft(1, 1) => [0, 2]
+  //   [0, 1, 2] => shiftLeft(2, 1) => [0, 1]
+  var shiftLeft = function(collection, start, size) {
+    var absSize = Math.abs(size);
+    var oldLength = collection.length;
+    var newLength = oldLength - absSize;
+    var max = start + absSize;
+
+    // Swap elements index by index
+    for (var i = max; i < oldLength; ++i) {
+      swap(collection, i, i - absSize);
+    }
+
+    // Clean last elements of array
+    for (var k = newLength; k < oldLength; ++k) {
+      unset(collection, collection.at(k));
+    }
+
+    collection.length = newLength;
+  };
+
+  // Move elements of collection
+  // If size is positive, it will move elements to the right
+  // If size is negative, it will move elements to the left
+  var shift = function(collection, start, size) {
+    var fn = size > 0 ? shiftRight : shiftLeft;
+    return fn.call(this, collection, start, size);
+  };
+
+  // == Public prototype
+
   Constructor.prototype = {
-    // Convert parameter to a model instance.
-    // Private function.
-    $$toModel: function(o) {
-      return o instanceof this.$$model ? o : new this.$$model(o);
-    },
+    // TODO refactor and replace with a public function
+    $$replaceAll: function(array) {
+      var oldSize = this.length;
+      var newSize = array.length;
 
-    // Unset data at given index.
-    // Private function.
-    $$unsetAt: function(idx) {
-      delete this[idx];
-      return this;
-    },
+      this.$$map.clear();
 
-    // Unset id entry in internal map of object index.
-    // Private function.
-    $$unsetId: function(id) {
-      this.$$map.remove(id);
-      return this;
-    },
-
-    // Clean data from collection:
-    // - Remove index where data is put
-    // - Remove entry in map of entries
-    // Private function.
-    $$unset: function(obj) {
-      var id = this.$$key(obj);
-      var idx = this.$$map.get(id);
-
-      if (idx != null) {
-        this.$$unsetAt(idx)
-            .$$unsetId(id);
+      for (var i = 0; i < newSize; ++i) {
+        put(this, toModel(this, array[i]), i);
       }
+
+      for (; i < oldSize; ++i) {
+        unsetAt(this, i);
+      }
+
+      this.length = newSize;
 
       return this;
     },
 
-    // Add entry at given index.
-    // Internal map is updated to keep track of indexes.
-    // Private function.
-    $$addAt: function(o, i) {
-      this[i] = o;
-      if (o != null) {
-        this.$$map.put(this.$$key(o), i);
-      }
+    // TODO refactor and replace with a public function
+    $$add: function(data, start) {
+      var iteratee = function(m) {
+        return toModel(this, m);
+      };
 
-      return this;
-    },
-
-    // Swap elements at given index
-    // Internal map is updated to keep track of indexes.
-    // Private function.
-    $$swap: function(i, j) {
-      var oj = this.at(j);
-      return this.$$addAt(this.at(i), j)
-                 .$$addAt(oj, i);
-    },
-
-    // Merge collection and array to keep sort.
-    // This function should be call if and only a sort function
-    // is defined on collection.
-    // Array should be an array of model object if a constructor is defined
-    // in collection
-    // Should be a private function.
-    $$merge: function(array) {
-      var l1 = this.length - 1;
-      var l2 = array.length - 1;
-      var max = l1 + l2 + 1;
-
-      for (var i = l1, k = l2; k >= 0 && i >= 0;) {
-        var o1 = this[i];
-        var o2 = array[k];
-
-        if (this.$$sortFn(o1, o2) > 0) {
-          this.$$addAt(o1, max);
-          i--;
-        } else {
-          this.$$addAt(o2, max);
-          k--;
-        }
-
-        max--;
-      }
-
-      // Append remaining data from array
-      while (k >= 0) {
-        this.$$addAt(array[k--], max--);
-      }
-
-      // And update length
-      this.length += array.length;
-    },
-
-    // Move all elements of collection to the right.
-    // Start index is specified by first parameter.
-    // Number of move is specified by second parameter.
-    // Size of collection is automatically updated.
-    // Exemple:
-    //   [0, 1, 2] => $$move_righ(0, 2) => [undefined, undefined, 0, 1, 2]
-    //   [0, 1, 2] => $$move_righ(1, 2) => [0, undefined, undefined, 1, 2]
-    //   [0, 1, 2] => $$move_righ(2, 2) => [0, 1, undefined, undefined, 2]
-    // Should be a private function.
-    $$moveRight: function(start, size) {
-      size = Math.abs(size);
-
-      for (var i = this.length - 1; i >= start; --i) {
-        this.$$swap(i, i + size);
-      }
-
-      this.length += size;
-    },
-
-    // Move all elements of collection to the left.
-    // Start index is specified by first parameter.
-    // Number of move is specified by second parameter.
-    // Size of collection is automatically updated.
-    // Exemple:
-    //   [0, 1, 2] => $$move_left(0, 2) => [2]
-    //   [0, 1, 2] => $$move_left(1, 1) => [0, 2]
-    //   [0, 1, 2] => $$move_left(2, 1) => [0, 1]
-    // Should be a private function.
-    $$moveLeft: function(start, size) {
-      size = Math.abs(size);
-
-      var oldLength = this.length;
-      var newLength = oldLength - size;
-      var max = start + size;
-
-      for (var i = max; i < oldLength; ++i) {
-        this.$$swap(i, i - size);
-      }
-
-      // Clean last elements of array
-      for (var k = newLength; k < oldLength; ++k) {
-        this.$$unset(this.at(k));
-      }
-
-      this.length = newLength;
-    },
-
-    // Move elements of collection
-    // If size is positive, it will move elements to the right
-    // If size is negative, it will move elements to the left
-    // Should be a private function.
-    $$move: function(start, size, clean) {
-      this['$$move' + (size > 0 ? 'Right' : 'Left')](start, size, clean);
-    },
-
-    $$add: function(models, start) {
-      models = _.map(models, this.$$toModel, this);
-
+      var models = _.map(data, iteratee, this);
       var sort = !!this.$$sortFn;
       var goUp = start > 0;
       var oldLength = this.length;
@@ -260,7 +238,7 @@ var Collection = (function() {
       }
       else if (start < this.length) {
         // Otherwise, make space for new data
-        this.$$move(start, models.length);
+        shift(this, start, models.length);
       }
 
       var changes = [];
@@ -290,12 +268,12 @@ var Collection = (function() {
         var modelIdx;
         if (sort) {
           modelIdx = this.sortedIndex(model, goUp);
-          this.$$move(modelIdx, 1);
+          shift(this, modelIdx, 1);
         } else {
           modelIdx = start + i;
         }
 
-        this.$$addAt(model, modelIdx);
+        put(this, model, modelIdx);
 
         // Group changes
         if (!currentChange || modelIdx !== (oldIndex + 1)) {
@@ -313,6 +291,7 @@ var Collection = (function() {
       return this.length;
     },
 
+    // TODO refactor and replace with a public function
     $$removeAt: function(index) {
       if (this.isEmpty()) {
         return undefined;
@@ -324,13 +303,13 @@ var Collection = (function() {
       var id = this.$$key(value);
 
       if (index < lastIndex) {
-        this.$$move(index, -1);
+        shift(this, index, -1);
       }
 
       this.length = oldLength - 1;
 
-      this.$$unsetAt(lastIndex)
-          .$$unsetId(id);
+      unsetAt(this, lastIndex);
+      unsetId(this, id);
 
       this.trigger({
         addedCount: 0,
@@ -341,25 +320,6 @@ var Collection = (function() {
       });
 
       return value;
-    },
-
-    $$replaceAll: function(array) {
-      var oldSize = this.length;
-      var newSize = array.length;
-
-      this.$$map.clear();
-
-      for (var i = 0; i < newSize; ++i) {
-        this.$$addAt(this.$$toModel(array[i]), i);
-      }
-
-      for (; i < oldSize; ++i) {
-        this.$$unsetAt(i);
-      }
-
-      this.length = newSize;
-
-      return this;
     },
 
     // Get element at given index
@@ -404,7 +364,7 @@ var Collection = (function() {
         var array = [];
         for (var i = 0, size = this.length; i < size; ++i) {
           array[i] = this.at(i);
-          this.$$unsetAt(i);
+          unsetAt(this, i);
         }
 
         this.$$map.clear();

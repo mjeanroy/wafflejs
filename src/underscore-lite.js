@@ -23,7 +23,6 @@
  */
 
 /* global _ */
-/* global __toString */
 
 /**
  * Set of utilities.
@@ -34,67 +33,60 @@
  * replace this utility object by underscore or lodash.
  */
 
-// Returns undefined irrespective of the arguments passed to it
-_.noop = function() {};
+(function() {
+  var toString = Object.prototype.toString;
 
-// Returns the same value that is used as the argument
-_.identity = function(value) {
-  return value;
-};
+  // Returns undefined irrespective of the arguments passed to it
+  _.noop = function() {};
 
-// Check if given object is undefined
-_.isUndefined = function(obj) {
-  return typeof obj === 'undefined';
-};
+  // Returns the same value that is used as the argument
+  _.identity = function(value) {
+    return value;
+  };
 
-// Check if given object is a plain old javascript object
-_.isObject = function(obj) {
-  var type = typeof obj;
-  return type === 'function' || type === 'object' && !!obj;
-};
+  // Check if given object is undefined
+  _.isUndefined = function(obj) {
+    return typeof obj === 'undefined';
+  };
 
-// Check if given object is an array
-_.isArray = Array.isArray || function(obj) {
-  return __toString.call(obj) === '[object Array]';
-};
+  // Check if given object is a plain old javascript object
+  _.isObject = function(obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+  };
 
-  // Check if given object is a string
-_.isString = function(obj) {
-  return __toString.call(obj) === '[object String]';
-};
+    // Check that given object is a DOM element
+  _.isElement = function(obj) {
+    return !!(obj && obj.nodeType === 1);
+  };
 
-// Check if given object is a function
-_.isFunction = function(obj) {
-  return __toString.call(obj) === '[object Function]';
-};
+  // Clone array
+  _.clone = function(array) {
+    var newArray = [];
+    for (var i = 0, size = array.length; i < size; ++i) {
+      newArray[i] = array[i];
+    }
+    return newArray;
+  };
 
-// Check if given object is a number (including NaN)
-_.isNumber = function(obj) {
-  return __toString.call(obj) === '[object Number]';
-};
+  // Apply callback for each item of array
+  _.forEach = function(array, callback, ctx) {
+    for (var i = 0, size = array.length; i < size; ++i) {
+      callback.call(ctx, array[i], i, array);
+    }
+  };
 
-// Check if given object is a date
-_.isDate = function(obj) {
-  return __toString.call(obj) === '[object Date]';
-};
+  // Generic is<Type> functions
+  _.forEach(['String', 'Function', 'Number', 'Date', 'Array'], function(type) {
+    _['is' + type] = function(o) {
+      return toString.call(o) === '[object ' + type + ']';
+    };
+  });
 
-  // Check that given object is a DOM element
-_.isElement = function(obj) {
-  return !!(obj && obj.nodeType === 1);
-};
-
-// Clone array
-_.clone = function(array) {
-  var newArray = [];
-  for (var i = 0, size = array.length; i < size; ++i) {
-    newArray[i] = array[i];
+  // Optimisation: use native isArray if available
+  // http://jsperf.com/isarray-vs-instanceof/22
+  if (Array.isArray) {
+    _.isArray = Array.isArray;
   }
-  return newArray;
-};
 
-// Apply callback for each item of array
-_.forEach = function(array, callback, ctx) {
-  for (var i = 0, size = array.length; i < size; ++i) {
-    callback.call(ctx, array[i], i, array);
-  }
-};
+})();

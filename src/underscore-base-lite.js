@@ -34,311 +34,313 @@
  * replace this utility object by underscore or lodash.
  */
 
-var __ArrayProto = Array.prototype;
-var __slice = __ArrayProto.slice;
-var __ObjectProto = Object.prototype;
-var __nativeKeys = Object.keys;
-var __hasOwnProperty = __ObjectProto.hasOwnProperty;
-var __toString = __ObjectProto.toString;
-var __nativeBind = Function.prototype.bind;
+var _ = (function() {
 
-var _;
+  var ArrayProto = Array.prototype;
+  var nativeSlice = ArrayProto.slice;
+  var ObjectProto = Object.prototype;
+  var nativeKeys = Object.keys;
+  var hasOwnProperty = ObjectProto.hasOwnProperty;
+  var toString = ObjectProto.toString;
+  var nativeBind = Function.prototype.bind;
 
-var __callback = function(callback) {
-  if (_.isString(callback)) {
-    return function(value) {
-      return value[callback];
-    };
-  }
-
-  return callback;
-};
-
-var __group = function(behavior) {
-  return function(array, callback, ctx) {
-    var result = {};
-
-    var iteratee = __callback(callback);
-
-    for (var i = 0, size = array.length; i < size; ++i) {
-      var key = iteratee.call(ctx, array[i], i, array);
-      behavior(result, array[i], key);
+  var callbackWrapper = function(callback) {
+    if (_.isString(callback)) {
+      return function(value) {
+        return value[callback];
+      };
     }
 
-    return result;
+    return callback;
   };
-};
 
-_ = {
-  // Check if given object is null
-  isNull: function(obj) {
-    return obj === null;
-  },
+  var groupByWrapper = function(behavior) {
+    return function(array, callback, ctx) {
+      var result = {};
 
-  // Check if given object is a boolean
-  isBoolean: function(obj) {
-    return obj === true || obj === false || __toString.call(obj) === '[object Boolean]';
-  },
+      var iteratee = callbackWrapper(callback);
 
-  // Bind a function to an object, meaning that whenever the function is called,
-  // the value of this will be the object.
-  bind: function(fn, ctx) {
-    if (__nativeBind) {
-      return fn.bind(ctx);
-    }
+      for (var i = 0, size = array.length; i < size; ++i) {
+        var key = iteratee.call(ctx, array[i], i, array);
+        behavior(result, array[i], key);
+      }
 
-    return function() {
-      return fn.apply(ctx, arguments);
+      return result;
     };
-  },
+  };
 
-  // Creates a real Array from the list (anything that can be iterated over).
-  // Useful for transmuting the arguments object.
-  toArray: function(obj) {
-    return _.map(obj, function(value) {
-      return value;
-    });
-  },
+  return {
+    // Check if given object is null
+    isNull: function(obj) {
+      return obj === null;
+    },
 
-  // Fill in undefined properties in object with the first value present in the default objects.
-  defaults: function(o1, o2) {
-    _.forEach(_.keys(o2), function(k) {
-      if (_.isUndefined(o1[k])) {
-        o1[k] = o2[k];
+    // Check if given object is a boolean
+    isBoolean: function(obj) {
+      return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
+    },
+
+    // Bind a function to an object, meaning that whenever the function is called,
+    // the value of this will be the object.
+    bind: function(fn, ctx) {
+      if (nativeBind) {
+        return fn.bind(ctx);
       }
-    });
 
-    return o1;
-  },
+      return function() {
+        return fn.apply(ctx, arguments);
+      };
+    },
 
-  // Check if object has given key
-  has: function(object, key) {
-    return __hasOwnProperty.call(object, key);
-  },
+    // Creates a real Array from the list (anything that can be iterated over).
+    // Useful for transmuting the arguments object.
+    toArray: function(obj) {
+      return _.map(obj, function(value) {
+        return value;
+      });
+    },
 
-  // Return the number of values in the list.
-  size: function(array) {
-    return array.length;
-  },
+    // Fill in undefined properties in object with the first value present in the default objects.
+    defaults: function(o1, o2) {
+      _.forEach(_.keys(o2), function(k) {
+        if (_.isUndefined(o1[k])) {
+          o1[k] = o2[k];
+        }
+      });
 
-  // Returns the first element of an array.
-  // Passing n will return the first n elements of the array.
-  first: function(array, n) {
-    if (n == null) {
-      return array[0];
-    }
-    return __slice.call(array, 0, n);
-  },
+      return o1;
+    },
 
-  // Returns the last element of an array.
-  // Passing n will return the last n elements of the array.
-  last: function(array, n) {
-    if (n == null) {
-      return array[array.length - 1];
-    }
-    return __slice.call(array, array.length - n, array.length);
-  },
+    // Check if object has given key
+    has: function(object, key) {
+      return hasOwnProperty.call(object, key);
+    },
 
-  // Returns the rest of the elements in an array.
-  // Pass an index to return the values of the array from that index onward.
-  rest: function(array, index) {
-    var start = arguments.length > 1 ? index : 1;
-    return __slice.call(array, start, array.length);
-  },
+    // Return the number of values in the list.
+    size: function(array) {
+      return array.length;
+    },
 
-  // Returns the rest of the elements in an array.
-  // Pass an index to return the values of the array from that index onward.
-  initial: function(array, index) {
-    var length = array.length;
-    var end = arguments.length > 1 ? length - index : length - 1;
-    return __slice.call(array, 0, end);
-  },
-
-  // Return the position of the first occurrence of an item in an array, or -1
-  // if the item is not included in the array.
-  indexOf: function(array, item) {
-    for (var i = 0, size = array.length; i < size; ++i) {
-      if (array[i] === item) {
-        return i;
+    // Returns the first element of an array.
+    // Passing n will return the first n elements of the array.
+    first: function(array, n) {
+      if (n == null) {
+        return array[0];
       }
-    }
-    return -1;
-  },
+      return nativeSlice.call(array, 0, n);
+    },
 
-  // Return the position of the last occurrence of an item in an array, or -1
-  // if the item is not included in the array.
-  lastIndexOf: function(array, item) {
-    for (var i = array.length - 1; i >= 0; --i) {
-      if (array[i] === item) {
-        return i;
+    // Returns the last element of an array.
+    // Passing n will return the last n elements of the array.
+    last: function(array, n) {
+      if (n == null) {
+        return array[array.length - 1];
       }
-    }
-    return -1;
-  },
+      return nativeSlice.call(array, array.length - n, array.length);
+    },
 
-  // Get all keys of object
-  keys: function(object) {
-    if (!_.isObject(object)) {
-      return [];
-    }
+    // Returns the rest of the elements in an array.
+    // Pass an index to return the values of the array from that index onward.
+    rest: function(array, index) {
+      var start = arguments.length > 1 ? index : 1;
+      return nativeSlice.call(array, start, array.length);
+    },
 
-    if (__nativeKeys) {
-      return __nativeKeys(object);
-    }
+    // Returns the rest of the elements in an array.
+    // Pass an index to return the values of the array from that index onward.
+    initial: function(array, index) {
+      var length = array.length;
+      var end = arguments.length > 1 ? length - index : length - 1;
+      return nativeSlice.call(array, 0, end);
+    },
 
-    var keys = [];
-    for (var key in object) {
-      if (_.has(object, key)) {
-        keys.push(key);
+    // Return the position of the first occurrence of an item in an array, or -1
+    // if the item is not included in the array.
+    indexOf: function(array, item) {
+      for (var i = 0, size = array.length; i < size; ++i) {
+        if (array[i] === item) {
+          return i;
+        }
       }
-    }
+      return -1;
+    },
 
-    return keys;
-  },
-
-  // Returns a sorted list of the names of every method in an object.
-  functions: function(obj) {
-    var names = [];
-    for (var key in obj) {
-      if (_.isFunction(obj[key])) {
-        names.push(key);
+    // Return the position of the last occurrence of an item in an array, or -1
+    // if the item is not included in the array.
+    lastIndexOf: function(array, item) {
+      for (var i = array.length - 1; i >= 0; --i) {
+        if (array[i] === item) {
+          return i;
+        }
       }
-    }
-    return names.sort();
-  },
+      return -1;
+    },
 
-  // Map array to a new array using callback results
-  map: function(array, callback, ctx) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
-      newArray[i] = callback.call(ctx, array[i], i, array);
-    }
-    return newArray;
-  },
-
-  // Tests whether all elements in the array pass the test
-  // implemented by the provided function.
-  every: function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
-      if (!callback.call(ctx, array[i], i, array)) {
-        return false;
+    // Get all keys of object
+    keys: function(object) {
+      if (!_.isObject(object)) {
+        return [];
       }
-    }
-    return true;
-  },
 
-  // Tests whether some element in the array passes the test
-  // implemented by the provided function.
-  some: function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
-      if (callback.call(ctx, array[i], i, array)) {
-        return true;
+      if (nativeKeys) {
+        return nativeKeys(object);
       }
-    }
-    return false;
-  },
 
-  // Creates a new array with all elements that pass
-  // the test implemented by the provided function.
-  filter: function(array, callback, ctx) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
-      if (callback.call(ctx, array[i], i, array)) {
-        newArray.push(array[i]);
+      var keys = [];
+      for (var key in object) {
+        if (_.has(object, key)) {
+          keys.push(key);
+        }
       }
-    }
-    return newArray;
-  },
 
-  // Returns the values in list without the elements that the truth test (predicate) passes. 
-  reject: function(array, callback, ctx) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
-      if (!callback.call(ctx, array[i], i, array)) {
-        newArray.push(array[i]);
+      return keys;
+    },
+
+    // Returns a sorted list of the names of every method in an object.
+    functions: function(obj) {
+      var names = [];
+      for (var key in obj) {
+        if (_.isFunction(obj[key])) {
+          names.push(key);
+        }
       }
-    }
-    return newArray;
-  },
+      return names.sort();
+    },
 
-  // Applies a function against an accumulator and each value
-  // of the array (from left-to-right) has to reduce it to a single value.
-  reduce: function(array, callback, initialValue) {
-    var nbArgs = arguments.length;
-    var step = nbArgs === 3 ? initialValue : array[0];
-    var size = array.length;
-    var i = nbArgs === 3 ? 0 : 1;
-
-    for (; i < size; ++i) {
-      step = callback.call(null, step, array[i], i, array);
-    }
-
-    return step;
-  },
-
-  // Applies a function against an accumulator and each value
-  // of the array (from right-to-left) has to reduce it to a single value.
-  reduceRight: function(array, callback, initialValue) {
-    var nbArgs = arguments.length;
-    var size = array.length - 1;
-    var step = nbArgs === 3 ? initialValue : array[size];
-    var i = nbArgs === 3 ? size : size - 1;
-
-    for (; i >= 0; --i) {
-      step = callback.call(null, step, array[i], i, array);
-    }
-
-    return step;
-  },
-
-  // Looks through each value in the list, returning the first one that
-  // passes a truth test (predicate), or undefined if no value passes the test.
-  // The function returns as soon as it finds an acceptable element, and doesn't traverse the entire list.
-  find: function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
-      if (callback.call(ctx, array[i], i, array)) {
-        return array[i];
+    // Map array to a new array using callback results
+    map: function(array, callback, ctx) {
+      var newArray = [];
+      for (var i = 0, size = array.length; i < size; ++i) {
+        newArray[i] = callback.call(ctx, array[i], i, array);
       }
-    }
-    return undefined;
-  },
+      return newArray;
+    },
 
-  // Split a collection into two arrays: one whose elements all
-  // satisfy the given predicate, and one whose elements all
-  // do not satisfy the predicate.
-  partition: function(array, iteratee) {
-    var pass = [];
-    var fail = [];
-
-    for (var i = 0, size = array.length; i < size; ++i) {
-      if (iteratee.call(null, array[i], i, array)) {
-        pass.push(array[i]);
-      } else {
-        fail.push(array[i]);
+    // Tests whether all elements in the array pass the test
+    // implemented by the provided function.
+    every: function(array, callback, ctx) {
+      for (var i = 0, size = array.length; i < size; ++i) {
+        if (!callback.call(ctx, array[i], i, array)) {
+          return false;
+        }
       }
-    }
+      return true;
+    },
 
-    return [pass, fail];
-  },
+    // Tests whether some element in the array passes the test
+    // implemented by the provided function.
+    some: function(array, callback, ctx) {
+      for (var i = 0, size = array.length; i < size; ++i) {
+        if (callback.call(ctx, array[i], i, array)) {
+          return true;
+        }
+      }
+      return false;
+    },
 
-  // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
-  // returns an object with an index of each item.
-  indexBy: __group(function(result, value, key) {
-    result[key] = value;
-  }),
+    // Creates a new array with all elements that pass
+    // the test implemented by the provided function.
+    filter: function(array, callback, ctx) {
+      var newArray = [];
+      for (var i = 0, size = array.length; i < size; ++i) {
+        if (callback.call(ctx, array[i], i, array)) {
+          newArray.push(array[i]);
+        }
+      }
+      return newArray;
+    },
 
-  // Splits a collection into sets, grouped by the result of
-  // running each value through iteratee.
-  // If iteratee is a string instead of a function, groups by the property
-  // named by iteratee on each of the values.
-  groupBy: __group(function(result, value, key) {
-    (result[key] = result[key] || []).push(value);
-  }),
+    // Returns the values in list without the elements that the truth test (predicate) passes. 
+    reject: function(array, callback, ctx) {
+      var newArray = [];
+      for (var i = 0, size = array.length; i < size; ++i) {
+        if (!callback.call(ctx, array[i], i, array)) {
+          newArray.push(array[i]);
+        }
+      }
+      return newArray;
+    },
 
-  // Sorts a list into groups and returns a count for the number of objects
-  // in each group. Similar to groupBy, but instead of returning a list of values,
-  // returns a count for the number of values in that group.
-  countBy: __group(function(result, value, key) {
-    result[key] = (result[key] || 0) + 1;
-  })
-};
+    // Applies a function against an accumulator and each value
+    // of the array (from left-to-right) has to reduce it to a single value.
+    reduce: function(array, callback, initialValue) {
+      var nbArgs = arguments.length;
+      var step = nbArgs === 3 ? initialValue : array[0];
+      var size = array.length;
+      var i = nbArgs === 3 ? 0 : 1;
+
+      for (; i < size; ++i) {
+        step = callback.call(null, step, array[i], i, array);
+      }
+
+      return step;
+    },
+
+    // Applies a function against an accumulator and each value
+    // of the array (from right-to-left) has to reduce it to a single value.
+    reduceRight: function(array, callback, initialValue) {
+      var nbArgs = arguments.length;
+      var size = array.length - 1;
+      var step = nbArgs === 3 ? initialValue : array[size];
+      var i = nbArgs === 3 ? size : size - 1;
+
+      for (; i >= 0; --i) {
+        step = callback.call(null, step, array[i], i, array);
+      }
+
+      return step;
+    },
+
+    // Looks through each value in the list, returning the first one that
+    // passes a truth test (predicate), or undefined if no value passes the test.
+    // The function returns as soon as it finds an acceptable element, and doesn't traverse the entire list.
+    find: function(array, callback, ctx) {
+      for (var i = 0, size = array.length; i < size; ++i) {
+        if (callback.call(ctx, array[i], i, array)) {
+          return array[i];
+        }
+      }
+      return undefined;
+    },
+
+    // Split a collection into two arrays: one whose elements all
+    // satisfy the given predicate, and one whose elements all
+    // do not satisfy the predicate.
+    partition: function(array, iteratee) {
+      var pass = [];
+      var fail = [];
+
+      for (var i = 0, size = array.length; i < size; ++i) {
+        if (iteratee.call(null, array[i], i, array)) {
+          pass.push(array[i]);
+        } else {
+          fail.push(array[i]);
+        }
+      }
+
+      return [pass, fail];
+    },
+
+    // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
+    // returns an object with an index of each item.
+    indexBy: groupByWrapper(function(result, value, key) {
+      result[key] = value;
+    }),
+
+    // Splits a collection into sets, grouped by the result of
+    // running each value through iteratee.
+    // If iteratee is a string instead of a function, groups by the property
+    // named by iteratee on each of the values.
+    groupBy: groupByWrapper(function(result, value, key) {
+      (result[key] = result[key] || []).push(value);
+    }),
+
+    // Sorts a list into groups and returns a count for the number of objects
+    // in each group. Similar to groupBy, but instead of returning a list of values,
+    // returns a count for the number of values in that group.
+    countBy: groupByWrapper(function(result, value, key) {
+      result[key] = (result[key] || 0) + 1;
+    })
+  };
+
+})();

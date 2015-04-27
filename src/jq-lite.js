@@ -22,216 +22,219 @@
  * SOFTWARE.
  */
 
+/*jshint newcap: false */
+
 /* global _ */
+/* exported $ */
 
-var $ = function(nodes) {
-  if (nodes instanceof $) {
-  	return nodes;
-  }
+var $ = (function() {
 
-  if (!(this instanceof $)) {
-    return new $(nodes);
-  }
-
-  if (_.isElement(nodes)) {
-    nodes = [nodes];
-  }
-
-  _.forEach(nodes, function(node, idx) {
-    this[idx] = node;
-  }, this);
-
-  this.length = nodes.length;
-
-  // Store internal event listeners binded
-  // with addEventListener or attachEvent
-  // This will be used to remove event listeners
-  this.$$events = [];
-};
-
-$.prototype = {
-  $$each: function(fn) {
-    for (var i = 0; i < this.length; ++i) {
-      fn.call(this, this[i], i, this);
+  var jqLite = function(nodes) {
+    if (nodes instanceof jqLite) {
+      return nodes;
     }
 
-    return this;
-  },
+    if (!(this instanceof jqLite)) {
+      return new jqLite(nodes);
+    }
+
+    if (_.isElement(nodes)) {
+      nodes = [nodes];
+    }
+
+    _.forEach(nodes, function(node, idx) {
+      this[idx] = node;
+    }, this);
+
+    this.length = nodes.length;
+
+    // Store internal event listeners binded
+    // with addEventListener or attachEvent
+    // This will be used to remove event listeners
+    this.$$events = [];
+  };
 
   // Bind event
-  // This is a cross browser implementation
-  $$bind: function(event, callback, node) {
-    // Should we support IE < 9 ?
+  var bind = function($o, event, callback, node) {
     node.addEventListener(event, callback);
 
     // Track event
-    this.$$events.push({
+    $o.$$events.push({
       event: event,
       callback: callback,
       node: node
     });
-  },
+  };
 
-  // Bind event
-  // This is a cross browser implementation
-  $$unbind: function(event, callback, node) {
-    // Should we support IE < 9 ?
+  // Unbind event
+  var unbind = function($o, event, callback, node) {
     node.removeEventListener(event, callback);
-  },
+  };
 
-  // Get the children of each element in the set of matched elements.
-  children: function() {
-    var children = [];
+  // Iterate over all internal elements applying given function
+  // and return current context value
+  var iterate = function($o, fn) {
+    _.forEach($o, fn, $o);
+    return $o;
+  };
 
-    this.$$each(function(node) {
-      _.forEach(node.childNodes, function(childNode) {
-        if (childNode.nodeType === 1) {
-          children.push(childNode);
+  jqLite.prototype = {
+    // Get the children of each element in the set of matched elements.
+    children: function() {
+      var children = [];
+
+      iterate(this, function(node) {
+        _.forEach(node.childNodes, function(childNode) {
+          if (childNode.nodeType === 1) {
+            children.push(childNode);
+          }
+        });
+      });
+
+      return new jqLite(children);
+    },
+
+    // Reduce the set of matched elements to the one at the specified index.
+    eq: function(index) {
+      return new jqLite(this[index]);
+    },
+
+    // Attach event
+    on: function(event, callback) {
+      return iterate(this, function(node) {
+        bind(this, event, callback, node);
+      });
+    },
+
+    // Detach events
+    off: function() {
+      for (var i = 0, size = this.$$events.length; i < size; ++i) {
+        var e = this.$$events[i];
+        unbind(this, e.event, e.callback, e.node);
+      }
+
+      this.$$events = [];
+    },
+
+    // Clear node
+    empty: function() {
+      return iterate(this, function(node) {
+        while (node.firstChild) {
+          node.removeChild(node.firstChild);
         }
       });
-    });
+    },
 
-    return $(children);
-  },
+    // Remove node from DOM
+    remove: function() {
+      return iterate(this, function(node) {
+        node.parentNode.removeChild(node);
+      });
+    },
 
-  // Reduce the set of matched elements to the one at the specified index.
-  eq: function(index) {
-    return $(this[index]);
-  },
+    // Append node
+    append: function(childNode) {
+      return iterate(this, function(node, idx, collection) {
+        var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+        node.appendChild(clone);
+      });
+    },
 
-  // Attach event
-  on: function(event, callback) {
-    return this.$$each(function(node) {
-      this.$$bind(event, callback, node);
-    });
-  },
+    // Prepend node
+    prepend: function(childNode) {
+      return iterate(this, function(node, idx, collection) {
+        var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+        node.insertBefore(clone, node.childNodes[0]);
+      });
+    },
 
-  // Detach events
-  off: function() {
-    for (var i = 0, size = this.$$events.length; i < size; ++i) {
-      var e = this.$$events[i];
-      this.$$unbind(e.event, e.callback, e.node);
-    }
+    // Append node after element
+    after: function(childNode) {
+      return iterate(this, function(node, idx, collection) {
+        var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+        node.parentNode.insertBefore(clone, node.nextSibling);
+      });
+    },
 
-    this.$$events = [];
-  },
+    // Add inline style
+    css: function(propertyName, value) {
+      var styles, keys;
 
-  // Clear node
-  empty: function() {
-    return this.$$each(function(node) {
-      while (node.firstChild) {
-        node.removeChild(node.firstChild);
+      if (_.isObject(propertyName)) {
+        styles = propertyName;
+        keys = _.keys(styles);
+      } else {
+        styles = {};
+        styles[propertyName] = value;
+        keys = [propertyName];
       }
-    });
-  },
 
-  // Remove node from DOM
-  remove: function() {
-    return this.$$each(function(node) {
-      node.parentNode.removeChild(node);
-    });
-  },
+      return iterate(this, function(node) {
+        _.forEach(keys, function(propertyName) {
+          node.style[propertyName] = styles[propertyName];
+        });
+      });
+    },
 
-  // Append node
-  append: function(childNode) {
-    return this.$$each(function(node, idx, collection) {
-      var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
-      node.appendChild(clone);
-    });
-  },
+    // Add css class
+    addClass: function(css) {
+      return iterate(this, function(node) {
+        var actualCss = node.className;
+        node.className = (actualCss ? actualCss + ' ' : '') + css;
+      });
+    },
 
-  // Prepend node
-  prepend: function(childNode) {
-    return this.$$each(function(node, idx, collection) {
-      var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
-      node.insertBefore(clone, node.childNodes[0]);
-    });
-  },
+    // Remove a single class, multiple classes in the set of matched elements.
+    removeClass: function(classes) {
+      var css = classes.split(' ');
+      var map = _.indexBy(css, function(c) {
+        return c;
+      });
 
-  // Append node after element
-  after: function(childNode) {
-    return this.$$each(function(node, idx, collection) {
-      var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
-      node.parentNode.insertBefore(clone, node.nextSibling);
-    });
-  },
+      return iterate(this, function(node) {
+        var actualClasses = node.className;
+        var newClasses = _.filter(actualClasses.split(' '), function(c) {
+          return !map[c];
+        });
 
-  // Add inline style
-  css: function(propertyName, value) {
-    var styles, keys;
+        node.className = newClasses.join(' ');
+      });
+    },
 
-    if (_.isObject(propertyName)) {
-      styles = propertyName;
-      keys = _.keys(styles);
-    } else {
-      styles = {};
-      styles[propertyName] = value;
-      keys = [propertyName];
+    // Replace html content
+    html: function(html) {
+      return iterate(this, function(node) {
+        node.innerHTML = html;
+      });
+    },
+
+    // Set attribute to value
+    attr: function(name, value) {
+      var values = name;
+      var keys;
+
+      if (arguments.length === 2) {
+        values = {};
+        values[name] = value;
+        keys = [name];
+      } else {
+        keys = _.keys(values);
+      }
+
+      return iterate(this, function(node) {
+        _.forEach(keys, function(k) {
+          node.setAttribute(k, values[k]);
+        });
+      });
+    },
+
+    // Remove attribute
+    removeAttr: function(name) {
+      return iterate(this, function(node) {
+        node.removeAttribute(name);
+      });
     }
+  };
 
-    return this.$$each(function(node) {
-      _.forEach(keys, function(propertyName) {
-        node.style[propertyName] = styles[propertyName];
-      });
-    });
-  },
-
-  // Add css class
-  addClass: function(css) {
-    return this.$$each(function(node) {
-      var actualCss = node.className;
-      node.className = (actualCss ? actualCss + ' ' : '') + css;
-    });
-  },
-
-  // Remove a single class, multiple classes in the set of matched elements.
-  removeClass: function(classes) {
-    var css = classes.split(' ');
-    var map = _.indexBy(css, function(c) {
-      return c;
-    });
-
-    return this.$$each(function(node) {
-      var actualClasses = node.className;
-      var newClasses = _.filter(actualClasses.split(' '), function(c) {
-        return !map[c];
-      });
-
-      node.className = newClasses.join(' ');
-    });
-  },
-
-  // Replace html content
-  html: function(html) {
-    return this.$$each(function(node) {
-      node.innerHTML = html;
-    });
-  },
-
-  // Set attribute to value
-  attr: function(name, value) {
-    var values = name;
-    var keys;
-
-    if (arguments.length === 2) {
-      values = {};
-      values[name] = value;
-      keys = [name];
-    } else {
-      keys = _.keys(values);
-    }
-
-    return this.$$each(function(node) {
-      _.forEach(keys, function(k) {
-        node.setAttribute(k, values[k]);
-      });
-    });
-  },
-
-  // Remove attribute
-  removeAttr: function(name) {
-    return this.$$each(function(node) {
-      node.removeAttribute(name);
-    });
-  }
-};
+  return jqLite;
+})();

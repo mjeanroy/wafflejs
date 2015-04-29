@@ -101,6 +101,18 @@ var Collection = (function() {
 
   // == Private functions
 
+  // Create a change object according to Object.observe API
+  var TYPE_SPLICE = 'splice';
+  var createChange = function(type, removed, index, addedCount, collection) {
+    return {
+      type: type,
+      removed: removed,
+      index: index,
+      addedCount: addedCount,
+      object: collection
+    };
+  };
+
   // Unset data at given index.
   var unsetAt = function(collection, idx) {
     delete collection[idx];
@@ -242,17 +254,6 @@ var Collection = (function() {
       }
 
       var changes = [];
-
-      var newChange = function(index, object) {
-        return {
-          type: 'splice',
-          addedCount: 0,
-          index: index,
-          removed: [],
-          object: object
-        };
-      };
-
       var currentChange = null;
       var oldIndex = -1;
       var size = models.length;
@@ -277,7 +278,7 @@ var Collection = (function() {
 
         // Group changes
         if (!currentChange || modelIdx !== (oldIndex + 1)) {
-          currentChange = newChange(modelIdx, this);
+          currentChange = createChange(TYPE_SPLICE, [], modelIdx, 0, this);
           changes.push(currentChange);
         }
 
@@ -311,20 +312,14 @@ var Collection = (function() {
       unsetAt(this, lastIndex);
       unsetId(this, id);
 
-      this.trigger({
-        addedCount: 0,
-        index: index,
-        removed: [value],
-        type: 'splice',
-        object: this
-      });
+      this.trigger(createChange(TYPE_SPLICE, [value], index, 0, this));
 
       return value;
     },
 
     // Get element at given index
     // Shortcut to array notation
-    at: function(index) {
+    at: function(index, o) {
       return this[index];
     },
 
@@ -369,14 +364,7 @@ var Collection = (function() {
 
         this.$$map.clear();
         this.length = 0;
-
-        this.trigger({
-          type: 'splice',
-          removed: array,
-          index: 0,
-          addedCount: 0,
-          object: this
-        });
+        this.trigger(createChange(TYPE_SPLICE, array, 0, 0, this));
       }
 
       return this;

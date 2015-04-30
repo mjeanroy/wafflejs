@@ -314,13 +314,13 @@ var Collection = (function() {
     // Removes the last element from the collection
     // and returns that element.
     pop: function() {
-      return this.splice.call(this, this.length - 1, 1)[0];
+      return this.remove(this.length - 1, 1)[0];
     },
 
     // removes the first element from the collection
     // and returns that element.
     shift: function() {
-      return this.splice.call(this, 0, 1)[0];
+      return this.remove(0, 1)[0];
     },
 
     // Clear collection

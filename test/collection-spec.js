@@ -369,6 +369,39 @@ describe('collection', function() {
           { type: 'splice', addedCount: 2, index: 1, removed: [o2], object: collection }
         ]);
       });
+
+      it('should reverse collection with odd length', function() {
+        collection = new Collection([o1, o2]);
+
+        var result = collection.reverse();
+
+        expect(result).toBe(collection);
+        expect(collection.length).toBe(2);
+        expect(collection[0]).toBe(o2);
+        expect(collection[1]).toBe(o1);
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'update', addedCount: 0, index: 0, removed: [], object: collection },
+          { type: 'update', addedCount: 0, index: 1, removed: [], object: collection }
+        ]);
+      });
+
+      it('should reverse collection with even length', function() {
+        collection = new Collection([o1, o2, o3]);
+
+        var result = collection.reverse();
+
+        expect(result).toBe(collection);
+        expect(collection.length).toBe(3);
+        expect(collection[0]).toBe(o3);
+        expect(collection[1]).toBe(o2);
+        expect(collection[2]).toBe(o1);
+
+        expect(collection.trigger).toHaveBeenCalledWith([
+          { type: 'update', addedCount: 0, index: 0, removed: [], object: collection },
+          { type: 'update', addedCount: 0, index: 2, removed: [], object: collection }
+        ]);
+      });
     });
 
     describe('once sorted', function() {
@@ -637,6 +670,21 @@ describe('collection', function() {
           { type: 'splice', addedCount: 1, index: 0, removed: [o1], object: collection },
           { type: 'splice', addedCount: 1, index: 2, removed: [], object: collection }
         ]);
+      });
+
+      it('should not reverse collection if collection is sorted', function() {
+        collection = new Collection([o1, o2]);
+        collection.sort(sortFn);
+
+        collection.trigger.calls.reset();
+
+        var result = collection.reverse();
+
+        expect(result).toBe(collection);
+        expect(collection.length).toBe(2);
+        expect(collection[0]).toBe(o1);
+        expect(collection[1]).toBe(o2);
+        expect(collection.trigger).not.toHaveBeenCalled();
       });
     });
 

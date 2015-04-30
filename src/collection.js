@@ -42,8 +42,6 @@
  *    same key are not allowed.
  *  - Key identifier must be a simple type (numeric, string or
  *    boolean).
- *
- * TODO reverse
  */
 
 var Collection = (function() {
@@ -109,6 +107,7 @@ var Collection = (function() {
 
   // Create a change object according to Object.observe API
   var TYPE_SPLICE = 'splice';
+  var TYPE_UPDATE = 'update';
   var createChange = function(type, removed, index, addedCount, collection) {
     return {
       type: type,
@@ -341,6 +340,7 @@ var Collection = (function() {
       return this;
     },
 
+    // Reset entire collection with new data array
     reset: function(array) {
       var oldSize = this.length;
       var newSize = array.length;
@@ -499,6 +499,36 @@ var Collection = (function() {
       // If only one element is removed, an array of one element is returned.
       // If no elements are removed, an empty array is returned.
       return removed;
+    },
+
+    // Reverses collection in place.
+    // The first array element becomes the last and the last becomes the first.
+    reverse: function() {
+      if (this.$$sortFn) {
+        // If collection is sorted, reverse is a no-op
+        return this;
+      }
+
+      var size = this.length;
+      var mid = Math.floor(size / 2);
+
+      // Track changes using two arrays to have changes in order
+      var changesStart = [];
+      var changesEnd = [];
+
+      for (var i = 0, j = size - 1; i < mid; ++i, --j) {
+        swap(this, i, j);
+        changesStart.push(createChange(TYPE_UPDATE, [], i, 0, this));
+        changesEnd.unshift(createChange(TYPE_UPDATE, [], j, 0, this));
+      }
+
+      // Trigger changes in order
+      var changes = changesStart.concat(changesEnd);
+      if (changes.length) {
+        this.trigger(changes);
+      }
+
+      return this;
     },
 
     // Custom json representation

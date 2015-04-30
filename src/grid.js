@@ -405,6 +405,20 @@ Grid.prototype = {
     return this;
   },
 
+  // Some data have been updated
+  // Should be a private function
+  $$on_update: function(change) {
+    var index = change.index;
+    var data = this.$data.at(index);
+    var tbody = this.$tbody[0];
+
+    var oldNode = tbody.childNodes[index];
+    var newNode = this.$$renderRow(data);
+    tbody.replaceChild(newNode, oldNode);
+
+    return this;
+  },
+
   // Build row and return it
   // Should be a private function
   $$renderRow: function(data) {

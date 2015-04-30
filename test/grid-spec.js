@@ -539,6 +539,15 @@ describe('Grid', function() {
       expect(grid.columns()).toBe(grid.$columns);
     });
 
+    it('should refresh grid when data array is reversed', function() {
+      grid.data().reverse();
+      jasmine.clock().tick();
+
+      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
+        return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+      });
+    });
+
     describe('observe', function() {
       var change;
       var changes;

@@ -43,7 +43,7 @@
  *  - Key identifier must be a simple type (numeric, string or
  *    boolean).
  *
- * TODO splice ; reverse
+ * TODO reverse
  */
 
 var Collection = (function() {
@@ -100,6 +100,12 @@ var Collection = (function() {
   };
 
   // == Private functions
+
+  // To Int function
+  // See: http://es5.github.io/#x9.4
+  var toInt = function(nb) {
+    return parseInt(Number(nb) || 0, 10);
+  };
 
   // Create a change object according to Object.observe API
   var TYPE_SPLICE = 'splice';
@@ -179,15 +185,18 @@ var Collection = (function() {
   // Start index is specified by first parameter.
   // Number of move is specified by second parameter.
   // Size of collection is automatically updated.
+  // Removed elements are returned
   // Exemple:
-  //   [0, 1, 2] => shiftLeft(0, 2) => [2]
-  //   [0, 1, 2] => shiftLeft(1, 1) => [0, 2]
-  //   [0, 1, 2] => shiftLeft(2, 1) => [0, 1]
+  //   shiftLeft([0, 1, 2], 0, 2) => [2]
+  //   shiftLeft([0, 1, 2], 1, 1) => [0, 2]
+  //   shiftLeft([0, 1, 2], 2, 1) => [0, 1]
   var shiftLeft = function(collection, start, size) {
     var absSize = Math.abs(size);
     var oldLength = collection.length;
     var newLength = oldLength - absSize;
     var max = start + absSize;
+
+    var removed = [];
 
     // Swap elements index by index
     for (var i = max; i < oldLength; ++i) {
@@ -196,130 +205,60 @@ var Collection = (function() {
 
     // Clean last elements of array
     for (var k = newLength; k < oldLength; ++k) {
-      unset(collection, collection.at(k));
+      var o = collection.at(k);
+      removed.unshift(o);
+      unset(collection, o);
     }
 
     collection.length = newLength;
+
+    return removed;
   };
 
-  // Move elements of collection
-  // If size is positive, it will move elements to the right
-  // If size is negative, it will move elements to the left
-  var shift = function(collection, start, size) {
-    var fn = size > 0 ? shiftRight : shiftLeft;
-    return fn.call(this, collection, start, size);
+  var merge = function(collection, array) {
+    var sortFn = collection.$$sortFn;
+    var sizeCollection = collection.length;
+    var sizeArray = array.length;
+    var newSize = sizeCollection + sizeArray;
+
+    var changes = [], change;
+    var j = sizeCollection - 1;
+    var k = sizeArray - 1;
+    for (var i = newSize - 1; i >= 0; --i) {
+      if (j < 0 || sortFn(collection[j], array[k]) < 0) {
+        put(collection, array[k--], i);
+
+        // New change occurs
+        change = _.first(changes);
+        if (!change || change.index !== (i + 1)) {
+          change = createChange(TYPE_SPLICE, [], i, 1, collection);
+          changes.unshift(change);
+        } else {
+          change.index = i;
+          change.addedCount++;
+        }
+
+        if (k < 0) {
+          // Array is 100% merged
+          break;
+        }
+      } else {
+        put(collection, collection[j--], i);
+      }
+    }
+
+    // Update collection length
+    collection.length = newSize;
+
+    return changes;
   };
 
   // == Public prototype
 
   Constructor.prototype = {
-    // TODO refactor and replace with a public function
-    $$replaceAll: function(array) {
-      var oldSize = this.length;
-      var newSize = array.length;
-
-      this.$$map.clear();
-
-      for (var i = 0; i < newSize; ++i) {
-        put(this, toModel(this, array[i]), i);
-      }
-
-      for (; i < oldSize; ++i) {
-        unsetAt(this, i);
-      }
-
-      this.length = newSize;
-
-      return this;
-    },
-
-    // TODO refactor and replace with a public function
-    $$add: function(data, start) {
-      var iteratee = function(m) {
-        return toModel(this, m);
-      };
-
-      var models = _.map(data, iteratee, this);
-      var sort = !!this.$$sortFn;
-      var goUp = start > 0;
-      var oldLength = this.length;
-
-      // First sort array if needed
-      if (sort) {
-        models.sort(this.$$sortFn);
-      }
-      else if (start < this.length) {
-        // Otherwise, make space for new data
-        shift(this, start, models.length);
-      }
-
-      var changes = [];
-      var currentChange = null;
-      var oldIndex = -1;
-      var size = models.length;
-
-      for (var i = 0; i < size; ++i) {
-        var model = models[i];
-
-        // If collection is sorted, we need to keep sort, so compute
-        // sorted index, and move items to make space
-        // If collection is not sorted, index is already computed and
-        // space is already available
-
-        var modelIdx;
-        if (sort) {
-          modelIdx = this.sortedIndex(model, goUp);
-          shift(this, modelIdx, 1);
-        } else {
-          modelIdx = start + i;
-        }
-
-        put(this, model, modelIdx);
-
-        // Group changes
-        if (!currentChange || modelIdx !== (oldIndex + 1)) {
-          currentChange = createChange(TYPE_SPLICE, [], modelIdx, 0, this);
-          changes.push(currentChange);
-        }
-
-        currentChange.addedCount++;
-        oldIndex = modelIdx;
-      }
-
-      this.length = oldLength + size;
-      this.trigger(changes);
-
-      return this.length;
-    },
-
-    // TODO refactor and replace with a public function
-    $$removeAt: function(index) {
-      if (this.isEmpty()) {
-        return undefined;
-      }
-
-      var oldLength = this.length;
-      var lastIndex = oldLength - 1;
-      var value = this[index];
-      var id = this.$$key(value);
-
-      if (index < lastIndex) {
-        shift(this, index, -1);
-      }
-
-      this.length = oldLength - 1;
-
-      unsetAt(this, lastIndex);
-      unsetId(this, id);
-
-      this.trigger(createChange(TYPE_SPLICE, [value], index, 0, this));
-
-      return value;
-    },
-
     // Get element at given index
     // Shortcut to array notation
-    at: function(index, o) {
+    at: function(index) {
       return this[index];
     },
 
@@ -345,12 +284,44 @@ var Collection = (function() {
       return -1;
     },
 
+    // Add new elements at given index
+    // This is a shortcut for splice(start, O, models...)
+    add: function(start, models) {
+      var args = [start, 0].concat(models);
+      this.splice.apply(this, args);
+      return this.length;
+    },
+
+    // Remove elements at given index
+    // This is a shortcut for splice(start, deleteCount)
+    remove: function(start, deleteCount) {
+      return this.splice.call(this, start, deleteCount);
+    },
+
     // Adds one or more elements to the end of the collection
     // and returns the new length of the collection.
     // Semantic is the same as [].push function
     push: function() {
-      var models = _.toArray(arguments);
-      return this.$$add(models, this.length);
+      return this.add.call(this, this.length, _.toArray(arguments));
+    },
+
+    // adds one or more elements to the beginning of the collection
+    // and returns the new length of the collection.
+    // Semantic is the same as [].unshift function
+    unshift: function() {
+      return this.add.call(this, 0, _.toArray(arguments));
+    },
+
+    // Removes the last element from the collection
+    // and returns that element.
+    pop: function() {
+      return this.splice.call(this, this.length - 1, 1)[0];
+    },
+
+    // removes the first element from the collection
+    // and returns that element.
+    shift: function() {
+      return this.splice.call(this, 0, 1)[0];
     },
 
     // Clear collection
@@ -370,29 +341,45 @@ var Collection = (function() {
       return this;
     },
 
-    // adds one or more elements to the beginning of the collection
-    // and returns the new length of the collection.
-    // Semantic is the same as [].unshift function
-    unshift: function() {
-      var models = _.toArray(arguments);
-      return this.$$add(models, 0);
+    reset: function(array) {
+      var oldSize = this.length;
+      var newSize = array.length;
+
+      var sortFn = this.$$sortFn;
+      if (sortFn) {
+        array.sort(sortFn);
+      }
+
+      this.$$map.clear();
+
+      var removed = [];
+      var addedCount = array.length;
+
+      for (var i = 0; i < newSize; ++i) {
+        if (i < oldSize) {
+          removed.push(this.at(i));
+        }
+
+        put(this, toModel(this, array[i]), i);
+      }
+
+      for (; i < oldSize; ++i) {
+        removed.push(this.at(i));
+        unsetAt(this, i);
+      }
+
+      this.length = newSize;
+
+      this.trigger([
+        createChange(TYPE_SPLICE, removed, 0, addedCount, this)
+      ]);
+
+      return this;
     },
 
     // Check if collection is empty
     isEmpty: function() {
       return this.length === 0;
-    },
-
-    // Removes the last element from the collection
-    // and returns that element.
-    pop: function() {
-      return this.$$removeAt(this.length - 1);
-    },
-
-    // removes the first element from the collection
-    // and returns that element.
-    shift: function() {
-      return this.$$removeAt(0);
     },
 
     // Returns a new collection comprised of the collection on which it is called
@@ -415,6 +402,105 @@ var Collection = (function() {
       });
     },
 
+    // Changes the content of the collection by removing existing
+    // elements and/or adding new elements.
+    // If collection is sorted, splice will insert new elements
+    // in order (collection remains sorted).
+    splice: function(start, deleteCount) {
+      var sortFn = this.$$sortFn;
+      var size = this.length;
+      var data = _.rest(arguments, 2);
+
+      // Iterator that will translate object to model elements
+      var iteratee = function(m) {
+        return toModel(this, m);
+      };
+
+      var added = _.map(data, iteratee, this);
+      var addedCount = added.length;
+
+      // Index at which to start changing the array.
+      // If greater than the length of the array, actual starting index will
+      // be set to the length of the array.
+      // If negative, will begin that many elements from the end.
+      // See: http://es5.github.io/#x15.4.4.10
+      var actualStart = toInt(start);
+      if (actualStart >= 0) {
+        actualStart = Math.min(size, actualStart);
+      } else {
+        actualStart = Math.max(size + actualStart, 0);
+      }
+
+      // An integer indicating the number of old array elements to remove.
+      // If deleteCount is 0, no elements are removed.
+      // In this case, you should specify at least one new element.
+      // If deleteCount is greater than the number of elements left in the array
+      // starting at start, then all of the elements through the end of
+      // the array will be deleted.
+      // See: http://es5.github.io/#x15.4.4.10
+      var actualDeleteCount = Math.min(Math.max(toInt(deleteCount) || 0, 0), size - actualStart);
+
+      // Track removed elements
+      var removed = [];
+
+      // First delete elements
+      if (actualDeleteCount > 0) {
+        for (var i = 0; i < actualDeleteCount; ++i) {
+          removed.push(this[i + actualStart]);
+        }
+
+        shiftLeft(this, actualStart, actualDeleteCount);
+      }
+
+      var changes;
+
+      // Add new elements
+      if (addedCount > 0) {
+        if (sortFn) {
+          // We need to keep sort: sort added elements and merge everything
+          added.sort(sortFn);
+          changes = merge(this, added);
+        }
+        else {
+          // Shift and put elements at given indexes
+          shiftRight(this, actualStart, addedCount);
+
+          for (var k = 0; k < addedCount; ++k) {
+            put(this, added[k], actualStart + k);
+          }
+
+          changes = [createChange(TYPE_SPLICE, removed, actualStart, addedCount, this)];
+        }
+      } else {
+        changes = [];
+      }
+
+      // Add change for removed elements
+      if (removed.length > 0) {
+        var change = _.find(changes, function(c) {
+          return c.index === actualStart;
+        });
+
+        if (change) {
+          // Merge change for removed elements with added elements changes
+          change.removed = removed;
+        } else {
+          // Prepend changes with change for removed elements
+          changes.unshift(createChange(TYPE_SPLICE, removed, actualStart, 0, this));
+        }
+      }
+
+      // Trigger changes
+      if (changes && changes.length > 0) {
+        this.trigger(changes);
+      }
+
+      // An array containing the deleted elements.
+      // If only one element is removed, an array of one element is returned.
+      // If no elements are removed, an empty array is returned.
+      return removed;
+    },
+
     // Custom json representation
     // Need JSON.stringify to be available
     toJSON: function() {
@@ -424,59 +510,9 @@ var Collection = (function() {
     // Sort given collection in place
     // Sorted collection is returned
     sort: function(sortFn) {
-      var array = callNativeArrayFn('sort', this, [sortFn]);
-      this.$$replaceAll(array);
       this.$$sortFn = sortFn;
-      return this;
-    },
-
-    // Use a binary search to compute sorted index of item
-    // If collection is not sorted, it does not know how to compare
-    // values, so sorted index is the default index given as second parameter.
-    // If second parameter is not defined, sorted index is the last element + 1.
-    sortedIndex: function(item, asc) {
-      /* jshint bitwise:false */
-
-      var high = this.length;
-      var goUp = asc == null ? true : !!asc;
-
-      if (!this.$$sortFn) {
-        return goUp ? high : 0;
-      }
-
-      // Convert to model instance
-      var model = item;
-      if (this.$$model && !(model instanceof this.$$model)) {
-        model = new this.$$model(model);
-      }
-
-      var low = 0;
-
-      // Use binary search
-      while (low < high) {
-        var mid = (low + high) >>> 1;
-        var current = this.at(mid);
-        if (this.$$sortFn(current, model) < 0) {
-          low = mid + 1;
-        } else {
-          high = mid;
-        }
-      }
-
-      // If low index is "equivalent" to low index, search for first
-      // next or previous available index.
-      var eq = false;
-      if (low < this.length && (eq = this.$$sortFn(this[low], model) === 0)) {
-        var inc = goUp ? 1 : -1;
-        while (low && low < this.length && eq) {
-          low += inc;
-          eq = this.$$sortFn(this.at(low), model) === 0;
-        }
-
-        low = goUp ? low : low + 1;
-      }
-
-      return low;
+      return this.reset(this.toArray())
+                 .clearChanges();
     },
 
     // Extract property of collection items
@@ -515,6 +551,12 @@ var Collection = (function() {
     trigger: function(changes) {
       this.$$changes = this.$$changes.concat(changes);
       setTimeout(this.$$trigger);
+      return this;
+    },
+
+    // Clear pending changes
+    clearChanges: function() {
+      this.$$changes = [];
       return this;
     },
 

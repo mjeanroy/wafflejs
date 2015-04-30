@@ -531,6 +531,28 @@ var Collection = (function() {
       return this;
     },
 
+    // Split collection into smaller arrays
+    // Returned value is an array of smaller arrays.
+    split: function(size) {
+      var actualSize = size || 20;
+      var chunks = [];
+
+      var chunk = [];
+      for (var i = 0, length = this.length; i < length; ++i) {
+        chunk.push(this.at(i));
+        if (chunk.length === actualSize) {
+          chunks.push(chunk);
+          chunk = [];
+        }
+      }
+
+      if (chunk.length > 0) {
+        chunks.push(chunk);
+      }
+
+      return chunks;
+    },
+
     // Custom json representation
     // Need JSON.stringify to be available
     toJSON: function() {

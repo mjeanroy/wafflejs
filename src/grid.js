@@ -201,22 +201,57 @@ var Grid = (function() {
     // Render entire body of grid
     // Each row is appended to a fragment in memory
     // This fragment will be appended once to tbody element to avoid unnecessary DOM access
-    renderBody: function() {
-      var fragment = $doc.createFragment();
+    // If render is asynchronous, data will be split into chunks, each chunks will be appended
+    // one by one using setTimeout to let the browser to be refreshed periodically.
+    renderBody: function(async) {
+      var asyncRender = async == null ? this.options.async : async;
+      var grid = this;
 
-      this.$data.forEach(function(data) {
-        var row = renderRow(this, data);
-        fragment.appendChild(row);
-      }, this);
+      var buildFragment = function(grid, data) {
+        var fragment = $doc.createFragment();
+        for (var i = 0, dataSize = data.length; i < dataSize; ++i) {
+          var row = renderRow(grid, data[i]);
+          fragment.appendChild(row);
+        }
+        return fragment;
+      };
 
-      this.$tbody.empty().append(fragment);
+      var onEnded = function(grid) {
+        grid.$data.clearChanges();
 
-      // Clear changes since data is now synchronized with grid
-      this.$data.$$changes = [];
+        call(grid, 'onRendered', function() {
+          return [this.$data, _.toArray(this.$tbody[0].childNodes)];
+        });
 
-      return call(this, 'onRendered', function() {
-        return [this.$data, _.toArray(this.$tbody[0].childNodes)];
-      });
+        // Free memory
+        grid = buildFragment = onEnded = null;
+      };
+
+      if (asyncRender) {
+        // Async rendering
+        var delay = 10;
+        var chunks = this.$data.split(200);
+        var timer = function() {
+          if (chunks.length > 0) {
+            var fragment = buildFragment(grid, chunks.shift());
+            grid.$tbody.append(fragment);
+            setTimeout(timer, delay);
+          } else {
+            onEnded(grid);
+            timer = chunks = null;
+          }
+        };
+
+        this.$tbody.empty();
+        setTimeout(timer);
+      }
+      else {
+        var fragment = buildFragment(grid, grid.data());
+        grid.$tbody.empty().append(fragment);
+        onEnded(grid);
+      }
+
+      return this;
     },
 
     // Sort grid by fields
@@ -450,6 +485,7 @@ var Grid = (function() {
   // Define some default options
   Constructor.options = {
     key: 'id',
+    async: false,
     events: {}
   };
 

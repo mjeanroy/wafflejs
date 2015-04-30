@@ -122,10 +122,10 @@ describe('collection', function() {
   });
 
   it('should initialize collection with array and model constructor', function() {
-  	var Model = function(data) {
+    var Model = function(data) {
       this.id = data.id;
       this.name = data.name;
-  	};
+    };
 
     var o1 = { id: 1, name: 'foo' };
     var o2 = { id: 2, name: 'bar' };
@@ -927,6 +927,22 @@ describe('collection', function() {
       var c3 = collection.slice(0, collection.length);
       jasmine.clock().tick(1);
       expect(c3).toEqual(collection);
+    });
+
+    it('should split collection into chunks', function() {
+      var chunks = collection.split(1);
+      expect(chunks).toEqual([[o1], [o2]]);
+    });
+
+    it('should split collection into chunks of two elements', function() {
+      var o1 = { id: 1 };
+      var o2 = { id: 2 };
+      var o3 = { id: 3 };
+      collection = new Collection([o1, o2, o3]);
+
+      var chunks = collection.split(2);
+
+      expect(chunks).toEqual([[o1, o2], [o3]]);
     });
 
     it('should clear collection', function() {

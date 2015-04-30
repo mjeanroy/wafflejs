@@ -42,6 +42,7 @@ describe('Grid', function() {
   it('should define custom options', function() {
     expect(Grid.options).toEqual({
       key: 'id',
+      async: false,
       events: {
         onInitialized: _.noop,
         onRendered: _.noop,
@@ -546,6 +547,43 @@ describe('Grid', function() {
       expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
         return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
       });
+    });
+
+    it('should render data asynchronously', function() {
+      var columns = [
+        { id: 'id', title: 'Foo' },
+        { id: 'name', title: 'Boo' }
+      ];
+
+      var data = [];
+      for (var i = 0; i < 215; ++i) {
+        data.push({
+          id: i + 1,
+          name: 'foo' + (i + 1)
+        });
+      }
+
+      var table = document.createElement('table');
+
+      var grid = new Grid(table, {
+        data: data,
+        columns: columns
+      });
+
+      expect(grid.$tbody[0].childNodes.length).toBe(data.length);
+
+      var result = grid.renderBody(true);
+
+      expect(result).toBe(grid);
+      expect(grid.$tbody[0].childNodes.length).toBe(0);
+
+      // Trigger first timeout
+      jasmine.clock().tick();
+      expect(grid.$tbody[0].childNodes.length).toBe(200);
+
+      // Trigger second timeout
+      jasmine.clock().tick(10);
+      expect(grid.$tbody[0].childNodes.length).toBe(215);
     });
 
     describe('observe', function() {

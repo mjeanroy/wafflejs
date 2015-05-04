@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,8 @@
 /* exported Grid */
 
 var Grid = (function() {
+
+  var SCROLLBAR_WIDTH = 16;
 
   // Normalize sort predicate
   // This function will return an array of id preprended with sort order
@@ -104,6 +106,10 @@ var Grid = (function() {
     grid.$columns.forEach(function(column) {
       var attributes = {};
       attributes[DATA_WAFFLE_ID] = column.id;
+      var width = column.calculatedWidth;
+      if (width) {
+        attributes.style = $$width(width).style;
+      }
 
       var $node = $($doc.td())
         .addClass(column.cssClasses())
@@ -115,6 +121,19 @@ var Grid = (function() {
 
     return tr;
   };
+
+  var $$dim = function(type) {
+    return function(val) {
+      var dim = type + ': ' + val + 'px;';
+      var max = 'max-' + dim;
+      var min = 'min-' + dim;
+      return {
+        style: max + min + dim
+      };
+    };
+  };
+
+  var $$width = $$dim('width');
 
   var Constructor = function(table, options) {
     if (!(this instanceof Constructor)) {
@@ -138,12 +157,16 @@ var Grid = (function() {
       model: Column
     });
 
+    this.$height = options.height;
+    this.$width = options.width;
+
     this.$sortBy = [];
 
     createNodes(this);
 
     this.$$bind()
         .$$observe()
+        .assignWidth()
         .renderHeader()
         .sortBy(options.sortBy, false)
         .renderBody();
@@ -169,14 +192,62 @@ var Grid = (function() {
 
     // Render entire grid
     render: function() {
-      return this.renderHeader().renderBody();
+      return this.calculateWidth().renderHeader().renderBody();
+    },
+
+    // Calculate column width
+    assignWidth: function() {
+      var borderWidth = 1;
+      var rowWidth = this.$width - (2 * borderWidth);
+      if (this.$height) {
+        this.$table.addClass('waffle-fixedheader')
+                   .attr($$width(this.$width));
+        rowWidth -= SCROLLBAR_WIDTH;
+      }
+
+      var constrainedWidth = 0;
+      var constrainedColumnCount = 0;
+      this.$columns.forEach(function(col) {
+        if (col.width) {
+          constrainedWidth += col.width;
+          ++constrainedColumnCount;
+        }
+      });
+
+      var columnCount = this.$columns.length;
+      var remainingColumns = columnCount - constrainedColumnCount;
+      var flooredCalculatedWidth = 0;
+      var remains = 0;
+      if (remainingColumns) {
+        var calculatedWidthColumn = (rowWidth - constrainedWidth) / remainingColumns;
+        flooredCalculatedWidth = Math.floor(calculatedWidthColumn);
+        remains = calculatedWidthColumn - flooredCalculatedWidth;
+      }
+
+      var offset = 0;
+      this.$columns.forEach(function(col) {
+        if (col.width) {
+          col.calculatedWidth = col.width;
+        } else {
+          offset += remains;
+          if (offset >= 1) {
+            col.calculatedWidth = flooredCalculatedWidth + 1;
+            offset -= 1;
+          } else {
+            col.calculatedWidth = flooredCalculatedWidth;
+          }
+        }
+      });
+
+      return this;
     },
 
     // Render entire header of grid
     renderHeader: function() {
       var tr = $doc.tr();
+      var that = this;
 
-      this.$columns.forEach(function(column) {
+      this.$columns.forEach(function(column, idx) {
         var attributes = {};
         attributes[DATA_WAFFLE_ID] = column.id;
         if (column.sortable) {
@@ -184,6 +255,11 @@ var Grid = (function() {
           if (column.asc != null) {
             attributes[DATA_WAFFLE_ORDER] = column.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
           }
+        }
+        var width = column.calculatedWidth;
+        if (width) {
+          width += (that.$height && that.$columns.length === (idx + 1)) ? SCROLLBAR_WIDTH : 0;
+          attributes.style = $$width(width).style;
         }
 
         var $node = $($doc.th())
@@ -195,6 +271,11 @@ var Grid = (function() {
       });
 
       this.$thead.empty().append(tr);
+
+      if (this.$height) {
+        this.$tbody.attr({style: 'max-height: ' + this.$height + 'px;'});
+      }
+
       return this;
     },
 

@@ -9,11 +9,7 @@ angular.module('SampleApp', ['waffle'])
   }])
 
   .controller('SampleController', ['$scope', '$log', function($scope, $log) {
-    $scope.options = {
-      data: generatedData,
-      columns: columns,
-      sortBy: 'firstName'
-    };
+    $scope.options = options;
 
     $scope.grid = null;
 

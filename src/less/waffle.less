@@ -116,38 +116,29 @@ th {
  * --------------------------------------------------------------------------*\
  */
 
-// Mixin used to display elements to block, specific to table with fixed height
-.display-table-block() {
-  display: block;
-  float: left;
-}
-
 // This class will be added automatically to the table element
 // if table must be scrollable.
 .waffle-fixedheader {
-  .display-table-block();
-
   > tbody {
     overflow-y: scroll;
   }
 
   > thead,
   > tbody {
-    .display-table-block();
+    width: 100%;
+    display: block;
+    float: left;
+
+    &:after {
+      .clearfix();
+    }
 
     > tr {
-      .display-table-block();
-
-      &:after {
-        .clearfix();
-      }
-
       > th,
       > td {
-        .display-table-block();
-
         word-wrap: break-word;
-        vertical-align: 'middle';
+        vertical-align: middle;
+        table-layout: fixed;
       }
     }
   }
@@ -155,6 +146,21 @@ th {
   // Fix Twitter Bootstrap borders
   // We need to hide some border-left to simulate collapse
   // with cells and table borders
+
+  &.table,
+  &.table-bordered {
+    > thead {
+      // This is the default border color with twitter bootstrap.
+      // It should be overridden by users with a custom twitter
+      // bootstrap build, or to customize border colors
+      border-bottom: 2px solid #ddd;
+
+      th {
+        border-bottom: 0;
+      }
+    }
+  }
+
   &.table-bordered {
     border-left: 0;
 

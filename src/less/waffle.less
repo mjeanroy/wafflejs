@@ -24,6 +24,20 @@
 
 /**
  * --------------------------------------------------------------------------*\
+ * Mixins use to clear float effect.                                         *\
+ * https://css-tricks.com/all-about-floats/                                  *\
+ * --------------------------------------------------------------------------*\
+ */
+.clearfix() {
+  content: ' ';
+  display: block;
+  visibility: hidden;
+  height: 0;
+  clear: both;
+}
+
+/**
+ * --------------------------------------------------------------------------*\
  * Mixins use to user-select effect.                                         *\
  * https://developer.mozilla.org/en-US/docs/Web/CSS/user-select              *\
  * http://css-tricks.com/almanac/properties/u/user-select/                   *\
@@ -101,61 +115,60 @@ th {
  * by https://github.com/DavidRueter                                         *\
  * --------------------------------------------------------------------------*\
  */
-// Set table elements display to block
-table.waffle-fixedheader,
-table.waffle-fixedheader>thead,
-table.waffle-fixedheader>tbody,
-table.waffle-fixedheader>thead>tr,
-table.waffle-fixedheader>tbody>tr,
-table.waffle-fixedheader>thead>tr>th,
-table.waffle-fixedheader>tbody>tr>td {
+
+// Mixin used to display elements to block, specific to table with fixed height
+.display-table-block() {
   display: block;
   float: left;
 }
 
+// This class will be added automatically to the table element
+// if table must be scrollable.
+.waffle-fixedheader {
+  .display-table-block();
 
-table.waffle-fixedheader>thead>tr:after,
-table.waffle-fixedheader>tbody>tr:after  {
-  content: ' ';
-  display: block;
-  visibility: hidden;
-  clear: both;
-}
+  > tbody {
+    overflow-y: scroll;
+  }
 
-// Add scroll
-table.waffle-fixedheader>tbody:not(:empty) {
-  overflow-y: scroll;
-}
+  > thead,
+  > tbody {
+    .display-table-block();
 
-// Set <th> and <td> elements to float left
-table.waffle-fixedheader>thead>tr>th,
-table.waffle-fixedheader>tbody>tr>td {
-  word-wrap: break-word;
-  vertical-align: middle;
-}
+    > tr {
+      .display-table-block();
 
-/**
- * --------------------------------------------------------------------------*\
- * Borders handling.                                                         *\
- * --------------------------------------------------------------------------*\
- */
-// hide table border-left to simulate collapse with th and td border-left if present
-table.waffle-fixedheader {
-  border-left: 0;
-}
+      &:after {
+        .clearfix();
+      }
 
-// hide first tbody row border-top to simulate collaps with th border-bottom
-table.waffle-fixedheader>tbody>tr:first-child>td {
-  border-top: 0;
-}
+      > th,
+      > td {
+        .display-table-block();
 
-// hide ths&tds border-right to simulate collaps with ths&tds border-left
-table.waffle-fixedheader>thead>tr>th,
-table.waffle-fixedheader>tbody>tr>td:not(:last-child) {
-  border-right: 0;
-}
+        word-wrap: break-word;
+        vertical-align: 'middle';
+      }
+    }
+  }
 
-// hide tbody rows border-bottom to simulate collaps with above row border-bottom
-table.waffle-fixedheader>tbody>tr>td {
-  border-bottom: 0;
+  // Fix Twitter Bootstrap borders
+  // We need to hide some border-left to simulate collapse
+  // with cells and table borders
+  &.table-bordered {
+    border-left: 0;
+
+    > tbody > tr:first-child > td {
+      border-top: 0;
+    }
+
+    > thead > tr > th,
+    > tbody > tr > td:not(:last-child) {
+      border-right: 0;
+    }
+
+    > tbody > tr > td {
+      border-bottom: 0;
+    }
+  }
 }

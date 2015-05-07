@@ -67,19 +67,13 @@ var Column = (function() {
   var Constructor = function(column) {
     var escape = column.escape;
     var sortable = column.sortable;
-    var size = column.size || {};
 
     this.id = column.id;
     this.title = column.title || '';
     this.field = column.field || this.id;
     this.css = column.css || this.id;
     this.escape = isUndefined(escape) ? true : !!escape;
-
-    this.size = {
-      width: fromPx(size.width),
-      height: fromPx(size.height)
-    };
-
+    this.width = fromPx(column.width);
     this.sortable = isUndefined(sortable) ? true : !!sortable;
     this.asc = isUndefined(column.asc) ? null : !!column.asc;
 
@@ -146,34 +140,24 @@ var Column = (function() {
       return attributes;
     },
 
-    // Compute inline styles to set on each cell
+    // Compute inline style to set on each cell
     styles: function() {
       var styles = {};
 
-      // Set size as inline styles
-      var size = this.size;
-      _.forEach(['Width', 'Height'], function(attr) {
-        var lower = attr.toLowerCase();
-        var px = toPx(size[lower]);
-        if (px) {
-          styles[lower] = px;
-          styles['max' + attr] = px;
-          styles['min' + attr] = px;
-        }
-      });
+      // Set width as inline style
+      var width = toPx(this.width);
+      if (width) {
+        styles.width = width;
+        styles.maxWidth = width;
+        styles.minWidth = width;
+      }
 
       return styles;
     },
 
     // Update column fixed width
     updateWidth: function(width) {
-      this.size.width = fromPx(width);
-      return this;
-    },
-
-    // Update column fixed height
-    updateHeight: function(height) {
-      this.size.height = fromPx(height);
+      this.width = fromPx(width);
       return this;
     },
 

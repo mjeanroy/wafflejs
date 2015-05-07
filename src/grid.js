@@ -209,7 +209,7 @@ var Grid = (function() {
       var constrainedWidth = 0;
       var constrainedColumnCount = 0;
       this.$columns.forEach(function(col) {
-        var width = col.size.width;
+        var width = col.width;
         if (width) {
           constrainedWidth += width;
           ++constrainedColumnCount;
@@ -228,7 +228,7 @@ var Grid = (function() {
 
       var offset = 0;
       this.$columns.forEach(function(col) {
-        var oldWidth = col.size.width;
+        var oldWidth = col.width;
         var newWidth = oldWidth || 0;
 
         // If size is not explicitly specified, we should compute a size

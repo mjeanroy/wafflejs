@@ -35,10 +35,7 @@ describe('Column', function() {
     expect(column.id).toBe('foo');
     expect(column.field).toBe('foo');
     expect(column.css).toBe('foo');
-    expect(column.size).toEqual({
-      width: undefined,
-      height: undefined
-    });
+    expect(column.width).toBeUndefined();
   });
 
   it('should initialize with custom values', function() {
@@ -49,10 +46,7 @@ describe('Column', function() {
       css: 'foo-bar',
       escape: false,
       sortable: false,
-      size: {
-        width: 100,
-        height: 200
-      }
+      width: 100
     });
 
     expect(column.escape).toBe(false);
@@ -61,10 +55,7 @@ describe('Column', function() {
     expect(column.id).toBe('foo');
     expect(column.field).toBe('foo.bar');
     expect(column.css).toBe('foo-bar');
-    expect(column.size).toEqual({
-      width: 100,
-      height: 200
-    });
+    expect(column.width).toBe(100);
   });
 
   it('should initialize column with pre-built renderer', function() {
@@ -351,20 +342,13 @@ describe('Column', function() {
     var column = new Column({
       id: 'id',
       sortable: false,
-      size: {
-        width: 100,
-        height: 200
-      }
+      width: 100
     });
 
     expect(column.styles()).toEqual({
       width: '100px',
       minWidth: '100px',
       maxWidth: '100px',
-
-      height: '200px',
-      minHeight: '200px',
-      maxHeight: '200px'
     });
   });
 
@@ -372,20 +356,13 @@ describe('Column', function() {
     var column = new Column({
       id: 'id',
       sortable: false,
-      size: {
-        width: '100px',
-        height: '200px'
-      }
+      width: '100px'
     });
 
     expect(column.styles()).toEqual({
       width: '100px',
       minWidth: '100px',
       maxWidth: '100px',
-
-      height: '200px',
-      minHeight: '200px',
-      maxHeight: '200px'
     });
   });
 
@@ -393,37 +370,11 @@ describe('Column', function() {
     var column = new Column({
       id: 'id',
       sortable: false,
-      size: {
-        width: 100,
-        height: 200
-      }
+      width: 100
     });
 
-    expect(column.size.width).toBe(100);
-    expect(column.size.height).toBe(200);
-
+    expect(column.width).toBe(100);
     column.updateWidth(300);
-
-    expect(column.size.width).toBe(300);
-    expect(column.size.height).toBe(200);
-  });
-
-  it('should update height of column', function() {
-    var column = new Column({
-      id: 'id',
-      sortable: false,
-      size: {
-        width: 100,
-        height: 200
-      }
-    });
-
-    expect(column.size.width).toBe(100);
-    expect(column.size.height).toBe(200);
-
-    column.updateHeight(300);
-
-    expect(column.size.width).toBe(100);
-    expect(column.size.height).toBe(300);
+    expect(column.width).toBe(300);
   });
 });

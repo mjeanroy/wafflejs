@@ -119,13 +119,18 @@ th {
 // This class will be added automatically to the table element
 // if table must be scrollable.
 .waffle-fixedheader {
+  table-layout: fixed;
+
+  > thead {
+    width: 100%;
+  }
+
   > tbody {
     overflow-y: scroll;
   }
 
   > thead,
   > tbody {
-    width: 100%;
     display: block;
     float: left;
 
@@ -134,6 +139,8 @@ th {
     }
 
     > tr {
+      table-layout: fixed;
+
       > th,
       > td {
         word-wrap: break-word;

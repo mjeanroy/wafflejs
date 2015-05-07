@@ -45,5 +45,3 @@ var DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';
 
 var CHAR_ORDER_ASC = '+';
 var CHAR_ORDER_DESC = '-';
-
-var SCROLLBAR_WIDTH = 15;

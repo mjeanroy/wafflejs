@@ -321,6 +321,22 @@ var _ = (function() {
       return [pass, fail];
     },
 
+    // Memoize an expensive function by storing its results.
+    memoize: function(func, hasher) {
+      var memoize = function(key) {
+        var cache = memoize.cache;
+        var address = hasher ? hasher.apply(this, arguments) : key;
+        if (!_.has(cache, address)) {
+          cache[address] = func.apply(this, arguments);
+        }
+        return cache[address];
+      };
+
+      memoize.cache = {};
+
+      return memoize;
+    },
+
     // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
     // returns an object with an index of each item.
     indexBy: groupByWrapper(function(result, value, key) {

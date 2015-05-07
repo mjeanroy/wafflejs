@@ -23,35 +23,64 @@
  */
 
 /* global _ */
+/* exported $doc */
 
-var $doc = {
-  // Create dom element
-  create: function(tagName) {
-    return document.createElement(tagName);
-  },
+var $doc = (function() {
 
-  // Find element by its id
-  // To have a consistent api, this function will return an array of element.
-  // If id does not exist, it will return an empty array.
-  byId: function(id) {
-    var node = document.getElementById(id);  
-    return !!node ? [node] : [];
-  },
+  var scrollbarWidth = function() {
+    var scrollDiv = document.createElement('div');
+    scrollDiv.style.width = '100px';
+    scrollDiv.style.height = '100px';
+    scrollDiv.style.overflow = 'scroll';
+    scrollDiv.style.position = 'absolute';
+    scrollDiv.style.top = '-9999px';
 
-  // Find element by tags.
-  // This function will return an "array like" of dom elements.
-  byTagName: function(tagName, parentNode) {
-    return (parentNode || document).getElementsByTagName(tagName);
-  },
+    document.body.appendChild(scrollDiv);
+    var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+    document.body.removeChild(scrollDiv);
 
-  // Create new empty document fragment
-  createFragment: function() {
-    return document.createDocumentFragment();
-  }
-};
-
-_.forEach(['tr', 'td', 'th', 'tbody', 'thead'], function(tagName) {
-  $doc[tagName] = function() {
-    return this.create(tagName);
+    return scrollbarWidth;
   };
-});
+
+  var hasher = function() {
+    return 'body';
+  };
+
+  var o = {
+    // Create dom element
+    create: function(tagName) {
+      return document.createElement(tagName);
+    },
+
+    // Find element by its id
+    // To have a consistent api, this function will return an array of element.
+    // If id does not exist, it will return an empty array.
+    byId: function(id) {
+      var node = document.getElementById(id);
+      return !!node ? [node] : [];
+    },
+
+    // Find element by tags.
+    // This function will return an "array like" of dom elements.
+    byTagName: function(tagName, parentNode) {
+      return (parentNode || document).getElementsByTagName(tagName);
+    },
+
+    // Create new empty document fragment
+    createFragment: function() {
+      return document.createDocumentFragment();
+    },
+
+    // Compute scrollbar width
+    scrollbarWidth: _.memoize(scrollbarWidth, hasher)
+  };
+
+  _.forEach(['tr', 'td', 'th', 'tbody', 'thead'], function(tagName) {
+    o[tagName] = function() {
+      return this.create(tagName);
+    };
+  });
+
+  return o;
+
+})();

@@ -110,4 +110,11 @@ describe('$doc', function() {
     expect(node).toBeDefined();
     expect(node.tagName).toBe('THEAD');
   });
+
+  it('should get size of scrollbar', function() {
+    var size = $doc.scrollbarWidth();
+    expect(size).toBeDefined();
+    expect(size).not.toBeZero();
+    expect(size).toBePositive();
+  });
 });

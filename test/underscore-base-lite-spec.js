@@ -457,4 +457,21 @@ describe('_', function() {
     expect(callback).toHaveBeenCalledWith(a[0], 0, a);
     expect(callback).toHaveBeenCalledWith(a[1], 1, a);
   });
+
+  it('should memoize result', function() {
+    var expensive = jasmine.createSpy('callback').and.returnValue('foo');
+    var fn = function() {
+      return expensive();
+    };
+
+    var memoize = _.memoize(fn, function() {
+      return 'foo';
+    });
+
+    expect(memoize()).toBe('foo');
+    expect(expensive.calls.count()).toBe(1);
+
+    expect(memoize()).toBe('foo');
+    expect(expensive.calls.count()).toBe(1);
+  });
 });

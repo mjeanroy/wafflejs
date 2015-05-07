@@ -39,7 +39,6 @@
 /* global DATA_WAFFLE_SORTABLE */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
-/* global SCROLLBAR_WIDTH */
 /* exported Grid */
 
 var Grid = (function() {
@@ -203,7 +202,7 @@ var Grid = (function() {
           maxHeight: toPx(size.height)
         });
 
-        rowWidth -= SCROLLBAR_WIDTH;
+        rowWidth -= $doc.scrollbarWidth();
       }
 
       var constrainedWidth = 0;

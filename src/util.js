@@ -22,28 +22,25 @@
  * SOFTWARE.
  */
 
-/* exported CSS_PREFIX */
-/* exported CSS_SORTABLE */
-/* exported CSS_SORTABLE_ASC */
-/* exported CSS_SORTABLE_DESC */
-/* exported DATA_WAFFLE_ID */
-/* exported DATA_WAFFLE_SORTABLE */
-/* exported DATA_WAFFLE_ORDER */
-/* exported CHAR_ORDER_ASC */
-/* exported CHAR_ORDER_DESC */
-/* exported SCROLLBAR_WIDTH */
+/* global _ */
+/* exported $util */
 
-var CSS_PREFIX = 'waffle-';
-var CSS_SORTABLE = CSS_PREFIX + 'sortable';
-var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
-var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
+/**
+ * Set of utilities.
+ */
 
-var DATA_PREFIX = 'data-waffle-';
-var DATA_WAFFLE_ID = DATA_PREFIX + 'id';
-var DATA_WAFFLE_SORTABLE = DATA_PREFIX + 'sortable';
-var DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';
+var $util = {
+  // Translate a value to a valid px notation
+  //   toPx(1OO) => '100px'
+  //   toPx('100px') => '100px'
+  toPx: function(value) {
+    return _.isNumber(value) ? value + 'px' : value;
+  },
 
-var CHAR_ORDER_ASC = '+';
-var CHAR_ORDER_DESC = '-';
-
-var SCROLLBAR_WIDTH = 15;
+  // Translate a px notation to a valid number
+  //   fromPx('100px') => 100
+  //   fromPx(100) => 100
+  fromPx: function(value) {
+    return _.isString(value) ? Number(value.replace('px', '')) : value;
+  }
+};

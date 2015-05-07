@@ -22,28 +22,15 @@
  * SOFTWARE.
  */
 
-/* exported CSS_PREFIX */
-/* exported CSS_SORTABLE */
-/* exported CSS_SORTABLE_ASC */
-/* exported CSS_SORTABLE_DESC */
-/* exported DATA_WAFFLE_ID */
-/* exported DATA_WAFFLE_SORTABLE */
-/* exported DATA_WAFFLE_ORDER */
-/* exported CHAR_ORDER_ASC */
-/* exported CHAR_ORDER_DESC */
-/* exported SCROLLBAR_WIDTH */
+describe('$util', function() {
 
-var CSS_PREFIX = 'waffle-';
-var CSS_SORTABLE = CSS_PREFIX + 'sortable';
-var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
-var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
+  it('should translate a value to a px notation', function() {
+    expect($util.toPx(100)).toBe('100px');
+    expect($util.toPx('100px')).toBe('100px');
+  });
 
-var DATA_PREFIX = 'data-waffle-';
-var DATA_WAFFLE_ID = DATA_PREFIX + 'id';
-var DATA_WAFFLE_SORTABLE = DATA_PREFIX + 'sortable';
-var DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';
-
-var CHAR_ORDER_ASC = '+';
-var CHAR_ORDER_DESC = '-';
-
-var SCROLLBAR_WIDTH = 15;
+  it('should translate a px notation to a number', function() {
+    expect($util.fromPx('100px')).toBe(100);
+    expect($util.fromPx(100)).toBe(100);
+  });
+});

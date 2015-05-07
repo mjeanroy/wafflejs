@@ -43,6 +43,10 @@ describe('Grid', function() {
     expect(Grid.options).toEqual({
       key: 'id',
       async: false,
+      size: {
+        width: null,
+        height: null
+      },
       events: {
         onInitialized: _.noop,
         onRendered: _.noop,
@@ -74,6 +78,11 @@ describe('Grid', function() {
 
     var grid = new Grid(table, {
       key: 'title',
+      async: true,
+      size: {
+        width: 100,
+        height: 200
+      },
       events: {
         onInitialized: onInitialized,
         onAdded: onAdded
@@ -89,12 +98,37 @@ describe('Grid', function() {
     expect(grid.options).not.toEqual(jasmine.objectContaining(Grid.options));
     expect(grid.options).toEqual(jasmine.objectContaining({
       key: 'title',
+      async: true,
+      size: {
+        width: 100,
+        height: 200
+      },
       events: {
         onInitialized: onInitialized,
         onRendered: _.noop,
         onAdded: onAdded,
         onRemoved: _.noop,
         onSorted: _.noop
+      }
+    }));
+  });
+
+  it('should create grid with size values as numbers', function() {
+    var table = document.createElement('table');
+    var onInitialized = jasmine.createSpy('onInitialized');
+    var onAdded = jasmine.createSpy('onAdded');
+
+    var grid = new Grid(table, {
+      size: {
+        width: '100px',
+        height: '200px'
+      }
+    });
+
+    expect(grid.options).toEqual(jasmine.objectContaining({
+      size: {
+        width: 100,
+        height: 200
       }
     }));
   });

@@ -35,6 +35,10 @@ describe('Column', function() {
     expect(column.id).toBe('foo');
     expect(column.field).toBe('foo');
     expect(column.css).toBe('foo');
+    expect(column.size).toEqual({
+      width: undefined,
+      height: undefined
+    });
   });
 
   it('should initialize with custom values', function() {
@@ -44,7 +48,11 @@ describe('Column', function() {
       title: 'Foo',
       css: 'foo-bar',
       escape: false,
-      sortable: false
+      sortable: false,
+      size: {
+        width: 100,
+        height: 200
+      }
     });
 
     expect(column.escape).toBe(false);
@@ -53,6 +61,10 @@ describe('Column', function() {
     expect(column.id).toBe('foo');
     expect(column.field).toBe('foo.bar');
     expect(column.css).toBe('foo-bar');
+    expect(column.size).toEqual({
+      width: 100,
+      height: 200
+    });
   });
 
   it('should initialize column with pre-built renderer', function() {
@@ -324,5 +336,94 @@ describe('Column', function() {
     expect(classes).not.toContain('waffle-sortable');
     expect(classes).not.toContain('waffle-sortable-asc');
     expect(classes).not.toContain('waffle-sortable-desc');
+  });
+
+  it('should get empty object if no styles should be set', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false
+    });
+
+    expect(column.styles()).toBeEmpty();
+  });
+
+  it('should get height and width as inline styles if size is defined', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false,
+      size: {
+        width: 100,
+        height: 200
+      }
+    });
+
+    expect(column.styles()).toEqual({
+      width: '100px',
+      minWidth: '100px',
+      maxWidth: '100px',
+
+      height: '200px',
+      minHeight: '200px',
+      maxHeight: '200px'
+    });
+  });
+
+  it('should get height and width as inline styles if size is defined as strings', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false,
+      size: {
+        width: '100px',
+        height: '200px'
+      }
+    });
+
+    expect(column.styles()).toEqual({
+      width: '100px',
+      minWidth: '100px',
+      maxWidth: '100px',
+
+      height: '200px',
+      minHeight: '200px',
+      maxHeight: '200px'
+    });
+  });
+
+  it('should update width of column', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false,
+      size: {
+        width: 100,
+        height: 200
+      }
+    });
+
+    expect(column.size.width).toBe(100);
+    expect(column.size.height).toBe(200);
+
+    column.updateWidth(300);
+
+    expect(column.size.width).toBe(300);
+    expect(column.size.height).toBe(200);
+  });
+
+  it('should update height of column', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false,
+      size: {
+        width: 100,
+        height: 200
+      }
+    });
+
+    expect(column.size.width).toBe(100);
+    expect(column.size.height).toBe(200);
+
+    column.updateHeight(300);
+
+    expect(column.size.width).toBe(100);
+    expect(column.size.height).toBe(300);
   });
 });

@@ -25,7 +25,9 @@ var newColumn = function(id, title, renderer, width) {
     escape: false,
     comparator: '$string',
     renderer: renderer,
-    width: width
+    size: {
+      width: width
+    }
   };
 };
 
@@ -43,6 +45,8 @@ var options = {
   data: generatedData,
   columns: columns,
   sortBy: 'firstName',
-  height: 300,
-  width: 1140
+  size: {
+    height: 300,
+    width: 1140
+  }
 };

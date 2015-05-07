@@ -29,9 +29,15 @@
 /* global $sanitize */
 /* global $renderers */
 /* global $comparators */
+/* global $util */
 /* global CSS_SORTABLE */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SORTABLE_ASC */
+/* global CHAR_ORDER_ASC */
+/* global CHAR_ORDER_DESC */
+/* global DATA_WAFFLE_ID */
+/* global DATA_WAFFLE_ORDER */
+/* global DATA_WAFFLE_SORTABLE */
 /* exported Column */
 
 var Column = (function() {
@@ -39,6 +45,10 @@ var Column = (function() {
   var isUndefined = _.isUndefined;
   var defaultRenderer = '$identity';
   var defaultComparator = '$auto';
+
+  // Save bytes
+  var fromPx = $util.fromPx;
+  var toPx = $util.toPx;
 
   var lookup = function(value, dictionary, defaultValue) {
     // If value is a string, search in given dictionary
@@ -57,13 +67,18 @@ var Column = (function() {
   var Constructor = function(column) {
     var escape = column.escape;
     var sortable = column.sortable;
+    var size = column.size || {};
 
     this.id = column.id;
     this.title = column.title || '';
     this.field = column.field || this.id;
     this.css = column.css || this.id;
     this.escape = isUndefined(escape) ? true : !!escape;
-    this.width = column.width;
+
+    this.size = {
+      width: fromPx(size.width),
+      height: fromPx(size.height)
+    };
 
     this.sortable = isUndefined(sortable) ? true : !!sortable;
     this.asc = isUndefined(column.asc) ? null : !!column.asc;
@@ -109,6 +124,57 @@ var Column = (function() {
       }
 
       return classes.join(' ');
+    },
+
+    // Compute attributes to set on each cell
+    attributes: function(idx, header) {
+      var attributes = {};
+
+      // Set id of column as custom attribute
+      attributes[DATA_WAFFLE_ID] = this.id;
+
+      // Set sort information as custom attributes
+      if (header && this.sortable) {
+        attributes[DATA_WAFFLE_SORTABLE] = true;
+
+        var asc = this.asc;
+        if (asc != null) {
+          attributes[DATA_WAFFLE_ORDER] = asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+        }
+      }
+
+      return attributes;
+    },
+
+    // Compute inline styles to set on each cell
+    styles: function() {
+      var styles = {};
+
+      // Set size as inline styles
+      var size = this.size;
+      _.forEach(['Width', 'Height'], function(attr) {
+        var lower = attr.toLowerCase();
+        var px = toPx(size[lower]);
+        if (px) {
+          styles[lower] = px;
+          styles['max' + attr] = px;
+          styles['min' + attr] = px;
+        }
+      });
+
+      return styles;
+    },
+
+    // Update column fixed width
+    updateWidth: function(width) {
+      this.size.width = fromPx(width);
+      return this;
+    },
+
+    // Update column fixed height
+    updateHeight: function(height) {
+      this.size.height = fromPx(height);
+      return this;
     },
 
     // Render object using column settings

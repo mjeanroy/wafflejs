@@ -30,6 +30,7 @@
 /* global _ */
 /* global $parse */
 /* global $comparators */
+/* global $util */
 /* global $$createComparisonFunction */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
@@ -38,11 +39,14 @@
 /* global DATA_WAFFLE_SORTABLE */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
+/* global SCROLLBAR_WIDTH */
 /* exported Grid */
 
 var Grid = (function() {
 
-  var SCROLLBAR_WIDTH = 16;
+  // Save bytes
+  var toPx = $util.toPx;
+  var fromPx = $util.fromPx;
 
   // Normalize sort predicate
   // This function will return an array of id preprended with sort order
@@ -103,17 +107,11 @@ var Grid = (function() {
   var renderRow = function(grid, data) {
     var tr = $doc.tr();
 
-    grid.$columns.forEach(function(column) {
-      var attributes = {};
-      attributes[DATA_WAFFLE_ID] = column.id;
-      var width = column.calculatedWidth;
-      if (width) {
-        attributes.style = $$width(width).style;
-      }
-
+    grid.$columns.forEach(function(column, idx) {
       var $node = $($doc.td())
-        .addClass(column.cssClasses())
-        .attr(attributes)
+        .addClass(column.cssClasses(idx, false))
+        .css(column.styles(idx, false))
+        .attr(column.attributes(idx, false))
         .html(column.render(data));
 
        tr.appendChild($node[0]);
@@ -121,19 +119,6 @@ var Grid = (function() {
 
     return tr;
   };
-
-  var $$dim = function(type) {
-    return function(val) {
-      var dim = type + ': ' + val + 'px;';
-      var max = 'max-' + dim;
-      var min = 'min-' + dim;
-      return {
-        style: max + min + dim
-      };
-    };
-  };
-
-  var $$width = $$dim('width');
 
   var Constructor = function(table, options) {
     if (!(this instanceof Constructor)) {
@@ -157,8 +142,12 @@ var Grid = (function() {
       model: Column
     });
 
-    this.$height = options.height;
-    this.$width = options.width;
+    // Extract size
+    var size = options.size;
+    this.options.size = {
+      width: fromPx(size.width),
+      height: fromPx(size.height)
+    };
 
     this.$sortBy = [];
 
@@ -192,24 +181,37 @@ var Grid = (function() {
 
     // Render entire grid
     render: function() {
-      return this.calculateWidth().renderHeader().renderBody();
+      return this.renderHeader()
+                 .renderBody();
     },
 
     // Calculate column width
     assignWidth: function() {
-      var borderWidth = 1;
-      var rowWidth = this.$width - (2 * borderWidth);
-      if (this.$height) {
+      var size = this.options.size;
+      var rowWidth = size.width;
+
+      if (size.height) {
+        var px = toPx(size.width);
         this.$table.addClass('waffle-fixedheader')
-                   .attr($$width(this.$width));
+                   .css({
+                     width: px,
+                     maxWidth: px,
+                     minWidth: px
+                   });
+
+        this.$tbody.css({
+          maxHeight: toPx(size.height)
+        });
+
         rowWidth -= SCROLLBAR_WIDTH;
       }
 
       var constrainedWidth = 0;
       var constrainedColumnCount = 0;
       this.$columns.forEach(function(col) {
-        if (col.width) {
-          constrainedWidth += col.width;
+        var width = col.size.width;
+        if (width) {
+          constrainedWidth += width;
           ++constrainedColumnCount;
         }
       });
@@ -226,16 +228,24 @@ var Grid = (function() {
 
       var offset = 0;
       this.$columns.forEach(function(col) {
-        if (col.width) {
-          col.calculatedWidth = col.width;
-        } else {
+        var oldWidth = col.size.width;
+        var newWidth = oldWidth || 0;
+
+        // If size is not explicitly specified, we should compute a size
+        // For now, use the same width for every column
+        if (!newWidth) {
           offset += remains;
           if (offset >= 1) {
-            col.calculatedWidth = flooredCalculatedWidth + 1;
-            offset -= 1;
+            newWidth = flooredCalculatedWidth + 1;
+            offset--;
           } else {
-            col.calculatedWidth = flooredCalculatedWidth;
+            newWidth = flooredCalculatedWidth;
           }
+        }
+
+        // Update size if we detect a change
+        if (newWidth !== oldWidth) {
+          col.updateWidth(newWidth);
         }
       });
 
@@ -245,36 +255,18 @@ var Grid = (function() {
     // Render entire header of grid
     renderHeader: function() {
       var tr = $doc.tr();
-      var that = this;
 
-      this.$columns.forEach(function(column, idx) {
-        var attributes = {};
-        attributes[DATA_WAFFLE_ID] = column.id;
-        if (column.sortable) {
-          attributes[DATA_WAFFLE_SORTABLE] = true;
-          if (column.asc != null) {
-            attributes[DATA_WAFFLE_ORDER] = column.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
-          }
-        }
-        var width = column.calculatedWidth;
-        if (width) {
-          width += (that.$height && that.$columns.length === (idx + 1)) ? SCROLLBAR_WIDTH : 0;
-          attributes.style = $$width(width).style;
-        }
-
+      this.$columns.forEach(function(column, idx, array) {
         var $node = $($doc.th())
-          .addClass(column.cssClasses())
-          .attr(attributes)
+          .addClass(column.cssClasses(idx, true))
+          .css(column.styles(idx, true))
+          .attr(column.attributes(idx, array, true))
           .html(column.title);
 
         tr.appendChild($node[0]);
       });
 
       this.$thead.empty().append(tr);
-
-      if (this.$height) {
-        this.$tbody.attr({style: 'max-height: ' + this.$height + 'px;'});
-      }
 
       return this;
     },
@@ -567,7 +559,12 @@ var Grid = (function() {
   Constructor.options = {
     key: 'id',
     async: false,
-    events: {}
+    size: {
+      width: null,
+      height: null
+    },
+    events: {
+    }
   };
 
   // Initialize events with noop

@@ -35,6 +35,7 @@ var $files = {
     SRC + 'constants.js',
     SRC + 'map.js',
     SRC + 'dom.js',
+    SRC + 'util.js',
     SRC + 'collection.js',
     SRC + 'renderers.js',
     SRC + 'comparators.js',

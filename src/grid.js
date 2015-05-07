@@ -34,6 +34,7 @@
 /* global $$createComparisonFunction */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
+/* global CSS_SCROLLABLE */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_ORDER */
 /* global DATA_WAFFLE_SORTABLE */
@@ -191,7 +192,7 @@ var Grid = (function() {
 
       if (size.height) {
         var px = toPx(size.width);
-        this.$table.addClass('waffle-fixedheader')
+        this.$table.addClass(CSS_SCROLLABLE)
                    .css({
                      width: px,
                      maxWidth: px,

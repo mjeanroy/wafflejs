@@ -31,12 +31,13 @@
 /* exported DATA_WAFFLE_ORDER */
 /* exported CHAR_ORDER_ASC */
 /* exported CHAR_ORDER_DESC */
-/* exported SCROLLBAR_WIDTH */
+/* exported CSS_SCROLLABLE */
 
 var CSS_PREFIX = 'waffle-';
 var CSS_SORTABLE = CSS_PREFIX + 'sortable';
 var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
 var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
+var CSS_SCROLLABLE = CSS_PREFIX + 'fixedheader';
 
 var DATA_PREFIX = 'data-waffle-';
 var DATA_WAFFLE_ID = DATA_PREFIX + 'id';

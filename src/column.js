@@ -53,12 +53,12 @@ var Column = (function() {
   var lookup = function(value, dictionary, defaultValue) {
     // If value is a string, search in given dictionary
     if (_.isString(value)) {
-      value = dictionary[value];
+      value = dictionary.$get(value);
     }
 
     // If it is not a function then use default value in dictionary
     if (!_.isFunction(value)) {
-      value = dictionary[defaultValue];
+      value = dictionary.$get(defaultValue);
     }
 
     return value;

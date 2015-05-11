@@ -77,6 +77,12 @@ var $comparators = {
 
     // Just do a simple comparison... (strict equality is already checked)
     return a < b ? -1 : 1;
+  },
+
+  // Get comparator by its name
+  // Can be overridden by custom lookup
+  $get: function(name) {
+    return $comparators[name];
   }
 };
 

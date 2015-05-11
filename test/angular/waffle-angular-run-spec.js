@@ -33,4 +33,10 @@ describe('waffle-angular-run', function() {
     expect($sanitize).toBeDefined();
     expect($sanitize).toBe(_$sanitize_);
   }));
+
+  it('should define filters as waffle renderer', function() {
+    expect($renderers.$get('date')).toBeDefined();
+    expect($renderers.$get('uppercase')).toBeDefined();
+    expect($renderers.$get('lowercase')).toBeDefined();
+  });
 });

@@ -32,7 +32,7 @@ var $renderers = (function() {
     return (value == null ? '' : value).toString();
   };
 
-  return {
+  var o = {
     // Simple renderer that just return same value
     $identity: _.identity,
 
@@ -57,6 +57,14 @@ var $renderers = (function() {
     $capitalize: function(value) {
       var str = toString(value);
       return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
+    // Get renderer by its name
+    // Could be overridden by custom lookup
+    $get: function(name) {
+      return o[name];
     }
   };
+
+  return o;
 })();

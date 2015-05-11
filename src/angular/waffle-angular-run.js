@@ -25,6 +25,7 @@
 /* exported $parse */
 /* exported $sanitize */
 /* global _ */
+/* global $renderers */
 /* global waffleModule */
 
 // Use $parse and $sanitize services from angularjs framework
@@ -32,7 +33,7 @@
 var $parse;
 var $sanitize;
 
-waffleModule.run(['$injector', '$log', function($injector, $log) {
+waffleModule.run(['$injector', '$log', '$filter', function($injector, $log, $filter) {
   // Service $parse is a mandatory module
   $parse = $injector.get('$parse');
 
@@ -45,4 +46,12 @@ waffleModule.run(['$injector', '$log', function($injector, $log) {
     // Fallback to identity function, should it be better ?
     $sanitize = _.identity;
   }
+
+  // Override $renderers lookup
+  var $getRenderer = $renderers.$get;
+  $renderers.$get = function(name) {
+    // An angular fitler should be a waffle renderer.
+    // Native waffle renderer should be check first.
+    return $getRenderer(name) || $filter(name);
+  };
 }]);

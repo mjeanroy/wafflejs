@@ -53,16 +53,16 @@ waffleModule.directive('waffle', ['$parse', function($parse) {
       var events = options.events = options.events || {};
 
       _.forEach(_.keys(Grid.options.events), function(f) {
-        var fn = events[f];
-        events[f] = function() {
-          if (_.isFunction(fn)) {
-            fn.apply(this, arguments);
-          }
+        if (attrs[f]) {
+          var fn = events[f];
+          events[f] = function() {
+            if (fn !== _.noop && _.isFunction(fn)) {
+              fn.apply(this, arguments);
+            }
 
-          if (attrs[f]) {
             scope.$eval(attrs[f]);
-          }
-        };
+          };
+        }
       });
 
       // Create grid object

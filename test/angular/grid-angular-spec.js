@@ -202,4 +202,24 @@ describe('waffle-jq-angular', function() {
     $scope.$destroy();
     expect(Grid.prototype.destroy).toHaveBeenCalled();
   });
+
+  it('should not override events if dom attribute is not defined', function() {
+    $scope.grid = options;
+
+    $scope.onInitialized = jasmine.createSpy('onInitialized');
+    $scope.onRendered = jasmine.createSpy('onRendered');
+    $scope.onAdded = jasmine.createSpy('onAdded');
+
+    var table = '' +
+      '<table waffle waffle-grid="grid" ' +
+      '       on-initialized="onInitialized()" ' +
+      '       on-rendered="onRendered()" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid.options.events.onAdded).toBe(_.noop);
+    expect($scope.grid.options.events.onRendered).not.toBe(_.noop);
+  });
 });

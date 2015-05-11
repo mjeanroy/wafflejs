@@ -33,6 +33,7 @@ var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
 var taskListing = require('gulp-task-listing');
 var uglify = require('gulp-uglify');
+var minifyCSS = require('gulp-minify-css');
 var wrap = require('gulp-wrap');
 var git = require('gulp-git');
 var bump = require('gulp-bump');
@@ -126,6 +127,9 @@ gulp.task('test', targets.map(function(t) { return 'test:' + t; }));
 gulp.task('less', function() {
   return gulp.src(__dirname + '/src/less/*.less')
     .pipe(less())
+    .pipe(gulp.dest(BUILD_FOLDER))
+    .pipe(minifyCSS())
+    .pipe(rename('waffle.min.css'))
     .pipe(gulp.dest(BUILD_FOLDER));
 });
 

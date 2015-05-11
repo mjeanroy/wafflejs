@@ -839,6 +839,42 @@ describe('collection', function() {
       });
     });
 
+    it('should fail if added value is not object', function() {
+      var o1 = { id: 1, name: 'foo' };
+      var o2 = { id: 2, name: 'bar' };
+      var o3 = { id: 3, name: 'foo' };
+      var o4 = null;
+      var collection = new Collection([o1, o2]);
+
+      var push = function() {
+        collection.push(o3, o4);
+      };
+
+      var unshift = function() {
+        collection.unshift(o3, o4);
+      };
+
+      var add = function() {
+        collection.add(0, [o3, o4]);
+      };
+
+      var splice = function() {
+        collection.splice(0, 0, o3, o4);
+      };
+
+      var error = new Error('Waffle collections are not array, only object are allowed');
+
+      expect(push).toThrow(error);
+      expect(unshift).toThrow(error);
+      expect(add).toThrow(error);
+      expect(splice).toThrow(error);
+
+      // Check collection has not been updated
+      expect(collection.length).toBe(2);
+      expect(collection[0]).toBe(o1);
+      expect(collection[1]).toBe(o2);
+    });
+
     it('get element by key', function() {
       var o1 = { id: 1, name: 'foo' };
       var o2 = { id: 2, name: 'bar' };

@@ -139,8 +139,19 @@ var Collection = (function() {
   };
 
   // Convert parameter to a model instance.
-  var toModel = function(collection, o) {
-    return o instanceof collection.$$model ? o : new collection.$$model(o);
+  var parseModel = function(collection, o) {
+    if (!_.isObject(o)) {
+      // Only object are allowed inside collection
+      throw new Error('Waffle collections are not array, only object are allowed');
+    }
+
+    if (o instanceof collection.$$model) {
+      // It is already an instance of model object !
+      return o;
+    }
+
+    // Create new model instance and return it.
+    return new collection.$$model(o);
   };
 
   // Add entry at given index.
@@ -360,7 +371,7 @@ var Collection = (function() {
           removed.push(this.at(i));
         }
 
-        put(this, toModel(this, array[i]), i);
+        put(this, parseModel(this, array[i]), i);
       }
 
       for (; i < oldSize; ++i) {
@@ -413,7 +424,7 @@ var Collection = (function() {
 
       // Iterator that will translate object to model elements
       var iteratee = function(m) {
-        return toModel(this, m);
+        return parseModel(this, m);
       };
 
       var added = _.map(data, iteratee, this);

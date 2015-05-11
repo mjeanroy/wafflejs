@@ -20,7 +20,7 @@
     "gulp": "3.8.11",
     "gulp-concat": "2.5.2",
     "gulp-express": "0.3.2",
-    "gulp-jshint": "1.9.2",
+    "gulp-jshint": "1.10.0",
     "gulp-less": "3.0.1",
     "gulp-rename": "1.2.0",
     "gulp-strip-comments": "1.0.1",

@@ -21,7 +21,7 @@
     "gulp-concat": "2.5.2",
     "gulp-express": "0.3.2",
     "gulp-jshint": "1.10.0",
-    "gulp-less": "3.0.1",
+    "gulp-less": "3.0.3",
     "gulp-rename": "1.2.2",
     "gulp-strip-comments": "1.0.1",
     "gulp-task-listing": "1.0.0",

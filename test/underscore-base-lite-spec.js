@@ -100,6 +100,16 @@ describe('_', function() {
     expect(functions).toEqual(['bar', 'foo']);
   });
 
+  it('should execute or return value', function() {
+    var obj = {
+      foo: 1,
+      bar: jasmine.createSpy('bar').and.returnValue(2)
+    };
+
+    expect(_.result(obj, 'foo')).toBe(1);
+    expect(_.result(obj, 'bar')).toBe(2);
+  });
+
   it('should check if object contains key', function() {
     expect(_.has({ foo: 'foo' }, 'foo')).toBe(true);
     expect(_.has({ foo: 'foo' }, 'bar')).toBe(false);

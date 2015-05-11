@@ -37,7 +37,7 @@ var $parse = function(key) {
         return undefined;
       }
 
-      current = current[parts[i]];
+      current = _.result(current, parts[i]);
     }
 
     return current;
@@ -67,9 +67,17 @@ $parse.$normalize = function(key) {
   };
 
   for (var i = 0, size = parts.length; i < size; ++i) {
-    results[i] = parts[i].replace(arrayIndex, replacer)
+    var part = parts[i].replace(arrayIndex, replacer)
                          .replace(bracketSingleQuote, replacer)
                          .replace(bracketDoubleQuote, replacer);
+
+    // Remove parenthesis if name is a function call
+    var openParenthesis = part.indexOf('(');
+    if (openParenthesis > 0) {
+      part = part.slice(0, openParenthesis);
+    }
+
+    results[i] = part;
   }
 
   return results.join('.');

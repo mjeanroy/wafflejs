@@ -111,6 +111,13 @@ var _ = (function() {
       return o1;
     },
 
+    // If the value of the named property is a function, then invoke it with
+    // the object as context, otherwise return it.
+    result: function(o, prop) {
+      var value = o[prop];
+      return _.isFunction(value) ? value.call(o) : value;
+    },
+
     // Check if object has given key
     has: function(object, key) {
       return hasOwnProperty.call(object, key);

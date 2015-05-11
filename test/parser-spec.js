@@ -29,7 +29,10 @@ describe('parse', function() {
 
   beforeEach(function() {
     obj = {
-      id: 1
+      id: 1,
+      foo: function() {
+        return 'bar';
+      }
     };
 
     nestedObj = {
@@ -65,6 +68,11 @@ describe('parse', function() {
 
   it('should return value of attribute of simple object', function() {
     expect($parse('id')(obj)).toBe(1);
+  });
+
+  it('should return result of function execution', function() {
+    expect($parse('foo()')(obj)).toBe('bar');
+    expect($parse('foo( )')(obj)).toBe('bar');
   });
 
   it('should return value of attribute of nested object', function() {

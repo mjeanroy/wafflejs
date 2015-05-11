@@ -10,7 +10,10 @@ var createFakePerson = function() {
     firstName: faker.Name.firstName(),
     lastName: faker.Name.lastName(),
     userName: faker.Internet.userName(),
-    email: faker.Internet.email()
+    email: faker.Internet.email(),
+    name: function() {
+      return this.firstName + ' ' + this.lastName.toUpperCase()
+    }
   };
 };
 
@@ -31,20 +34,16 @@ var newColumn = function(id, title, renderer, width) {
   };
 };
 
-var fullNameRenderer = function(value, object) {
-  return value + ' ' + this.$uppercase(object.lastName);
-};
-
 var columns = [
-  newColumn('firstName', 'Name', [fullNameRenderer, '$capitalize']),
-  newColumn('userName', 'Login'),
+  newColumn('name()', 'Name', ['$capitalize']),
+  newColumn('userName', 'Login'), 
   newColumn('email', 'Email', ['$lowercase', 'email'], 500)
 ];
 
 var options = {
   data: generatedData,
   columns: columns,
-  sortBy: 'firstName',
+  sortBy: 'name()',
   size: {
     height: 300,
     width: 1140

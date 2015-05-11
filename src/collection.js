@@ -88,7 +88,6 @@ var Collection = (function() {
 
     this.$$observers = [];
     this.$$changes = [];
-    this.$$trigger = _.bind(this.$$trigger, this);
 
     // Initialize collection
     this.length = 0;
@@ -261,6 +260,11 @@ var Collection = (function() {
     collection.length = newSize;
 
     return changes;
+  };
+
+  // Call observer callback
+  var callObserver = function(o) {
+    o.callback.call(o.ctx, this.$$changes);
   };
 
   // == Public prototype
@@ -613,27 +617,24 @@ var Collection = (function() {
     // Note that callbacks will be called asynchronously
     trigger: function(changes) {
       this.$$changes = this.$$changes.concat(changes);
-      setTimeout(this.$$trigger);
+
+      var collection = this;
+      setTimeout(function() {
+        if (collection.$$changes.length > 0) {
+          _.forEach(collection.$$observers, callObserver, collection);
+          collection.$$changes = [];
+        }
+
+        // Free memory
+        collection = null;
+      });
+
       return this;
     },
 
     // Clear pending changes
     clearChanges: function() {
       this.$$changes = [];
-      return this;
-    },
-
-    // Trigger changes to observers
-    // Private function
-    $$trigger: function() {
-      if (this.$$changes.length > 0) {
-        _.forEach(this.$$observers, function(o) {
-          o.callback.call(o.ctx, this.$$changes);
-        }, this);
-
-        this.$$changes = [];
-      }
-
       return this;
     }
   };

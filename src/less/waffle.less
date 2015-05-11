@@ -22,12 +22,10 @@
  * SOFTWARE.
  */
 
-/**
- * --------------------------------------------------------------------------*\
- * Mixins use to clear float effect.                                         *\
- * https://css-tricks.com/all-about-floats/                                  *\
- * --------------------------------------------------------------------------*\
- */
+// -------------------------------------------------------------------------- \\
+// Mixins use to clear float effect.                                          \\
+// https://css-tricks.com/all-about-floats/                                   \\
+// -------------------------------------------------------------------------- \\
 .clearfix() {
   content: ' ';
   display: block;
@@ -36,13 +34,11 @@
   clear: both;
 }
 
-/**
- * --------------------------------------------------------------------------*\
- * Mixins use to user-select effect.                                         *\
- * https://developer.mozilla.org/en-US/docs/Web/CSS/user-select              *\
- * http://css-tricks.com/almanac/properties/u/user-select/                   *\
- * --------------------------------------------------------------------------*\
- */
+// -------------------------------------------------------------------------- \\
+// Mixins use to user-select effect.                                          \\
+// https://developer.mozilla.org/en-US/docs/Web/CSS/user-select               \\
+// http://css-tricks.com/almanac/properties/u/user-select/                    \\
+// -------------------------------------------------------------------------- \\
 .drop-select() {
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -51,14 +47,12 @@
           user-select: none;
 }
 
-/**
- * --------------------------------------------------------------------------*\
- * Mixins use to create arrows in pure css.                                  *\
- * http://css-tricks.com/snippets/css/css-triangle/                          *\
- * @param size Size of arrow                                                 *\
- * @param direction Direction of arrow (top or bottom)                       *\
- * --------------------------------------------------------------------------*\
- */
+// -------------------------------------------------------------------------- \\
+// Mixins use to create arrows in pure css.                                   \\
+// http://css-tricks.com/snippets/css/css-triangle/                           \\
+// @param size Size of arrow                                                  \\
+// @param direction Direction of arrow (top or bottom)                        \\
+// -------------------------------------------------------------------------- \\
 .arrow(@size, @direction) {
   position: absolute;
   width: 0;
@@ -108,13 +102,11 @@ th {
   }
 }
 
-/**
- * --------------------------------------------------------------------------*\
- * Fixed header for scroll handling.                                         *\
- * http://jsfiddle.net/drueter/yqgB5/16/                                     *\
- * by https://github.com/DavidRueter                                         *\
- * --------------------------------------------------------------------------*\
- */
+// -------------------------------------------------------------------------- \\
+// Fixed header for scroll handling.                                          \\
+// http://jsfiddle.net/drueter/yqgB5/16/                                      \\
+// by https://github.com/DavidRueter                                          \\
+// -------------------------------------------------------------------------- \\
 
 // This class will be added automatically to the table element
 // if table must be scrollable.

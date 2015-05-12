@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,10 @@ describe('constants', function() {
 
   it('should define css sortable desc class', function() {
     expect(CSS_SORTABLE_DESC).toBe('waffle-sortable-desc');
+  });
+
+  it('should define css selected class', function() {
+    expect(CSS_SELECTED).toBe('waffle-selected');
   });
 
   it('should define data attribute name for id value', function() {

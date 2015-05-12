@@ -210,11 +210,12 @@ var targets = _.mapObject($targets, function(target, key) {
   // Each source file should have a spec file
   var specs = _.map(src, function(f) {
     return f.replace(SRC, TEST)
-            .replace('.js', '-spec.js');
+            .replace('.js', '*-spec.js');
   });
 
   test = $test
     .concat(vdrTests)
+    .concat('test/base-spec.js')
     .concat(specs)
     .concat(target.test);
 

@@ -59,14 +59,6 @@ describe('collection', function() {
     });
   });
 
-  beforeEach(function() {
-    jasmine.clock().install();
-  });
-
-  afterEach(function() {
-    jasmine.clock().uninstall();
-  });
-
   it('should initialize empty collection', function() {
     var collection = new Collection();
     expect(collection.length).toBe(0);

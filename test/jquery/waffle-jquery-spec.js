@@ -25,7 +25,6 @@
 describe('waffle-jquery', function() {
 
   var table;
-  var fixtures;
   var css;
 
   beforeEach(function() {
@@ -34,16 +33,10 @@ describe('waffle-jquery', function() {
     table = document.createElement('table');
     table.setAttribute('id', 'waffle-table');
     table.className = css;
-
-    fixtures = document.createElement('div');
     fixtures.appendChild(table);
-
-    document.body.appendChild(fixtures);
   });
 
   afterEach(function() {
-    fixtures.parentNode.removeChild(fixtures);
-    fixtures = null;
     table = null;
   });
 

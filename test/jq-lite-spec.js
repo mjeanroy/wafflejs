@@ -24,23 +24,15 @@
 
 describe('$', function() {
 
-  var fixtures;
   var node1;
   var node2;
 
   beforeEach(function() {
-    fixtures = document.createElement('div');
     node1 = document.createElement('div');
     node2 = document.createElement('div');
 
     fixtures.appendChild(node1);
     fixtures.appendChild(node2);
-
-    document.body.appendChild(fixtures);
-  });
-
-  afterEach(function() {
-    document.body.removeChild(fixtures);
   });
 
   it('should return instance of $', function() {

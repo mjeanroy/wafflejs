@@ -31,14 +31,6 @@ describe('waffle-jq-angular', function() {
   var options;
   var compileTable;
 
-  beforeEach(function() {
-    jasmine.clock().install();
-  });
-
-  afterEach(function() {
-    jasmine.clock().uninstall();
-  });
-
   beforeEach(inject(function(_$rootScope_, _$compile_) {
     $rootScope = _$rootScope_;
     $compile = _$compile_;

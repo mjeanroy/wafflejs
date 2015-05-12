@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,8 +35,10 @@
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SCROLLABLE */
+/* global CSS_SELECTED */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_ORDER */
+/* global DATA_WAFFLE_IDX */
 /* global DATA_WAFFLE_SORTABLE */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
@@ -104,8 +106,18 @@ var Grid = (function() {
 
   // Build row and return it
   // Should be a private function
-  var renderRow = function(grid, data) {
+  var renderRow = function(grid, data, idx) {
     var tr = $doc.tr();
+
+    var $tr = $(tr);
+
+    // Add index
+    $tr.attr(DATA_WAFFLE_IDX, idx);
+
+    if (data.$$selected) {
+      $tr.addClass(CSS_SELECTED);
+      grid.$selection[idx] = data;
+    }
 
     grid.$columns.forEach(function(column, idx) {
       var $node = $($doc.td())
@@ -280,10 +292,10 @@ var Grid = (function() {
       var asyncRender = async == null ? this.options.async : async;
       var grid = this;
 
-      var buildFragment = function(grid, data) {
+      var buildFragment = function(grid, data, startIdx) {
         var fragment = $doc.createFragment();
         for (var i = 0, dataSize = data.length; i < dataSize; ++i) {
-          var row = renderRow(grid, data[i]);
+          var row = renderRow(grid, data[i], startIdx + i);
           fragment.appendChild(row);
         }
         return fragment;
@@ -300,13 +312,16 @@ var Grid = (function() {
         grid = buildFragment = onEnded = null;
       };
 
+      this.$selection = {};
+
       if (asyncRender) {
         // Async rendering
         var delay = 10;
         var chunks = this.$data.split(200);
+        var idx = 0;
         var timer = function() {
           if (chunks.length > 0) {
-            var fragment = buildFragment(grid, chunks.shift());
+            var fragment = buildFragment(grid, chunks.shift(), idx++);
             grid.$tbody.append(fragment);
             setTimeout(timer, delay);
           } else {
@@ -319,12 +334,46 @@ var Grid = (function() {
         setTimeout(timer);
       }
       else {
-        var fragment = buildFragment(grid, grid.data());
+        var fragment = buildFragment(grid, grid.data(), 0);
         grid.$tbody.empty().append(fragment);
         onEnded(grid);
       }
 
       return this;
+    },
+
+    select: function(newSelection) {
+      var that = this;
+      if (!_.isObject(newSelection)) {
+        newSelection = {};
+      }
+
+      var previousSelection = this.$selection;
+
+      var toggle = function(idx) {
+          var select = !that.$data[idx].$$selected;
+          that.$data[idx].$$selected = select;
+          var tr = that.$tbody[0].rows[idx];
+          if (select) {
+            tr.setAttribute('class', CSS_SELECTED);
+          } else {
+            tr.removeAttribute('class');
+          }
+      };
+
+      _.keys(newSelection).forEach(function(idx) {
+        if (!newSelection[idx].$$selected) {
+          toggle(idx);
+        }
+      });
+
+      _.keys(previousSelection).forEach(function(idx) {
+        if (!newSelection[idx]) {
+          toggle(idx);
+        }
+      });
+
+      this.$selection = newSelection;
     },
 
     // Sort grid by fields
@@ -442,6 +491,22 @@ var Grid = (function() {
           that.sortBy(newSortBy);
         }
       });
+
+      this.$tbody.on('click', function(e) {
+        var getTrParent = function(node) {
+          return node.tagName === 'TR' ? node : getTrParent(node.parentNode);
+        };
+        var tr = getTrParent(e.target);
+        var idx = tr.getAttribute(DATA_WAFFLE_IDX);
+        var data = that.$data[idx];
+        var previouslySelected = data.$$selected;
+        var newSelection = {};
+        if (!previouslySelected) {
+          newSelection[idx] = data;
+        }
+        that.select(newSelection);
+      });
+
       return this;
     },
 
@@ -449,6 +514,7 @@ var Grid = (function() {
     // Should be a private function
     $$unbind: function() {
       this.$thead.off();
+      this.$tbody.off();
       return this;
     },
 
@@ -514,7 +580,7 @@ var Grid = (function() {
         for (var i = 0; i < addedCount; ++i) {
           var rowIdx = i + index;
           var data = collection.at(rowIdx);
-          var tr = renderRow(this, data);
+          var tr = renderRow(this, data, rowIdx);
 
           addedNodes.push(tr);
           added.push(data);
@@ -548,7 +614,7 @@ var Grid = (function() {
       var tbody = this.$tbody[0];
 
       var oldNode = tbody.childNodes[index];
-      var newNode = renderRow(this, data);
+      var newNode = renderRow(this, data, index);
       tbody.replaceChild(newNode, oldNode);
 
       return this;

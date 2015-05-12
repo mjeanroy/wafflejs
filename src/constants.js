@@ -26,9 +26,11 @@
 /* exported CSS_SORTABLE */
 /* exported CSS_SORTABLE_ASC */
 /* exported CSS_SORTABLE_DESC */
+/* exported CSS_SELECTED */
 /* exported DATA_WAFFLE_ID */
 /* exported DATA_WAFFLE_SORTABLE */
 /* exported DATA_WAFFLE_ORDER */
+/* exported DATA_WAFFLE_IDX */
 /* exported CHAR_ORDER_ASC */
 /* exported CHAR_ORDER_DESC */
 /* exported CSS_SCROLLABLE */
@@ -38,11 +40,13 @@ var CSS_SORTABLE = CSS_PREFIX + 'sortable';
 var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
 var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
 var CSS_SCROLLABLE = CSS_PREFIX + 'fixedheader';
+var CSS_SELECTED = CSS_PREFIX + 'selected';
 
 var DATA_PREFIX = 'data-waffle-';
 var DATA_WAFFLE_ID = DATA_PREFIX + 'id';
 var DATA_WAFFLE_SORTABLE = DATA_PREFIX + 'sortable';
 var DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';
+var DATA_WAFFLE_IDX = DATA_PREFIX + 'idx';
 
 var CHAR_ORDER_ASC = '+';
 var CHAR_ORDER_DESC = '-';

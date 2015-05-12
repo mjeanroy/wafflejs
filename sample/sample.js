@@ -43,6 +43,7 @@ var columns = [
 var options = {
   data: generatedData,
   columns: columns,
+  multiSelect: true,
   sortBy: 'name()',
   size: {
     height: 300,

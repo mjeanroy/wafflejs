@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -162,6 +162,8 @@ var Grid = (function() {
     };
 
     this.$sortBy = [];
+
+    this.$multiSelect = options.multiSelect;
 
     createNodes(this);
 
@@ -460,6 +462,11 @@ var Grid = (function() {
     $$bind: function() {
       var that = this;
       this.$thead.on('click', function(e) {
+        // If target is thead it means click was pressed in a th and released in another
+        if (e.target.tagName === 'THEAD') {
+          return;
+        }
+
         var th = e.target;
         if (th.getAttribute(DATA_WAFFLE_SORTABLE)) {
           var id = th.getAttribute(DATA_WAFFLE_ID);
@@ -493,6 +500,11 @@ var Grid = (function() {
       });
 
       this.$tbody.on('click', function(e) {
+        // If target is tbody it means click was pressed in a tr and released in another
+        if (e.target.tagName === 'TBODY') {
+          return;
+        }
+
         var getTrParent = function(node) {
           return node.tagName === 'TR' ? node : getTrParent(node.parentNode);
         };
@@ -501,9 +513,37 @@ var Grid = (function() {
         var data = that.$data[idx];
         var previouslySelected = data.$$selected;
         var newSelection = {};
-        if (!previouslySelected) {
-          newSelection[idx] = data;
+
+        this.$$selectAnchor = 0;
+
+        if (that.$multiSelect) {
+          if (e.shiftKey) {
+            var idxF = parseFloat(idx);
+            var selectAnchorF = parseFloat(that.$$selectAnchor);
+            var lowerBound = idxF > selectAnchorF ? selectAnchorF : idxF;
+            var upperBound = idxF > selectAnchorF ? idxF : selectAnchorF;
+            for (var i = lowerBound; i <= upperBound; ++i) {
+              newSelection[i] = that.$data[i];
+            }
+          } else if (e.ctrlKey) {
+            _.keys(that.$selection).forEach(function(currIdx) {
+              if (idx !== currIdx) {
+                newSelection[currIdx] = that.$data[currIdx];
+              }
+            });
+            if (!previouslySelected) {
+              newSelection[idx] = data;
+            }
+          } else if (!previouslySelected || (_.keys(that.$selection).length > 1)) {
+            newSelection[idx] = data;
+            that.$$selectAnchor = idx;
+          }
+        } else {
+          if (!previouslySelected) {
+            newSelection[idx] = data;
+          }
         }
+
         that.select(newSelection);
       });
 

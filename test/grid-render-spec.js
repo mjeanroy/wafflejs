@@ -144,8 +144,12 @@ describe('Grid Render', function() {
       return node.tagName === 'TR';
     });
 
-    expect(trs).toVerify(function(node, idx) {
+    expect(trs).toVerify(function(node) {
       return node.childNodes.length === 2;
+    });
+
+    expect(trs).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-idx') === idx.toString();
     });
 
     expect(trs).toVerify(function(node, idx) {
@@ -204,5 +208,10 @@ describe('Grid Render', function() {
     // Trigger second timeout
     jasmine.clock().tick(10);
     expect(grid.$tbody[0].childNodes.length).toBe(215);
+
+    var trs = grid.$tbody[0].childNodes;
+    expect(trs).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-idx') === idx.toString();
+    });
   });
 });

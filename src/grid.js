@@ -326,12 +326,13 @@ var Grid = (function() {
       if (asyncRender) {
         // Async rendering
         var delay = 10;
-        var chunks = this.$data.split(200);
+        var chunkSize = 200;
+        var chunks = this.$data.split(chunkSize);
         var idx = 0;
         var timer = function() {
           if (chunks.length > 0) {
-            var fragment = buildFragment(grid, chunks.shift(), idx++);
-            grid.$tbody.append(fragment);
+            grid.$tbody.append(buildFragment(grid, chunks.shift(), idx));
+            idx += chunkSize;
             setTimeout(timer, delay);
           } else {
             onEnded(grid);

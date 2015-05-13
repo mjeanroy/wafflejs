@@ -73,15 +73,20 @@ var Collection = (function() {
   };
 
   var Constructor = function(data, options) {
-    this.$$map = new HashMap();
-
     var opts = options || {};
 
-    this.$$key = opts.key || 'id';
+    // We keep an internal map that will store, for each data, an additionnal context
+    // object that can be used to keep various information (index in collection,
+    // internal state of data etc.).
+    // Each entry is indexed by data identifier (value retrieved from $$key).
+    this.$$map = new HashMap();
 
+    // Internal data model object.
     // Use Object as a fallback since every object is already an instance of Object !
     this.$$model = opts.model || Object;
 
+    // Key may be an attribute name or an explicit function
+    this.$$key = opts.key || 'id';
     if (!_.isFunction(this.$$key)) {
       this.$$key = $parse(this.$$key);
     }
@@ -130,7 +135,8 @@ var Collection = (function() {
   // Unset data from collection
   var unset = function(collection, obj) {
     var id = collection.$$key(obj);
-    var idx = collection.$$map.get(id);
+    var ctx = collection.$$map.get(id);
+    var idx = ctx ? ctx.idx : null;
     if (idx != null) {
       unsetAt(collection, idx);
       unsetId(collection, id);
@@ -158,7 +164,10 @@ var Collection = (function() {
   var put = function(collection, o, i) {
     collection[i] = o;
     if (o != null) {
-      collection.$$map.put(collection.$$key(o), i);
+      var dataId = collection.$$key(o);
+      var dataCtx = collection.$$map.get(dataId) || {};
+      dataCtx.idx = i;
+      collection.$$map.put(dataId, dataCtx);
     }
   };
 
@@ -282,9 +291,16 @@ var Collection = (function() {
       return index >= 0 ? this.at(index) : undefined;
     },
 
+    // Get state of data object.
+    // First parameter should be the object key or the object.
+    getState: function(key) {
+      var k = _.isObject(key) ? this.$$key(key) : key;
+      return this.$$map.get(key);
+    },
+
     // Get index of item by its key
     indexByKey: function(key) {
-      return this.$$map.contains(key) ? this.$$map.get(key) : -1;
+      return this.$$map.contains(key) ? this.$$map.get(key).idx : -1;
     },
 
     // Returns an index in the array, if an element in the array

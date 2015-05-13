@@ -109,8 +109,13 @@ describe('collection', function() {
     expect(collection[0]).toBe(o1);
     expect(collection[1]).toBe(o2);
 
-    expect(collection.$$map.get(1)).toBe(0);
-    expect(collection.$$map.get(2)).toBe(1);
+    expect(collection.$$map.get(1)).toEqual({
+      idx: 0
+    });
+
+    expect(collection.$$map.get(2)).toEqual({
+      idx: 1
+    });
   });
 
   it('should initialize collection with array and model constructor', function() {
@@ -134,11 +139,13 @@ describe('collection', function() {
     expect(collection[0]).toEqual(jasmine.objectContaining(o1));
     expect(collection[1]).toEqual(jasmine.objectContaining(o2));
 
-    expect(collection.$$map.get(1)).not.toBe(o1);
-    expect(collection.$$map.get(2)).not.toBe(o2);
+    expect(collection.$$map.get(1)).toEqual({
+      idx: 0
+    });
 
-    expect(collection.$$map.get(1)).toBe(0);
-    expect(collection.$$map.get(2)).toBe(1);
+    expect(collection.$$map.get(2)).toEqual({
+      idx: 1
+    });
   });
 
   describe('once initialized', function() {
@@ -185,7 +192,7 @@ describe('collection', function() {
         expect(collection[0]).toBe(o1);
         expect(collection[1]).toBeUndefined();
         expect(collection.$$map).toEqual(createMap({
-          1: 0
+          1: { idx: 0 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([{
@@ -205,7 +212,7 @@ describe('collection', function() {
         expect(collection[0]).toBe(o2);
         expect(collection[1]).toBeUndefined();
         expect(collection.$$map).toEqual(createMap({
-          2: 0
+          2: { idx: 0 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([{
@@ -228,10 +235,10 @@ describe('collection', function() {
         expect(collection[3]).toBe(o3);
 
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          0: 2,
-          3: 3
+          1: { idx: 0 },
+          2: { idx: 1 },
+          0: { idx: 2 },
+          3: { idx: 3 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -250,10 +257,10 @@ describe('collection', function() {
         expect(collection[3]).toBe(o2);
 
         expect(collection.$$map).toEqual(createMap({
-          1: 2,
-          2: 3,
-          3: 0,
-          4: 1
+          1: { idx: 2 },
+          2: { idx: 3 },
+          3: { idx: 0 },
+          4: { idx: 1 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -273,9 +280,9 @@ describe('collection', function() {
         expect(collection[1]).toBe(o2);
         expect(collection[2]).toBe(o3);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          3: 2
+          1: { idx: 0 },
+          2: { idx: 1 },
+          3: { idx: 2 }
         }));
 
         expect(collection.trigger).not.toHaveBeenCalled();
@@ -292,8 +299,8 @@ describe('collection', function() {
         expect(collection[0]).toBe(o1);
         expect(collection[1]).toBe(o3);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          3: 1
+          1: { idx: 0 },
+          3: { idx: 1 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -311,8 +318,8 @@ describe('collection', function() {
         expect(collection[0]).toBe(o1);
         expect(collection[1]).toBe(o2);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1
+          1: { idx: 0 },
+          2: { idx: 1 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -331,9 +338,9 @@ describe('collection', function() {
         expect(collection[1]).toBe(o4);
         expect(collection[2]).toBe(o3);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          4: 1,
-          3: 2
+          1: { idx: 0 },
+          4: { idx: 1 },
+          3: { idx: 2 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -352,9 +359,9 @@ describe('collection', function() {
         expect(collection[1]).toBe(o3);
         expect(collection[2]).toBe(o4);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          3: 1,
-          4: 2
+          1: { idx: 0 },
+          3: { idx: 1 },
+          4: { idx: 2 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -428,10 +435,10 @@ describe('collection', function() {
         expect(collection[3]).toBe(o10);
 
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          5: 2,
-          10: 3
+          1: { idx: 0 },
+          2: { idx: 1 },
+          5: { idx: 2 },
+          10: { idx: 3 }
         }));
 
         expect(collection.$$sortFn).toBe(sortFn);
@@ -454,12 +461,12 @@ describe('collection', function() {
         expect(collection[5]).toBe(o10);
 
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          5: 2,
-          6: 3,
-          7: 4,
-          10: 5
+          1: { idx: 0 },
+          2: { idx: 1 },
+          5: { idx: 2 },
+          6: { idx: 3 },
+          7: { idx: 4 },
+          10: { idx: 5 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -484,12 +491,12 @@ describe('collection', function() {
         expect(collection[5]).toBe(o10);
 
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          5: 2,
-          6: 3,
-          7: 4,
-          10: 5
+          1: { idx: 0 },
+          2: { idx: 1 },
+          5: { idx: 2 },
+          6: { idx: 3 },
+          7: { idx: 4 },
+          10: { idx: 5 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -514,12 +521,12 @@ describe('collection', function() {
         expect(collection[5]).toBe(o11);
 
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          5: 2,
-          6: 3,
-          10: 4,
-          11: 5
+          1: { idx: 0 },
+          2: { idx: 1 },
+          5: { idx: 2 },
+          6: { idx: 3 },
+          10: { idx: 4 },
+          11: { idx: 5 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -545,12 +552,12 @@ describe('collection', function() {
         expect(collection[5]).toBe(o11);
 
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          5: 2,
-          6: 3,
-          10: 4,
-          11: 5
+          1: { idx: 0 },
+          2: { idx: 1 },
+          5: { idx: 2 },
+          6: { idx: 3 },
+          10: { idx: 4 },
+          11: { idx: 5 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -571,9 +578,9 @@ describe('collection', function() {
         expect(collection[1]).toBe(o2);
         expect(collection[2]).toBe(o5);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1,
-          5: 2
+          1: { idx: 0 },
+          2: { idx: 1 },
+          5: { idx: 2 }
         }));
 
         expect(collection.trigger).not.toHaveBeenCalled();
@@ -590,8 +597,8 @@ describe('collection', function() {
         expect(collection[0]).toBe(o1);
         expect(collection[1]).toBe(o5);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          5: 1
+          1: { idx: 0 },
+          5: { idx: 1 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -609,8 +616,8 @@ describe('collection', function() {
         expect(collection[0]).toBe(o1);
         expect(collection[1]).toBe(o2);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          2: 1
+          1: { idx: 0 },
+          2: { idx: 1 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -630,9 +637,9 @@ describe('collection', function() {
         expect(collection[1]).toBe(o5);
         expect(collection[2]).toBe(o10);
         expect(collection.$$map).toEqual(createMap({
-          1: 0,
-          5: 1,
-          10: 2
+          1: { idx: 0 },
+          5: { idx: 1 },
+          10: { idx: 2 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -653,9 +660,9 @@ describe('collection', function() {
         expect(collection[1]).toBe(o5);
         expect(collection[2]).toBe(o10);
         expect(collection.$$map).toEqual(createMap({
-          2: 0,
-          5: 1,
-          10: 2
+          2: { idx: 0 },
+          5: { idx: 1 },
+          10: { idx: 2 }
         }));
 
         expect(collection.trigger).toHaveBeenCalledWith([
@@ -936,10 +943,10 @@ describe('collection', function() {
       expect(newCollection[2]).toBe(o3);
       expect(newCollection[3]).toBe(o4);
       expect(newCollection.$$map).toEqual(createMap({
-        1: 0,
-        2: 1,
-        3: 2,
-        4: 3
+        1: { idx: 0 },
+        2: { idx: 1 },
+        3: { idx: 2 },
+        4: { idx: 3 }
       }));
     });
 
@@ -1000,7 +1007,7 @@ describe('collection', function() {
       expect(results.length).toBe(1);
       expect(results[0]).toBe(collection[0]);
       expect(results.$$map).toEqual(createMap({
-        1: 0
+        1: { idx: 0 }
       }));
     });
 

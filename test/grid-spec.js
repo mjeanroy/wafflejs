@@ -32,6 +32,9 @@ describe('Grid', function() {
     expect(Grid.options).toEqual({
       key: 'id',
       async: false,
+      selection: {
+        multi: false
+      },
       size: {
         width: null,
         height: null
@@ -47,12 +50,14 @@ describe('Grid', function() {
   });
 
   it('should create grid using default options', function() {
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo' }
+    ];
+
     var table = document.createElement('table');
     var grid = new Grid(table, {
-      columns: [
-        { id: 'foo', title: 'Foo' },
-        { id: 'bar', title: 'Boo' }
-      ]
+      columns: columns
     });
 
     expect(grid.options).toBeDefined();
@@ -61,13 +66,21 @@ describe('Grid', function() {
   });
 
   it('should create grid with custom options', function() {
+    var Model = function(o) {
+      this.id = o.id;
+    };
+
     var table = document.createElement('table');
     var onInitialized = jasmine.createSpy('onInitialized');
     var onAdded = jasmine.createSpy('onAdded');
 
     var grid = new Grid(table, {
       key: 'title',
+      model: Model,
       async: true,
+      selection: {
+        multi: false
+      },
       size: {
         width: 100,
         height: 200
@@ -87,6 +100,10 @@ describe('Grid', function() {
     expect(grid.options).not.toEqual(jasmine.objectContaining(Grid.options));
     expect(grid.options).toEqual(jasmine.objectContaining({
       key: 'title',
+      model: Model,
+      selection: {
+        multi: false
+      },
       async: true,
       size: {
         width: 100,

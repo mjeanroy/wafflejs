@@ -137,33 +137,40 @@ var Grid = (function() {
       return new Constructor(table, options);
     }
 
-    // Initialize options with default values
-    _.defaults(options.events || {}, Constructor.options.events);
-    this.options = _.defaults(options || {}, Constructor.options);
+    var opts = options = options || {};
+    var defaultOptions = Constructor.options;
+
+    // Initialize nested object of options with default values.
+    _.forEach(['events', 'selection', 'size'], function(optName) {
+      opts[optName] = _.defaults(opts[optName] || {}, defaultOptions[optName]);
+    });
+
+    // Initialize options with default values.
+    // Keep options as an internal property.
+    this.options = _.defaults(opts, defaultOptions);
 
     // Initialize main table
     this.$table = $(table);
 
-    // Initialize data and columns
-    this.$data = new Collection(options.data || [], {
-      key: options.key
+    // Initialize data
+    this.$data = new Collection(opts.data, {
+      key: opts.key,
+      model: opts.model
     });
 
-    this.$columns = new Collection(options.columns || [], {
+    // Initialize column collection
+    this.$columns = new Collection(opts.columns, {
       key: 'id',
       model: Column
     });
 
-    // Extract size
-    var size = options.size;
-    this.options.size = {
-      width: fromPx(size.width),
-      height: fromPx(size.height)
+    // Translate size to valid numbers.
+    opts.size = {
+      width: fromPx(opts.size.width),
+      height: fromPx(opts.size.height)
     };
 
     this.$sortBy = [];
-
-    this.$multiSelect = options.multiSelect;
 
     createNodes(this);
 
@@ -516,7 +523,7 @@ var Grid = (function() {
 
         this.$$selectAnchor = 0;
 
-        if (that.$multiSelect) {
+        if (that.options.selection.multi) {
           if (e.shiftKey) {
             var idxF = parseFloat(idx);
             var selectAnchorF = parseFloat(that.$$selectAnchor);
@@ -661,14 +668,28 @@ var Grid = (function() {
     }
   };
 
-  // Define some default options
+  // Define default options.
   Constructor.options = {
+    // Default identifier for data.
     key: 'id',
+
+    // Asynchronous rendering, disable by default.
+    // Should be used to improve user experience with large dataset.
     async: false,
+
+    // Selection configuration.
+    // By default it is not enable.
+    selection: {
+      multi: false
+    },
+
+    // Size of grid, default is to use automatic size.
     size: {
       width: null,
       height: null
     },
+
+    // Set of events.
     events: {
     }
   };

@@ -361,14 +361,14 @@ var Grid = (function() {
       var previousSelection = this.$selection;
 
       var toggle = function(idx) {
-          var select = !that.$data[idx].$$selected;
-          that.$data[idx].$$selected = select;
-          var tr = that.$tbody[0].rows[idx];
-          if (select) {
-            tr.setAttribute('class', CSS_SELECTED);
-          } else {
-            tr.removeAttribute('class');
-          }
+        var select = !that.$data[idx].$$selected;
+        that.$data[idx].$$selected = select;
+        var tr = that.$tbody[0].rows[idx];
+        if (select) {
+          tr.setAttribute('class', CSS_SELECTED);
+        } else {
+          tr.removeAttribute('class');
+        }
       };
 
       _.keys(newSelection).forEach(function(idx) {

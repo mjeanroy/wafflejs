@@ -515,7 +515,7 @@ var Grid = (function() {
 
         var tr = $doc.findParent(e.target, 'TR');
         var idx = tr.getAttribute(DATA_WAFFLE_IDX);
-        var data = that.$data[idx];
+        var data = that.$data.at(idx);
         var previouslySelected = data.$$selected;
         var newSelection = {};
 

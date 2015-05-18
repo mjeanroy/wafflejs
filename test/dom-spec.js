@@ -111,6 +111,18 @@ describe('$doc', function() {
     expect(node.tagName).toBe('THEAD');
   });
 
+  it('should find parent', function() {
+    var nodes = $doc.byTagName('span');
+    var parent = $doc.findParent(nodes[0], 'DIV');
+    expect(parent).toBe(fixtures);
+  });
+
+  it('should return undefined if parent does not exist', function() {
+    var nodes = $doc.byTagName('span');
+    var parent = $doc.findParent(nodes[0], 'TABLE');
+    expect(parent).toBeNull();
+  });
+
   it('should get size of scrollbar', function() {
     var size = $doc.scrollbarWidth();
     expect(size).toBeDefined();

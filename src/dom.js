@@ -71,6 +71,15 @@ var $doc = (function() {
       return document.createDocumentFragment();
     },
 
+    // Find parent by its tag name.
+    // If parent does not exist, null will be returned.
+    findParent: function(node, parentTagName) {
+      while (node && node.tagName !== parentTagName) {
+        node = node.parentNode;
+      }
+      return node;
+    },
+
     // Compute scrollbar width
     scrollbarWidth: _.memoize(scrollbarWidth, hasher)
   };

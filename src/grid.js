@@ -513,10 +513,7 @@ var Grid = (function() {
           return;
         }
 
-        var getTrParent = function(node) {
-          return node.tagName === 'TR' ? node : getTrParent(node.parentNode);
-        };
-        var tr = getTrParent(e.target);
+        var tr = $doc.findParent(e.target, 'TR');
         var idx = tr.getAttribute(DATA_WAFFLE_IDX);
         var data = that.$data[idx];
         var previouslySelected = data.$$selected;

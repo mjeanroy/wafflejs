@@ -279,6 +279,14 @@ var Collection = (function() {
   // == Public prototype
 
   Constructor.prototype = {
+    // Get collection options
+    options: function() {
+      return {
+        model: this.$$model,
+        key: this.$$key
+      };
+    },
+
     // Get element at given index
     // Shortcut to array notation
     at: function(index) {
@@ -410,20 +418,14 @@ var Collection = (function() {
     // joined with the collection(s) and/or value(s) provided as arguments.
     concat: function() {
       var newArray = ArrayProto.concat.apply(this.toArray(), arguments);
-      return new Constructor(newArray, {
-        key: this.$$key,
-        model: this.$$model
-      });
+      return new Constructor(newArray, this.options());
     },
 
     // returns a shallow copy of a portion of the collection
     // into a new collection object.
     slice: function() {
       var results = callNativeArrayFn('slice', this, arguments);
-      return new Constructor(results, {
-        key: this.$$key,
-        model: this.$$model
-      });
+      return new Constructor(results, this.options());
     },
 
     // Changes the content of the collection by removing existing

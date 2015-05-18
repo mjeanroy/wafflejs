@@ -136,6 +136,14 @@ describe('collection', function() {
       jasmine.clock().tick(1);
     });
 
+    it('should get collection options', function() {
+      var options = collection.options();
+      expect(options).toEqual({
+        model: collection.$$model,
+        key: collection.$$key
+      });
+    });
+
     it('should fail if added value is not object', function() {
       var o1 = { id: 1, name: 'foo' };
       var o2 = { id: 2, name: 'bar' };

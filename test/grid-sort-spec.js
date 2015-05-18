@@ -252,9 +252,7 @@ describe('Grid Sort', function() {
 
     // Trigger click
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    var evt1 = document.createEvent('MouseEvent');
-    evt1.initEvent('click', true, true);
-    ths[1].dispatchEvent(evt1);
+    triggerClick(ths[1]);
 
     expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
     expect(grid.$sortBy).toEqual(['+firstName']);
@@ -277,9 +275,7 @@ describe('Grid Sort', function() {
     grid.sortBy.calls.reset();
 
     // New click should reverse order
-    var evt2 = document.createEvent('MouseEvent');
-    evt2.initEvent('click', true, true);
-    ths[1].dispatchEvent(evt2);
+    triggerClick(ths[1]);
 
     // Th should have flag
     expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
@@ -306,9 +302,7 @@ describe('Grid Sort', function() {
 
     // Trigger click
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    var evt1 = document.createEvent('MouseEvent');
-    evt1.initEvent('click', true, true);
-    ths[0].dispatchEvent(evt1);
+    triggerClick(ths[0]);
 
     expect(grid.sortBy).not.toHaveBeenCalled();
     expect(grid.$sortBy).toEqual([]);
@@ -338,9 +332,7 @@ describe('Grid Sort', function() {
 
     // Trigger click
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    var evt1 = document.createEvent('MouseEvent');
-    evt1.initEvent('click', true, true);
-    ths[0].dispatchEvent(evt1);
+    triggerClick(ths[0]);
 
     expect(grid.sortBy).toHaveBeenCalledWith(['+id']);
     expect(grid.$sortBy).toEqual(['+id']);
@@ -348,53 +340,14 @@ describe('Grid Sort', function() {
     grid.sortBy.calls.reset();
 
     // New click should reverse order
-    var evt2 = document.createEvent('MouseEvent');
-    evt2.initMouseEvent(
-        'click',    // type
-        true,       // canBubble
-        true,       // cancelable,
-        window,     // 'view'
-        0,          // detail
-        0,          // screenX,
-        0,          // screenY,
-        0,          // clientX,
-        0,          // clientY,
-        false,      // ctrlKey,
-        false,      // altKey,
-        true,       // shiftKey,
-        false,      // metaKey,
-        'left',     // button,
-        ths         // relatedTarget
-    );
-
-    ths[1].dispatchEvent(evt2);
-
+    triggerClick(ths[1], true, false);
     expect(grid.sortBy).toHaveBeenCalledWith(['+id', '+name']);
     expect(grid.$sortBy).toEqual(['+id', '+name']);
 
     grid.sortBy.calls.reset();
 
     // New click on id should reverse order of id column
-    var evt3 = document.createEvent('MouseEvent');
-    evt3.initMouseEvent(
-        'click',    // type
-        true,       // canBubble
-        true,       // cancelable,
-        window,     // 'view'
-        0,          // detail
-        0,          // screenX,
-        0,          // screenY,
-        0,          // clientX,
-        0,          // clientY,
-        false,      // ctrlKey,
-        false,      // altKey,
-        true,       // shiftKey,
-        false,      // metaKey,
-        'left',     // button,
-        ths         // relatedTarget
-    );
-
-    ths[0].dispatchEvent(evt3);
+    triggerClick(ths[0], true, false);
     expect(grid.sortBy).toHaveBeenCalledWith(['+name', '-id']);
     expect(grid.$sortBy).toEqual(['+name', '-id']);
   });

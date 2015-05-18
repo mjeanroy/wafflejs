@@ -39,6 +39,30 @@ var createMap = function(entries) {
   return map;
 };
 
+var triggerClick = function(relatedTarget, shiftKey, ctrlKey) {
+  var evt = document.createEvent('MouseEvent');
+
+  evt.initMouseEvent(
+      'click',        // type
+      true,           // canBubble
+      true,           // cancelable,
+      window,         // 'view'
+      0,              // detail
+      0,              // screenX,
+      0,              // screenY,
+      0,              // clientX,
+      0,              // clientY,
+      ctrlKey,        // ctrlKey,
+      false,          // altKey,
+      shiftKey,       // shiftKey,
+      false,          // metaKey,
+      'left',         // button,
+      relatedTarget   // relatedTarget
+  );
+
+  relatedTarget.dispatchEvent(evt);
+};
+
 // == Fixtures
 beforeEach(function() {
   fixtures = document.createElement('div');

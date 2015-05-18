@@ -371,13 +371,13 @@ var Grid = (function() {
         }
       };
 
-      _.keys(newSelection).forEach(function(idx) {
+      _.forEach(_.keys(newSelection), function(idx) {
         if (!newSelection[idx].$$selected) {
           toggle(idx);
         }
       });
 
-      _.keys(previousSelection).forEach(function(idx) {
+      _.forEach(_.keys(previousSelection), function(idx) {
         if (!newSelection[idx]) {
           toggle(idx);
         }
@@ -534,7 +534,7 @@ var Grid = (function() {
               newSelection[i] = that.$data[i];
             }
           } else if (e.ctrlKey) {
-            _.keys(that.$selection).forEach(function(currIdx) {
+            _.forEach(_.keys(that.$selection), function(currIdx) {
               if (idx !== currIdx) {
                 newSelection[currIdx] = that.$data[currIdx];
               }

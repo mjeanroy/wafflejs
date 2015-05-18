@@ -407,7 +407,7 @@ var Grid = (function() {
         var columnId = id.substr(1);
         var asc = flag === CHAR_ORDER_ASC;
 
-        var index = $columns.indexByKey(columnId);
+        var index = $columns.indexOf(columnId);
 
         var column;
 

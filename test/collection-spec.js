@@ -192,18 +192,6 @@ describe('collection', function() {
       expect(collection.byKey(3)).toBe(undefined);
     });
 
-    it('get element index by key', function() {
-      var o1 = { id: 1, name: 'foo' };
-      var o2 = { id: 2, name: 'bar' };
-      var items = [o1, o2];
-
-      var collection = new Collection(items);
-
-      expect(collection.indexByKey(1)).toBe(0);
-      expect(collection.indexByKey(2)).toBe(1);
-      expect(collection.indexByKey(3)).toBe(-1);
-    });
-
     it('should join elements', function() {
       expect(collection.join()).toBe('1,2');
       expect(collection.join(';')).toBe('1;2');

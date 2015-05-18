@@ -296,12 +296,12 @@ var Collection = (function() {
 
     // Get item by its key value
     byKey: function(key) {
-      var index = this.indexByKey(key);
+      var index = this.indexOf(key);
       return index >= 0 ? this.at(index) : undefined;
     },
 
-    // Get index of item by its key
-    indexByKey: function(key) {
+    indexOf: function(o) {
+      var key = _.isObject(o) ? this.$$key(o) : o;
       return this.$$map.contains(key) ? this.$$map.get(key).idx : -1;
     },
 
@@ -703,7 +703,12 @@ var Collection = (function() {
     }
   };
 
-  _.forEach(['indexOf', 'size', 'lastIndexOf', 'first', 'last', 'initial', 'rest', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
+
+  // Since collection should only contains uniq elements, indexOf and lastIndexOf should
+  // be the same.
+  Constructor.prototype.lastIndexOf = Constructor.prototype.indexOf;
+
+  _.forEach(['size', 'first', 'last', 'initial', 'rest', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
     if (_[fn]) {
       Constructor.prototype[fn] = function() {
         var args = [this].concat(_.toArray(arguments));

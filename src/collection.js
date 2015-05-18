@@ -161,10 +161,11 @@ var Collection = (function() {
 
   // Add entry at given index.
   // Internal map is updated to keep track of indexes.
-  var put = function(collection, o, i) {
+  var put = function(collection, o, i, id) {
     collection[i] = o;
     if (o != null) {
-      var dataId = collection.$$key(o);
+      var ngArgs = arguments.length;
+      var dataId = ngArgs === 3 ? collection.$$key(o) : id;
       var dataCtx = collection.$$map.get(dataId) || {};
       dataCtx.idx = i;
       collection.$$map.put(dataId, dataCtx);
@@ -323,10 +324,62 @@ var Collection = (function() {
       return this.length;
     },
 
-    // Remove elements at given index
-    // This is a shortcut for splice(start, deleteCount)
+    // Remove elements of collection
+    // If first argument is a number, then this is a shortcut for splice(start, deleteCount).
+    // Otherwise, first argument should be a predicate. This predicate will be called for
+    // each element, and must return a truthy value to remove that element.
     remove: function(start, deleteCount) {
-      return this.splice.call(this, start, deleteCount);
+      if (_.isNumber(start)) {
+        // Shortcut for splice method
+        return this.splice.call(this, start, deleteCount || this.length);
+      }
+
+      var predicate = start;
+      var ctx =  deleteCount;
+      var idx = 0;
+      var lastChangeIdx = null;
+      var changes = [];
+      var removed = [];
+
+      for (var i = 0, size = this.length; i < size; ++i) {
+        var o = this.at(i);
+        var id = this.$$key(o);
+
+        if (predicate.call(ctx, o, i)) {
+          // Remove
+          unsetAt(this, i);
+          unsetId(this, id);
+
+          // Merge with last change or create new change object
+          if (lastChangeIdx === (i - 1)) {
+            _.last(changes).removed.push(o);
+          } else {
+            changes.push(createChange(TYPE_SPLICE, [o], i, 0, this));
+          }
+
+          removed.push(o);
+          lastChangeIdx = i;
+        }
+        else {
+          // Keep
+          if (idx !== i) {
+            unsetAt(this, i);
+            unsetId(this, id);
+            put(this, o, idx, id);
+          }
+
+          idx++;
+        }
+      }
+
+      // Update collection length
+      this.length -= removed.length;
+
+      if (changes.length > 0) {
+        this.trigger(changes);
+      }
+
+      return removed;
     },
 
     // Adds one or more elements to the end of the collection

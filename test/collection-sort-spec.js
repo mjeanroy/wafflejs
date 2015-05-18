@@ -299,6 +299,95 @@ describe('Sorted collection', function() {
     ]);
   });
 
+  it('should remove element using start index', function() {
+    expect(collection.length).toBe(4);
+
+    var removed = collection.remove(2);
+
+    expect(removed).toEqual([o5, o10]);
+    expect(collection.length).toBe(2);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBeUndefined();
+    expect(collection[3]).toBeUndefined();
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 0, index: 2, removed: [o5, o10], object: collection }
+    ]);
+  });
+
+  it('should remove element using index and delete count', function() {
+    expect(collection.length).toBe(4);
+
+    var removed = collection.remove(2, 1);
+
+    expect(removed).toEqual([o5]);
+    expect(collection.length).toBe(3);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBe(o10);
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 },
+      10: { idx: 2 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 0, index: 2, removed: [o5], object: collection }
+    ]);
+  });
+
+  it('should remove element using predicate', function() {
+    expect(collection.length).toBe(4);
+
+    var removed = collection.remove(function(o) {
+      return o.id % 2 !== 0;
+    });
+
+    expect(removed).toEqual([o1, o5]);
+    expect(collection.length).toBe(2);
+    expect(collection[0]).toBe(o2);
+    expect(collection[1]).toBe(o10);
+    expect(collection[2]).toBeUndefined();
+    expect(collection[3]).toBeUndefined();
+    expect(collection.$$map).toEqual(createMap({
+      2: { idx: 0 },
+      10: { idx: 1 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 0, index: 0, removed: [o1], object: collection },
+      { type: 'splice', addedCount: 0, index: 2, removed: [o5], object: collection }
+    ]);
+  });
+
+  it('should remove element using predicate and merge changes', function() {
+    expect(collection.length).toBe(4);
+
+    var removed = collection.remove(function(o) {
+      return o.id <= 2;
+    });
+
+    expect(removed).toEqual([o1, o2]);
+    expect(collection.length).toBe(2);
+    expect(collection[0]).toBe(o5);
+    expect(collection[1]).toBe(o10);
+    expect(collection[2]).toBeUndefined();
+    expect(collection[3]).toBeUndefined();
+    expect(collection.$$map).toEqual(createMap({
+      5: { idx: 0 },
+      10: { idx: 1 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 0, index: 0, removed: [o1, o2], object: collection }
+    ]);
+  });
+
   it('should not reverse collection if collection is sorted', function() {
     collection = new Collection([o1, o2]);
     collection.sort(sortFn);

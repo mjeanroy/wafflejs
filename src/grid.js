@@ -301,16 +301,26 @@ var Grid = (function() {
       var asyncRender = async == null ? this.options.async : async;
       var grid = this;
 
-      var buildFragment = function(grid, data, startIdx) {
+      var empty = _.once(function() {
+        grid.$tbody.empty();
+      });
+
+      var build = function(data, startIdx) {
         var fragment = $doc.createFragment();
+
         for (var i = 0, dataSize = data.length; i < dataSize; ++i) {
           var row = renderRow(grid, data[i], startIdx + i);
           fragment.appendChild(row);
         }
-        return fragment;
+
+        // This will be called once... :)
+        empty();
+
+        // Append to grid
+        grid.$tbody.append(fragment);
       };
 
-      var onEnded = function(grid) {
+      var onEnded = function() {
         grid.$data.clearChanges();
 
         call(grid, 'onRendered', function() {
@@ -318,35 +328,19 @@ var Grid = (function() {
         });
 
         // Free memory
-        grid = buildFragment = onEnded = null;
+        grid = empty = build = onEnded = null;
       };
 
       this.$selection = {};
 
       if (asyncRender) {
-        // Async rendering
-        var delay = 10;
-        var chunkSize = 200;
-        var chunks = this.$data.split(chunkSize);
-        var idx = 0;
-        var timer = function() {
-          if (chunks.length > 0) {
-            grid.$tbody.append(buildFragment(grid, chunks.shift(), idx));
-            idx += chunkSize;
-            setTimeout(timer, delay);
-          } else {
-            onEnded(grid);
-            timer = chunks = null;
-          }
-        };
-
-        this.$tbody.empty();
-        setTimeout(timer);
+        // Asynchronous call
+        $util.asyncTask(this.$data.split(200), 10, build, onEnded);
       }
       else {
-        var fragment = buildFragment(grid, grid.data(), 0);
-        grid.$tbody.empty().append(fragment);
-        onEnded(grid);
+        // Synchronous call
+        build(this.$data, 0);
+        onEnded();
       }
 
       return this;

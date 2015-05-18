@@ -42,5 +42,28 @@ var $util = {
   //   fromPx(100) => 100
   fromPx: function(value) {
     return _.isString(value) ? Number(value.replace('px', '')) : value;
+  },
+
+  // Execute asynchronous tasks on small chunks of data.
+  asyncTask: function(chunks, delay, onIteration, onEnded) {
+    var idx = 0;
+
+    var timer = function() {
+      if (chunks.length > 0) {
+        var current = chunks.shift();
+        onIteration(current, idx);
+        idx += current.length;
+
+        // Trigger next chunk
+        if (chunks.length > 0) {
+          setTimeout(timer, delay);
+        } else {
+          onEnded();
+          timer = null;
+        }
+      }
+    };
+
+    setTimeout(timer);
   }
 };

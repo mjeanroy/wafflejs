@@ -33,4 +33,41 @@ describe('$util', function() {
     expect($util.fromPx('100px')).toBe(100);
     expect($util.fromPx(100)).toBe(100);
   });
+
+  it('should call async task', function() {
+    var data = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9]
+    ];
+
+    var onIteration = jasmine.createSpy('onIteration');
+    var onEnded = jasmine.createSpy('onEnded');
+
+    $util.asyncTask(data, 10, onIteration, onEnded);
+
+    expect(onIteration).not.toHaveBeenCalled();
+    expect(onEnded).not.toHaveBeenCalled();
+
+    jasmine.clock().tick();
+
+    expect(onIteration).toHaveBeenCalledWith([1, 2, 3], 0);
+    expect(onEnded).not.toHaveBeenCalled();
+
+    onIteration.calls.reset();
+    onEnded.calls.reset();
+
+    jasmine.clock().tick(10);
+
+    expect(onIteration).toHaveBeenCalledWith([4, 5, 6], 3);
+    expect(onEnded).not.toHaveBeenCalled();
+
+    onIteration.calls.reset();
+    onEnded.calls.reset();
+
+    jasmine.clock().tick(10);
+
+    expect(onIteration).toHaveBeenCalledWith([7, 8, 9], 6);
+    expect(onEnded).toHaveBeenCalled();
+  });
 });

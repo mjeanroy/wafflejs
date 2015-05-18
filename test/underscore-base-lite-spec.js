@@ -56,6 +56,21 @@ describe('_', function() {
     expect(fn()).toBe(ctx);
   });
 
+  it('should call function once and only once', function() {
+    var callback = jasmine.createSpy('callback').and.returnValue('foo');
+    var func = _.once(callback);
+
+    var r1 = func(1, 2, 3);
+    expect(r1).toBe('foo');
+    expect(callback).toHaveBeenCalledWith(1, 2, 3);
+    expect(callback.calls.count()).toBe(1);
+
+    var r2 = func(1, 2, 3);
+    expect(r2).toBe('foo');
+    expect(callback).toHaveBeenCalledWith(1, 2, 3);
+    expect(callback.calls.count()).toBe(1);
+  });
+
   it('should transmute arguments object to an array', function() {
     var foo = function() {
       return _.toArray(arguments);

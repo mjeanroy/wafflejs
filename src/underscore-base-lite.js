@@ -100,6 +100,24 @@ var _ = (function() {
       });
     },
 
+    // Creates a version of the function that can only be called one time.
+    // Repeated calls to the modified function will have no effect, returning the value
+    // from the original call.
+    once: function(fn) {
+      var wasCalled = false;
+      var returnValue;
+
+      return function() {
+        if (!wasCalled) {
+          wasCalled = true;
+          returnValue = fn.apply(this, arguments);
+          fn = null;
+        }
+
+        return returnValue;
+      };
+    },
+
     // Fill in undefined properties in object with the first value present in the default objects.
     defaults: function(o1, o2) {
       _.forEach(_.keys(o2), function(k) {

@@ -199,7 +199,9 @@ describe('Grid Render', function() {
     var result = grid.renderBody(true);
 
     expect(result).toBe(grid);
-    expect(grid.$tbody[0].childNodes.length).toBe(0);
+
+    // Grid should not be empty until first chunks has been appended
+    expect(grid.$tbody[0].childNodes.length).toBe(215);
 
     // Trigger first timeout
     jasmine.clock().tick();

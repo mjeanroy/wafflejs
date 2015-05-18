@@ -26,6 +26,19 @@
 
 var fixtures;
 
+// Create map from entries
+var createMap = function(entries) {
+  var map = new HashMap();
+
+  for (var i in entries) {
+    if (entries.hasOwnProperty(i)) {
+      map.put(i, entries[i]);
+    }
+  }
+
+  return map;
+};
+
 // == Fixtures
 beforeEach(function() {
   fixtures = document.createElement('div');

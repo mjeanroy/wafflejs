@@ -291,13 +291,6 @@ var Collection = (function() {
       return index >= 0 ? this.at(index) : undefined;
     },
 
-    // Get state of data object.
-    // First parameter should be the object key or the object.
-    getState: function(key) {
-      var k = _.isObject(key) ? this.$$key(key) : key;
-      return this.$$map.get(key);
-    },
-
     // Get index of item by its key
     indexByKey: function(key) {
       return this.$$map.contains(key) ? this.$$map.get(key).idx : -1;

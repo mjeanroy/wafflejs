@@ -169,6 +169,25 @@ describe('$', function() {
       expect($div[1].className).toBe('');
     });
 
+    it('should check if node has given class', function() {
+      $div[0].className = 'foo bar';
+      expect($div.hasClass('foo')).toBe(true);
+      expect($div.hasClass('bar')).toBe(true);
+      expect($div.hasClass('barbar')).toBe(false);
+    });
+
+    it('should toggle class', function() {
+      var $r1 = $div.toggleClass('foo');
+      expect($r1).toBe($div);
+      expect($div[0].className).toBe('foo');
+      expect($div[1].className).toBe('foo');
+
+      var $r2 = $div.toggleClass('foo');
+      expect($r2).toBe($div);
+      expect($div[0].className).toBe('');
+      expect($div[1].className).toBe('');
+    });
+
     it('should get element at given index', function() {
       var $node1 = $div.eq(1);
       expect($node1).toBeInstanceOf($);

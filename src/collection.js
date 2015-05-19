@@ -300,6 +300,9 @@ var Collection = (function() {
       return index >= 0 ? this.at(index) : undefined;
     },
 
+    // Get index of data in collection.
+    // This function use internal id to check index faster.
+    // This function accept data or data identifier as argument.
     indexOf: function(o) {
       var key = _.isObject(o) ? this.$$key(o) : o;
       return this.$$map.contains(key) ? this.$$map.get(key).idx : -1;

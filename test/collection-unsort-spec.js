@@ -312,6 +312,66 @@ describe('Unsorted collection', function() {
     ]);
   });
 
+  it('should replace existing data using splice', function() {
+    collection = new Collection([o1, o2]);
+    var removed = collection.splice(0, 0, o1);
+
+    expect(removed).toEqual([]);
+    expect(collection.length).toBe(2);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace existing data and add new data using splice', function() {
+    collection = new Collection([o1, o2]);
+    var removed = collection.splice(2, 0, o1, o3);
+
+    expect(removed).toEqual([]);
+    expect(collection.length).toBe(3);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBe(o3);
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 },
+      3: { idx: 2 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 2, removed: [], object: collection },
+      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace existing data and add new data using splice and keep order', function() {
+    collection = new Collection([o1, o2]);
+    var removed = collection.splice(0, 0, o1, o3);
+
+    expect(removed).toEqual([]);
+    expect(collection.length).toBe(3);
+    expect(collection[0]).toBe(o3);
+    expect(collection[1]).toBe(o1);
+    expect(collection[2]).toBe(o2);
+    expect(collection.$$map).toEqual(createMap({
+      3: { idx: 0 },
+      1: { idx: 1 },
+      2: { idx: 2 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 0, removed: [], object: collection },
+      { type: 'update', addedCount: 0, index: 1, removed: [], object: collection }
+    ]);
+  });
+
   it('should remove element using start index', function() {
     collection = new Collection([o1, o2, o3, o4]);
     expect(collection.length).toBe(4);

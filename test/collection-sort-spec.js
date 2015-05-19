@@ -354,6 +354,96 @@ describe('Sorted collection', function() {
     ]);
   });
 
+  it('should replace existing data using splice', function() {
+    collection = new Collection([o1, o5]);
+    collection.sort(sortFn);
+
+    var removed = collection.splice(0, 0, o1);
+
+    expect(removed).toEqual([]);
+    expect(collection.length).toBe(2);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o5);
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      5: { idx: 1 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace existing data and add new data using splice', function() {
+    collection = new Collection([o1, o5]);
+    collection.sort(sortFn);
+
+    var removed = collection.splice(0, 0, o1, o2);
+
+    expect(removed).toEqual([]);
+    expect(collection.length).toBe(3);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBe(o5);
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 },
+      5: { idx: 2 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 1, removed: [], object: collection },
+      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace existing data and add new data using splice and keep order', function() {
+    collection = new Collection([o1, o5]);
+    collection.sort(sortFn);
+
+    var removed = collection.splice(0, 0, o5, o2);
+
+    expect(removed).toEqual([]);
+    expect(collection.length).toBe(3);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBe(o5);
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 },
+      5: { idx: 2 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 1, removed: [], object: collection },
+      { type: 'update', addedCount: 0, index: 2, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace existing data and add new data using splice and trigger update changes in order', function() {
+    collection = new Collection([o1, o5]);
+    collection.sort(sortFn);
+
+    var removed = collection.splice(0, 0, o5, o1, o2);
+
+    expect(removed).toEqual([]);
+    expect(collection.length).toBe(3);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBe(o5);
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 },
+      5: { idx: 2 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 1, removed: [], object: collection },
+      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection },
+      { type: 'update', addedCount: 0, index: 2, removed: [], object: collection }
+    ]);
+  });
+
   it('should remove element using start index', function() {
     expect(collection.length).toBe(4);
 

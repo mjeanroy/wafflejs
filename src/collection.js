@@ -172,6 +172,13 @@ var Collection = (function() {
     }
   };
 
+  // Replace data in collection and return appropriate change.
+  var replace = function(collection, current) {
+    var idx =  collection.indexOf(current);
+    collection[idx] = current;
+    return createChange(TYPE_UPDATE, [], idx, 0, collection);
+  };
+
   // Swap elements at given index
   // Internal map is updated to keep track of indexes.
   var swap = function(collection, i, j) {
@@ -393,6 +400,15 @@ var Collection = (function() {
       return removed;
     },
 
+    // Replace data inside collection.
+    // Index of data is retrieved from id and data at given index is replaced.
+    // Appropriate changes are automatically triggered.
+    replace: function(data) {
+      var args = [0, 0].concat(data);
+      this.splice.apply(this, args);
+      return this;
+    },
+
     // Adds one or more elements to the end of the collection
     // and returns the new length of the collection.
     // Semantic is the same as [].push function
@@ -502,12 +518,13 @@ var Collection = (function() {
       var data = _.rest(arguments, 2);
 
       // Iterator that will translate object to model elements
-      var iteratee = function(m) {
+      var transformIteratee = function(m) {
         return parseModel(this, m);
       };
 
-      var added = _.map(data, iteratee, this);
-      var addedCount = added.length;
+      // Data to model transformation.
+      // This iteration will also check for undefined / null values.
+      var models = _.map(data, transformIteratee, this);
 
       // Index at which to start changing the array.
       // If greater than the length of the array, actual starting index will
@@ -543,6 +560,13 @@ var Collection = (function() {
       }
 
       var changes;
+
+       // We need to split between existing data and new data to add.
+      var parts = _.groupBy(models, this.contains, this);
+      var existing = parts[true] || [];
+      var added = parts[false] || [];
+      var addedCount = added.length;
+      var existingCount = existing.length;
 
       // Add new elements
       if (addedCount > 0) {
@@ -580,9 +604,22 @@ var Collection = (function() {
         }
       }
 
-      // Trigger changes
-      if (changes && changes.length > 0) {
-        this.trigger(changes);
+      // Replace existing data and trigger changes
+      var updateChanges = [];
+      if (existingCount > 0) {
+        if (sortFn) {
+          existing.sort(sortFn);
+        }
+
+        for (var x = 0; x < existingCount; ++x) {
+          updateChanges.push(replace(this, existing[x]));
+        }
+      }
+
+      // Trigger update and splice changes
+      var allChanges = changes.concat(updateChanges);
+      if (allChanges.length > 0) {
+        this.trigger(allChanges);
       }
 
       // An array containing the deleted elements.

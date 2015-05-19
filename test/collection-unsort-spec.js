@@ -130,6 +130,87 @@ describe('Unsorted collection', function() {
     ]);
   });
 
+  it('should add elements at given index', function() {
+    collection = new Collection([o0, o1, o2, o3]);
+    expect(collection.length).toBe(4);
+
+    var newLength = collection.add([o4], 2);
+
+    expect(newLength).toBe(5);
+    expect(collection.length).toBe(5);
+    expect(collection[0]).toBe(o0);
+    expect(collection[1]).toBe(o1);
+    expect(collection[2]).toBe(o4);
+    expect(collection[3]).toBe(o2);
+    expect(collection[4]).toBe(o3);
+
+    expect(collection.$$map).toEqual(createMap({
+      0: { idx: 0 },
+      1: { idx: 1 },
+      4: { idx: 2 },
+      2: { idx: 3 },
+      3: { idx: 4 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 2, removed: [], object: collection }
+    ]);
+  });
+
+  it('should add elements at the end by default', function() {
+    collection = new Collection([o0, o1, o2, o3]);
+    expect(collection.length).toBe(4);
+
+    var newLength = collection.add([o4]);
+
+    expect(newLength).toBe(5);
+    expect(collection.length).toBe(5);
+    expect(collection[0]).toBe(o0);
+    expect(collection[1]).toBe(o1);
+    expect(collection[2]).toBe(o2);
+    expect(collection[3]).toBe(o3);
+    expect(collection[4]).toBe(o4);
+
+    expect(collection.$$map).toEqual(createMap({
+      0: { idx: 0 },
+      1: { idx: 1 },
+      2: { idx: 2 },
+      3: { idx: 3 },
+      4: { idx: 4 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 4, removed: [], object: collection }
+    ]);
+  });
+
+  it('should add elements at the beginning with zero', function() {
+    collection = new Collection([o0, o1, o2, o3]);
+    expect(collection.length).toBe(4);
+
+    var newLength = collection.add([o4], 0);
+
+    expect(newLength).toBe(5);
+    expect(collection.length).toBe(5);
+    expect(collection[0]).toBe(o4);
+    expect(collection[1]).toBe(o0);
+    expect(collection[2]).toBe(o1);
+    expect(collection[3]).toBe(o2);
+    expect(collection[4]).toBe(o3);
+
+    expect(collection.$$map).toEqual(createMap({
+      4: { idx: 0 },
+      0: { idx: 1 },
+      1: { idx: 2 },
+      2: { idx: 3 },
+      3: { idx: 4 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 0, removed: [], object: collection }
+    ]);
+  });
+
   it('should not changed collection using splice with no args', function() {
     collection = new Collection([o1, o2, o3]);
     collection.trigger.calls.reset();

@@ -318,8 +318,9 @@ var Collection = (function() {
 
     // Add new elements at given index
     // This is a shortcut for splice(start, O, models...)
-    add: function(start, models) {
-      var args = [start, 0].concat(models);
+    add: function(models, start) {
+      var startIdx = start == null ? this.length : start;
+      var args = [startIdx, 0].concat(models);
       this.splice.apply(this, args);
       return this.length;
     },
@@ -386,14 +387,14 @@ var Collection = (function() {
     // and returns the new length of the collection.
     // Semantic is the same as [].push function
     push: function() {
-      return this.add.call(this, this.length, _.toArray(arguments));
+      return this.add.call(this, _.toArray(arguments));
     },
 
     // adds one or more elements to the beginning of the collection
     // and returns the new length of the collection.
     // Semantic is the same as [].unshift function
     unshift: function() {
-      return this.add.call(this, 0, _.toArray(arguments));
+      return this.add.call(this, _.toArray(arguments), 0);
     },
 
     // Removes the last element from the collection

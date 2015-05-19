@@ -132,6 +132,61 @@ describe('Sorted collection', function() {
     ]);
   });
 
+  it('should add elements in order', function() {
+    var o6 = { id: 6 };
+
+    expect(collection.length).toBe(4);
+
+    var newLength = collection.add([o6]);
+
+    expect(newLength).toBe(5);
+    expect(collection.length).toBe(5);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBe(o5);
+    expect(collection[3]).toBe(o6);
+    expect(collection[4]).toBe(o10);
+
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 },
+      5: { idx: 2 },
+      6: { idx: 3 },
+      10: { idx: 4 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection }
+    ]);
+  });
+
+  it('should add elements in order even with an index', function() {
+    var o6 = { id: 6 };
+    expect(collection.length).toBe(4);
+
+    var newLength = collection.add([o6], 0);
+
+    expect(newLength).toBe(5);
+    expect(collection.length).toBe(5);
+    expect(collection[0]).toBe(o1);
+    expect(collection[1]).toBe(o2);
+    expect(collection[2]).toBe(o5);
+    expect(collection[3]).toBe(o6);
+    expect(collection[4]).toBe(o10);
+
+    expect(collection.$$map).toEqual(createMap({
+      1: { idx: 0 },
+      2: { idx: 1 },
+      5: { idx: 2 },
+      6: { idx: 3 },
+      10: { idx: 4 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection }
+    ]);
+  });
+
   it('should push elements, keep order and trigger changes by index', function() {
     var o6 = { id: 6, name: 'foobar' };
     var o11 = { id: 11, name: 'foobar' };

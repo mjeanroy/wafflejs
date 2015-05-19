@@ -309,12 +309,30 @@ describe('collection', function() {
       expect(collection.indexOf(o1)).toBe(0);
       expect(collection.indexOf(o2)).toBe(1);
       expect(collection.indexOf({ id: 3 })).toBe(-1);
+
+      expect(collection.indexOf(1)).toBe(0);
+      expect(collection.indexOf(2)).toBe(1);
+      expect(collection.indexOf(3)).toBe(-1);
     });
 
     it('should get last index of element', function() {
       expect(collection.lastIndexOf(o1)).toBe(0);
       expect(collection.lastIndexOf(o2)).toBe(1);
       expect(collection.lastIndexOf({ id: 3 })).toBe(-1);
+
+      expect(collection.lastIndexOf(1)).toBe(0);
+      expect(collection.lastIndexOf(2)).toBe(1);
+      expect(collection.lastIndexOf(3)).toBe(-1);
+    });
+
+    it('should check if collection contains data', function() {
+      expect(collection.contains(o1)).toBeTrue();
+      expect(collection.contains(o2)).toBeTrue();
+      expect(collection.contains({ id: 3 })).toBeFalse();
+
+      expect(collection.contains(1)).toBeTrue();
+      expect(collection.contains(2)).toBeTrue();
+      expect(collection.contains(3)).toBeFalse();
     });
 
     it('should get first element of collection', function() {

@@ -308,6 +308,13 @@ var Collection = (function() {
       return this.$$map.contains(key) ? this.$$map.get(key).idx : -1;
     },
 
+    // Check if data object is already inside collection.
+    // This function is a shortcut for checking return value of indexOf.
+    // This function accept data or data identifier as argument.
+    contains: function(o) {
+      return this.indexOf(o) >= 0;
+    },
+
     // Returns an index in the array, if an element in the array
     // satisfies the provided testing function. Otherwise -1 is returned.
     findIndex: function(callback, ctx) {

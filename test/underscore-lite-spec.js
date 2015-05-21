@@ -144,4 +144,22 @@ describe('_', function() {
     expect(callback).toHaveBeenCalledWith(2, 1, array);
     expect(callback).toHaveBeenCalledWith(3, 2, array);
   });
+
+  it('should extend destination with source', function() {
+    var destination = {
+      foo: 'bar'
+    };
+
+    var source = {
+      bar: 'foo'
+    };
+
+    var result = _.extend(destination, source);
+
+    expect(result).toBe(destination);
+    expect(destination).toEqual({
+      foo: 'bar',
+      bar: 'foo'
+    });
+  });
 });

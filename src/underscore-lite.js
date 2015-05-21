@@ -76,6 +76,17 @@
     }
   };
 
+  // Copy all of the properties in the source objects over to the
+  // destination object.
+  _.extend = function(destination, source) {
+    for (var i in source) {
+      if (_.has(source, i)) {
+        destination[i] = source[i];
+      }
+    }
+    return destination;
+  };
+
   // Generic is<Type> functions
   _.forEach(['String', 'Function', 'Number', 'Date', 'Array'], function(type) {
     _['is' + type] = function(o) {

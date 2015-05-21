@@ -35,7 +35,7 @@
  */
 
 // Map functions that already exist in angular.js
-angular.forEach(['noop', 'identity', 'forEach', 'isUndefined', 'isFunction', 'isObject', 'isArray', 'isNumber', 'isDate', 'isElement', 'isString'], function(fn) {
+angular.forEach(['noop', 'identity', 'forEach', 'isUndefined', 'isFunction', 'isObject', 'isArray', 'isNumber', 'isDate', 'isElement', 'isString', 'extend'], function(fn) {
   _[fn] = angular[fn];
 });
 

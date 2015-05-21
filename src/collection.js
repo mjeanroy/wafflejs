@@ -27,6 +27,7 @@
 /* global _ */
 /* global $parse */
 /* global HashMap */
+/* global Observable */
 /* exported Collection */
 
 /**
@@ -90,9 +91,6 @@ var Collection = (function() {
     if (!_.isFunction(this.$$key)) {
       this.$$key = $parse(this.$$key);
     }
-
-    this.$$observers = [];
-    this.$$changes = [];
 
     // Initialize collection
     this.length = 0;
@@ -277,11 +275,6 @@ var Collection = (function() {
     collection.length = newSize;
 
     return changes;
-  };
-
-  // Call observer callback
-  var callObserver = function(o) {
-    o.callback.call(o.ctx, this.$$changes);
   };
 
   // == Public prototype
@@ -697,65 +690,17 @@ var Collection = (function() {
     // Extract property of collection items
     pluck: function(name) {
       return this.map($parse(name));
-    },
-
-    // Add new observer
-    observe: function(callback, observer) {
-      this.$$observers.push({
-        ctx: observer || null,
-        callback: callback
-      });
-
-      return this;
-    },
-
-    // Remove observer
-    unobserve: function(callback, observer) {
-      if (arguments.length === 0) {
-        // Unobserve everything
-        this.$$observers = [];
-      }
-      else {
-        var ctx = observer || null;
-        this.$$observers = _.reject(this.$$observers, function(o) {
-          return o.ctx === ctx && callback === o.callback;
-        });
-      }
-
-      return this;
-    },
-
-    // Trigger changes
-    // Note that callbacks will be called asynchronously
-    trigger: function(changes) {
-      this.$$changes = this.$$changes.concat(changes);
-
-      var collection = this;
-      setTimeout(function() {
-        if (collection.$$changes.length > 0) {
-          _.forEach(collection.$$observers, callObserver, collection);
-          collection.$$changes = [];
-        }
-
-        // Free memory
-        collection = null;
-      });
-
-      return this;
-    },
-
-    // Clear pending changes
-    clearChanges: function() {
-      this.$$changes = [];
-      return this;
     }
   };
-
 
   // Since collection should only contains uniq elements, indexOf and lastIndexOf should
   // be the same.
   Constructor.prototype.lastIndexOf = Constructor.prototype.indexOf;
 
+  // Turn collection to an observable object
+  _.extend(Constructor.prototype, Observable);
+
+  // Add underscore functions to Collection prototype
   _.forEach(['size', 'first', 'last', 'initial', 'rest', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
     if (_[fn]) {
       Constructor.prototype[fn] = function() {
@@ -765,6 +710,7 @@ var Collection = (function() {
     }
   });
 
+  // These functions may allow nested properties
   _.forEach(['countBy', 'groupBy', 'indexBy'], function(fn) {
     Constructor.prototype[fn] = function(callback, ctx) {
       // Support nested property in collection object
@@ -776,6 +722,7 @@ var Collection = (function() {
     };
   });
 
+  // Add some Array functions to Collection prototype
   _.forEach(['toString', 'toLocaleString', 'join'], function(fn) {
     Constructor.prototype[fn] = callNativeArrayWrapper(fn);
   });

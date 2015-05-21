@@ -22,11 +22,7 @@
  * SOFTWARE.
  */
 
-describe('Collection observers', function() {
-
-  var o1;
-  var o2;
-  var collection;
+describe('Observable', function() {
 
   var callback1;
   var callback2;
@@ -38,12 +34,6 @@ describe('Collection observers', function() {
   var change2;
 
   beforeEach(function() {
-    o1 = { id: 1, name: 'foo' };
-    o2 = { id: 2, name: 'bar' };
-
-    collection = new Collection([o1, o2]);
-    expect(collection.length).toBe(2);
-
     jasmine.clock().tick(1);
 
     callback1 = jasmine.createSpy('callback1');
@@ -52,123 +42,126 @@ describe('Collection observers', function() {
     ctx1 = { foo: 'bar' };
     ctx2 = { bar: 'foo' };
 
-    change1 = { type: 'splice', addedCount: 1, index: 3, object: collection, removed: [] };
-    change2 = { type: 'splice', addedCount: 1, index: 4, object: collection, removed: [] };
+    change1 = { type: 'splice', addedCount: 1, index: 3, object: Observable, removed: [] };
+    change2 = { type: 'splice', addedCount: 1, index: 4, object: Observable, removed: [] };
+
+    Observable.$$observers = undefined;
+    Observable.$$changes = undefined;
   });
 
   it('should register observer', function() {
-    collection.observe(callback1);
+    Observable.observe(callback1);
 
-    expect(collection.$$observers).toEqual([
+    expect(Observable.$$observers).toEqual([
       { ctx: null, callback: callback1 }
     ]);
   });
 
   it('should register observer with context', function() {
-    collection.observe(callback1, ctx1);
+    Observable.observe(callback1, ctx1);
 
-    expect(collection.$$observers).toEqual([
+    expect(Observable.$$observers).toEqual([
       { ctx: ctx1, callback: callback1 }
     ]);
   });
 
   it('should unregister everything', function() {
-    collection.$$observers = [{
+    Observable.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    collection.unobserve();
+    Observable.unobserve();
 
-    expect(collection.$$observers).toEqual([]);
+    expect(Observable.$$observers).toEqual([]);
   });
 
   it('should unregister callback', function() {
-    collection.$$observers = [
+    Observable.$$observers = [
       { ctx: null, callback: callback1 },
       { ctx: null, callback: callback2 }
     ];
 
-    collection.unobserve(callback1);
+    Observable.unobserve(callback1);
 
-    expect(collection.$$observers).toEqual([
+    expect(Observable.$$observers).toEqual([
       { ctx: null, callback: callback2 }
     ]);
   });
 
   it('should unregister callback with context', function() {
-    collection.$$observers = [
+    Observable.$$observers = [
       { ctx: ctx1, callback: callback1 },
       { ctx: ctx2, callback: callback1 }
     ];
 
-    collection.unobserve(callback1, ctx1);
+    Observable.unobserve(callback1, ctx1);
 
-    expect(collection.$$observers).toEqual([
+    expect(Observable.$$observers).toEqual([
       { ctx: ctx2, callback: callback1 }
     ]);
   });
 
   it('should trigger changes asynchronously', function() {
-    collection.$$observers = [{
+    Observable.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
     var changes = [change1, change2];
 
-    collection.trigger(changes);
+    Observable.trigger(changes);
 
-    expect(collection.$$changes).toEqual(changes);
+    expect(Observable.$$changes).toEqual(changes);
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes;
+    var $$changes = Observable.$$changes;
 
     jasmine.clock().tick(1);
 
     expect(callback1).toHaveBeenCalledWith($$changes);
-    expect(collection.$$changes).toEqual([]);
+    expect(Observable.$$changes).toEqual([]);
   });
 
   it('should trigger single change', function() {
-    collection.$$observers = [{
+    Observable.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    collection.trigger(change1);
+    Observable.trigger(change1);
 
-    expect(collection.$$changes).toEqual([change1]);
+    expect(Observable.$$changes).toEqual([change1]);
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes;
+    var $$changes = Observable.$$changes;
 
     jasmine.clock().tick(1);
 
     expect(callback1).toHaveBeenCalledWith($$changes);
-    expect(collection.$$changes).toEqual([]);
+    expect(Observable.$$changes).toEqual([]);
   });
 
   it('should trigger all changes once asynchronously', function() {
-    collection.$$observers = [{
+    Observable.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
     var changes1 = [change1];
-    collection.trigger(changes1);
+    Observable.trigger(changes1);
 
     var changes2 = [change2];
-    collection.trigger(changes2);
+    Observable.trigger(changes2);
 
-    expect(collection.$$changes).toEqual(changes1.concat(changes2));
+    expect(Observable.$$changes).toEqual(changes1.concat(changes2));
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes;
+    var $$changes = Observable.$$changes;
 
     jasmine.clock().tick(1);
 
     expect(callback1).toHaveBeenCalledWith($$changes);
-    expect(collection.$$changes).toEqual([]);
+    expect(Observable.$$changes).toEqual([]);
   });
 });

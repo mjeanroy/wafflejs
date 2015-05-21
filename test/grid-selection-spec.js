@@ -77,9 +77,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBeNull();
-      expect(trs[1].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toBeNull();
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       grid.select.calls.reset();
 
@@ -90,7 +90,8 @@ describe('Grid Selection', function() {
       expect(grid.$selection).toBeEmpty();
       expect(grid.$data[1].$$selected).toBeFalse();
       expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.getAttribute('class') == null;
+        var className = tr.getAttribute('class') || '';
+        return className.indexOf(CSS_SELECTED) < 0;
       });
     });
 
@@ -106,9 +107,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBeNull();
-      expect(trs[1].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toBeNull();
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       grid.select.calls.reset();
 
@@ -122,9 +123,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[2].$$selected).toBeTrue();
 
       trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBeNull();
-      expect(trs[1].getAttribute('class')).toBeNull();
-      expect(trs[2].getAttribute('class')).toBe(CSS_SELECTED);
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
     });
 
     it('should set $selection and flag corresponding data as selected', function() {
@@ -146,7 +147,7 @@ describe('Grid Selection', function() {
       grid.select(newSelection);
 
       expect(data[idx].$$selected).toBeTrue();
-      expect(trs[idx].getAttribute('class')).toEqual(CSS_SELECTED);
+      expect(trs[idx].getAttribute('class')).toContain(CSS_SELECTED);
       expect(grid.$selection.toArray()).toEqual(newSelection);
     });
 
@@ -158,7 +159,7 @@ describe('Grid Selection', function() {
       grid.select(previousSelection);
 
       expect(data[idx].$$selected).toBeTrue();
-      expect(trs[idx].getAttribute('class')).toEqual(CSS_SELECTED);
+      expect(trs[idx].getAttribute('class')).toContain(CSS_SELECTED);
       expect(grid.$selection.toArray()).toEqual(previousSelection);
 
       var newIdx = 0;
@@ -168,8 +169,8 @@ describe('Grid Selection', function() {
 
       expect(data[newIdx].$$selected).toBeTrue();
       expect(data[idx].$$selected).toBeFalse();
-      expect(trs[newIdx].getAttribute('class')).toEqual(CSS_SELECTED);
-      expect(trs[idx].getAttribute('class')).toBeNull();
+      expect(trs[newIdx].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[idx].getAttribute('class')).not.toContain(CSS_SELECTED);
       expect(grid.$selection.toArray()).toEqual(newSelection);
     });
 
@@ -186,9 +187,9 @@ describe('Grid Selection', function() {
       expect(data[idx0].$$selected).toBeTrue();
       expect(data[idx1].$$selected).toBeTrue();
       expect(data[idx2].$$selected).toBeUndefined();
-      expect(trs[idx0].getAttribute('class')).toEqual(CSS_SELECTED);
-      expect(trs[idx1].getAttribute('class')).toEqual(CSS_SELECTED);
-      expect(trs[idx2].getAttribute('class')).toBeNull();
+      expect(trs[idx0].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[idx1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[idx2].getAttribute('class')).not.toContain(CSS_SELECTED);
       expect(grid.$selection.toArray()).toEqual(previousSelection);
 
       var newSelection = [data[idx1], data[idx2]];
@@ -199,9 +200,9 @@ describe('Grid Selection', function() {
       expect(data[idx0].$$selected).toBeFalse();
       expect(data[idx1].$$selected).toBeTrue();
       expect(data[idx2].$$selected).toBeTrue();
-      expect(trs[idx0].getAttribute('class')).toBeNull();
-      expect(trs[idx1].getAttribute('class')).toEqual(CSS_SELECTED);
-      expect(trs[idx2].getAttribute('class')).toEqual(CSS_SELECTED);
+      expect(trs[idx0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[idx1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[idx2].getAttribute('class')).toContain(CSS_SELECTED);
       expect(grid.$selection.toArray()).toEqual(newSelection);
     });
 
@@ -223,15 +224,15 @@ describe('Grid Selection', function() {
 
       expect(grid.$data[0].id).toEqual(id1);
       expect(grid.$data[0].$$selected).toBeTrue();
-      expect(trs[0].getAttribute('class')).toEqual(CSS_SELECTED);
+      expect(trs[0].getAttribute('class')).toContain(CSS_SELECTED);
 
       expect(grid.$data[1].id).toEqual(id2);
       expect(grid.$data[1].$$selected).toBeUndefined();
-      expect(trs[1].getAttribute('class')).toBeNull();
+      expect(trs[1].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       expect(grid.$data[2].id).toEqual(id3);
       expect(grid.$data[2].$$selected).toBeTrue();
-      expect(trs[2].getAttribute('class')).toEqual(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
 
       expect(grid.$selection.toArray()).toEqual(previousSelection);
       expect(grid.$selection).toHaveLength(2);
@@ -264,9 +265,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBeNull();
-      expect(trs[1].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toBeNull();
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       grid.select.calls.reset();
 
@@ -277,7 +278,8 @@ describe('Grid Selection', function() {
       expect(grid.$selection).toBeEmpty();
       expect(grid.$data[1].$$selected).toBeFalse();
       expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.getAttribute('class') == null;
+        var className = tr.getAttribute('class') || '';
+        return className.indexOf(CSS_SELECTED) < 0;
       });
     });
 
@@ -293,9 +295,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBeNull();
-      expect(trs[1].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toBeNull();
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       grid.select.calls.reset();
 
@@ -309,9 +311,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[2].$$selected).toBeTrue();
 
       trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBeNull();
-      expect(trs[1].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toBe(CSS_SELECTED);
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
     });
 
     it('should add set of data to selection when new row is clicked with shift key', function() {
@@ -326,9 +328,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[0].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).toBeNull();
-      expect(trs[2].getAttribute('class')).toBeNull();
+      expect(trs[0].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       grid.select.calls.reset();
 
@@ -343,9 +345,9 @@ describe('Grid Selection', function() {
       expect(grid.$data[2].$$selected).toBeTrue();
 
       trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).toBe(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toBe(CSS_SELECTED);
+      expect(trs[0].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
     });
   });
 });

@@ -360,11 +360,11 @@ var Grid = (function() {
         var idx = that.$data.indexOf(data);
         var select = !that.$data.at(idx).$$selected;
         that.$data.at(idx).$$selected = select;
-        var tr = that.$tbody[0].rows[idx];
+        var $tr = $(that.$tbody[0].rows[idx]);
         if (select) {
-          tr.setAttribute('class', CSS_SELECTED);
+          $tr.addClass(CSS_SELECTED);
         } else {
-          tr.removeAttribute('class');
+          $tr.removeClass(CSS_SELECTED);
         }
       };
 

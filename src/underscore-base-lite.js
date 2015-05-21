@@ -201,6 +201,11 @@ var _ = (function() {
       return -1;
     },
 
+    // Check that array contains given item.
+    contains: function(array, item) {
+      return _.indexOf(array, item) >= 0;
+    },
+
     // Get all keys of object
     keys: function(object) {
       if (!_.isObject(object)) {

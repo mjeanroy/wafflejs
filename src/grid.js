@@ -116,7 +116,6 @@ var Grid = (function() {
 
     if (data.$$selected) {
       $tr.addClass(CSS_SELECTED);
-      grid.$selection[idx] = data;
     }
 
     grid.$columns.forEach(function(column, idx) {
@@ -163,6 +162,10 @@ var Grid = (function() {
       key: 'id',
       model: Column
     });
+
+    // Initialize selection data.
+    // Use same options as data collection.
+    this.$selection = new Collection([], this.$data.options());
 
     // Translate size to valid numbers.
     opts.size = {
@@ -331,8 +334,6 @@ var Grid = (function() {
         grid = empty = build = onEnded = null;
       };
 
-      this.$selection = {};
-
       if (asyncRender) {
         // Asynchronous call
         $util.asyncTask(this.$data.split(200), 10, build, onEnded);
@@ -348,15 +349,17 @@ var Grid = (function() {
 
     select: function(newSelection) {
       var that = this;
-      if (!_.isObject(newSelection)) {
-        newSelection = {};
+
+      if (!_.isArray(newSelection)) {
+        newSelection = [newSelection];
       }
 
       var previousSelection = this.$selection;
 
-      var toggle = function(idx) {
-        var select = !that.$data[idx].$$selected;
-        that.$data[idx].$$selected = select;
+      var toggle = function(data) {
+        var idx = that.$data.indexOf(data);
+        var select = !that.$data.at(idx).$$selected;
+        that.$data.at(idx).$$selected = select;
         var tr = that.$tbody[0].rows[idx];
         if (select) {
           tr.setAttribute('class', CSS_SELECTED);
@@ -365,19 +368,19 @@ var Grid = (function() {
         }
       };
 
-      _.forEach(_.keys(newSelection), function(idx) {
-        if (!newSelection[idx].$$selected) {
-          toggle(idx);
+      _.forEach(newSelection, function(data) {
+        if (!data.$$selected) {
+          toggle(data);
         }
       });
 
-      _.forEach(_.keys(previousSelection), function(idx) {
-        if (!newSelection[idx]) {
-          toggle(idx);
+      previousSelection.forEach(function(data) {
+        if (!_.contains(newSelection, data)) {
+          toggle(data);
         }
       });
 
-      this.$selection = newSelection;
+      this.$selection.reset(newSelection);
     },
 
     // Sort grid by fields
@@ -511,9 +514,7 @@ var Grid = (function() {
         var idx = tr.getAttribute(DATA_WAFFLE_IDX);
         var data = that.$data.at(idx);
         var previouslySelected = data.$$selected;
-        var newSelection = {};
-
-        this.$$selectAnchor = 0;
+        var newSelection = [];
 
         if (that.options.selection.multi) {
           if (e.shiftKey) {
@@ -522,24 +523,24 @@ var Grid = (function() {
             var lowerBound = idxF > selectAnchorF ? selectAnchorF : idxF;
             var upperBound = idxF > selectAnchorF ? idxF : selectAnchorF;
             for (var i = lowerBound; i <= upperBound; ++i) {
-              newSelection[i] = that.$data[i];
+              newSelection.push(that.$data.at(i));
             }
           } else if (e.ctrlKey) {
-            _.forEach(_.keys(that.$selection), function(currIdx) {
+            that.$selection.forEach(function(data, currIdx) {
               if (idx !== currIdx) {
-                newSelection[currIdx] = that.$data[currIdx];
+                newSelection.push(data);
               }
             });
             if (!previouslySelected) {
-              newSelection[idx] = data;
+              newSelection.push(data);
             }
-          } else if (!previouslySelected || (_.keys(that.$selection).length > 1)) {
-            newSelection[idx] = data;
+          } else if (!previouslySelected || that.$selection.length > 1) {
+            newSelection.push(data);
             that.$$selectAnchor = idx;
           }
         } else {
           if (!previouslySelected) {
-            newSelection[idx] = data;
+            newSelection.push(data);
           }
         }
 

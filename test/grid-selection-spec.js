@@ -45,6 +45,17 @@ describe('Grid Selection', function() {
     fixtures.appendChild(table);
   });
 
+  it('should initialize selection collection', function() {
+    grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    expect(grid.$selection).toBeDefined();
+    expect(grid.$selection).toBeEmpty();
+    expect(grid.$selection.options()).toEqual(grid.$data.options());
+  });
+
   describe('with single selection', function() {
     beforeEach(function() {
       grid = new Grid(table, {
@@ -60,9 +71,9 @@ describe('Grid Selection', function() {
 
       triggerClick(row);
 
-      var expectedSelection = {1:grid.$data[1]};
+      var expectedSelection = [grid.$data[1]];
       expect(grid.select).toHaveBeenCalledWith(expectedSelection);
-      expect(grid.$selection).toEqual(expectedSelection);
+      expect(grid.$selection.toArray()).toEqual(expectedSelection);
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
@@ -75,8 +86,8 @@ describe('Grid Selection', function() {
       // New click should toggle selection
       triggerClick(row);
 
-      expect(grid.select).toHaveBeenCalledWith({});
-      expect(grid.$selection).toEqual({});
+      expect(grid.select).toHaveBeenCalledWith([]);
+      expect(grid.$selection).toBeEmpty();
       expect(grid.$data[1].$$selected).toBeFalse();
       expect(tbody.childNodes).toVerify(function(tr) {
         return tr.getAttribute('class') == null;
@@ -89,9 +100,9 @@ describe('Grid Selection', function() {
 
       triggerClick(row1);
 
-      var expectedSelection = {1:grid.$data[1]};
+      var expectedSelection = [grid.$data[1]];
       expect(grid.select).toHaveBeenCalledWith(expectedSelection);
-      expect(grid.$selection).toEqual(expectedSelection);
+      expect(grid.$selection.toArray()).toEqual(expectedSelection);
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
@@ -104,9 +115,9 @@ describe('Grid Selection', function() {
       // New click should toggle selection
       triggerClick(row2);
 
-      var newExpectedSelection = {2:grid.$data[2]};
+      var newExpectedSelection = [grid.$data[2]];
       expect(grid.select).toHaveBeenCalledWith(newExpectedSelection);
-      expect(grid.$selection).toEqual(newExpectedSelection);
+      expect(grid.$selection.toArray()).toEqual(newExpectedSelection);
       expect(grid.$data[1].$$selected).toBeFalse();
       expect(grid.$data[2].$$selected).toBeTrue();
 
@@ -127,34 +138,31 @@ describe('Grid Selection', function() {
         return !data.$$selected;
       });
 
-      expect(grid.$selection).toEqual({});
+      expect(grid.$selection).toBeEmpty();
 
       var idx = 1;
-      var newSelection = {}
-      newSelection[idx] = data[idx];
+      var newSelection = [data[idx]];
 
       grid.select(newSelection);
 
       expect(data[idx].$$selected).toBeTrue();
       expect(trs[idx].getAttribute('class')).toEqual(CSS_SELECTED);
-      expect(grid.$selection).toBe(newSelection);
+      expect(grid.$selection.toArray()).toEqual(newSelection);
     });
 
     it('should replace $selection, unflag previously selected data and flag newly selected data', function() {
       var trs = tbody.childNodes;
       var idx = 1;
-      var previousSelection = {}
-      previousSelection[idx]= data[idx];
+      var previousSelection = [data[idx]];
 
       grid.select(previousSelection);
 
       expect(data[idx].$$selected).toBeTrue();
       expect(trs[idx].getAttribute('class')).toEqual(CSS_SELECTED);
-      expect(grid.$selection).toBe(previousSelection);
+      expect(grid.$selection.toArray()).toEqual(previousSelection);
 
       var newIdx = 0;
-      var newSelection = {}
-      newSelection[newIdx] = data[newIdx];
+      var newSelection = [data[newIdx]];
 
       grid.select(newSelection);
 
@@ -162,7 +170,7 @@ describe('Grid Selection', function() {
       expect(data[idx].$$selected).toBeFalse();
       expect(trs[newIdx].getAttribute('class')).toEqual(CSS_SELECTED);
       expect(trs[idx].getAttribute('class')).toBeNull();
-      expect(grid.$selection).toBe(newSelection);
+      expect(grid.$selection.toArray()).toEqual(newSelection);
     });
 
     it('should replace $selection, unflag unselected data, flag newly selected data and keep still selected data flagged', function() {
@@ -170,9 +178,7 @@ describe('Grid Selection', function() {
       var idx0 = 0;
       var idx1 = 1;
       var idx2 = 2;
-      var previousSelection = {}
-      previousSelection[idx0] = data[idx0];
-      previousSelection[idx1] = data[idx1];
+      var previousSelection = [data[idx0], data[idx1]];
 
       // [0,1]
       grid.select(previousSelection);
@@ -183,11 +189,9 @@ describe('Grid Selection', function() {
       expect(trs[idx0].getAttribute('class')).toEqual(CSS_SELECTED);
       expect(trs[idx1].getAttribute('class')).toEqual(CSS_SELECTED);
       expect(trs[idx2].getAttribute('class')).toBeNull();
-      expect(grid.$selection).toBe(previousSelection);
+      expect(grid.$selection.toArray()).toEqual(previousSelection);
 
-      var newSelection = {}
-      newSelection[idx1] = data[idx1];
-      newSelection[idx2] = data[idx2];
+      var newSelection = [data[idx1], data[idx2]];
 
       // => [1,2]
       grid.select(newSelection);
@@ -198,19 +202,16 @@ describe('Grid Selection', function() {
       expect(trs[idx0].getAttribute('class')).toBeNull();
       expect(trs[idx1].getAttribute('class')).toEqual(CSS_SELECTED);
       expect(trs[idx2].getAttribute('class')).toEqual(CSS_SELECTED);
-      expect(grid.$selection).toBe(newSelection);
+      expect(grid.$selection.toArray()).toEqual(newSelection);
     });
 
     it('should keep current selection after sort', function() {
       var id1 = 1;
       var id2 = 2;
       var id3 = 3;
-      var previousSelection = {}
-      previousSelection[1] = grid.$data[1];
-      previousSelection[2] = grid.$data[2];
-
-      expect(previousSelection[1].id).toEqual(id1);
-      expect(previousSelection[2].id).toEqual(id3);
+      var previousSelection = [grid.$data[1], grid.$data[2]];
+      expect(previousSelection[0].id).toEqual(id1);
+      expect(previousSelection[1].id).toEqual(id3);
 
       // [1,2]
       grid.select(previousSelection);
@@ -232,10 +233,10 @@ describe('Grid Selection', function() {
       expect(grid.$data[2].$$selected).toBeTrue();
       expect(trs[2].getAttribute('class')).toEqual(CSS_SELECTED);
 
-      expect(grid.$selection).not.toBe(previousSelection);
-      expect(_.keys(grid.$selection)).toHaveLength(2);
-      expect(grid.$selection[0]).toBe(grid.$data[0]);
-      expect(grid.$selection[2]).toBe(grid.$data[2]);
+      expect(grid.$selection.toArray()).toEqual(previousSelection);
+      expect(grid.$selection).toHaveLength(2);
+      expect(grid.$selection[0]).toEqual(grid.$data[0]);
+      expect(grid.$selection[1]).toEqual(grid.$data[2]);
     });
   });
 
@@ -257,12 +258,9 @@ describe('Grid Selection', function() {
 
       triggerClick(row);
 
-      var expectedSelection = {
-        1:grid.$data[1]
-      };
-
+      var expectedSelection = [grid.$data[1]];
       expect(grid.select).toHaveBeenCalledWith(expectedSelection);
-      expect(grid.$selection).toEqual(expectedSelection);
+      expect(grid.$selection.toArray()).toEqual(expectedSelection);
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
@@ -275,8 +273,8 @@ describe('Grid Selection', function() {
       // New click should toggle selection
       triggerClick(row);
 
-      expect(grid.select).toHaveBeenCalledWith({});
-      expect(grid.$selection).toEqual({});
+      expect(grid.select).toHaveBeenCalledWith([]);
+      expect(grid.$selection).toBeEmpty();
       expect(grid.$data[1].$$selected).toBeFalse();
       expect(tbody.childNodes).toVerify(function(tr) {
         return tr.getAttribute('class') == null;
@@ -289,12 +287,9 @@ describe('Grid Selection', function() {
 
       triggerClick(row1);
 
-      var expectedSelection = {
-        1: grid.$data[1]
-      };
-
+      var expectedSelection = [grid.$data[1]];
       expect(grid.select).toHaveBeenCalledWith(expectedSelection);
-      expect(grid.$selection).toEqual(expectedSelection);
+      expect(grid.$selection.toArray()).toEqual(expectedSelection);
       expect(grid.$data[1].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
@@ -307,13 +302,9 @@ describe('Grid Selection', function() {
       // New click should toggle selection
       triggerClick(row2, false, true);
 
-      var newExpectedSelection = {
-        1: grid.$data[1],
-        2: grid.$data[2]
-      };
-
+      var newExpectedSelection = [grid.$data[1], grid.$data[2]];
       expect(grid.select).toHaveBeenCalledWith(newExpectedSelection);
-      expect(grid.$selection).toEqual(newExpectedSelection);
+      expect(grid.$selection.toArray()).toEqual(newExpectedSelection);
       expect(grid.$data[1].$$selected).toBeTrue();
       expect(grid.$data[2].$$selected).toBeTrue();
 
@@ -329,12 +320,9 @@ describe('Grid Selection', function() {
 
       triggerClick(row0);
 
-      var expectedSelection = {
-        0: grid.$data[0]
-      };
-
+      var expectedSelection = [grid.$data[0]];
       expect(grid.select).toHaveBeenCalledWith(expectedSelection);
-      expect(grid.$selection).toEqual(expectedSelection);
+      expect(grid.$selection.toArray()).toEqual(expectedSelection);
       expect(grid.$data[0].$$selected).toBeTrue();
 
       var trs = tbody.childNodes;
@@ -347,14 +335,9 @@ describe('Grid Selection', function() {
       // New click should toggle selection
       triggerClick(row2, true);
 
-      var newExpectedSelection = {
-        0: grid.$data[0],
-        1: grid.$data[1],
-        2: grid.$data[2]
-      };
-
+      var newExpectedSelection = [grid.$data[0], grid.$data[1], grid.$data[2]];
       expect(grid.select).toHaveBeenCalledWith(newExpectedSelection);
-      expect(grid.$selection).toEqual(newExpectedSelection);
+      expect(grid.$selection.toArray()).toEqual(newExpectedSelection);
       expect(grid.$data[0].$$selected).toBeTrue();
       expect(grid.$data[1].$$selected).toBeTrue();
       expect(grid.$data[2].$$selected).toBeTrue();

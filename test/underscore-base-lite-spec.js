@@ -329,6 +329,17 @@ describe('_', function() {
     expect(_.lastIndexOf(array, 0)).toBe(-1);
   });
 
+  it('should array contains data', function() {
+    var array = [1, 2, 3, 4, 4];
+
+    expect(_.contains(array, 1)).toBe(true);
+    expect(_.contains(array, 2)).toBe(true);
+    expect(_.contains(array, 3)).toBe(true);
+    expect(_.contains(array, 4)).toBe(true);
+    expect(_.contains(array, 5)).toBe(false);
+    expect(_.contains(array, 0)).toBe(false);
+  });
+
   it('should get first elements of array', function() {
     var callback = jasmine.createSpy('callback').and.callFake(function(value) {
       return value % 2 === 0;

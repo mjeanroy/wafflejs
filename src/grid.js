@@ -446,20 +446,15 @@ var Grid = (function() {
 
     // Destroy datagrid
     destroy: function() {
-      return this.$$unbind()
-                 .$$unobserve()
-                 .$$destroy();
-    },
+      // Unbind dom events
+      this.$thead.off();
+      this.$tbody.off();
 
-    // Destroy internal data
-    // Should be a private function
-    $$destroy: function() {
-      for (var i in this) {
-        if (this.hasOwnProperty(i)) {
-          this[i] = null;
-        }
-      }
-      return this;
+      // Unobserve collection
+      this.$data.unobserve();
+
+      // Destroy internal property
+      $util.destroy(this);
     },
 
     // Bind user events
@@ -550,23 +545,9 @@ var Grid = (function() {
       return this;
     },
 
-    // Unbind user events
-    // Should be a private function
-    $$unbind: function() {
-      this.$thead.off();
-      this.$tbody.off();
-      return this;
-    },
-
     // Observe data collection
     $$observe: function() {
       this.$data.observe(this.$$onDataChange, this);
-      return this;
-    },
-
-    // Delete all observers on data collection
-    $$unobserve: function() {
-      this.$data.unobserve();
       return this;
     },
 

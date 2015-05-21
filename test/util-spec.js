@@ -34,6 +34,28 @@ describe('$util', function() {
     expect($util.fromPx(100)).toBe(100);
   });
 
+  it('should destroy object', function() {
+    var fn = jasmine.createSpy('fn');
+    var protoFn = jasmine.createSpy('protoFn');
+    var prototype = {
+      protoFn: protoFn
+    };
+
+    var o = {
+      foo: 'bar',
+      fn: fn
+    };
+
+    o.prototype = prototype;
+
+    $util.destroy(o);
+
+    expect(o.foo).toBeNull();
+    expect(o.fn).toBeNull();
+    expect(o.prototype).toBeNull();
+    expect(prototype.protoFn).toBe(protoFn);
+  });
+
   it('should call async task', function() {
     var data = [
       [1, 2, 3],

@@ -44,6 +44,18 @@ var $util = {
     return _.isString(value) ? Number(value.replace('px', '')) : value;
   },
 
+  // Destroy object by setting null to object own properties.
+  // Note that this function will also destroy prototype attribute,
+  // so this function must be called when object does not need to
+  // be used anymore.
+  destroy: function(o) {
+    for (var i in o) {
+      if (_.has(o, i)) {
+        o[i] = null;
+      }
+    }
+  },
+
   // Execute asynchronous tasks on small chunks of data.
   asyncTask: function(chunks, delay, onIteration, onEnded) {
     var idx = 0;

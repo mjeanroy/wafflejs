@@ -31,6 +31,7 @@
 /* global $parse */
 /* global $comparators */
 /* global $util */
+/* global GridBuilder */
 /* global $$createComparisonFunction */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
@@ -104,33 +105,6 @@ var Grid = (function() {
     return grid;
   };
 
-  // Build row and return it
-  // Should be a private function
-  var renderRow = function(grid, data, idx) {
-    var tr = $doc.tr();
-
-    var $tr = $(tr);
-
-    // Add index
-    $tr.attr(DATA_WAFFLE_IDX, idx);
-
-    if (data.$$selected) {
-      $tr.addClass(CSS_SELECTED);
-    }
-
-    grid.$columns.forEach(function(column, idx) {
-      var $node = $($doc.td())
-        .addClass(column.cssClasses(idx, false))
-        .css(column.styles(idx, false))
-        .attr(column.attributes(idx, false))
-        .html(column.render(data));
-
-       tr.appendChild($node[0]);
-    });
-
-    return tr;
-  };
-
   var Constructor = function(table, options) {
     if (!(this instanceof Constructor)) {
       return new Constructor(table, options);
@@ -177,8 +151,10 @@ var Grid = (function() {
 
     createNodes(this);
 
+    // Observe collection to update grid accordingly
+    this.$data.observe(this.$$onDataChange, this);
+
     this.$$bind()
-        .$$observe()
         .assignWidth()
         .renderHeader()
         .sortBy(options.sortBy, false)
@@ -278,20 +254,8 @@ var Grid = (function() {
 
     // Render entire header of grid
     renderHeader: function() {
-      var tr = $doc.tr();
-
-      this.$columns.forEach(function(column, idx, array) {
-        var $node = $($doc.th())
-          .addClass(column.cssClasses(idx, true))
-          .css(column.styles(idx, true))
-          .attr(column.attributes(idx, array, true))
-          .html(column.title);
-
-        tr.appendChild($node[0]);
-      });
-
+      var tr = GridBuilder.theadRow(this);
       this.$thead.empty().append(tr);
-
       return this;
     },
 
@@ -309,17 +273,8 @@ var Grid = (function() {
       });
 
       var build = function(data, startIdx) {
-        var fragment = $doc.createFragment();
-
-        for (var i = 0, dataSize = data.length; i < dataSize; ++i) {
-          var row = renderRow(grid, data[i], startIdx + i);
-          fragment.appendChild(row);
-        }
-
-        // This will be called once... :)
+        var fragment = GridBuilder.tbodyRows(grid, data, startIdx);
         empty();
-
-        // Append to grid
         grid.$tbody.append(fragment);
       };
 
@@ -335,11 +290,8 @@ var Grid = (function() {
       };
 
       if (asyncRender) {
-        // Asynchronous call
         $util.asyncTask(this.$data.split(200), 10, build, onEnded);
-      }
-      else {
-        // Synchronous call
+      } else {
         build(this.$data, 0);
         onEnded();
       }
@@ -545,12 +497,6 @@ var Grid = (function() {
       return this;
     },
 
-    // Observe data collection
-    $$observe: function() {
-      this.$data.observe(this.$$onDataChange, this);
-      return this;
-    },
-
     // Listener on changes on data collection
     $$onDataChange: function(changes) {
       _.forEach(changes, function(change) {
@@ -601,7 +547,7 @@ var Grid = (function() {
         for (var i = 0; i < addedCount; ++i) {
           var rowIdx = i + index;
           var data = collection.at(rowIdx);
-          var tr = renderRow(this, data, rowIdx);
+          var tr = GridBuilder.tbodyRow(this, data, rowIdx);
 
           addedNodes.push(tr);
           added.push(data);
@@ -635,7 +581,7 @@ var Grid = (function() {
       var tbody = this.$tbody[0];
 
       var oldNode = tbody.childNodes[index];
-      var newNode = renderRow(this, data, index);
+      var newNode = GridBuilder.tbodyRow(this, data, index);
       tbody.replaceChild(newNode, oldNode);
 
       return this;

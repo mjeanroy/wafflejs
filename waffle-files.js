@@ -41,6 +41,7 @@ var $files = {
     SRC + 'renderers.js',
     SRC + 'comparators.js',
     SRC + 'column.js',
+    SRC + 'grid-builder.js',
     SRC + 'grid.js',
     SRC + 'waffle.js'
   ],

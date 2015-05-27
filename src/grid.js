@@ -72,16 +72,6 @@ var Grid = (function() {
 
   // == Private utilities
 
-  // Call an event listener of given grid.
-  // Grid object is returned.
-  var call = function(grid, name, argFn) {
-    var fn = grid.options.events[name];
-    if (fn !== _.noop) {
-      fn.apply(grid, (argFn || _.noop).call(grid));
-    }
-    return grid;
-  };
-
   // Initialize grid:
   //  - Create or retrieve thead element
   //  - Create or retrieve tbody element
@@ -160,7 +150,7 @@ var Grid = (function() {
         .sortBy(options.sortBy, false)
         .renderBody();
 
-    call(this, 'onInitialized');
+    this.trigger('onInitialized');
   };
 
   // Create new grid
@@ -281,7 +271,7 @@ var Grid = (function() {
       var onEnded = function() {
         grid.$data.clearChanges();
 
-        call(grid, 'onRendered', function() {
+        grid.trigger('onRendered', function() {
           return [this.$data, _.toArray(this.$tbody[0].childNodes)];
         });
 
@@ -393,7 +383,23 @@ var Grid = (function() {
         this.renderBody();
       }
 
-      return call(this, 'onSorted');
+      return this.trigger('onSorted');
+    },
+
+    // Trigger events listeners
+    // First argument is the name of the event.
+    // For lazy evaluation of arguments, second argument is a function that
+    // should return event argument. This function will be called if and only if
+    // event need to be triggered.
+    // If lazy evaluation is needless, just put arguments next to event name.
+    trigger: function(name, argFn) {
+      var fn = this.options.events[name];
+      if (fn && fn !== _.noop) {
+        var args = _.isFunction(argFn) ? argFn.call(this) : _.rest(arguments);
+        fn.apply(this, args);
+      }
+
+      return this;
     },
 
     // Destroy datagrid
@@ -533,7 +539,7 @@ var Grid = (function() {
         }
 
         // Trigger callback
-        call(this, 'onRemoved', function() {
+        this.trigger('onRemoved', function() {
           return [change.removed, removedNodes, index];
         });
       }
@@ -565,9 +571,7 @@ var Grid = (function() {
         }
 
         // Trigger callback
-        call(this, 'onAdded', function() {
-          return [added, addedNodes, index];
-        });
+        this.trigger('onAdded', added, addedNodes, index);
       }
 
       return this;

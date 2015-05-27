@@ -44,6 +44,11 @@ var $util = {
     return _.isString(value) ? Number(value.replace('px', '')) : value;
   },
 
+  // Capitalize given string
+  capitalize: function(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  },
+
   // Destroy object by setting null to object own properties.
   // Note that this function will also destroy prototype attribute,
   // so this function must be called when object does not need to

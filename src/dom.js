@@ -80,6 +80,38 @@ var $doc = (function() {
       return node;
     },
 
+    // Update attributes of old node with attributes of new node
+    updateAttributes: function(oldNode, newNode) {
+      var oldAttributes = oldNode.attributes;
+      var newAttributes = newNode.attributes;
+
+      _.forEach(newAttributes, function(attr, idx) {
+        var oldValue = oldAttributes[idx].value;
+        var newValue = newAttributes[idx].value;
+        if (oldValue !== newValue) {
+          oldNode.setAttribute(attr.name, newValue);
+        }
+      });
+    },
+
+    // Update attributes of old node with attributes of new node
+    updateClassName: function(oldNode, newNode) {
+      var oldClassName = oldNode.className;
+      var newClassName = newNode.className;
+      if (oldClassName !== newClassName) {
+        oldNode.className = newNode.className;
+      }
+    },
+
+    // Update attributes of old node with attributes of new node
+    updateContent: function(oldNode, newNode) {
+      var oldContent = oldNode.innerHTML;
+      var newContent = newNode.innerHTML;
+      if (oldContent !== newContent) {
+        oldNode.innerHTML = newContent;
+      }
+    },
+
     // Compute scrollbar width
     scrollbarWidth: _.memoize(scrollbarWidth, hasher)
   };

@@ -32,6 +32,7 @@
 /* global $comparators */
 /* global $util */
 /* global GridBuilder */
+/* global GridDataObserver */
 /* global $$createComparisonFunction */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
@@ -95,6 +96,10 @@ var Grid = (function() {
     return grid;
   };
 
+  var dataObserver = function(changes) {
+    return GridDataObserver.on(this, changes);
+  };
+
   var Constructor = function(table, options) {
     if (!(this instanceof Constructor)) {
       return new Constructor(table, options);
@@ -142,7 +147,7 @@ var Grid = (function() {
     createNodes(this);
 
     // Observe collection to update grid accordingly
-    this.$data.observe(this.$$onDataChange, this);
+    this.$data.observe(dataObserver, this);
 
     this.$$bind()
         .assignWidth()
@@ -501,94 +506,6 @@ var Grid = (function() {
       });
 
       return this;
-    },
-
-    // Listener on changes on data collection
-    $$onDataChange: function(changes) {
-      _.forEach(changes, function(change) {
-        var type = change.type;
-        var method = '$$on_' + type;
-        this[method](change);
-      }, this);
-
-      return this;
-    },
-
-    // Data collection has been spliced
-    // It means that elements have been added or removed
-    $$on_splice: function(change) {
-      var index = change.index;
-      var addedCount = change.addedCount;
-      var collection = change.object;
-
-      var removedCount = change.removed.length;
-      if (removedCount > 0) {
-        var removedNodes;
-
-        if (index === 0 && removedCount === this.$tbody[0].childNodes.length) {
-          removedNodes = _.toArray(this.$tbody[0].childNodes);
-          this.$tbody.empty();
-        } else {
-          removedNodes = [];
-          for (var k = 0; k < removedCount; ++k) {
-            var removedIndex = k + index;
-            var $node = this.$tbody.children().eq(removedIndex);
-            removedNodes.push($node[0]);
-            $node.remove();
-          }
-        }
-
-        // Trigger callback
-        this.trigger('onRemoved', function() {
-          return [change.removed, removedNodes, index];
-        });
-      }
-
-      // Append new added data
-      if (addedCount > 0) {
-        var fragment = $doc.createFragment();
-        var added = [];
-        var addedNodes = [];
-
-        for (var i = 0; i < addedCount; ++i) {
-          var rowIdx = i + index;
-          var data = collection.at(rowIdx);
-          var tr = GridBuilder.tbodyRow(this, data, rowIdx);
-
-          addedNodes.push(tr);
-          added.push(data);
-          fragment.appendChild(tr);
-        }
-
-        if (index > 0) {
-          // Add after existing node
-          this.$tbody.children()
-                     .eq(index - 1)
-                     .after(fragment);
-        } else {
-          // Add at the beginning
-          this.$tbody.prepend(fragment);
-        }
-
-        // Trigger callback
-        this.trigger('onAdded', added, addedNodes, index);
-      }
-
-      return this;
-    },
-
-    // Some data have been updated
-    // Should be a private function
-    $$on_update: function(change) {
-      var index = change.index;
-      var data = this.$data.at(index);
-      var tbody = this.$tbody[0];
-
-      var oldNode = tbody.childNodes[index];
-      var newNode = GridBuilder.tbodyRow(this, data, index);
-      tbody.replaceChild(newNode, oldNode);
-
-      return this;
     }
   };
 
@@ -619,7 +536,7 @@ var Grid = (function() {
   };
 
   // Initialize events with noop
-  _.forEach(['onInitialized', 'onRendered', 'onAdded', 'onRemoved', 'onSorted'], function(name) {
+  _.forEach(['onInitialized', 'onRendered', 'onAdded', 'onRemoved', 'onSorted', 'onUpdated'], function(name) {
     Constructor.options.events[name] = _.noop;
   });
 

@@ -34,6 +34,12 @@ describe('$util', function() {
     expect($util.fromPx(100)).toBe(100);
   });
 
+  it('should capitalize string', function() {
+    expect($util.capitalize('foo')).toBe('Foo');
+    expect($util.capitalize('FOO')).toBe('FOO');
+    expect($util.capitalize('Foo')).toBe('Foo');
+  });
+
   it('should destroy object', function() {
     var fn = jasmine.createSpy('fn');
     var protoFn = jasmine.createSpy('protoFn');

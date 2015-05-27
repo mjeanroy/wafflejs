@@ -129,4 +129,43 @@ describe('$doc', function() {
     expect(size).not.toBeZero();
     expect(size).toBePositive();
   });
+
+  it('should update node attribute', function() {
+    var node1 = document.createElement('div');
+    node1.setAttribute('data-foo', 'bar');
+    node1.setAttribute('data-idx', 1);
+
+    var node2 = document.createElement('div');
+    node2.setAttribute('data-foo', 'foo');
+    node2.setAttribute('data-idx', 2);
+
+    $doc.updateAttributes(node1, node2);
+
+    expect(node1.getAttribute('data-foo')).toBe('foo');
+    expect(node1.getAttribute('data-idx')).toBe('2');
+  });
+
+  it('should update node classes', function() {
+    var node1 = document.createElement('div');
+    node1.className = 'foo bar';
+
+    var node2 = document.createElement('div');
+    node2.className = 'bar';
+
+    $doc.updateClassName(node1, node2);
+
+    expect(node1.className).toBe('bar');
+  });
+
+  it('should update node content', function() {
+    var node1 = document.createElement('div');
+    node1.innerHTML = 'foo bar';
+
+    var node2 = document.createElement('div');
+    node2.innerHTML = 'bar';
+
+    $doc.updateContent(node1, node2);
+
+    expect(node1.innerHTML).toBe('bar');
+  });
 });

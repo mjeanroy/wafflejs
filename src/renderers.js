@@ -24,6 +24,7 @@
 
 /* jshint eqnull:true */
 /* global _ */
+/* global $util */
 /* exported $renderers */
 
 var $renderers = (function() {
@@ -55,8 +56,7 @@ var $renderers = (function() {
     // Render a value as a capitalized string
     // First character is changed to an uppercase character, other characters remains unchanged
     $capitalize: function(value) {
-      var str = toString(value);
-      return str.charAt(0).toUpperCase() + str.slice(1);
+      return $util.capitalize(toString(value));
     },
 
     // Get renderer by its name

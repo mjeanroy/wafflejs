@@ -44,7 +44,8 @@ describe('Grid', function() {
         onRendered: _.noop,
         onAdded: _.noop,
         onRemoved: _.noop,
-        onSorted: _.noop
+        onSorted: _.noop,
+        onUpdated: _.noop
       }
     });
   });
@@ -114,7 +115,8 @@ describe('Grid', function() {
         onRendered: _.noop,
         onAdded: onAdded,
         onRemoved: _.noop,
-        onSorted: _.noop
+        onSorted: _.noop,
+        onUpdated: _.noop
       }
     }));
   });

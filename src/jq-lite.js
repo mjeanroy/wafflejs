@@ -125,13 +125,6 @@ var $ = (function() {
       });
     },
 
-    // Remove node from DOM
-    remove: function() {
-      return iterate(this, function(node) {
-        node.parentNode.removeChild(node);
-      });
-    },
-
     // Append node
     append: function(childNode) {
       return iterate(this, function(node, idx, collection) {
@@ -182,24 +175,6 @@ var $ = (function() {
         var actualCss = node.className;
         node.className = (actualCss ? actualCss + ' ' : '') + css;
       });
-    },
-
-    // Determine whether any of the mached elements are assigned the given class.
-    hasClass: function(css) {
-      for (var i = 0, size = this.length; i < size; ++i) {
-        var classes = this[i].className.split(' ');
-        if (_.indexOf(classes, css) >= 0) {
-          return true;
-        }
-      }
-
-      return false;
-    },
-
-    // Add or remove one or more classes from each element in the set of matched
-    // elements depending on either the class's presence.
-    toggleClass: function(css) {
-      return this.hasClass(css) ? this.removeClass(css) : this.addClass(css);
     },
 
     // Remove a single class, multiple classes in the set of matched elements.

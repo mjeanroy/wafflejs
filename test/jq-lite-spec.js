@@ -68,18 +68,6 @@ describe('$', function() {
       expect(node1.innerHTML).toBe('');
     });
 
-    it('should remove nodes', function() {
-      var fixtures = document.createElement('fixtures');
-      fixtures.appendChild(node1);
-      fixtures.appendChild(node2);
-
-      var $result = $div.remove();
-
-      expect($result).toBe($div);
-      expect(node1.parentNode).toBeNull();
-      expect(node2.parentNode).toBeNull();
-    });
-
     it('should append node', function() {
       var childNode = document.createElement('span');
       childNode.innerHTML = 'foo';
@@ -166,25 +154,6 @@ describe('$', function() {
       $div.removeClass('foo foobar');
 
       expect($div[0].className).toBe('bar');
-      expect($div[1].className).toBe('');
-    });
-
-    it('should check if node has given class', function() {
-      $div[0].className = 'foo bar';
-      expect($div.hasClass('foo')).toBe(true);
-      expect($div.hasClass('bar')).toBe(true);
-      expect($div.hasClass('barbar')).toBe(false);
-    });
-
-    it('should toggle class', function() {
-      var $r1 = $div.toggleClass('foo');
-      expect($r1).toBe($div);
-      expect($div[0].className).toBe('foo');
-      expect($div[1].className).toBe('foo');
-
-      var $r2 = $div.toggleClass('foo');
-      expect($r2).toBe($div);
-      expect($div[0].className).toBe('');
       expect($div[1].className).toBe('');
     });
 

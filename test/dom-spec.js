@@ -111,6 +111,26 @@ describe('$doc', function() {
     expect(node.tagName).toBe('THEAD');
   });
 
+  it('should create input element', function() {
+    var node = $doc.input();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+  });
+
+  it('should create input type "checkbox" element', function() {
+    var node = $doc.inputCheckbox();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('checkbox');
+  });
+
+  it('should create input type "text" element', function() {
+    var node = $doc.inputText();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('text');
+  });
+
   it('should find parent', function() {
     var nodes = $doc.byTagName('span');
     var parent = $doc.findParent(nodes[0], 'DIV');

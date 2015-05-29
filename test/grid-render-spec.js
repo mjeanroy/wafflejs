@@ -46,17 +46,21 @@ describe('Grid Render', function() {
     expect(tr[0]).toBeDOMElement('tr');
 
     var ths = tr[0].childNodes;
-    expect(ths).toHaveLength(2);
+
+    // 2 columns + 1 column for checkbox
+    expect(ths).toHaveLength(3);
 
     expect(ths).toVerify(function(node) {
       return node.tagName === 'TH';
     });
 
-    expect(ths).toVerify(function(node, idx) {
+    var dataColumns = Array.prototype.slice.call(ths, 1);
+
+    expect(dataColumns).toVerify(function(node, idx) {
       return node.innerHTML === columns[idx].title;
     });
 
-    expect(ths).toVerify(function(node, idx) {
+    expect(dataColumns).toVerify(function(node, idx) {
       var cssClasses = [
         columns[idx].id,
         'waffle-sortable'
@@ -65,15 +69,15 @@ describe('Grid Render', function() {
       return node.className === cssClasses.join(' ');
     });
 
-    expect(ths).toVerify(function(node, idx) {
+    expect(dataColumns).toVerify(function(node, idx) {
       return node.getAttribute('data-waffle-id') === columns[idx].id;
     });
 
-    expect(ths).toVerify(function(node, idx) {
+    expect(dataColumns).toVerify(function(node, idx) {
       return node.getAttribute('data-waffle-order') === null;
     });
 
-    expect(ths).toVerify(function(node) {
+    expect(dataColumns).toVerify(function(node) {
       return node.getAttribute('data-waffle-sortable') === 'true';
     });
   });
@@ -100,21 +104,25 @@ describe('Grid Render', function() {
     expect(tr[0]).toBeDOMElement('tr');
 
     var ths = tr[0].childNodes;
-    expect(ths).toHaveLength(2);
 
-    expect(ths).toVerify(function(node) {
+    // 2 columns + 1 column for checkbox
+    expect(ths).toHaveLength(3);
+
+    var dataColumns = Array.prototype.slice.call(ths, 1);
+
+    expect(dataColumns).toVerify(function(node) {
       return node.tagName === 'TH';
     });
 
-    expect(ths).toVerify(function(node, idx) {
+    expect(dataColumns).toVerify(function(node, idx) {
       return node.innerHTML === columns[idx].title;
     });
 
-    expect(ths[0].className.split(' ')).toContain('waffle-sortable');
-    expect(ths[1].className.split(' ')).not.toContain('waffle-sortable');
+    expect(dataColumns[0].className.split(' ')).toContain('waffle-sortable');
+    expect(dataColumns[1].className.split(' ')).not.toContain('waffle-sortable');
 
-    expect(ths[0].getAttribute('data-waffle-sortable')).toBe('true');
-    expect(ths[1].getAttribute('data-waffle-sortable')).toBeNull();
+    expect(dataColumns[0].getAttribute('data-waffle-sortable')).toBe('true');
+    expect(dataColumns[1].getAttribute('data-waffle-sortable')).toBeNull();
   });
 
   it('should render data', function() {
@@ -145,7 +153,8 @@ describe('Grid Render', function() {
     });
 
     expect(trs).toVerify(function(node) {
-      return node.childNodes.length === 2;
+      // 2 columns + 1 column for checkbox
+      return node.childNodes.length === 3;
     });
 
     expect(trs).toVerify(function(node, idx) {
@@ -154,22 +163,22 @@ describe('Grid Render', function() {
 
     expect(trs).toVerify(function(node, idx) {
       var tds = node.childNodes;
-      return tds[0].innerHTML === data[idx].id.toString() &&
-             tds[1].innerHTML === data[idx].name.toString();
+      return tds[1].innerHTML === data[idx].id.toString() &&
+             tds[2].innerHTML === data[idx].name.toString();
     });
 
     expect(trs).toVerify(function(node) {
       var css1 = [columns[0].id, 'waffle-sortable'];
       var css2 = [columns[1].id, 'waffle-sortable'];
       var tds = node.childNodes;
-      return tds[0].className === css1.join(' ') &&
-             tds[1].className === css2.join(' ');
+      return tds[1].className === css1.join(' ') &&
+             tds[2].className === css2.join(' ');
     });
 
     expect(trs).toVerify(function(node, idx) {
       var tds = node.childNodes;
-      return tds[0].getAttribute('data-waffle-id') === columns[0].id &&
-             tds[1].getAttribute('data-waffle-id') === columns[1].id;
+      return tds[1].getAttribute('data-waffle-id') === columns[0].id &&
+             tds[2].getAttribute('data-waffle-id') === columns[1].id;
     });
   });
 

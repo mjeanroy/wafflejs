@@ -262,5 +262,23 @@ describe('$', function() {
       expect($div[0].getAttribute(name)).toBeNull();
       expect($div[1].getAttribute(name)).toBeNull();
     });
+
+    it('should fix node property', function() {
+      var node1 = document.createElement('input');
+      node1.setAttribute('type', 'checkbox');
+
+      var node2 = document.createElement('input');
+      node2.setAttribute('type', 'checkbox');
+
+      $([node1, node2]).prop('checked', true);
+
+      expect(node1.checked).toBeTrue();
+      expect(node2.checked).toBeTrue();
+
+      $([node1, node2]).prop('checked', false);
+
+      expect(node1.checked).toBeFalse();
+      expect(node2.checked).toBeFalse();
+    });
   });
 });

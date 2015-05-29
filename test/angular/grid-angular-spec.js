@@ -69,19 +69,22 @@ describe('waffle-jq-angular', function() {
 
     var thead = childNodes[0];
     var ths = thead.childNodes[0].childNodes;
-    expect(ths.length).toBe(2);
-    expect(ths).toVerify(function(node, idx) {
+    expect(ths.length).toBe(3);
+
+    var dataHeader = Array.prototype.slice(ths, 1);
+    expect(dataHeader).toVerify(function(node, idx) {
       return node.innerHTML === $scope.options.columns[idx].title;
     });
 
     var tbody = childNodes[1];
     var trs = tbody.childNodes;
     expect(trs.length).toBe(3);
+
     expect(trs).toVerify(function(node, idx) {
       var tds = node.childNodes;
       var data = $scope.options.data[idx];
-      return tds[0].innerHTML === data.id.toString() &&
-             tds[1].innerHTML === data.name.toString();
+      return tds[1].innerHTML === data.id.toString() &&
+             tds[2].innerHTML === data.name.toString();
     });
   });
 
@@ -99,8 +102,10 @@ describe('waffle-jq-angular', function() {
 
     var thead = childNodes[0];
     var ths = thead.childNodes[0].childNodes;
-    expect(ths.length).toBe(2);
-    expect(ths).toVerify(function(node, idx) {
+    expect(ths.length).toBe(3);
+
+    var dataHeader = Array.prototype.slice(ths, 1);
+    expect(dataHeader).toVerify(function(node, idx) {
       return node.innerHTML === $scope.options.columns[idx].title;
     });
 
@@ -110,8 +115,8 @@ describe('waffle-jq-angular', function() {
     expect(trs).toVerify(function(node, idx) {
       var tds = node.childNodes;
       var data = $scope.options.data[idx];
-      return tds[0].innerHTML === data.id.toString() &&
-             tds[1].innerHTML === data.name.toString();
+      return tds[1].innerHTML === data.id.toString() &&
+             tds[2].innerHTML === data.name.toString();
     });
 
     expect($scope.grid).toBeDefined();
@@ -132,8 +137,10 @@ describe('waffle-jq-angular', function() {
 
     var thead = childNodes[0];
     var ths = thead.childNodes[0].childNodes;
-    expect(ths.length).toBe(2);
-    expect(ths).toVerify(function(node, idx) {
+    expect(ths.length).toBe(3);
+
+    var dataHeader = Array.prototype.slice(ths, 1);
+    expect(dataHeader).toVerify(function(node, idx) {
       return node.innerHTML === options.columns[idx].title;
     });
 
@@ -143,8 +150,8 @@ describe('waffle-jq-angular', function() {
     expect(trs).toVerify(function(node, idx) {
       var tds = node.childNodes;
       var data = options.data[idx];
-      return tds[0].innerHTML === data.id.toString() &&
-             tds[1].innerHTML === data.name.toString();
+      return tds[1].innerHTML === data.id.toString() &&
+             tds[2].innerHTML === data.name.toString();
     });
 
     expect($scope.grid).toBeInstanceOf(Grid);

@@ -34,8 +34,8 @@ var $files = {
   $core: [
     SRC + 'constants.js',
     SRC + 'map.js',
-    SRC + 'dom.js',
     SRC + 'util.js',
+    SRC + 'dom.js',
     SRC + 'observable.js',
     SRC + 'collection.js',
     SRC + 'renderers.js',

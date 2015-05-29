@@ -131,7 +131,7 @@ describe('Grid Sort', function() {
 
       // First column should be data id value
       expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
       });
     });
 
@@ -179,7 +179,7 @@ describe('Grid Sort', function() {
 
       // First column should be data id value
       expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
       });
     });
 
@@ -207,7 +207,7 @@ describe('Grid Sort', function() {
       var tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(1);
       expect(tbody.childNodes[0].getAttribute('data-waffle-idx')).toBe('0');
-      expect(tbody.childNodes[0].childNodes[0].innerHTML).toBe('2');
+      expect(tbody.childNodes[0].childNodes[1].innerHTML).toBe('2');
     });
 
     it('should remove node at the beginning', function() {
@@ -239,7 +239,7 @@ describe('Grid Sort', function() {
 
       // First column should be data id value
       expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
       });
     });
 
@@ -299,7 +299,7 @@ describe('Grid Sort', function() {
 
       // First column should be data id value
       expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
       });
     });
 
@@ -353,7 +353,7 @@ describe('Grid Sort', function() {
       });
 
       expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
       });
     });
   });

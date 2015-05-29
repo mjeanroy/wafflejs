@@ -23,6 +23,26 @@
  */
 
 // -------------------------------------------------------------------------- \\
+// Mixins use to fix width.                                                   \\
+// -------------------------------------------------------------------------- \\
+.fixed-width(@width) {
+  width: @width;
+  min-width: @width;
+  max-width: @width;
+}
+
+// -------------------------------------------------------------------------- \\
+// Mixins for text-overflow property                                          \\
+// -------------------------------------------------------------------------- \\
+.text-overflow(@type) {
+  word-wrap: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  -o-text-overflow: @type;
+     text-overflow: @type;
+}
+
+// -------------------------------------------------------------------------- \\
 // Mixins use to clear float effect.                                          \\
 // https://css-tricks.com/all-about-floats/                                   \\
 // -------------------------------------------------------------------------- \\
@@ -111,6 +131,30 @@ th {
     > tr {
       cursor: pointer;
     }
+  }
+
+  // Fix column width
+  .waffle-checkbox {
+    text-align: center;
+    .fixed-width(30px);
+
+    span {
+      display: block;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      width: 100%;
+      font-size: 10px;
+
+      .text-overflow(ellipsis);
+
+      // Not visible by default, should be activated.
+      display: none;
+    }
+  }
+
+  [type="checkbox"] {
+    cursor: pointer;
   }
 }
 

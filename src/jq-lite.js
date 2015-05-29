@@ -226,6 +226,13 @@ var $ = (function() {
       return iterate(this, function(node) {
         node.removeAttribute(name);
       });
+    },
+
+    // Set property of matched element
+    prop: function(property, value) {
+      return iterate(this, function(node) {
+        node[property] = value;
+      });
     }
   };
 

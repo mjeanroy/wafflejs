@@ -57,9 +57,10 @@ describe('Grid Sort', function() {
       return th.getAttribute('data-waffle-order') === null;
     });
 
-    expect(ths[0].className.split(' ')).not.toContain('waffle-sortable');
-    expect(ths[1].className.split(' ')).toContain('waffle-sortable');
+    // First th is for checkbox
+    expect(ths[1].className.split(' ')).not.toContain('waffle-sortable');
     expect(ths[2].className.split(' ')).toContain('waffle-sortable');
+    expect(ths[3].className.split(' ')).toContain('waffle-sortable');
 
     expect(ths).toVerify(function(th) {
       return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
@@ -74,7 +75,8 @@ describe('Grid Sort', function() {
     });
 
     expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[0].innerHTML === data[idx].id.toString();
+      // First td is for checkbox
+      return tr.childNodes[1].innerHTML === data[idx].id.toString();
     });
   });
 
@@ -88,21 +90,21 @@ describe('Grid Sort', function() {
     expect(grid.$sortBy).toEqual(['+firstName']);
 
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[0].className.split(' ');
+    var classes0 = ths[1].className.split(' ');
     expect(classes0).not.toContain('waffle-sortable');
     expect(classes0).not.toContain('waffle-sortable-asc');
     expect(classes0).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[1].className.split(' ');
+    var classes1 = ths[2].className.split(' ');
     expect(classes1).toContain('waffle-sortable');
     expect(classes1).toContain('waffle-sortable-asc');
     expect(classes1).not.toContain('waffle-sortable-desc');
 
-    var classes2 = ths[2].className.split(' ');
+    var classes2 = ths[3].className.split(' ');
     expect(classes2).toContain('waffle-sortable');
     expect(classes2).not.toContain('waffle-sortable-asc');
     expect(classes2).not.toContain('waffle-sortable-desc');
@@ -112,7 +114,7 @@ describe('Grid Sort', function() {
     });
 
     expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+      return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
     });
   });
 
@@ -126,21 +128,21 @@ describe('Grid Sort', function() {
     expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
 
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[2].getAttribute('data-waffle-order')).toBe('-');
+    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(ths[3].getAttribute('data-waffle-order')).toBe('-');
 
-    var classes0 = ths[0].className.split(' ');
+    var classes0 = ths[1].className.split(' ');
     expect(classes0).not.toContain('waffle-sortable');
     expect(classes0).not.toContain('waffle-sortable-asc');
     expect(classes0).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[1].className.split(' ');
+    var classes1 = ths[2].className.split(' ');
     expect(classes1).toContain('waffle-sortable');
     expect(classes1).toContain('waffle-sortable-asc');
     expect(classes1).not.toContain('waffle-sortable-desc');
 
-    var classes2 = ths[2].className.split(' ');
+    var classes2 = ths[3].className.split(' ');
     expect(classes2).toContain('waffle-sortable');
     expect(classes2).not.toContain('waffle-sortable-asc');
     expect(classes2).toContain('waffle-sortable-desc');
@@ -151,7 +153,7 @@ describe('Grid Sort', function() {
     });
 
     expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+      return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
     });
   });
 
@@ -161,21 +163,21 @@ describe('Grid Sort', function() {
     expect(grid.$sortBy).toEqual(['+id']);
 
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[0].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
     expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[0].className.split(' ');
+    var classes0 = ths[1].className.split(' ');
     expect(classes0).not.toContain('waffle-sortable');
     expect(classes0).toContain('waffle-sortable-asc');
     expect(classes0).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[1].className.split(' ');
+    var classes1 = ths[2].className.split(' ');
     expect(classes1).toContain('waffle-sortable');
     expect(classes1).not.toContain('waffle-sortable-asc');
     expect(classes1).not.toContain('waffle-sortable-desc');
 
-    var classes2 = ths[1].className.split(' ');
+    var classes2 = ths[3].className.split(' ');
     expect(classes2).toContain('waffle-sortable');
     expect(classes2).not.toContain('waffle-sortable-asc');
     expect(classes2).not.toContain('waffle-sortable-desc');
@@ -185,7 +187,7 @@ describe('Grid Sort', function() {
     });
 
     expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+      return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
     });
   });
 
@@ -195,15 +197,15 @@ describe('Grid Sort', function() {
     expect(grid.$sortBy).toEqual(['-id']);
 
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[0].getAttribute('data-waffle-order')).toBe('-');
-    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[1].getAttribute('data-waffle-order')).toBe('-');
+    expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[0].className.split(' ');
+    var classes0 = ths[1].className.split(' ');
     expect(classes0).not.toContain('waffle-sortable');
     expect(classes0).toContain('waffle-sortable-desc');
     expect(classes0).not.toContain('waffle-sortable-asc');
 
-    var classes1 = ths[1].className.split(' ');
+    var classes1 = ths[2].className.split(' ');
     expect(classes1).toContain('waffle-sortable');
     expect(classes1).not.toContain('waffle-sortable-asc');
     expect(classes1).not.toContain('waffle-sortable-desc');
@@ -213,7 +215,7 @@ describe('Grid Sort', function() {
     });
 
     expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[0].innerHTML === grid.$data[idx].id.toString();
+      return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
     });
   });
 
@@ -223,16 +225,16 @@ describe('Grid Sort', function() {
     expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
 
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[2].getAttribute('data-waffle-order')).toBe('-');
+    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(ths[3].getAttribute('data-waffle-order')).toBe('-');
 
-    var classes0 = ths[1].className.split(' ');
+    var classes0 = ths[2].className.split(' ');
     expect(classes0).toContain('waffle-sortable');
     expect(classes0).toContain('waffle-sortable-asc');
     expect(classes0).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[2].className.split(' ');
+    var classes1 = ths[3].className.split(' ');
     expect(classes1).toContain('waffle-sortable');
     expect(classes1).toContain('waffle-sortable-desc');
     expect(classes1).not.toContain('waffle-sortable-asc');
@@ -243,7 +245,7 @@ describe('Grid Sort', function() {
     });
 
     expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[2].innerHTML === grid.$data[idx].lastName.toString();
+      return tr.childNodes[3].innerHTML === grid.$data[idx].lastName.toString();
     });
   });
 
@@ -252,22 +254,22 @@ describe('Grid Sort', function() {
 
     // Trigger click
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    triggerClick(ths[1]);
+    triggerClick(ths[2]);
 
     expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
     expect(grid.$sortBy).toEqual(['+firstName']);
 
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[1].className.split(' ');
+    var classes0 = ths[2].className.split(' ');
     expect(classes0).toContain('waffle-sortable');
     expect(classes0).toContain('waffle-sortable-asc');
     expect(classes0).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[2].className.split(' ');
+    var classes1 = ths[3].className.split(' ');
     expect(classes1).toContain('waffle-sortable');
     expect(classes1).not.toContain('waffle-sortable-desc');
     expect(classes1).not.toContain('waffle-sortable-asc');
@@ -275,23 +277,23 @@ describe('Grid Sort', function() {
     grid.sortBy.calls.reset();
 
     // New click should reverse order
-    triggerClick(ths[1]);
+    triggerClick(ths[2]);
 
     // Th should have flag
     expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
     expect(grid.$sortBy).toEqual(['-firstName']);
 
     ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[0].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[1].getAttribute('data-waffle-order')).toBe('-');
-    expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(ths[2].getAttribute('data-waffle-order')).toBe('-');
+    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
 
-    classes0 = ths[1].className.split(' ');
+    classes0 = ths[2].className.split(' ');
     expect(classes0).toContain('waffle-sortable');
     expect(classes0).not.toContain('waffle-sortable-asc');
     expect(classes0).toContain('waffle-sortable-desc');
 
-    classes1 = ths[2].className.split(' ');
+    classes1 = ths[3].className.split(' ');
     expect(classes1).toContain('waffle-sortable');
     expect(classes1).not.toContain('waffle-sortable-desc');
     expect(classes1).not.toContain('waffle-sortable-asc'); 
@@ -302,7 +304,7 @@ describe('Grid Sort', function() {
 
     // Trigger click
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    triggerClick(ths[0]);
+    triggerClick(ths[1]);
 
     expect(grid.sortBy).not.toHaveBeenCalled();
     expect(grid.$sortBy).toEqual([]);
@@ -332,7 +334,7 @@ describe('Grid Sort', function() {
 
     // Trigger click
     var ths = grid.$thead[0].childNodes[0].childNodes;
-    triggerClick(ths[0]);
+    triggerClick(ths[1]);
 
     expect(grid.sortBy).toHaveBeenCalledWith(['+id']);
     expect(grid.$sortBy).toEqual(['+id']);
@@ -340,14 +342,14 @@ describe('Grid Sort', function() {
     grid.sortBy.calls.reset();
 
     // New click should reverse order
-    triggerClick(ths[1], true, false);
+    triggerClick(ths[2], true, false);
     expect(grid.sortBy).toHaveBeenCalledWith(['+id', '+name']);
     expect(grid.$sortBy).toEqual(['+id', '+name']);
 
     grid.sortBy.calls.reset();
 
     // New click on id should reverse order of id column
-    triggerClick(ths[0], true, false);
+    triggerClick(ths[1], true, false);
     expect(grid.sortBy).toHaveBeenCalledWith(['+name', '-id']);
     expect(grid.$sortBy).toEqual(['+name', '-id']);
   });

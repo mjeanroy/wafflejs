@@ -28,49 +28,82 @@
 /* global $util */
 /* exported GridSelectionObserver */
 
-var GridSelectionObserver = {
-  // Apply data changes to grid.
-  on: function(grid, changes) {
-    _.forEach(changes, function(change) {
-      var fnName = 'on' + $util.capitalize(change.type);
-      var fn = GridSelectionObserver[fnName];
-      if (fn) {
-        fn.call(GridSelectionObserver, grid, change);
+var GridSelectionObserver = (function() {
+  var findCheckBox = function(row) {
+    return row.childNodes[0].childNodes[0];
+  };
+
+  var updateCheckbox = function(checkbox, checked) {
+    checkbox.checked = checked;
+  };
+
+  var o = {
+    // Apply data changes to grid.
+    on: function(grid, changes) {
+      _.forEach(changes, function(change) {
+        var fnName = 'on' + $util.capitalize(change.type);
+        var fn = GridSelectionObserver[fnName];
+        if (fn) {
+          fn.call(GridSelectionObserver, grid, change);
+        }
+      });
+
+      return this;
+    },
+
+    // Update selection
+    onSplice: function(grid, change) {
+      var $tbody = grid.$tbody;
+      var $data = grid.$data;
+      var idx, row;
+
+      var tbody = $tbody[0];
+      var childNodes = tbody.childNodes;
+      var index = change.index;
+      var removed = change.removed;
+      var addedCount = change.addedCount;
+      var collection = change.object;
+
+      // Deselection
+      var removedCount = removed.length;
+      if (removedCount > 0) {
+        for (var k = 0; k < removedCount; ++k) {
+          idx = $data.indexOf(removed[k]);
+          row = childNodes[idx];
+
+          $(row).removeClass(CSS_SELECTED);
+          if (grid.hasCheckbox()) {
+            updateCheckbox(findCheckBox(row), false);
+          }
+        }
       }
-    });
 
-    return this;
-  },
+      // Selection
+      if (addedCount > 0) {
+        for (var i = 0; i < addedCount; ++i) {
+          idx = $data.indexOf(collection.at(index + i));
+          row = childNodes[idx];
 
-  // Update selection
-  onSplice: function(grid, change) {
-    var $tbody = grid.$tbody;
-    var $data = grid.$data;
-
-    var tbody = $tbody[0];
-    var childNodes = tbody.childNodes;
-    var index = change.index;
-    var removed = change.removed;
-    var addedCount = change.addedCount;
-    var collection = change.object;
-
-    // Deselection
-    var removedCount = removed.length;
-    if (removedCount > 0) {
-      for (var k = 0; k < removedCount; ++k) {
-        var idx1 = $data.indexOf(removed[k]);
-        $(childNodes[idx1]).removeClass(CSS_SELECTED);
+          $(row).addClass(CSS_SELECTED);
+          if (grid.hasCheckbox()) {
+            updateCheckbox(findCheckBox(row), true);
+          }
+        }
       }
+
+      if (grid.hasCheckbox()) {
+        var $thead = grid.$thead;
+        var thead = $thead[0];
+        var cell = thead.childNodes[0].childNodes[0];
+        var childNodesCell = cell.childNodes;
+        childNodesCell[0].innerHTML = collection.length;
+        childNodesCell[0].setAttribute('title', collection.length);
+        childNodesCell[1].checked = grid.isSelected();
+      }
+
+      return this;
     }
+  };
 
-    // Selection
-    if (addedCount > 0) {
-      for (var i = 0; i < addedCount; ++i) {
-        var idx2 = $data.indexOf(collection.at(index + i));
-        $(childNodes[idx2]).addClass(CSS_SELECTED);
-      }
-    }
-
-    return this;
-  }
-};
+  return o;
+})();

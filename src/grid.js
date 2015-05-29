@@ -150,6 +150,7 @@ var Grid = (function() {
     this.$sortBy = [];
 
     // Add appropriate css to table
+
     if (opts.selection) {
       this.$table.addClass(CSS_SELECTABLE);
     }
@@ -194,6 +195,24 @@ var Grid = (function() {
       return this.$selection;
     },
 
+    // Check if grid render checkbox as first column
+    hasCheckbox: function() {
+      var selection = this.options.selection;
+      return selection && selection.checkbox;
+    },
+
+    // Without parameter, check if grid is selected.
+    // If first parameter is set, check if data is selected.
+    isSelected: function(data) {
+      if (data) {
+        return this.$selection.contains(data);
+      }
+
+      var s1 = this.$data.length;
+      var s2 = this.$selection.length;
+      return s1 > 0 && s1 === s2;
+    },
+
     // Render entire grid
     render: function() {
       return this.renderHeader()
@@ -218,6 +237,10 @@ var Grid = (function() {
         });
 
         rowWidth -= $doc.scrollbarWidth();
+
+        if (this.hasCheckbox()) {
+          rowWidth -= 30;
+        }
       }
 
       var constrainedWidth = 0;
@@ -313,6 +336,20 @@ var Grid = (function() {
       return this;
     },
 
+    // Select everything
+    select: function() {
+      if (this.$selection.length !== this.$data.length) {
+        this.$selection.add(this.$data.toArray());
+      }
+    },
+
+    // Deselect everything
+    deselect: function() {
+      if (!this.$selection.isEmpty()) {
+        this.$selection.clear();
+      }
+    },
+
     // Sort grid by fields
     // Second parameter is a parameter used internally to disable automatic rendering after sort
     sortBy: function(sortBy, $$render) {
@@ -335,12 +372,15 @@ var Grid = (function() {
 
       // Create comparators object that will be used to create comparison function
       var $columns = this.$columns;
+      var hasCheckbox = this.hasCheckbox();
+
       var comparators = _.map(this.$sortBy, function(id) {
         var flag = id.charAt(0);
         var columnId = id.substr(1);
         var asc = flag === CHAR_ORDER_ASC;
 
         var index = $columns.indexOf(columnId);
+        var thIndex = hasCheckbox ? index + 1 : index;
 
         var column;
 
@@ -349,7 +389,7 @@ var Grid = (function() {
           column.asc = asc;
 
           // Update order flag
-          $th.eq(index)
+          $th.eq(thIndex)
              .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
              .attr(DATA_WAFFLE_ORDER, flag);
 
@@ -414,10 +454,20 @@ var Grid = (function() {
           return;
         }
 
-        var th = e.target;
-        if (th.getAttribute(DATA_WAFFLE_SORTABLE)) {
-          var id = th.getAttribute(DATA_WAFFLE_ID);
-          var currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
+        var node = e.target;
+
+        // Checkbox
+        if (node.tagName === 'INPUT' && node.getAttribute('type') === 'checkbox') {
+          if (node.checked) {
+            that.select();
+          } else {
+            that.deselect();
+          }
+        }
+        // Column header
+        else if (node.tagName === 'TH' && node.getAttribute(DATA_WAFFLE_SORTABLE)) {
+          var id = node.getAttribute(DATA_WAFFLE_ID);
+          var currentOrder = node.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
           var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
 
           var newPredicate = newOrder + id;
@@ -507,8 +557,9 @@ var Grid = (function() {
     async: false,
 
     // Selection configuration.
-    // By default it is not enable.
+    // By default it is enable.
     selection: {
+      checkbox: true,
       multi: false
     },
 

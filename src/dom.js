@@ -23,6 +23,7 @@
  */
 
 /* global _ */
+/* global $util */
 /* exported $doc */
 
 var $doc = (function() {
@@ -116,9 +117,18 @@ var $doc = (function() {
     scrollbarWidth: _.memoize(scrollbarWidth, hasher)
   };
 
-  _.forEach(['tr', 'td', 'th', 'tbody', 'thead'], function(tagName) {
+  _.forEach(['tr', 'td', 'th', 'tbody', 'thead', 'input', 'span'], function(tagName) {
     o[tagName] = function() {
       return this.create(tagName);
+    };
+  });
+
+  _.forEach(['text', 'checkbox'], function(type) {
+    var fnName = 'input' + $util.capitalize(type);
+    o[fnName] = function() {
+      var input = this.input();
+      input.setAttribute('type', type);
+      return input;
     };
   });
 

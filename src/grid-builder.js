@@ -26,12 +26,17 @@
 /* global $doc */
 /* global DATA_WAFFLE_IDX */
 /* global CSS_SELECTED */
+/* global CSS_CHECKBOX_CELL */
 /* exported GridBuilder */
 
 var GridBuilder = {
   // Create row to append to thead node.
   theadRow: function(grid) {
     var tr = $doc.tr();
+
+    if (grid.hasCheckbox()) {
+      tr.appendChild(GridBuilder.theadCheckboxCell(grid));
+    }
 
     grid.$columns.forEach(function(column, idx) {
       tr.appendChild(GridBuilder.theadCell(grid, column, idx));
@@ -47,6 +52,21 @@ var GridBuilder = {
       .css(column.styles(idx, true))
       .attr(column.attributes(idx, true))
       .html(column.title)[0];
+  },
+
+  // Create cell for grid thead node.
+  theadCheckboxCell: function(grid) {
+    var $span = $($doc.span())
+      .attr('title', grid.$selection.length)
+      .html(grid.$selection.length);
+
+    var $input = $($doc.inputCheckbox())
+      .prop('checked', grid.isSelected());
+
+    return $($doc.th())
+      .addClass(CSS_CHECKBOX_CELL)
+      .append($span[0])
+      .append($input[0])[0];
   },
 
   // Create fragment of rows.
@@ -71,6 +91,10 @@ var GridBuilder = {
       $tr.addClass(CSS_SELECTED);
     }
 
+    if (grid.hasCheckbox()) {
+      $tr[0].appendChild(GridBuilder.tbodyCheckboxCell(grid, data));
+    }
+
     grid.$columns.forEach(function(column, idx) {
       $tr[0].appendChild(GridBuilder.tbodyCell(grid, data, column, idx));
     });
@@ -85,5 +109,15 @@ var GridBuilder = {
       .css(column.styles(idx, false))
       .attr(column.attributes(idx, false))
       .html(column.render(data))[0];
+  },
+
+  // Create a cell for grid tbody node
+  tbodyCheckboxCell: function(grid, data) {
+    var $checkbox = $($doc.inputCheckbox())
+      .prop('checked', grid.isSelected(data));
+
+    return $($doc.td())
+      .addClass(CSS_CHECKBOX_CELL)
+      .append($checkbox[0])[0];
   }
 };

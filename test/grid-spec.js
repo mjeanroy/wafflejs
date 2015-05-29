@@ -33,6 +33,7 @@ describe('Grid', function() {
       key: 'id',
       async: false,
       selection: {
+        checkbox: true,
         multi: false
       },
       size: {
@@ -103,6 +104,7 @@ describe('Grid', function() {
       key: 'title',
       model: Model,
       selection: {
+        checkbox: true,
         multi: false
       },
       async: true,

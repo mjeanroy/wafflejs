@@ -35,6 +35,7 @@
 /* exported CHAR_ORDER_DESC */
 /* exported CSS_SCROLLABLE */
 /* exported CSS_SELECTABLE */
+/* exported CSS_CHECKBOX_CELL */
 
 var CSS_PREFIX = 'waffle-';
 var CSS_SORTABLE = CSS_PREFIX + 'sortable';
@@ -43,6 +44,7 @@ var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
 var CSS_SCROLLABLE = CSS_PREFIX + 'fixedheader';
 var CSS_SELECTABLE = CSS_PREFIX + 'selectable';
 var CSS_SELECTED = CSS_PREFIX + 'selected';
+var CSS_CHECKBOX_CELL = CSS_PREFIX + 'checkbox';
 
 var DATA_PREFIX = 'data-waffle-';
 var DATA_WAFFLE_ID = DATA_PREFIX + 'id';

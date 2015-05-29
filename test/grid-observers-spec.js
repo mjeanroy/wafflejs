@@ -71,4 +71,28 @@ describe('Grid Observers', function() {
     observer.callback.call(observer.ctx, changes);
     expect(GridDataObserver.on).toHaveBeenCalledWith(grid, changes);
   });
+
+  it('should observe selection collection', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.$selection.$$observers).toEqual([{
+      ctx: grid,
+      callback: jasmine.any(Function)
+    }]);
+
+    spyOn(GridSelectionObserver, 'on');
+
+    var observer = grid.$selection.$$observers[0];
+    var changes = [];
+    observer.callback.call(observer.ctx, changes);
+    expect(GridSelectionObserver.on).toHaveBeenCalledWith(grid, changes);
+  });
 });

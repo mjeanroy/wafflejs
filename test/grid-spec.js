@@ -226,6 +226,12 @@ describe('Grid', function() {
     expect(grid.$selection).toBeDefined();
     expect(grid.$columns).toBeDefined();
 
+    var $data = grid.$data;
+    var $selection = grid.$selection;
+
+    spyOn($data, 'unobserve').and.callThrough();
+    spyOn($selection, 'unobserve').and.callThrough();
+
     grid.destroy();
 
     expect(grid.$table).toBeNull();
@@ -234,6 +240,32 @@ describe('Grid', function() {
     expect(grid.$data).toBeNull();
     expect(grid.$selection).toBeNull();
     expect(grid.$columns).toBeNull();
+
+    expect($data.unobserve).toHaveBeenCalled();
+    expect($selection.unobserve).toHaveBeenCalled();
+  });
+
+  it('should unobserve collections when grid is destroyed', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var $data = grid.$data;
+    var $selection = grid.$selection;
+
+    spyOn($data, 'unobserve').and.callThrough();
+    spyOn($selection, 'unobserve').and.callThrough();
+
+    grid.destroy();
+
+    expect($data.unobserve).toHaveBeenCalled();
+    expect($selection.unobserve).toHaveBeenCalled();
   });
 
   it('should unbind events when grid is destroyed', function() {

@@ -67,7 +67,7 @@ var GridBuilder = {
     $tr.attr(DATA_WAFFLE_IDX, idx);
 
     // Add css for selected row
-    if (data.$$selected) {
+    if (grid.$selection.contains(data)) {
       $tr.addClass(CSS_SELECTED);
     }
 

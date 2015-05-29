@@ -33,11 +33,11 @@
 /* global $util */
 /* global GridBuilder */
 /* global GridDataObserver */
+/* global GridSelectionObserver */
 /* global $$createComparisonFunction */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SCROLLABLE */
-/* global CSS_SELECTED */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_ORDER */
 /* global DATA_WAFFLE_IDX */
@@ -100,6 +100,10 @@ var Grid = (function() {
     return GridDataObserver.on(this, changes);
   };
 
+  var selectionObserver = function(changes) {
+    return GridSelectionObserver.on(this, changes);
+  };
+
   var Constructor = function(table, options) {
     if (!(this instanceof Constructor)) {
       return new Constructor(table, options);
@@ -148,6 +152,7 @@ var Grid = (function() {
 
     // Observe collection to update grid accordingly
     this.$data.observe(dataObserver, this);
+    this.$selection.observe(selectionObserver, this);
 
     this.$$bind()
         .assignWidth()
@@ -294,42 +299,6 @@ var Grid = (function() {
       return this;
     },
 
-    select: function(newSelection) {
-      var that = this;
-
-      if (!_.isArray(newSelection)) {
-        newSelection = [newSelection];
-      }
-
-      var previousSelection = this.$selection;
-
-      var toggle = function(data) {
-        var idx = that.$data.indexOf(data);
-        var select = !that.$data.at(idx).$$selected;
-        that.$data.at(idx).$$selected = select;
-        var $tr = $(that.$tbody[0].rows[idx]);
-        if (select) {
-          $tr.addClass(CSS_SELECTED);
-        } else {
-          $tr.removeClass(CSS_SELECTED);
-        }
-      };
-
-      _.forEach(newSelection, function(data) {
-        if (!data.$$selected) {
-          toggle(data);
-        }
-      });
-
-      previousSelection.forEach(function(data) {
-        if (!_.contains(newSelection, data)) {
-          toggle(data);
-        }
-      });
-
-      this.$selection.reset(newSelection);
-    },
-
     // Sort grid by fields
     // Second parameter is a parameter used internally to disable automatic rendering after sort
     sortBy: function(sortBy, $$render) {
@@ -415,6 +384,7 @@ var Grid = (function() {
 
       // Unobserve collection
       this.$data.unobserve();
+      this.$selection.unobserve();
 
       // Destroy internal property
       $util.destroy(this);
@@ -471,38 +441,42 @@ var Grid = (function() {
         var tr = $doc.findParent(e.target, 'TR');
         var idx = tr.getAttribute(DATA_WAFFLE_IDX);
         var data = that.$data.at(idx);
-        var previouslySelected = data.$$selected;
-        var newSelection = [];
+        var selection = that.$selection;
 
         if (that.options.selection.multi) {
           if (e.shiftKey) {
             var idxF = parseFloat(idx);
             var selectAnchorF = parseFloat(that.$$selectAnchor);
-            var lowerBound = idxF > selectAnchorF ? selectAnchorF : idxF;
-            var upperBound = idxF > selectAnchorF ? idxF : selectAnchorF;
+            var lowerBound = Math.min(idxF, selectAnchorF);
+            var upperBound = Math.max(idxF, selectAnchorF);
+
+            var toAdd = [];
             for (var i = lowerBound; i <= upperBound; ++i) {
-              newSelection.push(that.$data.at(i));
-            }
-          } else if (e.ctrlKey) {
-            that.$selection.forEach(function(data, currIdx) {
-              if (idx !== currIdx) {
-                newSelection.push(data);
+              var current = that.$data.at(i);
+              if (!selection.contains(current)) {
+                toAdd.push(current);
               }
-            });
-            if (!previouslySelected) {
-              newSelection.push(data);
             }
-          } else if (!previouslySelected || that.$selection.length > 1) {
-            newSelection.push(data);
+
+            if (toAdd.length > 0) {
+              selection.push.apply(selection, toAdd);
+            }
+          }
+          else {
+            selection.toggle(data);
             that.$$selectAnchor = idx;
           }
-        } else {
-          if (!previouslySelected) {
-            newSelection.push(data);
+        }
+        else {
+          var dataIdx = selection.indexOf(data);
+
+          if (dataIdx >= 0) {
+            selection.remove(dataIdx, 1);
+          }
+          else {
+            selection.reset([data]);
           }
         }
-
-        that.select(newSelection);
       });
 
       return this;

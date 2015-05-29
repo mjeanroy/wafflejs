@@ -43,6 +43,7 @@ var $files = {
     SRC + 'column.js',
     SRC + 'grid-builder.js',
     SRC + 'grid-data-observer.js',
+    SRC + 'grid-selection-observer.js',
     SRC + 'grid.js',
     SRC + 'waffle.js'
   ],

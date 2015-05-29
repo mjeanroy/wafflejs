@@ -428,6 +428,19 @@ var Collection = (function() {
       return this.remove(0, 1)[0];
     },
 
+    // Toggle data :
+    // - If data is already in collection, it will be removed
+    // - Otherwise it will be pushed into the collection
+    toggle: function(data) {
+      var index = this.indexOf(data);
+
+      if (index >= 0) {
+        return this.remove(index, 1);
+      } else {
+        return this.push(data);
+      }
+    },
+
     // Clear collection
     clear: function() {
       if (this.length > 0) {

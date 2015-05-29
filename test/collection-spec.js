@@ -335,6 +335,26 @@ describe('collection', function() {
       expect(collection.contains(3)).toBeFalse();
     });
 
+    it('should toggle data', function() {
+      expect(collection.contains(o1)).toBeTrue();
+
+      spyOn(collection, 'push').and.callThrough();
+      spyOn(collection, 'remove').and.callThrough();
+
+      collection.toggle(o1);
+      expect(collection.contains(o1)).toBeFalse();
+      expect(collection.remove).toHaveBeenCalledWith(0, 1);
+      expect(collection.push).not.toHaveBeenCalled();
+
+      collection.remove.calls.reset();
+      collection.push.calls.reset();
+
+      collection.toggle(o1);
+      expect(collection.contains(o1)).toBeTrue();
+      expect(collection.push).toHaveBeenCalledWith(o1);
+      expect(collection.remove).not.toHaveBeenCalled();
+    });
+
     it('should get first element of collection', function() {
       expect(collection.first()).toBe(o1);
       expect(collection.first(1)).toEqual([o1]);

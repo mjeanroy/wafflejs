@@ -352,6 +352,10 @@ describe('Grid', function() {
       expect(grid.data()).toBe(grid.$data);
     });
 
+    it('should get selection collection', function() {
+      expect(grid.selection()).toBe(grid.$selection);
+    });
+
     it('should get column collection', function() {
       expect(grid.columns()).toBe(grid.$columns);
     });

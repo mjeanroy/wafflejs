@@ -179,6 +179,11 @@ var Grid = (function() {
       return this.$columns;
     },
 
+    // Get selection collection
+    selection: function() {
+      return this.$selection;
+    },
+
     // Render entire grid
     render: function() {
       return this.renderHeader()

@@ -141,6 +141,34 @@ describe('Grid', function() {
     }));
   });
 
+  it('should create selectable grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      selectable: {
+        multi: true
+      }
+    });
+
+    expect(table.className).toContain('waffle-selectable');
+  });
+
+  it('should create scrollable grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      size: {
+        height: 300
+      }
+    });
+
+    expect(table.className).toContain('waffle-fixedheader');
+  });
+
+  it('should not create scrollable grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table);
+    expect(table.className).not.toContain('waffle-fixedheader');
+  });
+
   it('should retrieve thead and tbody element', function() {
     var table = document.createElement('table');
     var thead = document.createElement('thead');

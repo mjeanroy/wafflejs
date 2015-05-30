@@ -38,6 +38,7 @@
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SCROLLABLE */
+/* global CSS_SELECTABLE */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_ORDER */
 /* global DATA_WAFFLE_IDX */
@@ -148,6 +149,15 @@ var Grid = (function() {
 
     this.$sortBy = [];
 
+    // Add appropriate css to table
+    if (opts.selection) {
+      this.$table.addClass(CSS_SELECTABLE);
+    }
+
+    if (opts.size.height) {
+      this.$table.addClass(CSS_SCROLLABLE);
+    }
+
     createNodes(this);
 
     // Observe collection to update grid accordingly
@@ -197,8 +207,7 @@ var Grid = (function() {
 
       if (size.height) {
         var px = toPx(size.width);
-        this.$table.addClass(CSS_SCROLLABLE)
-                   .css({
+        this.$table.css({
                      width: px,
                      maxWidth: px,
                      minWidth: px

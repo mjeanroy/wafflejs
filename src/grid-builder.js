@@ -56,12 +56,16 @@ var GridBuilder = {
 
   // Create cell for grid thead node.
   theadCheckboxCell: function(grid) {
+    var selectionLength = grid.$selection.size();
+    var dataLength = grid.$data.size();
+
     var $span = $($doc.span())
-      .attr('title', grid.$selection.length)
-      .html(grid.$selection.length);
+      .attr('title', selectionLength)
+      .html(selectionLength);
 
     var $input = $($doc.inputCheckbox())
-      .prop('checked', grid.isSelected());
+      .prop('checked', grid.isSelected())
+      .prop('indeterminate', selectionLength > 0 && selectionLength !== dataLength);
 
     return $($doc.th())
       .addClass(CSS_CHECKBOX_CELL)

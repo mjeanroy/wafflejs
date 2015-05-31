@@ -32,9 +32,14 @@ describe('GridBuilder', function() {
       { id: 'bar', title: 'Boo', sortable: false }
     ];
 
+    var data = [
+      { foo: 'foo1', bar: 'bar1' },
+      { foo: 'foo2', bar: 'bar2' }
+    ];
+
     var table = document.createElement('table');
     grid = new Grid(table, {
-
+      data: data,
       columns: columns
     });
   });
@@ -101,17 +106,68 @@ describe('GridBuilder', function() {
     expect(th2.style.minWidth).toBeEmpty();
   });
 
-  it('should create thead cell for main checkbox', function() {
+  it('should create thead cell for main checkbox with unchecked state', function() {
     var th = GridBuilder.theadCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
-    expect(th.childNodes[0].tagName).toBe('SPAN');
-    expect(th.childNodes[0].innerHTML).toBe('0');
-    expect(th.childNodes[1].tagName).toBe('INPUT');
-    expect(th.childNodes[1].getAttribute('type')).toBe('checkbox');
+
+    var span = th.childNodes[0];
+    expect(span.tagName).toBe('SPAN');
+    expect(span.innerHTML).toBe('0');
+    expect(span.getAttribute('title')).toBe('0');
+
+    var checkbox = th.childNodes[1];
+    expect(checkbox.tagName).toBe('INPUT');
+    expect(checkbox.getAttribute('type')).toBe('checkbox');
+    expect(checkbox.checked).toBe(false);
+    expect(checkbox.indeterminate).toBe(false);
+  });
+
+  it('should create thead cell for main checkbox with checked state', function() {
+    grid.$selection.add(grid.$data.toArray());
+
+    var th = GridBuilder.theadCheckboxCell(grid);
+
+    expect(th).toBeDefined();
+    expect(th.tagName).toEqual('TH');
+    expect(th.className).toContain('waffle-checkbox');
+    expect(th.childNodes.length).toBe(2);
+
+    var span = th.childNodes[0];
+    expect(span.tagName).toBe('SPAN');
+    expect(span.innerHTML).toBe('2');
+    expect(span.getAttribute('title')).toBe('2');
+
+    var checkbox = th.childNodes[1];
+    expect(checkbox.tagName).toBe('INPUT');
+    expect(checkbox.getAttribute('type')).toBe('checkbox');
+    expect(checkbox.checked).toBe(true);
+    expect(checkbox.indeterminate).toBe(false);
+  });
+
+  it('should create thead cell for main checkbox with undeterminate state', function() {
+    grid.$selection.push(grid.$data[0]);
+
+    var th = GridBuilder.theadCheckboxCell(grid);
+
+    expect(th).toBeDefined();
+    expect(th.tagName).toEqual('TH');
+    expect(th.className).toContain('waffle-checkbox');
+    expect(th.childNodes.length).toBe(2);
+
+    var span = th.childNodes[0];
+    expect(span.tagName).toBe('SPAN');
+    expect(span.innerHTML).toBe('1');
+    expect(span.getAttribute('title')).toBe('1');
+
+    var checkbox = th.childNodes[1];
+    expect(checkbox.tagName).toBe('INPUT');
+    expect(checkbox.getAttribute('type')).toBe('checkbox');
+    expect(checkbox.checked).toBe(false);
+    expect(checkbox.indeterminate).toBe(true);
   });
 
   it('should create tbody rows', function() {

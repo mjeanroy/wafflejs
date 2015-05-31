@@ -55,6 +55,8 @@ var GridSelectionObserver = (function() {
     onSplice: function(grid, change) {
       var $tbody = grid.$tbody;
       var $data = grid.$data;
+      var $selection = change.object;
+
       var idx, row;
 
       var tbody = $tbody[0];
@@ -62,7 +64,6 @@ var GridSelectionObserver = (function() {
       var index = change.index;
       var removed = change.removed;
       var addedCount = change.addedCount;
-      var collection = change.object;
 
       // Deselection
       var removedCount = removed.length;
@@ -81,7 +82,7 @@ var GridSelectionObserver = (function() {
       // Selection
       if (addedCount > 0) {
         for (var i = 0; i < addedCount; ++i) {
-          idx = $data.indexOf(collection.at(index + i));
+          idx = $data.indexOf($selection.at(index + i));
           row = childNodes[idx];
 
           $(row).addClass(CSS_SELECTED);
@@ -96,9 +97,16 @@ var GridSelectionObserver = (function() {
         var thead = $thead[0];
         var cell = thead.childNodes[0].childNodes[0];
         var childNodesCell = cell.childNodes;
-        childNodesCell[0].innerHTML = collection.length;
-        childNodesCell[0].setAttribute('title', collection.length);
-        childNodesCell[1].checked = grid.isSelected();
+        var selectionLength = $selection.length;
+
+        var span = childNodesCell[0];
+        var checkbox = childNodesCell[1];
+
+        span.innerHTML = selectionLength;
+        span.setAttribute('title', selectionLength);
+
+        checkbox.checked = grid.isSelected();
+        checkbox.indeterminate = selectionLength > 0 && $data.length !== selectionLength;
       }
 
       return this;

@@ -102,7 +102,9 @@ describe('Grid Sort', function() {
       // Main checkbox should be updated
       expect(span.innerHTML).toBe('1');
       expect(span.getAttribute('title')).toBe('1');
+
       expect(mainCheckbox.checked).toBeFalse();
+      expect(mainCheckbox.indeterminate).toBeTrue();
     });
 
     it('should select multiple data', function() {
@@ -126,6 +128,7 @@ describe('Grid Sort', function() {
       expect(span.innerHTML).toBe('2');
       expect(span.getAttribute('title')).toBe('2');
       expect(mainCheckbox.checked).toBeFalse();
+      expect(mainCheckbox.indeterminate).toBeTrue();
     });
 
     it('should unselect multiple data', function() {
@@ -149,6 +152,7 @@ describe('Grid Sort', function() {
       expect(span.innerHTML).toBe('2');
       expect(span.getAttribute('title')).toBe('2');
       expect(mainCheckbox.checked).toBeFalse();
+      expect(mainCheckbox.indeterminate).toBeTrue();
 
       $selection.pop();
       jasmine.clock().tick();
@@ -161,6 +165,7 @@ describe('Grid Sort', function() {
       expect(span.innerHTML).toBe('1');
       expect(span.getAttribute('title')).toBe('1');
       expect(mainCheckbox.checked).toBeFalse();
+      expect(mainCheckbox.indeterminate).toBeTrue();
 
       $selection.pop();
       jasmine.clock().tick();
@@ -173,6 +178,7 @@ describe('Grid Sort', function() {
       expect(span.innerHTML).toBe('0');
       expect(span.getAttribute('title')).toBe('0');
       expect(mainCheckbox.checked).toBeFalse();
+      expect(mainCheckbox.indeterminate).toBeFalse();
     });
   });
 });

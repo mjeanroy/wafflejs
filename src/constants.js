@@ -23,6 +23,7 @@
  */
 
 /* exported CSS_PREFIX */
+/* exported CSS_GRID */
 /* exported CSS_SORTABLE */
 /* exported CSS_SORTABLE_ASC */
 /* exported CSS_SORTABLE_DESC */
@@ -38,6 +39,7 @@
 /* exported CSS_CHECKBOX_CELL */
 
 var CSS_PREFIX = 'waffle-';
+var CSS_GRID = 'waffle-grid';
 var CSS_SORTABLE = CSS_PREFIX + 'sortable';
 var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
 var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';

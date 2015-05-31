@@ -125,6 +125,107 @@ describe('Grid Render', function() {
     expect(dataColumns[1].getAttribute('data-waffle-sortable')).toBeNull();
   });
 
+  it('should render column footer', function() {
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo' }
+    ];
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: columns
+    });
+
+    var tbody = grid.$tbody[0];
+    expect(tbody.childNodes).toHaveLength(0);
+
+    var tfoot = grid.$tfoot[0];
+    var tr = tfoot.childNodes;
+    expect(tr).toHaveLength(1);
+    expect(tr[0]).toBeDOMElement('tr');
+
+    var ths = tr[0].childNodes;
+
+    // 2 columns + 1 column for checkbox
+    expect(ths).toHaveLength(3);
+
+    expect(ths).toVerify(function(node) {
+      return node.tagName === 'TH';
+    });
+
+    var dataColumns = Array.prototype.slice.call(ths, 1);
+
+    expect(dataColumns).toVerify(function(node, idx) {
+      return node.innerHTML === columns[idx].title;
+    });
+
+    expect(dataColumns).toVerify(function(node, idx) {
+      var cssClasses = [
+        columns[idx].id,
+        'waffle-sortable'
+      ];
+
+      return node.className === cssClasses.join(' ');
+    });
+
+    expect(dataColumns).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-id') === columns[idx].id;
+    });
+
+    expect(dataColumns).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-order') === null;
+    });
+
+    expect(dataColumns).toVerify(function(node) {
+      return node.getAttribute('data-waffle-sortable') === 'true';
+    });
+  });
+
+  it('should render column footer with unsortable column', function() {
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo', sortable: false }
+    ];
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: columns
+    });
+
+    var tbody = grid.$tbody[0];
+    expect(tbody.childNodes).toHaveLength(0);
+
+    var tfoot = grid.$tfoot[0];
+    var tr = tfoot.childNodes;
+    expect(tr).toHaveLength(1);
+    expect(tr[0]).toBeDOMElement('tr');
+
+    var ths = tr[0].childNodes;
+
+    // 2 columns + 1 column for checkbox
+    expect(ths).toHaveLength(3);
+
+    var dataColumns = Array.prototype.slice.call(ths, 1);
+
+    expect(dataColumns).toVerify(function(node) {
+      return node.tagName === 'TH';
+    });
+
+    expect(dataColumns).toVerify(function(node, idx) {
+      return node.innerHTML === columns[idx].title;
+    });
+
+    expect(dataColumns[0].className.split(' ')).toContain('waffle-sortable');
+    expect(dataColumns[1].className.split(' ')).not.toContain('waffle-sortable');
+
+    expect(dataColumns[0].getAttribute('data-waffle-sortable')).toBe('true');
+    expect(dataColumns[1].getAttribute('data-waffle-sortable')).toBeNull();
+  });
+
   it('should render data', function() {
     var columns = [
       { id: 'id', title: 'Foo' },

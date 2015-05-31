@@ -73,6 +73,36 @@ var GridBuilder = {
       .append($input[0])[0];
   },
 
+  // Create row to append to thead node.
+  tfootRow: function(grid) {
+    var tr = $doc.tr();
+
+    if (grid.hasCheckbox()) {
+      tr.appendChild(GridBuilder.tfootCheckboxCell(grid));
+    }
+
+    grid.$columns.forEach(function(column, idx) {
+      tr.appendChild(GridBuilder.tfootCell(grid, column, idx));
+    });
+
+    return tr;
+  },
+
+  // For now, tfoot cell is the same as the thead cell
+  tfootCell: function(grid, column, idx) {
+    return GridBuilder.theadCell(grid, column, idx);
+  },
+
+  // Create cell for grid thead node.
+  tfootCheckboxCell: function(grid) {
+    var cell = GridBuilder.theadCheckboxCell(grid);
+
+    // Put the span value at the the bottom...
+    cell.appendChild(cell.childNodes[0]);
+
+    return cell;
+  },
+
   // Create fragment of rows.
   tbodyRows: function(grid, data, startIdx) {
     var fragment = $doc.createFragment();

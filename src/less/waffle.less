@@ -95,29 +95,31 @@
   }
 }
 
-th {
-  @arrow-size: 5px;
+.waffle-grid {
+  th {
+    @arrow-size: 5px;
 
-  // Css class added to sortable column
-  &.waffle-sortable {
-    cursor: pointer;
-    position: relative;
+    // Css class added to sortable column
+    &.waffle-sortable {
+      cursor: pointer;
+      position: relative;
 
-    // Drop user selection
-    .drop-select();
-  }
-
-  // Css class added to column sorted in ascendant order
-  &.waffle-sortable-asc {
-    &:before {
-      .arrow(@arrow-size, 'top');
+      // Drop user selection
+      .drop-select();
     }
-  }
 
-  // Css class added to column sorted in descendant order
-  &.waffle-sortable-desc {
-    &:before {
-      .arrow(@arrow-size, 'bottom');
+    // Css class added to column sorted in ascendant order
+    &.waffle-sortable-asc {
+      &:before {
+        .arrow(@arrow-size, 'top');
+      }
+    }
+
+    // Css class added to column sorted in descendant order
+    &.waffle-sortable-desc {
+      &:before {
+        .arrow(@arrow-size, 'bottom');
+      }
     }
   }
 }
@@ -156,6 +158,12 @@ th {
   [type="checkbox"] {
     cursor: pointer;
   }
+
+  tr {
+    &.waffle-selected > td {
+      background-color: #d9edf7;
+    }
+  }
 }
 
 // -------------------------------------------------------------------------- \\
@@ -169,6 +177,7 @@ th {
 .waffle-fixedheader {
   table-layout: fixed;
 
+  > tfoot,
   > thead {
     width: 100%;
   }
@@ -177,6 +186,7 @@ th {
     overflow-y: scroll;
   }
 
+  > tfoot,
   > thead,
   > tbody {
     display: block;
@@ -216,6 +226,17 @@ th {
         border-bottom: 0;
       }
     }
+
+    > tfoot {
+      border-top-width: 2px;
+      border-top-style: inherit;
+      border-top-color: inherit;
+
+      th {
+        border-bottom: 0;
+        border-top: 0;
+      }
+    }
   }
 
   &.table-bordered {
@@ -226,6 +247,7 @@ th {
     }
 
     > thead > tr > th,
+    > tfoot > tr > th,
     > tbody > tr > td:not(:last-child) {
       border-right: 0;
     }
@@ -233,16 +255,5 @@ th {
     > tbody > tr > td {
       border-bottom: 0;
     }
-  }
-}
-
-tr {
-  @row-selected: #d9edf7;
-
-  .drop-select();
-
-  // Css class added to selected row
-  &.waffle-selected > td {
-    background-color: @row-selected;
   }
 }

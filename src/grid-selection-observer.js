@@ -93,20 +93,23 @@ var GridSelectionObserver = (function() {
       }
 
       if (grid.hasCheckbox()) {
-        var $thead = grid.$thead;
-        var thead = $thead[0];
-        var cell = thead.childNodes[0].childNodes[0];
-        var childNodesCell = cell.childNodes;
         var selectionLength = $selection.length;
+        var thead = grid.$thead[0];
+        var tfoot = grid.$tfoot[0];
 
-        var span = childNodesCell[0];
-        var checkbox = childNodesCell[1];
+        var theadCell = thead.childNodes[0].childNodes[0];
+        var theadSpan = theadCell.childNodes[0];
+        var theadCheckbox = theadCell.childNodes[1];
 
-        span.innerHTML = selectionLength;
-        span.setAttribute('title', selectionLength);
+        var tfootCell = tfoot.childNodes[0].childNodes[0];
+        var tfootSpan = tfootCell.childNodes[1];
+        var tfootCheckbox = tfootCell.childNodes[0];
 
-        checkbox.checked = grid.isSelected();
-        checkbox.indeterminate = selectionLength > 0 && $data.length !== selectionLength;
+        tfootSpan.innerHTML = theadSpan.innerHTML = selectionLength;
+        tfootSpan.title = theadSpan.title = selectionLength;
+
+        tfootCheckbox.checked = theadCheckbox.checked = grid.isSelected();
+        tfootCheckbox.indeterminate = theadCheckbox.indeterminate = selectionLength > 0 && $data.length !== selectionLength;
       }
 
       return this;

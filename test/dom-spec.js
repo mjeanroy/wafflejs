@@ -111,6 +111,12 @@ describe('$doc', function() {
     expect(node.tagName).toBe('THEAD');
   });
 
+  it('should create tfoot element', function() {
+    var node = $doc.tfoot();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('TFOOT');
+  });
+
   it('should create input element', function() {
     var node = $doc.input();
     expect(node).toBeDefined();

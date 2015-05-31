@@ -117,7 +117,7 @@ var $doc = (function() {
     scrollbarWidth: _.memoize(scrollbarWidth, hasher)
   };
 
-  _.forEach(['tr', 'td', 'th', 'tbody', 'thead', 'input', 'span'], function(tagName) {
+  _.forEach(['tr', 'td', 'th', 'tbody', 'thead','tfoot', 'input', 'span'], function(tagName) {
     o[tagName] = function() {
       return this.create(tagName);
     };

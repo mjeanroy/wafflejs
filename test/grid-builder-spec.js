@@ -170,6 +170,132 @@ describe('GridBuilder', function() {
     expect(checkbox.indeterminate).toBe(true);
   });
 
+  it('should create tfoot row with checkbox', function() {
+    spyOn(GridBuilder, 'tfootCell').and.callThrough();
+
+    var tr = GridBuilder.tfootRow(grid);
+
+    var columns = grid.columns();
+    expect(GridBuilder.tfootCell.calls.count()).toBe(2);
+    expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(0), 0);
+    expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(1), 1);
+
+    expect(tr).toBeDefined();
+    expect(tr.tagName).toEqual('TR');
+
+    // 2 columns + 1 column for checkbox
+    expect(tr.childNodes.length).toBe(3);
+
+    expect(tr.childNodes).toVerify(function(node) {
+      return node.tagName === 'TH';
+    });
+  });
+
+  it('should create tfoot row without checkbox', function() {
+    spyOn(GridBuilder, 'tfootCell').and.callThrough();
+    spyOn(grid, 'hasCheckbox').and.returnValue(false);
+
+    var tr = GridBuilder.tfootRow(grid);
+
+    var columns = grid.columns();
+    expect(GridBuilder.tfootCell.calls.count()).toBe(2);
+    expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(0), 0);
+    expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(1), 1);
+
+    expect(tr).toBeDefined();
+    expect(tr.tagName).toEqual('TR');
+    expect(tr.childNodes.length).toBe(2);
+    expect(tr.childNodes).toVerify(function(node) {
+      return node.tagName === 'TH';
+    });
+  });
+
+  it('should create tfoot cell', function() {
+    var th1 = GridBuilder.tfootCell(grid, grid.columns().at(0), 0);
+    var th2 = GridBuilder.theadCell(grid, grid.columns().at(1), 1);
+
+    expect(th1).toBeDefined();
+    expect(th1.tagName).toEqual('TH');
+    expect(th1.className).toContain('foo');
+    expect(th1.className).toContain('waffle-sortable');
+    expect(th1.getAttribute('data-waffle-id')).toBe('foo');
+    expect(th1.style.maxWidth).toBe('100px');
+    expect(th1.style.minWidth).toBe('100px');
+    expect(th1.style.width).toBe('100px');
+
+    expect(th2).toBeDefined();
+    expect(th2.tagName).toEqual('TH');
+    expect(th2.className).toContain('bar');
+    expect(th2.className).not.toContain('waffle-sortable');
+    expect(th2.getAttribute('data-waffle-id')).toBe('bar');
+    expect(th2.style.maxWidth).toBeEmpty();
+    expect(th2.style.minWidth).toBeEmpty();
+  });
+
+  it('should create tfoot cell for main checkbox with unchecked state', function() {
+    var th = GridBuilder.tfootCheckboxCell(grid);
+
+    expect(th).toBeDefined();
+    expect(th.tagName).toEqual('TH');
+    expect(th.className).toContain('waffle-checkbox');
+    expect(th.childNodes.length).toBe(2);
+
+    var checkbox = th.childNodes[0];
+    expect(checkbox.tagName).toBe('INPUT');
+    expect(checkbox.getAttribute('type')).toBe('checkbox');
+    expect(checkbox.checked).toBe(false);
+    expect(checkbox.indeterminate).toBe(false);
+
+    var span = th.childNodes[1];
+    expect(span.tagName).toBe('SPAN');
+    expect(span.innerHTML).toBe('0');
+    expect(span.getAttribute('title')).toBe('0');
+  });
+
+  it('should create thead cell for main checkbox with checked state', function() {
+    grid.$selection.add(grid.$data.toArray());
+
+    var th = GridBuilder.tfootCheckboxCell(grid);
+
+    expect(th).toBeDefined();
+    expect(th.tagName).toEqual('TH');
+    expect(th.className).toContain('waffle-checkbox');
+    expect(th.childNodes.length).toBe(2);
+
+    var checkbox = th.childNodes[0];
+    expect(checkbox.tagName).toBe('INPUT');
+    expect(checkbox.getAttribute('type')).toBe('checkbox');
+    expect(checkbox.checked).toBe(true);
+    expect(checkbox.indeterminate).toBe(false);
+
+    var span = th.childNodes[1];
+    expect(span.tagName).toBe('SPAN');
+    expect(span.innerHTML).toBe('2');
+    expect(span.getAttribute('title')).toBe('2');
+  });
+
+  it('should create tfoot cell for main checkbox with undeterminate state', function() {
+    grid.$selection.push(grid.$data[0]);
+
+    var th = GridBuilder.tfootCheckboxCell(grid);
+
+    expect(th).toBeDefined();
+    expect(th.tagName).toEqual('TH');
+    expect(th.className).toContain('waffle-checkbox');
+    expect(th.childNodes.length).toBe(2);
+
+    var checkbox = th.childNodes[0];
+    expect(checkbox.tagName).toBe('INPUT');
+    expect(checkbox.getAttribute('type')).toBe('checkbox');
+    expect(checkbox.checked).toBe(false);
+    expect(checkbox.indeterminate).toBe(true);
+
+    var span = th.childNodes[1];
+    expect(span.tagName).toBe('SPAN');
+    expect(span.innerHTML).toBe('1');
+    expect(span.getAttribute('title')).toBe('1');
+  });
+
   it('should create tbody rows', function() {
     spyOn(GridBuilder, 'tbodyRow').and.callThrough();
 

@@ -42,6 +42,8 @@ var $files = {
     SRC + 'comparators.js',
     SRC + 'column.js',
     SRC + 'grid-builder.js',
+    SRC + 'grid-dom-handlers.js',
+    SRC + 'grid-builder.js',
     SRC + 'grid-data-observer.js',
     SRC + 'grid-selection-observer.js',
     SRC + 'grid.js',

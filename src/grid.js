@@ -32,17 +32,16 @@
 /* global $comparators */
 /* global $util */
 /* global GridBuilder */
+/* global GridDomHandlers */
 /* global GridDataObserver */
 /* global GridSelectionObserver */
 /* global $$createComparisonFunction */
+/* global CSS_GRID */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SCROLLABLE */
 /* global CSS_SELECTABLE */
-/* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_ORDER */
-/* global DATA_WAFFLE_IDX */
-/* global DATA_WAFFLE_SORTABLE */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
 /* exported Grid */
@@ -145,6 +144,7 @@ var Grid = (function() {
     this.$sortBy = [];
 
     // Add appropriate css to table
+    this.$table.addClass(CSS_GRID);
 
     if (opts.selection) {
       this.$table.addClass(CSS_SELECTABLE);
@@ -155,15 +155,20 @@ var Grid = (function() {
     }
 
     // Create main nodes
-    _.forEach(['thead', 'tbody'], createNode, this);
+    _.forEach(['thead', 'tbody', 'tfoot'], createNode, this);
+
+    // Bind dom handlers
+    this.$thead.on('click', _.bind(GridDomHandlers.onClickThead, this));
+    this.$tfoot.on('click', _.bind(GridDomHandlers.onClickTfoot, this));
+    this.$tbody.on('click', _.bind(GridDomHandlers.onClickTbody, this));
 
     // Observe collection to update grid accordingly
     this.$data.observe(dataObserver, this);
     this.$selection.observe(selectionObserver, this);
 
-    this.$$bind()
-        .assignWidth()
+    this.assignWidth()
         .renderHeader()
+        .renderFooter()
         .sortBy(options.sortBy, false)
         .renderBody();
 
@@ -293,6 +298,13 @@ var Grid = (function() {
       return this;
     },
 
+    // Render entire footer of grid
+    renderFooter: function() {
+      var tr = GridBuilder.tfootRow(this);
+      this.$tfoot.empty().append(tr);
+      return this;
+    },
+
     // Render entire body of grid
     // Each row is appended to a fragment in memory
     // This fragment will be appended once to tbody element to avoid unnecessary DOM access
@@ -362,10 +374,11 @@ var Grid = (function() {
       this.$sortBy = normalizedSortBy;
 
       // Remove order flag
-      var $tr = this.$thead.children().eq(0);
-      var $th = $tr.children();
-      $th.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC)
-         .removeAttr(DATA_WAFFLE_ORDER);
+      var $headers = this.$thead.children().eq(0).children();
+      var $footers = this.$tfoot.children().eq(0).children();
+
+      $headers.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC).removeAttr(DATA_WAFFLE_ORDER);
+      $footers.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC).removeAttr(DATA_WAFFLE_ORDER);
 
       // Create comparators object that will be used to create comparison function
       var $columns = this.$columns;
@@ -386,9 +399,13 @@ var Grid = (function() {
           column.asc = asc;
 
           // Update order flag
-          $th.eq(thIndex)
-             .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
-             .attr(DATA_WAFFLE_ORDER, flag);
+          $headers.eq(thIndex)
+                  .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
+                  .attr(DATA_WAFFLE_ORDER, flag);
+
+          $footers.eq(thIndex)
+                  .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
+                  .attr(DATA_WAFFLE_ORDER, flag);
 
         } else {
           column = {};
@@ -439,108 +456,6 @@ var Grid = (function() {
 
       // Destroy internal property
       $util.destroy(this);
-    },
-
-    // Bind user events
-    // Should be a private function
-    $$bind: function() {
-      var that = this;
-      this.$thead.on('click', function(e) {
-        // If target is thead it means click was pressed in a th and released in another
-        if (e.target.tagName === 'THEAD') {
-          return;
-        }
-
-        var node = e.target;
-
-        // Checkbox
-        if (node.tagName === 'INPUT' && node.getAttribute('type') === 'checkbox') {
-          if (node.checked) {
-            that.select();
-          } else {
-            that.deselect();
-          }
-        }
-        // Column header
-        else if (node.tagName === 'TH' && node.getAttribute(DATA_WAFFLE_SORTABLE)) {
-          var id = node.getAttribute(DATA_WAFFLE_ID);
-          var currentOrder = node.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
-          var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
-
-          var newPredicate = newOrder + id;
-
-          var newSortBy;
-
-          if (e.shiftKey) {
-            newSortBy = that.$sortBy.slice();
-
-            // We need to remove old predicate
-            var oldPredicate = currentOrder + id;
-            var idx = newSortBy.indexOf(oldPredicate);
-            if (idx >= 0) {
-              newSortBy.splice(idx, 1);
-            }
-
-            // And append new predicate
-            newSortBy.push(newPredicate);
-
-          }
-          else {
-            newSortBy = [newPredicate];
-          }
-
-          that.sortBy(newSortBy);
-        }
-      });
-
-      this.$tbody.on('click', function(e) {
-        // If target is tbody it means click was pressed in a tr and released in another
-        if (e.target.tagName === 'TBODY') {
-          return;
-        }
-
-        var tr = $doc.findParent(e.target, 'TR');
-        var idx = tr.getAttribute(DATA_WAFFLE_IDX);
-        var data = that.$data.at(idx);
-        var selection = that.$selection;
-
-        if (that.options.selection.multi) {
-          if (e.shiftKey) {
-            var idxF = parseFloat(idx);
-            var selectAnchorF = parseFloat(that.$$selectAnchor);
-            var lowerBound = Math.min(idxF, selectAnchorF);
-            var upperBound = Math.max(idxF, selectAnchorF);
-
-            var toAdd = [];
-            for (var i = lowerBound; i <= upperBound; ++i) {
-              var current = that.$data.at(i);
-              if (!selection.contains(current)) {
-                toAdd.push(current);
-              }
-            }
-
-            if (toAdd.length > 0) {
-              selection.push.apply(selection, toAdd);
-            }
-          }
-          else {
-            selection.toggle(data);
-            that.$$selectAnchor = idx;
-          }
-        }
-        else {
-          var dataIdx = selection.indexOf(data);
-
-          if (dataIdx >= 0) {
-            selection.remove(dataIdx, 1);
-          }
-          else {
-            selection.reset([data]);
-          }
-        }
-      });
-
-      return this;
     }
   };
 

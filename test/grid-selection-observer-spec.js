@@ -96,15 +96,23 @@ describe('Grid Sort', function() {
       expect(childNodes[2].className).not.toContain('waffle-selected');
 
       var thead = grid.$thead[0];
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+      var tfoot = grid.$tfoot[0];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
 
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
     });
 
     it('should select multiple data', function() {
@@ -121,14 +129,23 @@ describe('Grid Sort', function() {
       expect(childNodes[2].className).toContain('waffle-selected');
 
       var thead = grid.$thead[0];
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+      var tfoot = grid.$tfoot[0];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('2');
-      expect(span.getAttribute('title')).toBe('2');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('2');
+      expect(theadSpan.getAttribute('title')).toBe('2');
+      expect(tfootSpan.innerHTML).toBe('2');
+      expect(tfootSpan.getAttribute('title')).toBe('2');
+
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
     });
 
     it('should unselect multiple data', function() {
@@ -140,8 +157,7 @@ describe('Grid Sort', function() {
 
       var tbody = grid.$tbody[0];
       var thead = grid.$thead[0];
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var tfoot = grid.$tbody[0];
 
       var childNodes = tbody.childNodes;
       expect(childNodes[0].className).not.toContain('waffle-selected');
@@ -149,10 +165,24 @@ describe('Grid Sort', function() {
       expect(childNodes[2].className).toContain('waffle-selected');
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('2');
-      expect(span.getAttribute('title')).toBe('2');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      var thead = grid.$thead[0];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+      var tfoot = grid.$tfoot[0];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+      // Main checkbox should be updated
+      expect(theadSpan.innerHTML).toBe('2');
+      expect(theadSpan.getAttribute('title')).toBe('2');
+      expect(tfootSpan.innerHTML).toBe('2');
+      expect(tfootSpan.getAttribute('title')).toBe('2');
+
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
 
       $selection.pop();
       jasmine.clock().tick();
@@ -162,10 +192,15 @@ describe('Grid Sort', function() {
       expect(childNodes[2].className).not.toContain('waffle-selected');
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
 
       $selection.pop();
       jasmine.clock().tick();
@@ -175,10 +210,15 @@ describe('Grid Sort', function() {
       expect(childNodes[2].className).not.toContain('waffle-selected');
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('0');
-      expect(span.getAttribute('title')).toBe('0');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeFalse();
+      expect(theadSpan.innerHTML).toBe('0');
+      expect(theadSpan.getAttribute('title')).toBe('0');
+      expect(tfootSpan.innerHTML).toBe('0');
+      expect(tfootSpan.getAttribute('title')).toBe('0');
+
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeFalse();
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeFalse();
     });
   });
 });

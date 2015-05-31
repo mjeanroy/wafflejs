@@ -51,22 +51,40 @@ describe('Grid Sort', function() {
   it('should not sort grid by default', function() {
     expect(grid.$sortBy).toEqual([]);
 
-    var ths = grid.$thead[0].childNodes[0].childNodes;
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
 
-    expect(ths).toVerify(function(th) {
+    expect(headers).toVerify(function(th) {
+      return th.getAttribute('data-waffle-order') === null;
+    });
+
+    expect(footers).toVerify(function(th) {
       return th.getAttribute('data-waffle-order') === null;
     });
 
     // First th is for checkbox
-    expect(ths[1].className.split(' ')).not.toContain('waffle-sortable');
-    expect(ths[2].className.split(' ')).toContain('waffle-sortable');
-    expect(ths[3].className.split(' ')).toContain('waffle-sortable');
 
-    expect(ths).toVerify(function(th) {
+    expect(headers[1].className.split(' ')).not.toContain('waffle-sortable');
+    expect(headers[2].className.split(' ')).toContain('waffle-sortable');
+    expect(headers[3].className.split(' ')).toContain('waffle-sortable');
+
+    expect(footers[1].className.split(' ')).not.toContain('waffle-sortable');
+    expect(footers[2].className.split(' ')).toContain('waffle-sortable');
+    expect(footers[3].className.split(' ')).toContain('waffle-sortable');
+
+    expect(headers).toVerify(function(th) {
       return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
     });
 
-    expect(ths).toVerify(function(th) {
+    expect(footers).toVerify(function(th) {
+      return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
+    });
+
+    expect(headers).toVerify(function(th) {
+      return th.className.split(' ').indexOf('waffle-sortable-desc') < 0;
+    });
+
+    expect(footers).toVerify(function(th) {
       return th.className.split(' ').indexOf('waffle-sortable-desc') < 0;
     });
 
@@ -89,25 +107,39 @@ describe('Grid Sort', function() {
 
     expect(grid.$sortBy).toEqual(['+firstName']);
 
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(headers[3].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[1].className.split(' ');
-    expect(classes0).not.toContain('waffle-sortable');
-    expect(classes0).not.toContain('waffle-sortable-asc');
-    expect(classes0).not.toContain('waffle-sortable-desc');
+    expect(headers[1].className).not.toContain('waffle-sortable');
+    expect(headers[1].className).not.toContain('waffle-sortable-asc');
+    expect(headers[1].className).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[2].className.split(' ');
-    expect(classes1).toContain('waffle-sortable');
-    expect(classes1).toContain('waffle-sortable-asc');
-    expect(classes1).not.toContain('waffle-sortable-desc');
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).toContain('waffle-sortable-asc');
+    expect(headers[2].className).not.toContain('waffle-sortable-desc');
 
-    var classes2 = ths[3].className.split(' ');
-    expect(classes2).toContain('waffle-sortable');
-    expect(classes2).not.toContain('waffle-sortable-asc');
-    expect(classes2).not.toContain('waffle-sortable-desc');
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+    expect(headers[3].className).not.toContain('waffle-sortable-desc');
+
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+    expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(footers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(footers[1].className).not.toContain('waffle-sortable');
+    expect(footers[1].className).not.toContain('waffle-sortable-asc');
+    expect(footers[1].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).toContain('waffle-sortable-asc');
+    expect(footers[2].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
+    expect(footers[3].className).not.toContain('waffle-sortable-desc');
 
     expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
       return o1.firstName.localeCompare(o2.firstName);
@@ -127,25 +159,39 @@ describe('Grid Sort', function() {
 
     expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
 
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[3].getAttribute('data-waffle-order')).toBe('-');
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(headers[3].getAttribute('data-waffle-order')).toBe('-');
 
-    var classes0 = ths[1].className.split(' ');
-    expect(classes0).not.toContain('waffle-sortable');
-    expect(classes0).not.toContain('waffle-sortable-asc');
-    expect(classes0).not.toContain('waffle-sortable-desc');
+    expect(headers[1].className).not.toContain('waffle-sortable');
+    expect(headers[1].className).not.toContain('waffle-sortable-asc');
+    expect(headers[1].className).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[2].className.split(' ');
-    expect(classes1).toContain('waffle-sortable');
-    expect(classes1).toContain('waffle-sortable-asc');
-    expect(classes1).not.toContain('waffle-sortable-desc');
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).toContain('waffle-sortable-asc');
+    expect(headers[2].className).not.toContain('waffle-sortable-desc');
 
-    var classes2 = ths[3].className.split(' ');
-    expect(classes2).toContain('waffle-sortable');
-    expect(classes2).not.toContain('waffle-sortable-asc');
-    expect(classes2).toContain('waffle-sortable-desc');
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+    expect(headers[3].className).toContain('waffle-sortable-desc');
+
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+    expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(footers[3].getAttribute('data-waffle-order')).toBe('-');
+
+    expect(footers[1].className).not.toContain('waffle-sortable');
+    expect(footers[1].className).not.toContain('waffle-sortable-asc');
+    expect(footers[1].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).toContain('waffle-sortable-asc');
+    expect(footers[2].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
+    expect(footers[3].className).toContain('waffle-sortable-desc');
 
     expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
       return (o1.firstName.localeCompare(o2.firstName)) ||
@@ -162,25 +208,39 @@ describe('Grid Sort', function() {
 
     expect(grid.$sortBy).toEqual(['+id']);
 
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[1].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    expect(headers[1].getAttribute('data-waffle-order')).toBe('+');
+    expect(headers[2].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[3].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[1].className.split(' ');
-    expect(classes0).not.toContain('waffle-sortable');
-    expect(classes0).toContain('waffle-sortable-asc');
-    expect(classes0).not.toContain('waffle-sortable-desc');
+    expect(headers[1].className).toContain('waffle-sortable');
+    expect(headers[1].className).toContain('waffle-sortable-asc');
+    expect(headers[1].className).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[2].className.split(' ');
-    expect(classes1).toContain('waffle-sortable');
-    expect(classes1).not.toContain('waffle-sortable-asc');
-    expect(classes1).not.toContain('waffle-sortable-desc');
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).not.toContain('waffle-sortable-asc');
+    expect(headers[2].className).not.toContain('waffle-sortable-desc');
 
-    var classes2 = ths[3].className.split(' ');
-    expect(classes2).toContain('waffle-sortable');
-    expect(classes2).not.toContain('waffle-sortable-asc');
-    expect(classes2).not.toContain('waffle-sortable-desc');
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+    expect(headers[3].className).not.toContain('waffle-sortable-desc');
+
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+    expect(footers[1].getAttribute('data-waffle-order')).toBe('+');
+    expect(footers[2].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(footers[1].className).toContain('waffle-sortable');
+    expect(footers[1].className).toContain('waffle-sortable-asc');
+    expect(footers[1].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).not.toContain('waffle-sortable-asc');
+    expect(footers[2].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
+    expect(footers[3].className).not.toContain('waffle-sortable-desc');
 
     expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
       return o1.id - o2.id;
@@ -196,19 +256,29 @@ describe('Grid Sort', function() {
 
     expect(grid.$sortBy).toEqual(['-id']);
 
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[1].getAttribute('data-waffle-order')).toBe('-');
-    expect(ths[2].getAttribute('data-waffle-order')).toBeNull();
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    expect(headers[1].getAttribute('data-waffle-order')).toBe('-');
+    expect(headers[2].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[1].className.split(' ');
-    expect(classes0).not.toContain('waffle-sortable');
-    expect(classes0).toContain('waffle-sortable-desc');
-    expect(classes0).not.toContain('waffle-sortable-asc');
+    expect(headers[1].className).toContain('waffle-sortable');
+    expect(headers[1].className).toContain('waffle-sortable-desc');
+    expect(headers[1].className).not.toContain('waffle-sortable-asc');
 
-    var classes1 = ths[2].className.split(' ');
-    expect(classes1).toContain('waffle-sortable');
-    expect(classes1).not.toContain('waffle-sortable-asc');
-    expect(classes1).not.toContain('waffle-sortable-desc');
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).not.toContain('waffle-sortable-asc');
+    expect(headers[2].className).not.toContain('waffle-sortable-desc');
+
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+    expect(footers[1].getAttribute('data-waffle-order')).toBe('-');
+    expect(footers[2].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(footers[1].className).toContain('waffle-sortable');
+    expect(footers[1].className).toContain('waffle-sortable-desc');
+    expect(footers[1].className).not.toContain('waffle-sortable-asc');
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).not.toContain('waffle-sortable-asc');
+    expect(footers[2].className).not.toContain('waffle-sortable-desc');
 
     expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
       return (o1.id - o2.id) * -1;
@@ -224,20 +294,31 @@ describe('Grid Sort', function() {
 
     expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
 
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[3].getAttribute('data-waffle-order')).toBe('-');
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(headers[3].getAttribute('data-waffle-order')).toBe('-');
 
-    var classes0 = ths[2].className.split(' ');
-    expect(classes0).toContain('waffle-sortable');
-    expect(classes0).toContain('waffle-sortable-asc');
-    expect(classes0).not.toContain('waffle-sortable-desc');
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).toContain('waffle-sortable-asc');
+    expect(headers[2].className).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[3].className.split(' ');
-    expect(classes1).toContain('waffle-sortable');
-    expect(classes1).toContain('waffle-sortable-desc');
-    expect(classes1).not.toContain('waffle-sortable-asc');
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).toContain('waffle-sortable-desc');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+    expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(footers[3].getAttribute('data-waffle-order')).toBe('-');
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).toContain('waffle-sortable-asc');
+    expect(footers[2].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).toContain('waffle-sortable-desc');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
 
     expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
       return (o1.firstName.localeCompare(o2.firstName)) ||
@@ -252,59 +333,162 @@ describe('Grid Sort', function() {
   it('should sort data when column header is clicked', function() {
     spyOn(grid, 'sortBy').and.callThrough();
 
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+
     // Trigger click
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    triggerClick(ths[2]);
+    triggerClick(headers[2]);
 
     expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
     expect(grid.$sortBy).toEqual(['+firstName']);
 
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[2].getAttribute('data-waffle-order')).toBe('+');
-    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(headers[3].getAttribute('data-waffle-order')).toBeNull();
 
-    var classes0 = ths[2].className.split(' ');
-    expect(classes0).toContain('waffle-sortable');
-    expect(classes0).toContain('waffle-sortable-asc');
-    expect(classes0).not.toContain('waffle-sortable-desc');
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).toContain('waffle-sortable-asc');
+    expect(headers[2].className).not.toContain('waffle-sortable-desc');
 
-    var classes1 = ths[3].className.split(' ');
-    expect(classes1).toContain('waffle-sortable');
-    expect(classes1).not.toContain('waffle-sortable-desc');
-    expect(classes1).not.toContain('waffle-sortable-asc');
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).not.toContain('waffle-sortable-desc');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+
+    expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(footers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).toContain('waffle-sortable-asc');
+    expect(footers[2].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).not.toContain('waffle-sortable-desc');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
 
     grid.sortBy.calls.reset();
 
     // New click should reverse order
-    triggerClick(ths[2]);
+    triggerClick(headers[2]);
 
     // Th should have flag
     expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
     expect(grid.$sortBy).toEqual(['-firstName']);
 
-    ths = grid.$thead[0].childNodes[0].childNodes;
-    expect(ths[1].getAttribute('data-waffle-order')).toBeNull();
-    expect(ths[2].getAttribute('data-waffle-order')).toBe('-');
-    expect(ths[3].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[2].getAttribute('data-waffle-order')).toBe('-');
+    expect(headers[3].getAttribute('data-waffle-order')).toBeNull();
 
-    classes0 = ths[2].className.split(' ');
-    expect(classes0).toContain('waffle-sortable');
-    expect(classes0).not.toContain('waffle-sortable-asc');
-    expect(classes0).toContain('waffle-sortable-desc');
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).not.toContain('waffle-sortable-asc');
+    expect(headers[2].className).toContain('waffle-sortable-desc');
 
-    classes1 = ths[3].className.split(' ');
-    expect(classes1).toContain('waffle-sortable');
-    expect(classes1).not.toContain('waffle-sortable-desc');
-    expect(classes1).not.toContain('waffle-sortable-asc'); 
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).not.toContain('waffle-sortable-desc');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+
+    expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[2].getAttribute('data-waffle-order')).toBe('-');
+    expect(footers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).not.toContain('waffle-sortable-asc');
+    expect(footers[2].className).toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).not.toContain('waffle-sortable-desc');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
+  });
+
+  it('should sort data when column footer is clicked', function() {
+    spyOn(grid, 'sortBy').and.callThrough();
+
+    // Trigger click
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+
+    triggerClick(footers[2]);
+
+    expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
+    expect(grid.$sortBy).toEqual(['+firstName']);
+
+    expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(headers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).toContain('waffle-sortable-asc');
+    expect(headers[2].className).not.toContain('waffle-sortable-desc');
+
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).not.toContain('waffle-sortable-desc');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+
+    expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
+    expect(footers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).toContain('waffle-sortable-asc');
+    expect(footers[2].className).not.toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).not.toContain('waffle-sortable-desc');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
+
+    grid.sortBy.calls.reset();
+
+    // New click should reverse order
+    triggerClick(footers[2]);
+
+    // Th should have flag
+    expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
+    expect(grid.$sortBy).toEqual(['-firstName']);
+
+    expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(headers[2].getAttribute('data-waffle-order')).toBe('-');
+    expect(headers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(headers[2].className).toContain('waffle-sortable');
+    expect(headers[2].className).not.toContain('waffle-sortable-asc');
+    expect(headers[2].className).toContain('waffle-sortable-desc');
+
+    expect(headers[3].className).toContain('waffle-sortable');
+    expect(headers[3].className).not.toContain('waffle-sortable-desc');
+    expect(headers[3].className).not.toContain('waffle-sortable-asc');
+
+    expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
+    expect(footers[2].getAttribute('data-waffle-order')).toBe('-');
+    expect(footers[3].getAttribute('data-waffle-order')).toBeNull();
+
+    expect(footers[2].className).toContain('waffle-sortable');
+    expect(footers[2].className).not.toContain('waffle-sortable-asc');
+    expect(footers[2].className).toContain('waffle-sortable-desc');
+
+    expect(footers[3].className).toContain('waffle-sortable');
+    expect(footers[3].className).not.toContain('waffle-sortable-desc');
+    expect(footers[3].className).not.toContain('waffle-sortable-asc');
   });
 
   it('should not sort data when column header is clicked and column is not sortable', function() {
     spyOn(grid, 'sortBy').and.callThrough();
 
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+
     // Trigger click
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    triggerClick(ths[1]);
+    triggerClick(headers[1]);
+
+    expect(grid.sortBy).not.toHaveBeenCalled();
+    expect(grid.$sortBy).toEqual([]);
+  });
+
+  it('should not sort data when column footer is clicked and column is not sortable', function() {
+    spyOn(grid, 'sortBy').and.callThrough();
+
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+
+    // Trigger click
+    triggerClick(footers[1]);
 
     expect(grid.sortBy).not.toHaveBeenCalled();
     expect(grid.$sortBy).toEqual([]);
@@ -332,9 +516,10 @@ describe('Grid Sort', function() {
 
     spyOn(grid, 'sortBy').and.callThrough();
 
+    var headers = grid.$thead[0].childNodes[0].childNodes;
+
     // Trigger click
-    var ths = grid.$thead[0].childNodes[0].childNodes;
-    triggerClick(ths[1]);
+    triggerClick(headers[1]);
 
     expect(grid.sortBy).toHaveBeenCalledWith(['+id']);
     expect(grid.$sortBy).toEqual(['+id']);
@@ -342,14 +527,59 @@ describe('Grid Sort', function() {
     grid.sortBy.calls.reset();
 
     // New click should reverse order
-    triggerClick(ths[2], true, false);
+    triggerClick(headers[2], true, false);
     expect(grid.sortBy).toHaveBeenCalledWith(['+id', '+name']);
     expect(grid.$sortBy).toEqual(['+id', '+name']);
 
     grid.sortBy.calls.reset();
 
     // New click on id should reverse order of id column
-    triggerClick(ths[1], true, false);
+    triggerClick(headers[1], true, false);
+    expect(grid.sortBy).toHaveBeenCalledWith(['+name', '-id']);
+    expect(grid.$sortBy).toEqual(['+name', '-id']);
+  });
+
+  it('should sort data when column footer is clicked using two field if shift key is pressed', function() {
+    var columns = [
+      { id: 'id', title: 'Foo' },
+      { id: 'name', title: 'Boo' }
+    ];
+
+    var data = [
+      { id: 2, name: 'foo2 '},
+      { id: 1, name: 'foo1 '},
+      { id: 3, name: 'foo3 '}
+    ];
+
+    var table = document.createElement('table');
+    fixtures.appendChild(table);
+
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    spyOn(grid, 'sortBy').and.callThrough();
+
+    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+
+    // Trigger click
+    triggerClick(footers[1]);
+
+    expect(grid.sortBy).toHaveBeenCalledWith(['+id']);
+    expect(grid.$sortBy).toEqual(['+id']);
+
+    grid.sortBy.calls.reset();
+
+    // New click should reverse order
+    triggerClick(footers[2], true, false);
+    expect(grid.sortBy).toHaveBeenCalledWith(['+id', '+name']);
+    expect(grid.$sortBy).toEqual(['+id', '+name']);
+
+    grid.sortBy.calls.reset();
+
+    // New click on id should reverse order of id column
+    triggerClick(footers[1], true, false);
     expect(grid.sortBy).toHaveBeenCalledWith(['+name', '-id']);
     expect(grid.$sortBy).toEqual(['+name', '-id']);
   });

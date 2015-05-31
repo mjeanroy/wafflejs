@@ -24,7 +24,7 @@
 
 describe('Grid Selection', function() {
 
-  var columns, data, table, grid, tbody, thead;
+  var columns, data, table, grid, tbody, thead, tfoot;
 
   var findCheckbox = function(row) {
     return row.childNodes[0].childNodes[0];
@@ -122,6 +122,7 @@ describe('Grid Selection', function() {
 
       tbody = grid.$tbody[0];
       thead = grid.$thead[0];
+      tfoot = grid.$tfoot[0];
     });
 
     it('should select data when row is clicked', function() {
@@ -144,14 +145,21 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
 
       // New click should toggle selection
       triggerClick(row);
@@ -166,10 +174,15 @@ describe('Grid Selection', function() {
       });
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('0');
-      expect(span.getAttribute('title')).toBe('0');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeFalse();
+      expect(theadSpan.innerHTML).toBe('0');
+      expect(theadSpan.getAttribute('title')).toBe('0');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeFalse();
+
+      expect(tfootSpan.innerHTML).toBe('0');
+      expect(tfootSpan.getAttribute('title')).toBe('0');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeFalse();
     });
 
     it('should replace select data when new row is clicked', function() {
@@ -187,19 +200,26 @@ describe('Grid Selection', function() {
       expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
       expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-
       // Check status of checkbox
       expect(findCheckbox(trs[0]).checked).toBeFalse();
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
 
       // New click should toggle selection
       triggerClick(row2);
@@ -219,10 +239,15 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[2]).checked).toBeTrue();
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
     });
 
     it('should keep current selection after sort', function() {
@@ -258,14 +283,21 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeFalse();
       expect(findCheckbox(trs[2]).checked).toBeTrue();
 
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('2');
-      expect(span.getAttribute('title')).toBe('2');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('2');
+      expect(theadSpan.getAttribute('title')).toBe('2');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('2');
+      expect(tfootSpan.getAttribute('title')).toBe('2');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
     });
   });
 
@@ -281,6 +313,7 @@ describe('Grid Selection', function() {
 
       tbody = grid.$tbody[0];
       thead = grid.$thead[0];
+      tfoot = grid.$tfoot[0];
     });
 
     it('should select data when row is clicked', function() {
@@ -302,14 +335,21 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
 
       // New click should toggle selection
       triggerClick(row);
@@ -324,10 +364,15 @@ describe('Grid Selection', function() {
       });
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('0');
-      expect(span.getAttribute('title')).toBe('0');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeFalse();
+      expect(theadSpan.innerHTML).toBe('0');
+      expect(theadSpan.getAttribute('title')).toBe('0');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeFalse();
+
+      expect(tfootSpan.innerHTML).toBe('0');
+      expect(tfootSpan.getAttribute('title')).toBe('0');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeFalse();
     });
 
     it('should add data to selection when new row is clicked with ctrl key', function() {
@@ -350,14 +395,21 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
 
       // New click should toggle selection
       triggerClick(row2, false, true);
@@ -377,10 +429,15 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[2]).checked).toBeTrue();
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('2');
-      expect(span.getAttribute('title')).toBe('2');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('2');
+      expect(theadSpan.getAttribute('title')).toBe('2');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('2');
+      expect(tfootSpan.getAttribute('title')).toBe('2');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
     });
 
     it('should add set of data to selection when new row is clicked with shift key', function() {
@@ -403,14 +460,21 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeFalse();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var span = thead.childNodes[0].childNodes[0].childNodes[0];
-      var mainCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('1');
-      expect(span.getAttribute('title')).toBe('1');
-      expect(mainCheckbox.checked).toBeFalse();
-      expect(mainCheckbox.indeterminate).toBeTrue();
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
 
       // New click should toggle selection
       triggerClick(row2, true);
@@ -430,10 +494,15 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[2]).checked).toBeTrue();
 
       // Main checkbox should be updated
-      expect(span.innerHTML).toBe('3');
-      expect(span.getAttribute('title')).toBe('3');
-      expect(mainCheckbox.checked).toBeTrue();
-      expect(mainCheckbox.indeterminate).toBeFalse();
+      expect(theadSpan.innerHTML).toBe('3');
+      expect(theadSpan.getAttribute('title')).toBe('3');
+      expect(theadCheckbox.checked).toBeTrue();
+      expect(theadCheckbox.indeterminate).toBeFalse();
+
+      expect(tfootSpan.innerHTML).toBe('3');
+      expect(tfootSpan.getAttribute('title')).toBe('3');
+      expect(tfootCheckbox.checked).toBeTrue();
+      expect(tfootCheckbox.indeterminate).toBeFalse();
     });
   });
 

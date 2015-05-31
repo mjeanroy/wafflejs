@@ -154,6 +154,17 @@ describe('Grid', function() {
     expect(table.className).toContain('waffle-selectable');
   });
 
+  it('should add default to css to grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      size: {
+        height: 300
+      }
+    });
+
+    expect(table.className).toContain('waffle-grid');
+  });
+
   it('should create scrollable grid', function() {
     var table = document.createElement('table');
     var grid = new Grid(table, {
@@ -174,8 +185,10 @@ describe('Grid', function() {
   it('should retrieve thead and tbody element', function() {
     var table = document.createElement('table');
     var thead = document.createElement('thead');
+    var tfoot = document.createElement('tfoot');
     var tbody = document.createElement('tbody');
     table.appendChild(thead);
+    table.appendChild(tfoot);
     table.appendChild(tbody);
 
     var grid = new Grid(table, {
@@ -187,11 +200,15 @@ describe('Grid', function() {
     });
 
     expect(grid.$table).toBeDefined();
+    expect(grid.$table[0].childNodes.length).toBe(3);
+
     expect(grid.$thead).toBeDefined();
+    expect(grid.$tfoot).toBeDefined();
     expect(grid.$tbody).toBeDefined();
 
     expect(grid.$tbody[0]).toBe(tbody);
     expect(grid.$thead[0]).toBe(thead);
+    expect(grid.$tfoot[0]).toBe(tfoot);
   });
 
   it('should create thead and tbody element', function() {
@@ -207,15 +224,18 @@ describe('Grid', function() {
 
     expect(grid.$table).toBeDefined();
     expect(grid.$thead).toBeDefined();
+    expect(grid.$tfoot).toBeDefined();
     expect(grid.$tbody).toBeDefined();
 
     expect(grid.$tbody[0]).toBeDOMElement('tbody');
     expect(grid.$thead[0]).toBeDOMElement('thead');
+    expect(grid.$tfoot[0]).toBeDOMElement('tfoot');
 
     var childs = table.childNodes;
-    expect(childs.length).toBe(2);
+    expect(childs.length).toBe(3);
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
+    expect(childs[2]).toBe(grid.$tfoot[0]);
   });
 
   it('should create only unknown nodes', function() {
@@ -233,14 +253,17 @@ describe('Grid', function() {
 
     expect(grid.$table).toBeDefined();
     expect(grid.$thead).toBeDefined();
+    expect(grid.$tfoot).toBeDefined();
 
     expect(grid.$tbody[0]).toBeDOMElement('tbody');
     expect(grid.$thead[0]).toBeDOMElement('thead');
+    expect(grid.$tfoot[0]).toBeDOMElement('tfoot');
 
     var childs = table.childNodes;
-    expect(childs.length).toBe(2);
+    expect(childs.length).toBe(3);
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
+    expect(childs[2]).toBe(grid.$tfoot[0]);
   });
 
   it('should bind click on header and body when grid is initialized', function() {
@@ -257,11 +280,10 @@ describe('Grid', function() {
     });
 
     var onCalls = jq.on.calls.all();
-    expect(onCalls).toHaveLength(2);
-    expect(onCalls[0].object).toEqual(grid.$thead);
+    expect(onCalls).toHaveLength(3);
     expect(onCalls[0].args).toContain('click', Function);
-    expect(onCalls[1].object).toEqual(grid.$tbody);
     expect(onCalls[1].args).toContain('click', Function);
+    expect(onCalls[2].args).toContain('click', Function);
   });
 
   it('should destroy grid', function() {
@@ -349,11 +371,10 @@ describe('Grid', function() {
     var $tbody = grid.$tbody;
 
     var onCalls = jq.on.calls.all();
-    expect(onCalls).toHaveLength(2);
-    expect(onCalls[0].object).toEqual($thead);
+    expect(onCalls).toHaveLength(3);
     expect(onCalls[0].args).toContain('click', Function);
-    expect(onCalls[1].object).toEqual($tbody);
     expect(onCalls[1].args).toContain('click', Function);
+    expect(onCalls[2].args).toContain('click', Function);
 
     jq.on.calls.reset();
     

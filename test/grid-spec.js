@@ -213,6 +213,32 @@ describe('Grid', function() {
     expect(grid.$thead[0]).toBeDOMElement('thead');
 
     var childs = table.childNodes;
+    expect(childs.length).toBe(2);
+    expect(childs[0]).toBe(grid.$thead[0]);
+    expect(childs[1]).toBe(grid.$tbody[0]);
+  });
+
+  it('should create only unknown nodes', function() {
+    var table = document.createElement('table');
+    var tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.$table).toBeDefined();
+    expect(grid.$thead).toBeDefined();
+
+    expect(grid.$tbody[0]).toBeDOMElement('tbody');
+    expect(grid.$thead[0]).toBeDOMElement('thead');
+
+    var childs = table.childNodes;
+    expect(childs.length).toBe(2);
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
   });

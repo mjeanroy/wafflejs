@@ -74,27 +74,22 @@ var Grid = (function() {
 
   // == Private utilities
 
-  // Initialize grid:
-  //  - Create or retrieve thead element
-  //  - Create or retrieve tbody element
-  var createNodes = function(grid) {
-    var table = grid.$table[0];
-    grid.$tbody = $($doc.byTagName('tbody', table));
-    grid.$thead = $($doc.byTagName('thead', table));
+  // Get exisiting node or create it and append it to the table.
+  var createNode = function(tagName) {
+    // Get existing node or create it
+    var varName = '$' + tagName;
+    var $table = this.$table;
 
-    if (!grid.$thead.length) {
-      var thead = $doc.thead();
-      grid.$thead = $(thead);
-      grid.$table.append(thead);
+    // Get it...
+    this[varName] = $($doc.byTagName(tagName, $table[0]));
+
+    // ... or create it !
+    if (!this[varName].length) {
+      this[varName] = $($doc[tagName]());
     }
 
-    if (!grid.$tbody.length) {
-      var tbody = $doc.tbody();
-      grid.$tbody = $(tbody);
-      grid.$table.append(tbody);
-    }
-
-    return grid;
+    // Just append at the end of the table
+    $table.append(this[varName][0]);
   };
 
   var dataObserver = function(changes) {
@@ -159,7 +154,8 @@ var Grid = (function() {
       this.$table.addClass(CSS_SCROLLABLE);
     }
 
-    createNodes(this);
+    // Create main nodes
+    _.forEach(['thead', 'tbody'], createNode, this);
 
     // Observe collection to update grid accordingly
     this.$data.observe(dataObserver, this);
@@ -216,6 +212,7 @@ var Grid = (function() {
     // Render entire grid
     render: function() {
       return this.renderHeader()
+                 .renderFooter()
                  .renderBody();
     },
 

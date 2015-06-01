@@ -350,6 +350,8 @@ var Grid = (function() {
       if (this.$selection.length !== this.$data.length) {
         this.$selection.add(this.$data.toArray());
       }
+
+      return this;
     },
 
     // Deselect everything
@@ -357,6 +359,8 @@ var Grid = (function() {
       if (!this.$selection.isEmpty()) {
         this.$selection.clear();
       }
+
+      return this;
     },
 
     // Sort grid by fields

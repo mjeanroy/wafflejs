@@ -41,6 +41,10 @@ var GridDomHandlers = (function() {
   var TR = 'TR';
   var INPUT = 'INPUT';
 
+  var isInputCheckbox = function(node) {
+    return node.tagName === INPUT && node.getAttribute('type') === 'checkbox';
+  };
+
   var onClickTitle = function(e, tagName) {
     var target = e.target;
     var th = $doc.findParent(e.target, TH);
@@ -51,7 +55,7 @@ var GridDomHandlers = (function() {
     }
 
     // Checkbox
-    if (target.tagName === INPUT && target.getAttribute('type') === 'checkbox') {
+    if (this.isSelectable() && isInputCheckbox(target)) {
       if (target.checked) {
         this.select();
       } else {
@@ -92,6 +96,11 @@ var GridDomHandlers = (function() {
     },
 
     onClickTbody: function(e) {
+      // If grid is not selectable, ignore event.
+      if (!this.isSelectable()) {
+        return;
+      }
+
       // If target is tbody it means click was pressed in a tr and released in another
       if (e.target.tagName === TBODY) {
         return;

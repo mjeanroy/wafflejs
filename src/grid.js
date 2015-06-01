@@ -109,7 +109,10 @@ var Grid = (function() {
 
     // Initialize nested object of options with default values.
     _.forEach(['events', 'selection', 'size'], function(optName) {
-      opts[optName] = _.defaults(opts[optName] || {}, defaultOptions[optName]);
+      var opt = opts[optName];
+      if (_.isObject(opt) || _.isUndefined(opt)) {
+        opts[optName] = _.defaults(opt || {}, defaultOptions[optName]);
+      }
     });
 
     // Initialize options with default values.
@@ -131,9 +134,8 @@ var Grid = (function() {
       model: Column
     });
 
-    // Initialize selection data.
-    // Use same options as data collection.
-    this.$selection = new Collection([], this.$data.options());
+    // Flag to know if grid is selectable.
+    var isSelectable = this.isSelectable();
 
     // Translate size to valid numbers.
     opts.size = {
@@ -146,7 +148,7 @@ var Grid = (function() {
     // Add appropriate css to table
     this.$table.addClass(CSS_GRID);
 
-    if (opts.selection) {
+    if (isSelectable) {
       this.$table.addClass(CSS_SELECTABLE);
     }
 
@@ -160,11 +162,15 @@ var Grid = (function() {
     // Bind dom handlers
     this.$thead.on('click', _.bind(GridDomHandlers.onClickThead, this));
     this.$tfoot.on('click', _.bind(GridDomHandlers.onClickTfoot, this));
-    this.$tbody.on('click', _.bind(GridDomHandlers.onClickTbody, this));
 
     // Observe collection to update grid accordingly
     this.$data.observe(dataObserver, this);
-    this.$selection.observe(selectionObserver, this);
+
+    if (isSelectable) {
+      this.$selection = new Collection([], this.$data.options());
+      this.$tbody.on('click', _.bind(GridDomHandlers.onClickTbody, this));
+      this.$selection.observe(selectionObserver, this);
+    }
 
     this.assignWidth()
         .renderHeader()
@@ -196,15 +202,24 @@ var Grid = (function() {
       return this.$selection;
     },
 
+    // Check if grid is selectable
+    isSelectable: function() {
+      var selection = this.options.selection;
+      return selection && selection.enable;
+    },
+
     // Check if grid render checkbox as first column
     hasCheckbox: function() {
-      var selection = this.options.selection;
-      return selection && selection.checkbox;
+      return this.isSelectable() && this.options.selection.checkbox;
     },
 
     // Without parameter, check if grid is selected.
     // If first parameter is set, check if data is selected.
     isSelected: function(data) {
+      if (!this.isSelectable()) {
+        return false;
+      }
+
       if (data) {
         return this.$selection.contains(data);
       }
@@ -475,6 +490,7 @@ var Grid = (function() {
     // Selection configuration.
     // By default it is enable.
     selection: {
+      enable: true,
       checkbox: true,
       multi: false
     },

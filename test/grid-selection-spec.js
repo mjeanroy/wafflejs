@@ -47,6 +47,39 @@ describe('Grid Selection', function() {
     fixtures.appendChild(table);
   });
 
+  it('should check if grid is selectable', function() {
+    grid = new Grid(table, {
+      data: data,
+      columns: columns,
+      selection: false
+    });
+
+    expect(grid.isSelectable()).toBeFalse();
+    expect(grid.hasCheckbox()).toBeFalse();
+
+    grid = new Grid(table, {
+      data: data,
+      columns: columns,
+      selection: {
+        enable: false
+      }
+    });
+
+    expect(grid.isSelectable()).toBeFalse();
+    expect(grid.hasCheckbox()).toBeFalse();
+
+    grid = new Grid(table, {
+      data: data,
+      columns: columns,
+      selection: {
+        enable: true
+      }
+    });
+
+    expect(grid.isSelectable()).toBeTrue();
+    expect(grid.hasCheckbox()).toBeTrue();
+  });
+
   it('should initialize selection collection', function() {
     grid = new Grid(table, {
       data: data,
@@ -56,6 +89,33 @@ describe('Grid Selection', function() {
     expect(grid.$selection).toBeDefined();
     expect(grid.$selection).toBeEmpty();
     expect(grid.$selection.options()).toEqual(grid.$data.options());
+  });
+
+  it('should not initialize selection collection if grid is not selectable', function() {
+    grid = new Grid(table, {
+      data: data,
+      columns: columns,
+      selection: {
+        enable: false
+      }
+    });
+
+    expect(grid.$selection).toBeUndefined();
+  });
+
+  it('should not check if data is selected if grid is not selectable', function() {
+    grid = new Grid(table, {
+      data: data,
+      columns: columns,
+      selection: {
+        enable: false
+      }
+    });
+
+    expect(grid.isSelected()).toBeFalse();
+    expect(grid.isSelected(grid.$data[0])).toBeFalse();
+    expect(grid.isSelected(grid.$data[1])).toBeFalse();
+    expect(grid.isSelected(grid.$data[2])).toBeFalse();
   });
 
   it('should check if data is selected', function() {
@@ -91,7 +151,7 @@ describe('Grid Selection', function() {
     expect(grid.isSelected(grid.$data[2])).toBeTrue();
   });
 
-  it('should check that grid does has checkbox', function() {
+  it('should check that grid has checkbox', function() {
     grid = new Grid(table, {
       data: data,
       columns: columns,

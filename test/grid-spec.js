@@ -33,6 +33,7 @@ describe('Grid', function() {
       key: 'id',
       async: false,
       selection: {
+        enable: true,
         checkbox: true,
         multi: false
       },
@@ -104,6 +105,7 @@ describe('Grid', function() {
       key: 'title',
       model: Model,
       selection: {
+        enable: true,
         checkbox: true,
         multi: false
       },
@@ -146,7 +148,7 @@ describe('Grid', function() {
   it('should create selectable grid', function() {
     var table = document.createElement('table');
     var grid = new Grid(table, {
-      selectable: {
+      selection: {
         multi: true
       }
     });
@@ -154,7 +156,25 @@ describe('Grid', function() {
     expect(table.className).toContain('waffle-selectable');
   });
 
-  it('should add default to css to grid', function() {
+  it('should not create selectable grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      selection: false
+    });
+
+    expect(table.className).not.toContain('waffle-selectable');
+
+    table = document.createElement('table');
+    grid = new Grid(table, {
+      selection: {
+        enable: false
+      }
+    });
+
+    expect(table.className).not.toContain('waffle-selectable');
+  });
+
+  it('should add default css to grid', function() {
     var table = document.createElement('table');
     var grid = new Grid(table, {
       size: {

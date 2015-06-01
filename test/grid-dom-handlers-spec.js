@@ -434,14 +434,49 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
+    it('should not deselect entire grid if grid is not selectable', function() {
+      grid.options.selection.enable = false;
+
+      event.target = document.createElement('INPUT');
+      event.target.setAttribute('type', 'checkbox');
+      event.target.checked = false;
+      event.target.indeterminate = false;
+
+      onClickTfoot(event);
+
+      expect(grid.deselect).not.toHaveBeenCalled();
+      expect(grid.select).not.toHaveBeenCalled();
+      expect(grid.sortBy).not.toHaveBeenCalled();
+
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(event.stopPropagation).not.toHaveBeenCalled();
+      expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
+    });
+
+    it('should not select entire grid if grid is not selectable', function() {
+      grid.options.selection.enable = false;
+
+      event.target = document.createElement('INPUT');
+      event.target.setAttribute('type', 'checkbox');
+      event.target.checked = true;
+      event.target.indeterminate = false;
+
+      onClickTfoot(event);
+
+      expect(grid.select).not.toHaveBeenCalled();
+      expect(grid.deselect).not.toHaveBeenCalled();
+      expect(grid.sortBy).not.toHaveBeenCalled();
+
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(event.stopPropagation).not.toHaveBeenCalled();
+      expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
+    });
+
     it('should deselect entire grid', function() {
       event.target = document.createElement('INPUT');
       event.target.setAttribute('type', 'checkbox');
       event.target.checked = false;
       event.target.indeterminate = false;
-      event.target.setAttribute('data-waffle-id', 'id');
-      event.target.setAttribute('data-waffle-sortable', 'true');
-      event.target.setAttribute('data-waffle-order', '+');
 
       onClickTfoot(event);
 
@@ -459,9 +494,6 @@ describe('Grid Dom Handlers', function() {
       event.target.setAttribute('type', 'checkbox');
       event.target.checked = true;
       event.target.indeterminate = false;
-      event.target.setAttribute('data-waffle-id', 'id');
-      event.target.setAttribute('data-waffle-sortable', 'true');
-      event.target.setAttribute('data-waffle-order', '+');
 
       onClickTfoot(event);
 
@@ -492,11 +524,24 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$selection.reset).not.toHaveBeenCalled();
     });
 
+    it('should not select data if grid is not selectable', function() {
+      grid.options.selection.enable = false;
+
+      event.shiftKey = false;
+      event.ctrlKey = false;
+      event.target = document.createElement('TR');
+      event.target.setAttribute('data-waffle-idx', '0');
+
+      onClickTbody(event);
+
+      expect(grid.$selection.push).not.toHaveBeenCalled();
+      expect(grid.$selection.remove).not.toHaveBeenCalled();
+      expect(grid.$selection.reset).not.toHaveBeenCalled();
+    });
+
     describe('with single selection', function() {
       beforeEach(function() {
-        grid.options.selection = {
-          multi: false
-        };
+        grid.options.selection.multi = false;
       });
 
       it('should select data', function() {
@@ -569,9 +614,7 @@ describe('Grid Dom Handlers', function() {
 
     describe('with multi selection', function() {
       beforeEach(function() {
-        grid.options.selection = {
-          multi: true
-        };
+        grid.options.selection.multi = true;
       });
 
       it('should select data', function() {

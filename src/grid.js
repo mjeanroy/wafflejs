@@ -474,6 +474,7 @@ var Grid = (function() {
     destroy: function() {
       // Unbind dom events
       this.$thead.off();
+      this.$tfoot.off();
       this.$tbody.off();
 
       // Unobserve collection

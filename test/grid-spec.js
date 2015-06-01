@@ -32,6 +32,7 @@ describe('Grid', function() {
     expect(Grid.options).toEqual({
       key: 'id',
       async: false,
+      sortable: true,
       selection: {
         enable: true,
         checkbox: true,
@@ -304,6 +305,44 @@ describe('Grid', function() {
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
     expect(onCalls[2].args).toContain('click', Function);
+  });
+
+  it('should bind click on header and footer if grid is not selectable and not sortable', function() {
+    spyOn(jq, 'on').and.callThrough();
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      selection: false,
+      sortable: false,
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(jq.on).not.toHaveBeenCalled();
+  });
+
+  it('should bind click on header and footer only if grid is not selectable', function() {
+    spyOn(jq, 'on').and.callThrough();
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      selection: false,
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var onCalls = jq.on.calls.all();
+    expect(onCalls).toHaveLength(2);
+    expect(onCalls[0].args).toContain('click', Function);
+    expect(onCalls[1].args).toContain('click', Function);
   });
 
   it('should destroy grid', function() {

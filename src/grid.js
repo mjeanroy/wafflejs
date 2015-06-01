@@ -159,9 +159,11 @@ var Grid = (function() {
     // Create main nodes
     _.forEach(['thead', 'tbody', 'tfoot'], createNode, this);
 
-    // Bind dom handlers
-    this.$thead.on('click', _.bind(GridDomHandlers.onClickThead, this));
-    this.$tfoot.on('click', _.bind(GridDomHandlers.onClickTfoot, this));
+    // Bind dom handlers only if needed
+    if (isSelectable || this.isSortable()) {
+      this.$thead.on('click', _.bind(GridDomHandlers.onClickThead, this));
+      this.$tfoot.on('click', _.bind(GridDomHandlers.onClickTfoot, this));
+    }
 
     // Observe collection to update grid accordingly
     this.$data.observe(dataObserver, this);
@@ -200,6 +202,11 @@ var Grid = (function() {
     // Get selection collection
     selection: function() {
       return this.$selection;
+    },
+
+    // Check if grid is sortable
+    isSortable: function() {
+      return this.options.sortable;
     },
 
     // Check if grid is selectable
@@ -486,6 +493,10 @@ var Grid = (function() {
     // Asynchronous rendering, disable by default.
     // Should be used to improve user experience with large dataset.
     async: false,
+
+    // Global sorting
+    // Sort can also be disabled per column
+    sortable: true,
 
     // Selection configuration.
     // By default it is enable.

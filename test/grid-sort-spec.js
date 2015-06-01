@@ -48,6 +48,14 @@ describe('Grid Sort', function() {
     });
   });
 
+  it('should check if grid is sortable', function() {
+    grid.options.sortable = true;
+    expect(grid.isSortable()).toBe(true);
+
+    grid.options.sortable = false;
+    expect(grid.isSortable()).toBe(false);
+  });
+
   it('should not sort grid by default', function() {
     expect(grid.$sortBy).toEqual([]);
 

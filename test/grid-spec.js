@@ -428,6 +428,7 @@ describe('Grid', function() {
 
     var $thead = grid.$thead;
     var $tbody = grid.$tbody;
+    var $tfoot = grid.$tfoot;
 
     var onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(3);
@@ -441,6 +442,7 @@ describe('Grid', function() {
 
     $thead.on.calls.reset();
     $tbody.on.calls.reset();
+    $tfoot.on.calls.reset();
 
     grid.destroy();
 
@@ -454,9 +456,10 @@ describe('Grid', function() {
     expect(jq.on).not.toHaveBeenCalled();
 
     var offCalls = jq.off.calls.all();
-    expect(offCalls).toHaveLength(2);
+    expect(offCalls).toHaveLength(3);
     expect(offCalls[0].object).toEqual($thead);
-    expect(offCalls[1].object).toEqual($tbody);
+    expect(offCalls[1].object).toEqual($tfoot);
+    expect(offCalls[2].object).toEqual($tbody);
   });
 
   describe('once initialized', function() {

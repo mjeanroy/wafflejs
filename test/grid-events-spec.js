@@ -38,7 +38,7 @@ describe('Grid Events', function() {
       ]
     });
 
-    expect(onInitialized).toHaveBeenCalledWith();
+    expect(onInitialized).toHaveBeenCalledWith(jasmine.any(Object));
   });
 
   it('should call onRendered callbacks after body rendering', function() {
@@ -55,7 +55,11 @@ describe('Grid Events', function() {
       ]
     });
 
-    expect(onRendered).toHaveBeenCalledWith(grid.$data, []);
+    expect(onRendered).toHaveBeenCalledWith(jasmine.any(Object));
+
+    var evt = onRendered.calls.mostRecent().args[0];
+    expect(evt.details.data).toEqual(grid.$data);
+    expect(evt.details.nodes).toEqual([]);
   });
 
   it('should call onAdded callback after data has been pushed', function() {
@@ -82,11 +86,12 @@ describe('Grid Events', function() {
     grid.data().push(data[0], data[1]);
     jasmine.clock().tick();
 
-    expect(onAdded).toHaveBeenCalledWith(
-        [grid.$data[0], grid.$data[1]],
-        [grid.$tbody[0].childNodes[0], grid.$tbody[0].childNodes[1]],
-        0
-    );
+    expect(onAdded).toHaveBeenCalledWith(jasmine.any(Object));
+
+    var evt = onAdded.calls.mostRecent().args[0];
+    expect(evt.details.added).toEqual([grid.$data[0], grid.$data[1]]);
+    expect(evt.details.addedNodes).toEqual([grid.$tbody[0].childNodes[0], grid.$tbody[0].childNodes[1]]);
+    expect(evt.details.index).toBe(0);
   });
 
   it('should call onRemoved callback after data has been removed', function() {
@@ -115,16 +120,17 @@ describe('Grid Events', function() {
     grid.data().pop();
     jasmine.clock().tick();
 
-    expect(onRemoved).toHaveBeenCalledWith(
-        [data[1]],
-        [nodes[1]],
-        1
-    );
+    expect(onRemoved).toHaveBeenCalledWith(jasmine.any(Object));
+
+    var evt = onRemoved.calls.mostRecent().args[0];
+    expect(evt.details.removed).toEqual([data[1]]);
+    expect(evt.details.removedNodes).toEqual([nodes[1]]);
+    expect(evt.details.index).toBe(1);
   });
 
   it('should call onSorted callback when grid is sorted', function() {
     var table = document.createElement('table');
-    var onSorted = jasmine.createSpy('onSorted');
+    var onSorted = jasmine.createSpy('sorted');
     var grid = new Grid(table, {
       events: {
         onSorted: onSorted
@@ -141,6 +147,6 @@ describe('Grid Events', function() {
 
     expect(onSorted).not.toHaveBeenCalled();
     grid.sortBy('id');
-    expect(onSorted).toHaveBeenCalledWith();
+    expect(onSorted).toHaveBeenCalledWith(jasmine.any(Object));
   });
 });

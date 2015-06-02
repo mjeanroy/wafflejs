@@ -55,12 +55,14 @@ waffleModule.directive('waffle', ['$parse', function($parse) {
       _.forEach(_.keys(Grid.options.events), function(f) {
         if (attrs[f]) {
           var fn = events[f];
-          events[f] = function() {
-            if (fn !== _.noop && _.isFunction(fn)) {
-              fn.apply(this, arguments);
+          events[f] = function(evt) {
+            if (fn) {
+              fn.call(this, evt);
             }
 
-            scope.$eval(attrs[f]);
+            scope.$eval(attrs[f], {
+              $event: evt
+            });
           };
         }
       });

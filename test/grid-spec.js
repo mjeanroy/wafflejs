@@ -43,12 +43,12 @@ describe('Grid', function() {
         height: null
       },
       events: {
-        onInitialized: _.noop,
-        onRendered: _.noop,
-        onAdded: _.noop,
-        onRemoved: _.noop,
-        onSorted: _.noop,
-        onUpdated: _.noop
+        onInitialized: null,
+        onRendered: null,
+        onAdded: null,
+        onRemoved: null,
+        onSorted: null,
+        onUpdated: null
       }
     });
   });
@@ -117,11 +117,11 @@ describe('Grid', function() {
       },
       events: {
         onInitialized: onInitialized,
-        onRendered: _.noop,
+        onRendered: null,
         onAdded: onAdded,
-        onRemoved: _.noop,
-        onSorted: _.noop,
-        onUpdated: _.noop
+        onRemoved: null,
+        onSorted: null,
+        onUpdated: null
       }
     }));
   });

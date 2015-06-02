@@ -100,10 +100,19 @@ var GridDataObserver = {
     // Trigger events
 
     if (removedNodes) {
-      grid.trigger('onRemoved', change.removed, removedNodes, index);
+      grid.trigger('removed', {
+        removedNodes: removedNodes,
+        index: index,
+        removed: change.removed
+      });
     }
+
     if (addedNodes) {
-      grid.trigger('onAdded', addedData, addedNodes, index);
+      grid.trigger('added', {
+        added: addedData,
+        addedNodes: addedNodes,
+        index: index
+      });
     }
 
     return this;

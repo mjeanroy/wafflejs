@@ -31,6 +31,7 @@
 /* global $parse */
 /* global $comparators */
 /* global $util */
+/* global EventBus */
 /* global GridBuilder */
 /* global GridDomHandlers */
 /* global GridDataObserver */
@@ -97,6 +98,13 @@ var Grid = (function() {
 
   var selectionObserver = function(changes) {
     return GridSelectionObserver.on(this, changes);
+  };
+
+  var callbackWrapper = function(name) {
+    var fn = this.options.events[name];
+    if (fn) {
+      this.addEventListener(name.slice(2), this.options.events[name]);
+    }
   };
 
   var Constructor = function(table, options) {
@@ -174,13 +182,19 @@ var Grid = (function() {
       this.$selection.observe(selectionObserver, this);
     }
 
+    // Create event bus...
+    this.$bus = new EventBus();
+
+    // ... and wrap callbacks to events
+    _.forEach(_.keys(opts.events), callbackWrapper, this);
+
     this.assignWidth()
         .renderHeader()
         .renderFooter()
         .sortBy(options.sortBy, false)
         .renderBody();
 
-    this.trigger('onInitialized');
+    this.trigger('initialized');
   };
 
   // Create new grid
@@ -349,8 +363,11 @@ var Grid = (function() {
       var onEnded = function() {
         grid.$data.clearChanges();
 
-        grid.trigger('onRendered', function() {
-          return [this.$data, _.toArray(this.$tbody[0].childNodes)];
+        grid.trigger('rendered', function() {
+          return {
+            data: this.$data,
+            nodes: _.toArray(this.$tbody[0].childNodes)
+          };
         });
 
         // Free memory
@@ -451,7 +468,7 @@ var Grid = (function() {
         this.renderBody();
       }
 
-      return this.trigger('onSorted');
+      return this.trigger('sorted');
     },
 
     // Trigger events listeners
@@ -461,12 +478,17 @@ var Grid = (function() {
     // event need to be triggered.
     // If lazy evaluation is needless, just put arguments next to event name.
     trigger: function(name, argFn) {
-      var fn = this.options.events[name];
-      if (fn && fn !== _.noop) {
-        var args = _.isFunction(argFn) ? argFn.call(this) : _.rest(arguments);
-        fn.apply(this, args);
-      }
+      this.$bus.dispatchEvent(this, name, argFn);
+      return this;
+    },
 
+    addEventListener: function(type, listener) {
+      this.$bus.addEventListener(type, listener);
+      return this;
+    },
+
+    removeEventListener: function(type, listener) {
+      this.$bus.removeEventListener(type, listener);
       return this;
     },
 
@@ -520,7 +542,7 @@ var Grid = (function() {
 
   // Initialize events with noop
   _.forEach(['onInitialized', 'onRendered', 'onAdded', 'onRemoved', 'onSorted', 'onUpdated'], function(name) {
-    Constructor.options.events[name] = _.noop;
+    Constructor.options.events[name] = null;
   });
 
   return Constructor;

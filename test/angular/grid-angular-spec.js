@@ -238,7 +238,7 @@ describe('waffle-jq-angular', function() {
     var $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
-    expect($scope.grid.options.events.onAdded).toBe(_.noop);
+    expect($scope.grid.options.events.onAdded).toBeNull();
     expect($scope.grid.options.events.onRendered).not.toBe(_.noop);
   });
 });

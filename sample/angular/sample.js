@@ -33,7 +33,7 @@ angular.module('SampleApp', ['waffle'])
       $log.debug('Grid rendered');
     };
 
-    $scope.onAdded = function() {
+    $scope.onDataSpliced = function() {
       $log.debug('New row added');
     };
 

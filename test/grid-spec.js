@@ -45,10 +45,9 @@ describe('Grid', function() {
       events: {
         onInitialized: null,
         onRendered: null,
-        onAdded: null,
-        onRemoved: null,
-        onSorted: null,
-        onUpdated: null
+        onDataSpliced: null,
+        onDataUpdated: null,
+        onSorted: null
       }
     });
   });
@@ -76,7 +75,7 @@ describe('Grid', function() {
 
     var table = document.createElement('table');
     var onInitialized = jasmine.createSpy('onInitialized');
-    var onAdded = jasmine.createSpy('onAdded');
+    var onDataSpliced = jasmine.createSpy('onDataSpliced');
 
     var grid = new Grid(table, {
       key: 'title',
@@ -91,7 +90,7 @@ describe('Grid', function() {
       },
       events: {
         onInitialized: onInitialized,
-        onAdded: onAdded
+        onDataSpliced: onDataSpliced
       },
       columns: [
         { id: 'bar' },
@@ -118,19 +117,15 @@ describe('Grid', function() {
       events: {
         onInitialized: onInitialized,
         onRendered: null,
-        onAdded: onAdded,
-        onRemoved: null,
-        onSorted: null,
-        onUpdated: null
+        onDataSpliced: onDataSpliced,
+        onDataUpdated: null,
+        onSorted: null
       }
     }));
   });
 
   it('should create grid with size values as numbers', function() {
     var table = document.createElement('table');
-    var onInitialized = jasmine.createSpy('onInitialized');
-    var onAdded = jasmine.createSpy('onAdded');
-
     var grid = new Grid(table, {
       size: {
         width: '100px',

@@ -92,25 +92,18 @@ var GridDataObserver = {
       }
     }
 
-    // We need to update row index
-    for (var start = index, length = childNodes.length; start < length; ++start) {
-      childNodes[start].setAttribute(DATA_WAFFLE_IDX, start);
-    }
+    if (removedNodes || addedNodes) {
+      // We need to update row index
+      for (var start = index, length = childNodes.length; start < length; ++start) {
+        childNodes[start].setAttribute(DATA_WAFFLE_IDX, start);
+      }
 
-    // Trigger events
-
-    if (removedNodes) {
-      grid.trigger('removed', {
-        removedNodes: removedNodes,
-        index: index,
-        removed: change.removed
-      });
-    }
-
-    if (addedNodes) {
-      grid.trigger('added', {
-        added: addedData,
-        addedNodes: addedNodes,
+      // Trigger events
+      grid.trigger('dataspliced', {
+        added: addedData || [],
+        addedNodes: addedNodes || [],
+        removedNodes: removedNodes || [],
+        removed: change.removed,
         index: index
       });
     }
@@ -143,7 +136,9 @@ var GridDataObserver = {
     });
 
     // Trigger event
-    grid.trigger('onUpdated', oldNode);
+    grid.trigger('dataupdated', {
+      updatedNode: oldNode
+    });
 
     return this;
   }

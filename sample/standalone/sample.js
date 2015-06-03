@@ -11,11 +11,16 @@ options.events = {
   onRendered: function() {
    console.log('Grid has been rendered');
   },
-  onAdded: function(data, rows, index) {
-    console.log('New row appended (line ' + index + ' => ' + JSON.stringify(data) + ')');
-  },
-  onRemoved: function(data, rows, index) {
-    console.log('Rows removed (line ' + index + ' => ' + JSON.stringify(data) + ')');
+  onDataSpliced: function(event) {
+    var index = event.index;
+
+    if (event.added.length > 0) {
+      console.log('New row appended (line ' + index + ' => ' + JSON.stringify(event.added) + ')');
+    }
+
+    if (event.removed.length > 0) {
+      console.log('Rows removed (line ' + index + ' => ' + JSON.stringify(event.removed) + ')');
+    }
   },
   onSorted: function() {
     console.log('Sort has been updated');

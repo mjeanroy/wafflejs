@@ -62,13 +62,13 @@ describe('Grid Events', function() {
     expect(evt.details.nodes).toEqual([]);
   });
 
-  it('should call onAdded callback after data has been pushed', function() {
+  it('should call onDataSpliced callback after data has been pushed', function() {
     var table = document.createElement('table');
-    var onAdded = jasmine.createSpy('onAdded');
+    var onDataSpliced = jasmine.createSpy('onDataSpliced');
 
     var grid = new Grid(table, {
       events: {
-        onAdded: onAdded
+        onDataSpliced: onDataSpliced
       },
       columns: [
         { id: 'bar' },
@@ -81,22 +81,22 @@ describe('Grid Events', function() {
       { id: 2, name: 'bar' }
     ];
 
-    expect(onAdded).not.toHaveBeenCalled();
+    expect(onDataSpliced).not.toHaveBeenCalled();
 
     grid.data().push(data[0], data[1]);
     jasmine.clock().tick();
 
-    expect(onAdded).toHaveBeenCalledWith(jasmine.any(Object));
+    expect(onDataSpliced).toHaveBeenCalledWith(jasmine.any(Object));
 
-    var evt = onAdded.calls.mostRecent().args[0];
+    var evt = onDataSpliced.calls.mostRecent().args[0];
     expect(evt.details.added).toEqual([grid.$data[0], grid.$data[1]]);
     expect(evt.details.addedNodes).toEqual([grid.$tbody[0].childNodes[0], grid.$tbody[0].childNodes[1]]);
     expect(evt.details.index).toBe(0);
   });
 
-  it('should call onRemoved callback after data has been removed', function() {
+  it('should call onDataSpliced callback after data has been removed', function() {
     var table = document.createElement('table');
-    var onRemoved = jasmine.createSpy('onRemoved');
+    var onDataSpliced = jasmine.createSpy('onDataSpliced');
 
     var data = [
       { id: 1, name: 'foo' },
@@ -105,7 +105,7 @@ describe('Grid Events', function() {
 
     var grid = new Grid(table, {
       events: {
-        onRemoved: onRemoved
+        onDataSpliced: onDataSpliced
       },
       data: data,
       columns: [
@@ -114,15 +114,15 @@ describe('Grid Events', function() {
       ]
     });
 
-    expect(onRemoved).not.toHaveBeenCalled();
+    expect(onDataSpliced).not.toHaveBeenCalled();
 
     var nodes = [].slice.call(grid.$tbody[0].childNodes);
     grid.data().pop();
     jasmine.clock().tick();
 
-    expect(onRemoved).toHaveBeenCalledWith(jasmine.any(Object));
+    expect(onDataSpliced).toHaveBeenCalledWith(jasmine.any(Object));
 
-    var evt = onRemoved.calls.mostRecent().args[0];
+    var evt = onDataSpliced.calls.mostRecent().args[0];
     expect(evt.details.removed).toEqual([data[1]]);
     expect(evt.details.removedNodes).toEqual([nodes[1]]);
     expect(evt.details.index).toBe(1);

@@ -116,9 +116,11 @@ describe('Grid Sort', function() {
         grid.$data[4]
       ];
 
-      expect(grid.trigger).toHaveBeenCalledWith('added', {
+      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
         added: expectedAddedData,
         addedNodes: expectedAddedNodes,
+        removed: [],
+        removedNodes: [],
         index: 3
       });
 
@@ -168,9 +170,11 @@ describe('Grid Sort', function() {
         grid.$data[1]
       ];
 
-      expect(grid.trigger).toHaveBeenCalledWith('added', {
+      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
         added: expectedAddedData,
         addedNodes: expectedAddedNodes,
+        removed: [],
+        removedNodes: [],
         index: 0
       });
 
@@ -208,7 +212,9 @@ describe('Grid Sort', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      expect(grid.trigger).toHaveBeenCalledWith('removed', {
+      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+        added: [],
+        addedNodes: [],
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
         index: 1
@@ -238,7 +244,9 @@ describe('Grid Sort', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      expect(grid.trigger).toHaveBeenCalledWith('removed', {
+      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+        added: [],
+        addedNodes: [],
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
         index: 0
@@ -300,15 +308,11 @@ describe('Grid Sort', function() {
         grid.$data[2]
       ];
 
-      expect(grid.trigger).toHaveBeenCalledWith('removed', {
-        removed: expectedRemovedData,
-        removedNodes: expectedRemovedNodes,
-        index: 1
-      });
-
-      expect(grid.trigger).toHaveBeenCalledWith('added', {
+      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
         added: expectedAddedData,
         addedNodes: expectedAddedNodes,
+        removed: expectedRemovedData,
+        removedNodes: expectedRemovedNodes,
         index: 1
       });
 
@@ -348,7 +352,10 @@ describe('Grid Sort', function() {
       jasmine.clock().tick();
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
-      expect(grid.trigger).toHaveBeenCalledWith('removed', {
+
+      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+        added: [],
+        addedNodes: [],
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
         index: 0
@@ -369,8 +376,14 @@ describe('Grid Sort', function() {
       jasmine.clock().tick();
 
       expect(GridDataObserver.onUpdate).toHaveBeenCalled();
-      expect(grid.trigger).toHaveBeenCalledWith('onUpdated', grid.$tbody[0].childNodes[0]);
-      expect(grid.trigger).toHaveBeenCalledWith('onUpdated', grid.$tbody[0].childNodes[2]);
+
+      expect(grid.trigger).toHaveBeenCalledWith('dataupdated', {
+        updatedNode: grid.$tbody[0].childNodes[0]
+      });
+
+      expect(grid.trigger).toHaveBeenCalledWith('dataupdated', {
+        updatedNode: grid.$tbody[0].childNodes[2]
+      });
 
       expect(grid.$data[0].id).toBe(3);
       expect(grid.$data[1].id).toBe(1);

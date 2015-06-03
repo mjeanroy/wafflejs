@@ -183,13 +183,13 @@ describe('waffle-jq-angular', function() {
 
     $scope.onInitialized = jasmine.createSpy('onInitialized');
     $scope.onRendered = jasmine.createSpy('onRendered');
-    $scope.onAdded = jasmine.createSpy('onAdded');
+    $scope.onDataSpliced = jasmine.createSpy('onDataSpliced');
 
     var table = '' +
       '<table waffle waffle-grid="grid" ' +
       '       on-initialized="onInitialized()" ' +
       '       on-rendered="onRendered()" ' +
-      '       on-added="onAdded()" ' +
+      '       on-data-spliced="onDataSpliced()" ' +
       '></table>';
 
     var $table = compileTable(table, $scope);
@@ -197,7 +197,7 @@ describe('waffle-jq-angular', function() {
     expect($table).toBeDefined();
     expect($scope.onInitialized).toHaveBeenCalled();
     expect($scope.onRendered).toHaveBeenCalled();
-    expect($scope.onAdded).not.toHaveBeenCalled();
+    expect($scope.onDataSpliced).not.toHaveBeenCalled();
 
     $scope.grid.data().push([
       { id: 10, name: 'foo' }
@@ -205,7 +205,7 @@ describe('waffle-jq-angular', function() {
 
     jasmine.clock().tick();
 
-    expect($scope.onAdded).toHaveBeenCalled();
+    expect($scope.onDataSpliced).toHaveBeenCalled();
   });
 
   it('should destroy grid when scope is destroyed', function() {
@@ -227,7 +227,7 @@ describe('waffle-jq-angular', function() {
 
     $scope.onInitialized = jasmine.createSpy('onInitialized');
     $scope.onRendered = jasmine.createSpy('onRendered');
-    $scope.onAdded = jasmine.createSpy('onAdded');
+    $scope.onDataSpliced = jasmine.createSpy('onDataSpliced');
 
     var table = '' +
       '<table waffle waffle-grid="grid" ' +
@@ -238,7 +238,7 @@ describe('waffle-jq-angular', function() {
     var $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
-    expect($scope.grid.options.events.onAdded).toBeNull();
+    expect($scope.grid.options.events.onDataSpliced).toBeNull();
     expect($scope.grid.options.events.onRendered).not.toBe(_.noop);
   });
 });

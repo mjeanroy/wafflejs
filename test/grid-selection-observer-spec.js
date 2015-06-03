@@ -244,5 +244,60 @@ describe('Grid Sort', function() {
         selection: grid.$selection.toArray()
       });
     });
+
+    it('should unselect removed data', function() {
+      var d1 = grid.$data[0];
+      var d2 = grid.$data[1];
+
+      grid.$selection.push(d1, d2);
+      jasmine.clock().tick();
+
+      var tbody = grid.$tbody[0];
+      var thead = grid.$thead[0];
+      var tfoot = grid.$tbody[0];
+
+      var childNodes = tbody.childNodes;
+      expect(childNodes.length).toBe(3);
+      expect(childNodes[0].className).toContain('waffle-selected');
+      expect(childNodes[1].className).toContain('waffle-selected');
+      expect(childNodes[2].className).not.toContain('waffle-selected');
+
+      // Now remove, data !
+      grid.$data.shift();
+      jasmine.clock().tick();
+      jasmine.clock().tick();
+
+      expect(childNodes.length).toBe(2);
+      expect(childNodes[0].className).toContain('waffle-selected');
+      expect(childNodes[1].className).not.toContain('waffle-selected');
+
+      // Main checkbox should be updated
+      var thead = grid.$thead[0];
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+      var tfoot = grid.$tfoot[0];
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+      // Main checkbox should be updated
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+      var call = grid.dispatchEvent.calls.mostRecent();
+      var evt = call.args[1].call(grid);
+      expect(evt).toEqual({
+        selection: grid.$selection.toArray()
+      });
+    });
   });
 });

@@ -52,8 +52,9 @@ var GridDataObserver = {
     var removedNodes;
     var addedNodes;
     var addedData;
+    var removedData = change.removed;
 
-    var removedCount = change.removed.length;
+    var removedCount = removedData.length;
     if (removedCount > 0) {
       if (index === 0 && removedCount === childNodes.length) {
         removedNodes = _.toArray(childNodes);
@@ -63,6 +64,12 @@ var GridDataObserver = {
         for (var k = 0; k < removedCount; ++k) {
           removedNodes.push(tbody.removeChild(childNodes[index]));
         }
+      }
+
+      // Do not forget to remove previously selected data !
+      var $selection = grid.$selection;
+      if ($selection && $selection.length > 0) {
+        $selection.remove(removedData);
       }
     }
 
@@ -103,7 +110,7 @@ var GridDataObserver = {
         added: addedData || [],
         addedNodes: addedNodes || [],
         removedNodes: removedNodes || [],
-        removed: change.removed,
+        removed: removedData,
         index: index
       });
     }

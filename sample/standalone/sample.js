@@ -13,13 +13,14 @@ options.events = {
   },
   onDataSpliced: function(event) {
     var index = event.index;
+    var details = event.details;
 
-    if (event.added.length > 0) {
-      console.log('New row appended (line ' + index + ' => ' + JSON.stringify(event.added) + ')');
+    if (details.added.length > 0) {
+      console.log('New row appended (line ' + index + ' => ' + JSON.stringify(details.added) + ')');
     }
 
-    if (event.removed.length > 0) {
-      console.log('Rows removed (line ' + index + ' => ' + JSON.stringify(event.removed) + ')');
+    if (details.removed.length > 0) {
+      console.log('Rows removed (line ' + index + ' => ' + JSON.stringify(details.removed) + ')');
     }
   },
   onSorted: function() {

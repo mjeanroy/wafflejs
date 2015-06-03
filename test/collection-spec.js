@@ -296,6 +296,32 @@ describe('collection', function() {
       });
     });
 
+    it('should remove data', function() {
+      spyOn(collection, 'trigger').and.callThrough();
+
+      var old1 = collection[0];
+      var old2 = collection[1];
+
+      collection.trigger.calls.reset();
+      collection.remove([old1]);
+
+      expect(collection.$$map).toEqual(createMap({
+        2: { idx: 0 }
+      }));
+
+      expect(collection.length).toBe(1);
+      expect(collection[0]).toBe(old2);
+      expect(collection[1]).toBeUndefined();
+
+      expect(collection.trigger).toHaveBeenCalledWith([{
+        type: 'splice',
+        removed: [old1],
+        index: 0,
+        addedCount: 0,
+        object: collection
+      }]);
+    });
+
     it('should slice part of collection', function() {
       var results = collection.slice(0, 1);
       expect(results.length).toBe(1);

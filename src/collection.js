@@ -340,9 +340,18 @@ var Collection = (function() {
     // Otherwise, first argument should be a predicate. This predicate will be called for
     // each element, and must return a truthy value to remove that element.
     remove: function(start, deleteCount) {
+      // If first argument is a number, then this is a shortcut for splice method
       if (_.isNumber(start)) {
-        // Shortcut for splice method
         return this.splice.call(this, start, deleteCount || this.length);
+      }
+
+      // If it is an array, then remove everything
+      if (_.isArray(start)) {
+        var $key = this.$$key;
+        var map = _.indexBy(start, $key);
+        return this.remove(function(current) {
+          return !!map[$key(current)];
+        });
       }
 
       var predicate = start;

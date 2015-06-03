@@ -70,11 +70,16 @@ var GridSelectionObserver = (function() {
       if (removedCount > 0) {
         for (var k = 0; k < removedCount; ++k) {
           idx = $data.indexOf(removed[k]);
-          row = childNodes[idx];
 
-          $(row).removeClass(CSS_SELECTED);
-          if (grid.hasCheckbox()) {
-            updateCheckbox(findCheckBox(row), false);
+          // Data may not be in grid data collection, since this change
+          // may have been triggered because data has been removed.
+          if (idx >= 0) {
+            row = childNodes[idx];
+
+            $(row).removeClass(CSS_SELECTED);
+            if (grid.hasCheckbox()) {
+              updateCheckbox(findCheckBox(row), false);
+            }
           }
         }
       }

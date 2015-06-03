@@ -364,6 +364,46 @@ describe('Grid Sort', function() {
       expect(grid.$data.length).toBe(0);
       expect(grid.$tbody[0].childNodes.length).toBe(0);
     });
+
+    it('should remove node and remove selection', function() {
+      grid.$selection.push(grid.$data[0]);
+      jasmine.clock().tick();
+      grid.dispatchEvent.calls.reset();
+
+      var expectedRemovedNodes = [
+        grid.$tbody[0].childNodes[0]
+      ];
+
+      expectedRemovedData = [
+        grid.$data[0]
+      ];
+
+      expect(grid.$selection.toArray()).toEqual([grid.$data[0]]);
+
+      // This should trigger a new change
+      grid.$data.splice(0, 1);
+      jasmine.clock().tick();
+
+      expect(GridDataObserver.onSplice).toHaveBeenCalled();
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataspliced', {
+        added: [],
+        addedNodes: [],
+        removed: expectedRemovedData,
+        removedNodes: expectedRemovedNodes,
+        index: 0
+      });
+
+      expect(grid.$data.length).toBe(2);
+      expect(grid.$data[0].id).toBe(1);
+
+      var tbody = grid.$tbody[0];
+      expect(tbody.childNodes.length).toBe(2);
+      expect(tbody.childNodes[0].getAttribute('data-waffle-idx')).toBe('0');
+      expect(tbody.childNodes[0].childNodes[1].innerHTML).toBe('1');
+
+      expect(grid.$selection.toArray()).toEqual([]);
+    });
   });
 
   describe('with an update change', function() {

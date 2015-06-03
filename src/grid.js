@@ -503,6 +503,9 @@ var Grid = (function() {
       this.$data.unobserve();
       this.$selection.unobserve();
 
+      // Clear event bus
+      this.$bus.clear();
+
       // Destroy internal property
       $util.destroy(this);
     }

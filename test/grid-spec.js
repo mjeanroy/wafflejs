@@ -405,6 +405,26 @@ describe('Grid', function() {
     expect($selection.unobserve).toHaveBeenCalled();
   });
 
+  it('should clear event bus when grid is destroyed', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var $bus = grid.$bus;
+
+    spyOn($bus, 'clear').and.callThrough();
+
+    grid.destroy();
+
+    expect($bus.clear).toHaveBeenCalled();
+  });
+
   it('should unbind events when grid is destroyed', function() {
     spyOn(jq, 'on').and.callThrough();
     spyOn(jq, 'off').and.callThrough();

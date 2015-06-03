@@ -50,7 +50,7 @@ describe('Grid Sort', function() {
     $selection = grid.$selection;
 
     spyOn(GridSelectionObserver, 'onSplice').and.callThrough();
-    spyOn(grid, 'trigger').and.callThrough();
+    spyOn(grid, 'dispatchEvent').and.callThrough();
   });
 
   it('should call onSplice for a "splice" change', function() {

@@ -51,7 +51,7 @@ describe('Grid Sort', function() {
 
     spyOn(GridDataObserver, 'onSplice').and.callThrough();
     spyOn(GridDataObserver, 'onUpdate').and.callThrough();
-    spyOn(grid, 'trigger').and.callThrough();
+    spyOn(grid, 'dispatchEvent').and.callThrough();
   });
 
   it('should call onSplice for a "splice" change', function() {
@@ -116,7 +116,7 @@ describe('Grid Sort', function() {
         grid.$data[4]
       ];
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataspliced', {
         added: expectedAddedData,
         addedNodes: expectedAddedNodes,
         removed: [],
@@ -170,7 +170,7 @@ describe('Grid Sort', function() {
         grid.$data[1]
       ];
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataspliced', {
         added: expectedAddedData,
         addedNodes: expectedAddedNodes,
         removed: [],
@@ -212,7 +212,7 @@ describe('Grid Sort', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataspliced', {
         added: [],
         addedNodes: [],
         removed: expectedRemovedData,
@@ -244,7 +244,7 @@ describe('Grid Sort', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataspliced', {
         added: [],
         addedNodes: [],
         removed: expectedRemovedData,
@@ -308,7 +308,7 @@ describe('Grid Sort', function() {
         grid.$data[2]
       ];
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataspliced', {
         added: expectedAddedData,
         addedNodes: expectedAddedNodes,
         removed: expectedRemovedData,
@@ -353,7 +353,7 @@ describe('Grid Sort', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataspliced', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataspliced', {
         added: [],
         addedNodes: [],
         removed: expectedRemovedData,
@@ -377,11 +377,11 @@ describe('Grid Sort', function() {
 
       expect(GridDataObserver.onUpdate).toHaveBeenCalled();
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataupdated', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
         updatedNode: grid.$tbody[0].childNodes[0]
       });
 
-      expect(grid.trigger).toHaveBeenCalledWith('dataupdated', {
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
         updatedNode: grid.$tbody[0].childNodes[2]
       });
 

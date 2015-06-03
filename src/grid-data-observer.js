@@ -99,7 +99,7 @@ var GridDataObserver = {
       }
 
       // Trigger events
-      grid.trigger('dataspliced', {
+      grid.dispatchEvent('dataspliced', {
         added: addedData || [],
         addedNodes: addedNodes || [],
         removedNodes: removedNodes || [],
@@ -136,7 +136,7 @@ var GridDataObserver = {
     });
 
     // Trigger event
-    grid.trigger('dataupdated', {
+    grid.dispatchEvent('dataupdated', {
       updatedNode: oldNode
     });
 

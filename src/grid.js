@@ -194,7 +194,7 @@ var Grid = (function() {
         .sortBy(options.sortBy, false)
         .renderBody();
 
-    this.trigger('initialized');
+    this.dispatchEvent('initialized');
   };
 
   // Create new grid
@@ -363,7 +363,7 @@ var Grid = (function() {
       var onEnded = function() {
         grid.$data.clearChanges();
 
-        grid.trigger('rendered', function() {
+        grid.dispatchEvent('rendered', function() {
           return {
             data: this.$data,
             nodes: _.toArray(this.$tbody[0].childNodes)
@@ -468,7 +468,7 @@ var Grid = (function() {
         this.renderBody();
       }
 
-      return this.trigger('sorted');
+      return this.dispatchEvent('sorted');
     },
 
     // Trigger events listeners
@@ -477,7 +477,7 @@ var Grid = (function() {
     // should return event argument. This function will be called if and only if
     // event need to be triggered.
     // If lazy evaluation is needless, just put arguments next to event name.
-    trigger: function(name, argFn) {
+    dispatchEvent: function(name, argFn) {
       this.$bus.dispatchEvent(this, name, argFn);
       return this;
     },

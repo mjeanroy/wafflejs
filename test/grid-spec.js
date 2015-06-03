@@ -172,6 +172,21 @@ describe('Grid', function() {
     expect(table.className).not.toContain('waffle-selectable');
   });
 
+  it('should not create sortable grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      sortable: false,
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    expect(grid.$columns).toVerify(function(column) {
+      return !column.sortable;
+    });
+  });
+
   it('should add default css to grid', function() {
     var table = document.createElement('table');
     var grid = new Grid(table, {

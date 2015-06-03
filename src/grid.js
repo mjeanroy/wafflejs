@@ -127,6 +127,10 @@ var Grid = (function() {
     // Keep options as an internal property.
     this.options = _.defaults(opts, defaultOptions);
 
+    // Options flags
+    var isSelectable = this.isSelectable();
+    var isSortable = this.isSortable();
+
     // Initialize main table
     this.$table = $(table);
 
@@ -136,14 +140,17 @@ var Grid = (function() {
       model: opts.model
     });
 
-    // Initialize column collection
+    if (!isSortable) {
+      // Force column not to be sortable
+      _.forEach(opts.columns, function(column) {
+        column.sortable = false;
+      });
+    }
+
     this.$columns = new Collection(opts.columns, {
       key: 'id',
       model: Column
     });
-
-    // Flag to know if grid is selectable.
-    var isSelectable = this.isSelectable();
 
     // Translate size to valid numbers.
     opts.size = {
@@ -168,7 +175,7 @@ var Grid = (function() {
     _.forEach(['thead', 'tbody', 'tfoot'], createNode, this);
 
     // Bind dom handlers only if needed
-    if (isSelectable || this.isSortable()) {
+    if (isSelectable || isSortable) {
       this.$thead.on('click', _.bind(GridDomHandlers.onClickThead, this));
       this.$tfoot.on('click', _.bind(GridDomHandlers.onClickTfoot, this));
     }

@@ -149,4 +149,32 @@ describe('Grid Events', function() {
     grid.sortBy('id');
     expect(onSorted).toHaveBeenCalledWith(jasmine.any(Object));
   });
+
+  it('should call onSelectionChanged callback when selection is updated', function() {
+    var table = document.createElement('table');
+    var onSelectionChanged = jasmine.createSpy('onSelectionChanged');
+    var grid = new Grid(table, {
+      events: {
+        onSelectionChanged: onSelectionChanged
+      },
+      data: [
+        { id: 1, name: 'foo' },
+        { id: 2, name: 'bar' }
+      ],
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(onSelectionChanged).not.toHaveBeenCalled();
+
+    grid.$selection.push(grid.$data[0]);
+    jasmine.clock().tick();
+
+    expect(onSelectionChanged).toHaveBeenCalledWith(jasmine.any(Object));
+
+    var evt = onSelectionChanged.calls.mostRecent().args[0];
+    expect(evt.details.selection).toEqual(grid.$selection.toArray());
+  });
 });

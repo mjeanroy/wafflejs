@@ -113,6 +113,14 @@ describe('Grid Sort', function() {
       expect(theadCheckbox.indeterminate).toBeTrue();
       expect(tfootCheckbox.checked).toBeFalse();
       expect(tfootCheckbox.indeterminate).toBeTrue();
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+      var call = grid.dispatchEvent.calls.mostRecent();
+      var evt = call.args[1].call(grid);
+      expect(evt).toEqual({
+        selection: grid.$selection.toArray()
+      });
     });
 
     it('should select multiple data', function() {
@@ -146,6 +154,14 @@ describe('Grid Sort', function() {
       expect(theadCheckbox.indeterminate).toBeTrue();
       expect(tfootCheckbox.checked).toBeFalse();
       expect(tfootCheckbox.indeterminate).toBeTrue();
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+      var call = grid.dispatchEvent.calls.mostRecent();
+      var evt = call.args[1].call(grid);
+      expect(evt).toEqual({
+        selection: grid.$selection.toArray()
+      });
     });
 
     it('should unselect multiple data', function() {
@@ -219,6 +235,14 @@ describe('Grid Sort', function() {
       expect(theadCheckbox.indeterminate).toBeFalse();
       expect(tfootCheckbox.checked).toBeFalse();
       expect(tfootCheckbox.indeterminate).toBeFalse();
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+      var call = grid.dispatchEvent.calls.mostRecent();
+      var evt = call.args[1].call(grid);
+      expect(evt).toEqual({
+        selection: grid.$selection.toArray()
+      });
     });
   });
 });

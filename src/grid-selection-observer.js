@@ -92,24 +92,33 @@ var GridSelectionObserver = (function() {
         }
       }
 
-      if (grid.hasCheckbox()) {
-        var selectionLength = $selection.length;
-        var thead = grid.$thead[0];
-        var tfoot = grid.$tfoot[0];
+      if (addedCount > 0 || removedCount > 0) {
+        if (grid.hasCheckbox()) {
+          var selectionLength = $selection.length;
+          var thead = grid.$thead[0];
+          var tfoot = grid.$tfoot[0];
 
-        var theadCell = thead.childNodes[0].childNodes[0];
-        var theadSpan = theadCell.childNodes[0];
-        var theadCheckbox = theadCell.childNodes[1];
+          var theadCell = thead.childNodes[0].childNodes[0];
+          var theadSpan = theadCell.childNodes[0];
+          var theadCheckbox = theadCell.childNodes[1];
 
-        var tfootCell = tfoot.childNodes[0].childNodes[0];
-        var tfootSpan = tfootCell.childNodes[1];
-        var tfootCheckbox = tfootCell.childNodes[0];
+          var tfootCell = tfoot.childNodes[0].childNodes[0];
+          var tfootSpan = tfootCell.childNodes[1];
+          var tfootCheckbox = tfootCell.childNodes[0];
 
-        tfootSpan.innerHTML = theadSpan.innerHTML = selectionLength;
-        tfootSpan.title = theadSpan.title = selectionLength;
+          tfootSpan.innerHTML = theadSpan.innerHTML = selectionLength;
+          tfootSpan.title = theadSpan.title = selectionLength;
 
-        tfootCheckbox.checked = theadCheckbox.checked = grid.isSelected();
-        tfootCheckbox.indeterminate = theadCheckbox.indeterminate = selectionLength > 0 && $data.length !== selectionLength;
+          tfootCheckbox.checked = theadCheckbox.checked = grid.isSelected();
+          tfootCheckbox.indeterminate = theadCheckbox.indeterminate = selectionLength > 0 && $data.length !== selectionLength;
+        }
+
+        // Trigger event
+        grid.dispatchEvent('selectionchanged', function() {
+          return {
+            selection: this.$selection.toArray()
+          };
+        });
       }
 
       return this;

@@ -544,7 +544,7 @@ var Grid = (function() {
   };
 
   // Initialize events with noop
-  _.forEach(['onInitialized', 'onRendered', 'onDataSpliced', 'onDataUpdated', 'onSorted'], function(name) {
+  _.forEach(['onInitialized', 'onRendered', 'onDataSpliced', 'onDataUpdated', 'onSelectionChanged', 'onSorted'], function(name) {
     Constructor.options.events[name] = null;
   });
 

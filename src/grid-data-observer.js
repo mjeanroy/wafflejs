@@ -94,7 +94,7 @@ var GridDataObserver = {
 
     if (removedNodes || addedNodes) {
       // We need to update row index
-      for (var start = index, length = childNodes.length; start < length; ++start) {
+      for (var start = (index + addedCount), length = childNodes.length; start < length; ++start) {
         childNodes[start].setAttribute(DATA_WAFFLE_IDX, start);
       }
 

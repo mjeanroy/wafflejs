@@ -93,7 +93,9 @@ var GridSelectionObserver = (function() {
       }
 
       if (addedCount > 0 || removedCount > 0) {
-        if (grid.hasCheckbox()) {
+        // If no difference with the selection size, no need to manipulate the dom here
+        var diff = addedCount - removedCount;
+        if (diff && grid.hasCheckbox()) {
           var selectionLength = $selection.length;
           var thead = grid.$thead[0];
           var tfoot = grid.$tfoot[0];

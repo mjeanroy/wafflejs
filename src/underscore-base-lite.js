@@ -368,6 +368,11 @@ var _ = (function() {
     return memoize;
   };
 
+  // Return current timestamp.
+  _.now = Date.now || function() {
+    return new Date().getTime();
+  };
+
   // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
   // returns an object with an index of each item.
   _.indexBy = groupByWrapper(function(result, value, key) {

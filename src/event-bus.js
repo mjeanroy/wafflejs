@@ -36,6 +36,7 @@ var EventBus = (function() {
     this.details = params;
     this.target = target;
     this.currentTarget = target;
+    this.timeStamp = _.now();
   };
 
   WaffleEvent.prototype = {

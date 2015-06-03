@@ -128,6 +128,7 @@ describe('EventBus', function() {
     var evt = call.args[0];
     expect(evt.bubbles).toBe(false);
     expect(evt.cancelable).toBe(false);
+    expect(evt.timeStamp).toBeDefined();
     expect(evt.target).toBe(grid);
     expect(evt.currentTarget).toBe(grid);
     expect(evt.details).toEqual({
@@ -157,6 +158,7 @@ describe('EventBus', function() {
     var evt = call.args[0];
     expect(evt.bubbles).toBe(false);
     expect(evt.cancelable).toBe(false);
+    expect(evt.timeStamp).toBeDefined();
     expect(evt.target).toBe(grid);
     expect(evt.currentTarget).toBe(grid);
     expect(evt.details).toEqual({
@@ -180,6 +182,7 @@ describe('EventBus', function() {
     var evt = call.args[0];
     expect(evt.bubbles).toBe(false);
     expect(evt.cancelable).toBe(false);
+    expect(evt.timeStamp).toBeDefined();
     expect(evt.target).toBe(grid);
     expect(evt.currentTarget).toBe(grid);
     expect(evt.details).toBeUndefined();

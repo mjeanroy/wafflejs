@@ -11,6 +11,7 @@ angular.module('SampleApp', ['waffle'])
   .controller('SampleController', ['$scope', '$log', function($scope, $log) {
     $scope.options = options;
 
+    $scope.nbSort = 0;
     $scope.grid = null;
 
     $scope.add = function() {
@@ -43,5 +44,6 @@ angular.module('SampleApp', ['waffle'])
 
     $scope.onSorted = function() {
       $log.debug('Sort updated');
+      $scope.nbSort++;
     };
   }]);

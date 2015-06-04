@@ -43,9 +43,15 @@
             waffle-grid="grid"
             on-initialized="onInitialized()"
             on-rendered="onRendered()"
+            on-sorted="onSorted()"
             on-data-spliced="onDataSpliced()"
             on-removed="onRemoved()">
     </table>
+    <div>
+      <p>Total Size: {{grid.data().length}}</p>
+      <p>Current Selection: {{grid.selection().length}} / {{grid.data().length}}</p>
+      <p>Trigger sort: {{nbSort}}</p>
+    </div>
   </div>
 </body>
 

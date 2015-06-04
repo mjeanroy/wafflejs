@@ -34,11 +34,18 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
     template: '<table><thead></thead><tbody></tbody></table>',
 
     link: function(scope, element, attrs, ngModel) {
+      var noop = _.noop;
+
+      // Execute given function in a digest cycle.
+      // If a digest cycle is already in progress, function
+      // will be executed as a standard call (does not trigger
+      // digest "aldready in progress" error).
       var $apply = function(fn) {
+        var func = fn || noop;
         if ($rootScope.$$phase) {
-          return fn();
+          return func();
         } else {
-          return scope.$apply(fn);
+          return scope.$apply(func);
         }
       };
 
@@ -46,6 +53,28 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
       if (table[0].tagName.toLowerCase() !== 'table') {
         table = table.children().eq(0);
       }
+
+      // Wrap function in a digest cycle
+      // This will preserve arguments and "this" context
+      // of original function.
+      var wrap = function(fn) {
+        if (fn) {
+          return function() {
+            var args = arguments;
+            var ctx = this;
+
+            // Exec in a digest cycle
+            var result = $apply(function() {
+              return fn.apply(ctx, args);
+            });
+
+            // Free memory
+            ctx = args = null;
+
+            return result;
+          };
+        }
+      };
 
       // Options can be defined in two ways
       // - Using waffle-options: one way binding, given option will never be updated
@@ -62,17 +91,24 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
       var events = options.events = options.events || {};
 
       _.forEach(_.keys(Grid.options.events), function(f) {
+        // Wrap original event callback
+        var fn = events[f] = wrap(events[f]);
+
+        // If an angular handler is defined, wrap event
+        // callback to execute handler.
         if (attrs[f]) {
-          var fn = events[f];
-          events[f] = function(evt) {
+          events[f] = wrap(function(evt) {
+            // Execute original event callback.
             if (fn) {
               fn.call(this, evt);
             }
 
+            // Evaluate handler, and provide $event as local
+            // scope value.
             scope.$eval(attrs[f], {
               $event: evt
             });
-          };
+          });
         }
       });
 
@@ -82,27 +118,36 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
       // Implement two-ways binding and set it to grid attribute
       setter(scope, grid);
 
+      // When data is spliced, we need to launch a new digest phase if needed
+      grid.addEventListener('dataspliced', function() {
+        $apply();
+      });
+
       // If ngModel is specified, then it should be binded to the
       // current selection. If grid is not selectable, then
       // this attribute is useless.
-      if (ngModel && grid.isSelectable()) {
+      if (grid.isSelectable()) {
         grid.addEventListener('selectionchanged', function(event) {
           $apply(function() {
-            ngModel.$setViewValue(event.details.selection);
+            if (ngModel) {
+              ngModel.$setViewValue(event.details.selection);
+            }
           });
         });
 
-        // Update selection when ngModel value is updated from outside
-        ngModel.$formatters.push(function(value) {
-          grid.selection().reset(value);
-          return value;
-        });
+        if (ngModel) {
+          // Update selection when ngModel value is updated from outside
+          ngModel.$formatters.push(function(value) {
+            grid.selection().reset(value);
+            return value;
+          });
 
-        // Override: ngModel is empty means that selection is not defined
-        // or is an empty array
-        ngModel.$isEmpty = function(value) {
-          return !value || !value.length;
-        };
+          // Override: ngModel is empty means that selection is not defined
+          // or is an empty array
+          ngModel.$isEmpty = function(value) {
+            return !value || !value.length;
+          };
+        }
       }
 
       // Destroy grid when scope is destroyed

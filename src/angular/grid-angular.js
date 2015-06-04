@@ -26,13 +26,22 @@
 /* global Grid */
 /* global _ */
 
-waffleModule.directive('waffle', ['$parse', function($parse) {
+waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $rootScope) {
   return {
     restrict: 'AE',
     replace: false,
+    require: '?ngModel',
     template: '<table><thead></thead><tbody></tbody></table>',
 
-    link: function(scope, element, attrs) {
+    link: function(scope, element, attrs, ngModel) {
+      var $apply = function(fn) {
+        if ($rootScope.$$phase) {
+          return fn();
+        } else {
+          return scope.$apply(fn);
+        }
+      };
+
       var table = element;
       if (table[0].tagName.toLowerCase() !== 'table') {
         table = table.children().eq(0);
@@ -72,6 +81,29 @@ waffleModule.directive('waffle', ['$parse', function($parse) {
 
       // Implement two-ways binding and set it to grid attribute
       setter(scope, grid);
+
+      // If ngModel is specified, then it should be binded to the
+      // current selection. If grid is not selectable, then
+      // this attribute is useless.
+      if (ngModel && grid.isSelectable()) {
+        grid.addEventListener('selectionchanged', function(event) {
+          $apply(function() {
+            ngModel.$setViewValue(event.details.selection);
+          });
+        });
+
+        // Update selection when ngModel value is updated from outside
+        ngModel.$formatters.push(function(value) {
+          grid.selection().reset(value);
+          return value;
+        });
+
+        // Override: ngModel is empty means that selection is not defined
+        // or is an empty array
+        ngModel.$isEmpty = function(value) {
+          return !value || !value.length;
+        };
+      }
 
       // Destroy grid when scope is destroyed
       scope.$on('$destroy', function() {

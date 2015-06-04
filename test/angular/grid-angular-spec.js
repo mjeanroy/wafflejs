@@ -241,4 +241,68 @@ describe('waffle-jq-angular', function() {
     expect($scope.grid.options.events.onDataSpliced).toBeNull();
     expect($scope.grid.options.events.onRendered).not.toBe(_.noop);
   });
+
+  it('should bind selection to ng-model attribute', function() {
+    $scope.grid = angular.extend(options, {
+      selection: {
+        enable: true
+      }
+    });
+
+    $scope.selection = [];
+
+    var table = '' +
+      '<table waffle waffle-grid="grid" ' +
+      '       ng-model="selection" ' +
+      '       on-initialized="onInitialized()" ' +
+      '       on-rendered="onRendered()" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.selection).toBeDefined();
+
+    var d1 = $scope.grid.data().at(0);
+
+    $scope.grid.selection().push(d1);
+
+    jasmine.clock().tick();
+    $rootScope.$digest();
+
+    expect($scope.selection.length).toBe(1);
+    expect($scope.selection[0]).toBe(d1);
+  });
+
+  it('should update selection with ngModel value', function() {
+    $scope.grid = angular.extend(options, {
+      selection: {
+        enable: true
+      }
+    });
+
+    $scope.selection = [];
+
+    var table = '' +
+      '<table waffle waffle-grid="grid" ' +
+      '       ng-model="selection" ' +
+      '       on-initialized="onInitialized()" ' +
+      '       on-rendered="onRendered()" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.selection).toBeDefined();
+
+    var d1 = $scope.grid.data().at(0);
+
+    $scope.selection = [d1];
+
+    $rootScope.$digest();
+    jasmine.clock().tick();
+
+    expect($scope.grid.selection().length).toBe(1);
+    expect($scope.grid.selection()[0]).toBe(d1);
+  });
 });

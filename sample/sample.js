@@ -43,12 +43,9 @@ var columns = [
 var options = {
   data: generatedData,
   columns: columns,
+  scrollable: true,
   selection: {
     multi: true
   },
-  sortBy: 'name()',
-  size: {
-    height: 300,
-    width: 1140
-  }
+  sortBy: 'name()'
 };

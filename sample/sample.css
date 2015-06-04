@@ -15,3 +15,17 @@ th.waffle-sortable-asc:before {
 th.waffle-sortable-desc:before {
   border-top-color: blue;
 }
+
+table tbody {
+  height: 400px;
+  min-height: 400px;
+  max-height: 400px;
+}
+
+table .name,
+table .userName,
+table .email {
+  width: 365px;
+  max-width: 365px;
+  min-width: 365px;
+}

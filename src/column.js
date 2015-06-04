@@ -42,6 +42,16 @@
 
 var Column = (function() {
 
+  var CSS_PLACHOLDERS = {
+    '.': '-',
+    '(': '',
+    ')': '',
+    '[': '-',
+    ']': '-',
+    '\'': '',
+    '"': ''
+  };
+
   var isUndefined = _.isUndefined;
   var defaultRenderer = '$identity';
   var defaultComparator = '$auto';
@@ -71,11 +81,21 @@ var Column = (function() {
     this.id = column.id;
     this.title = column.title || '';
     this.field = column.field || this.id;
-    this.css = column.css || this.id;
+    this.css = column.css || '';
     this.escape = isUndefined(escape) ? true : !!escape;
     this.width = fromPx(column.width);
     this.sortable = isUndefined(sortable) ? true : !!sortable;
     this.asc = isUndefined(column.asc) ? null : !!column.asc;
+
+    if (!this.css) {
+      // Use id as default css.
+      // Normalize css format : remove undesirable characters
+      for (var i = 0, size = this.id.length; i < size; ++i) {
+        var current = this.id.charAt(i);
+        var placeholder = CSS_PLACHOLDERS[current];
+        this.css += placeholder != null ? placeholder : current;
+      }
+    }
 
     // Sanitize input at construction
     if (escape) {

@@ -58,6 +58,14 @@ describe('Column', function() {
     expect(column.width).toBe(100);
   });
 
+  it('should normalize default css', function() {
+    var column = new Column({
+      id: 'foo.bar()'
+    });
+
+    expect(column.css).toBe('foo-bar');
+  });
+
   it('should initialize column with pre-built renderer', function() {
     var column = new Column({
       id: 'foo',

@@ -32,6 +32,7 @@ describe('Grid', function() {
     expect(Grid.options).toEqual({
       key: 'id',
       async: false,
+      scrollable: false,
       sortable: true,
       selection: {
         enable: true,
@@ -82,6 +83,7 @@ describe('Grid', function() {
       key: 'title',
       model: Model,
       async: true,
+      scrollable: true,
       selection: {
         multi: false
       },
@@ -105,6 +107,7 @@ describe('Grid', function() {
     expect(grid.options).toEqual(jasmine.objectContaining({
       key: 'title',
       model: Model,
+      scrollable: true,
       selection: {
         enable: true,
         checkbox: true,
@@ -199,6 +202,15 @@ describe('Grid', function() {
   });
 
   it('should create scrollable grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      scrollable: true
+    });
+
+    expect(table.className).toContain('waffle-fixedheader');
+  });
+
+  it('should create scrollable grid using size', function() {
     var table = document.createElement('table');
     var grid = new Grid(table, {
       size: {

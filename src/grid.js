@@ -127,9 +127,19 @@ var Grid = (function() {
     // Keep options as an internal property.
     this.options = _.defaults(opts, defaultOptions);
 
+    // Translate size to valid numbers.
+    opts.size = {
+      width: fromPx(opts.size.width),
+      height: fromPx(opts.size.height)
+    };
+
+    // Force scroll if height is specified.
+    opts.scrollable = opts.scrollable || !!opts.size.height;
+
     // Options flags
     var isSelectable = this.isSelectable();
     var isSortable = this.isSortable();
+    var isScrollable = opts.scrollable;
 
     // Initialize main table
     this.$table = $(table);
@@ -152,12 +162,6 @@ var Grid = (function() {
       model: Column
     });
 
-    // Translate size to valid numbers.
-    opts.size = {
-      width: fromPx(opts.size.width),
-      height: fromPx(opts.size.height)
-    };
-
     this.$sortBy = [];
 
     // Add appropriate css to table
@@ -167,7 +171,7 @@ var Grid = (function() {
       this.$table.addClass(CSS_SELECTABLE);
     }
 
-    if (opts.size.height) {
+    if (isScrollable) {
       this.$table.addClass(CSS_SCROLLABLE);
     }
 
@@ -195,8 +199,12 @@ var Grid = (function() {
     // ... and wrap callbacks to events
     _.forEach(_.keys(opts.events), callbackWrapper, this);
 
-    this.assignWidth()
-        .renderHeader()
+    // If height is specified, we need to set column size.
+    if (opts.size.height || opts.size.width) {
+      this.assignWidth();
+    }
+
+    this.renderHeader()
         .renderFooter()
         .sortBy(options.sortBy, false)
         .renderBody();
@@ -526,6 +534,13 @@ var Grid = (function() {
     // Asynchronous rendering, disable by default.
     // Should be used to improve user experience with large dataset.
     async: false,
+
+    // Global scrolling
+    // Scrolling is automatically set to true if height is set
+    // using size option.
+    // If size is not set, scolling is enabled, but column and table
+    // size have to be set using css.
+    scrollable: false,
 
     // Global sorting
     // Sort can also be disabled per column

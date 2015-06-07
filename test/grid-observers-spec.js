@@ -49,6 +49,8 @@ describe('Grid Observers', function() {
   });
 
   it('should observe data collection', function() {
+    spyOn(GridDataObserver, 'on');
+
     var table = document.createElement('table');
 
     var grid = new Grid(table, {
@@ -64,15 +66,16 @@ describe('Grid Observers', function() {
       callback: jasmine.any(Function)
     }]);
 
-    spyOn(GridDataObserver, 'on');
-
     var observer = grid.$data.$$observers[0];
     var changes = [];
+
     observer.callback.call(observer.ctx, changes);
-    expect(GridDataObserver.on).toHaveBeenCalledWith(grid, changes);
+    expect(GridDataObserver.on).toHaveBeenCalledWith(changes);
   });
 
   it('should observe selection collection', function() {
+    spyOn(GridSelectionObserver, 'on');
+
     var table = document.createElement('table');
 
     var grid = new Grid(table, {
@@ -88,11 +91,9 @@ describe('Grid Observers', function() {
       callback: jasmine.any(Function)
     }]);
 
-    spyOn(GridSelectionObserver, 'on');
-
     var observer = grid.$selection.$$observers[0];
     var changes = [];
     observer.callback.call(observer.ctx, changes);
-    expect(GridSelectionObserver.on).toHaveBeenCalledWith(grid, changes);
+    expect(GridSelectionObserver.on).toHaveBeenCalledWith(changes);
   });
 });

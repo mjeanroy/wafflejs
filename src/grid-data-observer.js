@@ -31,18 +31,18 @@
 
 var GridDataObserver = {
   // Apply data changes to grid.
-  on: function(grid, changes) {
+  on: function(changes) {
     _.forEach(changes, function(change) {
       var fnName = 'on' + $util.capitalize(change.type);
-      GridDataObserver[fnName].call(GridDataObserver, grid, change);
-    });
+      GridDataObserver[fnName].call(this, change);
+    }, this);
 
     return this;
   },
 
   // Update grid on splice change.
-  onSplice: function(grid, change) {
-    var $tbody = grid.$tbody;
+  onSplice: function(change) {
+    var $tbody = this.$tbody;
     var tbody = $tbody[0];
     var childNodes = tbody.childNodes;
     var index = change.index;
@@ -67,7 +67,7 @@ var GridDataObserver = {
       }
 
       // Do not forget to remove previously selected data !
-      var $selection = grid.$selection;
+      var $selection = this.$selection;
       if ($selection && $selection.length > 0) {
         $selection.remove(removedData);
       }
@@ -83,7 +83,7 @@ var GridDataObserver = {
       for (var i = 0; i < addedCount; ++i) {
         var rowIdx = i + index;
         var data = collection.at(rowIdx);
-        var tr = GridBuilder.tbodyRow(grid, data, rowIdx);
+        var tr = GridBuilder.tbodyRow(this, data, rowIdx);
 
         addedNodes.push(tr);
         addedData.push(data);
@@ -106,7 +106,7 @@ var GridDataObserver = {
       }
 
       // Trigger events
-      grid.dispatchEvent('dataspliced', {
+      this.dispatchEvent('dataspliced', {
         added: addedData || [],
         addedNodes: addedNodes || [],
         removedNodes: removedNodes || [],
@@ -119,13 +119,13 @@ var GridDataObserver = {
   },
 
   // Update grid on update change
-  onUpdate: function(grid, change) {
+  onUpdate: function(change) {
     var index = change.index;
-    var data = grid.$data.at(index);
-    var tbody = grid.$tbody[0];
+    var data = this.$data.at(index);
+    var tbody = this.$tbody[0];
 
     var oldNode = tbody.childNodes[index];
-    var newNode = GridBuilder.tbodyRow(grid, data, index);
+    var newNode = GridBuilder.tbodyRow(this, data, index);
 
     // We do not replace entire row, we just update what need to be updated
     $doc.updateAttributes(oldNode, newNode);
@@ -143,7 +143,7 @@ var GridDataObserver = {
     });
 
     // Trigger event
-    grid.dispatchEvent('dataupdated', {
+    this.dispatchEvent('dataupdated', {
       updatedNode: oldNode
     });
 

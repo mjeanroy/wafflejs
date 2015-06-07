@@ -39,22 +39,22 @@ var GridSelectionObserver = (function() {
 
   var o = {
     // Apply data changes to grid.
-    on: function(grid, changes) {
+    on: function(changes) {
       _.forEach(changes, function(change) {
         var fnName = 'on' + $util.capitalize(change.type);
         var fn = GridSelectionObserver[fnName];
         if (fn) {
-          fn.call(GridSelectionObserver, grid, change);
+          fn.call(this, change);
         }
-      });
+      }, this);
 
       return this;
     },
 
     // Update selection
-    onSplice: function(grid, change) {
-      var $tbody = grid.$tbody;
-      var $data = grid.$data;
+    onSplice: function(change) {
+      var $tbody = this.$tbody;
+      var $data = this.$data;
       var $selection = change.object;
 
       var idx, row;
@@ -77,7 +77,7 @@ var GridSelectionObserver = (function() {
             row = childNodes[idx];
 
             $(row).removeClass(CSS_SELECTED);
-            if (grid.hasCheckbox()) {
+            if (this.hasCheckbox()) {
               updateCheckbox(findCheckBox(row), false);
             }
           }
@@ -91,7 +91,7 @@ var GridSelectionObserver = (function() {
           row = childNodes[idx];
 
           $(row).addClass(CSS_SELECTED);
-          if (grid.hasCheckbox()) {
+          if (this.hasCheckbox()) {
             updateCheckbox(findCheckBox(row), true);
           }
         }
@@ -100,10 +100,10 @@ var GridSelectionObserver = (function() {
       if (addedCount > 0 || removedCount > 0) {
         // If no difference with the selection size, no need to manipulate the dom here
         var diff = addedCount - removedCount;
-        if (diff && grid.hasCheckbox()) {
+        if (diff && this.hasCheckbox()) {
           var selectionLength = $selection.length;
-          var thead = grid.$thead[0];
-          var tfoot = grid.$tfoot[0];
+          var thead = this.$thead[0];
+          var tfoot = this.$tfoot[0];
 
           var theadCell = thead.childNodes[0].childNodes[0];
           var theadSpan = theadCell.childNodes[0];
@@ -116,12 +116,12 @@ var GridSelectionObserver = (function() {
           tfootSpan.innerHTML = theadSpan.innerHTML = selectionLength;
           tfootSpan.title = theadSpan.title = selectionLength;
 
-          tfootCheckbox.checked = theadCheckbox.checked = grid.isSelected();
+          tfootCheckbox.checked = theadCheckbox.checked = this.isSelected();
           tfootCheckbox.indeterminate = theadCheckbox.indeterminate = selectionLength > 0 && $data.length !== selectionLength;
         }
 
         // Trigger event
-        grid.dispatchEvent('selectionchanged', function() {
+        this.dispatchEvent('selectionchanged', function() {
           return {
             selection: this.$selection.toArray()
           };

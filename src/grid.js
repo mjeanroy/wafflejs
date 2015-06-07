@@ -92,14 +92,6 @@ var Grid = (function() {
     $table.append(this[varName][0]);
   };
 
-  var dataObserver = function(changes) {
-    return GridDataObserver.on(this, changes);
-  };
-
-  var selectionObserver = function(changes) {
-    return GridSelectionObserver.on(this, changes);
-  };
-
   var callbackWrapper = function(name) {
     var fn = this.options.events[name];
     if (fn) {
@@ -185,12 +177,12 @@ var Grid = (function() {
     }
 
     // Observe collection to update grid accordingly
-    this.$data.observe(dataObserver, this);
+    this.$data.observe(GridDataObserver.on, this);
 
     if (isSelectable) {
       this.$selection = new Collection([], this.$data.options());
       this.$tbody.on('click', _.bind(GridDomHandlers.onClickTbody, this));
-      this.$selection.observe(selectionObserver, this);
+      this.$selection.observe(GridSelectionObserver.on, this);
     }
 
     // Create event bus...

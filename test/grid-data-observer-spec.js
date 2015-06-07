@@ -59,9 +59,9 @@ describe('Grid Sort', function() {
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
-    GridDataObserver.on(grid, changes);
+    GridDataObserver.on.call(grid, changes);
 
-    expect(GridDataObserver.onSplice).toHaveBeenCalledWith(grid, changes[0]);
+    expect(GridDataObserver.onSplice).toHaveBeenCalledWith(changes[0]);
   });
 
   it('should call onUpdate for an "update" change', function() {
@@ -69,9 +69,9 @@ describe('Grid Sort', function() {
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
-    GridDataObserver.on(grid, changes);
+    GridDataObserver.on.call(grid, changes);
 
-    expect(GridDataObserver.onUpdate).toHaveBeenCalledWith(grid, changes[0]);
+    expect(GridDataObserver.onUpdate).toHaveBeenCalledWith(changes[0]);
   });
 
   it('should call all changes with appropriate methods', function() {
@@ -80,10 +80,10 @@ describe('Grid Sort', function() {
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
-    GridDataObserver.on(grid, changes);
+    GridDataObserver.on.call(grid, changes);
 
-    expect(GridDataObserver.onSplice).toHaveBeenCalledWith(grid, changes[0]);
-    expect(GridDataObserver.onUpdate).toHaveBeenCalledWith(grid, changes[1]);
+    expect(GridDataObserver.onSplice).toHaveBeenCalledWith(changes[0]);
+    expect(GridDataObserver.onUpdate).toHaveBeenCalledWith(changes[1]);
   });
 
   describe('with splice change', function() {

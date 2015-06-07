@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-describe('Grid Sort', function() {
+describe('Grid Selection Observer', function() {
 
   var columns, data, table, grid, $data;
 
@@ -58,9 +58,9 @@ describe('Grid Sort', function() {
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
-    GridSelectionObserver.on(grid, changes);
+    GridSelectionObserver.on.call(grid, changes);
 
-    expect(GridSelectionObserver.onSplice).toHaveBeenCalledWith(grid, changes[0]);
+    expect(GridSelectionObserver.onSplice).toHaveBeenCalledWith(changes[0]);
   });
 
   it('should not call onUpdate for an "update" change', function() {
@@ -68,7 +68,7 @@ describe('Grid Sort', function() {
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
-    GridSelectionObserver.on(grid, changes);
+    GridSelectionObserver.on.call(grid, changes);
   });
 
   it('should call all changes', function() {
@@ -77,9 +77,9 @@ describe('Grid Sort', function() {
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
-    GridSelectionObserver.on(grid, changes);
+    GridSelectionObserver.on.call(grid, changes);
 
-    expect(GridSelectionObserver.onSplice).toHaveBeenCalledWith(grid, changes[0]);
+    expect(GridSelectionObserver.onSplice).toHaveBeenCalledWith(changes[0]);
   });
 
   describe('with splice change', function() {

@@ -35,6 +35,7 @@
 /* global GridBuilder */
 /* global GridDomHandlers */
 /* global GridDataObserver */
+/* global GridColumnsObserver */
 /* global GridSelectionObserver */
 /* global $$createComparisonFunction */
 /* global CSS_GRID */
@@ -178,6 +179,7 @@ var Grid = (function() {
 
     // Observe collection to update grid accordingly
     this.$data.observe(GridDataObserver.on, this);
+    this.$columns.observe(GridColumnsObserver.on, this);
 
     if (isSelectable) {
       this.$selection = new Collection([], this.$data.options());
@@ -200,6 +202,10 @@ var Grid = (function() {
         .renderFooter()
         .sortBy(options.sortBy, false)
         .renderBody();
+
+    // Grid is up to date !
+    this.$data.clearChanges();
+    this.$columns.clearChanges();
 
     this.dispatchEvent('initialized');
   };
@@ -259,9 +265,15 @@ var Grid = (function() {
 
     // Render entire grid
     render: function() {
-      return this.renderHeader()
-                 .renderFooter()
-                 .renderBody();
+      this.renderHeader()
+          .renderFooter()
+          .renderBody();
+
+      // Grid is up to date !
+      this.$columns.clearChanges();
+      this.$data.clearChanges();
+
+      return this;
     },
 
     // Calculate column width
@@ -508,6 +520,7 @@ var Grid = (function() {
 
       // Unobserve collection
       this.$data.unobserve();
+      this.$columns.unobserve();
       this.$selection.unobserve();
 
       // Clear event bus
@@ -558,7 +571,7 @@ var Grid = (function() {
   };
 
   // Initialize events with noop
-  _.forEach(['onInitialized', 'onRendered', 'onDataSpliced', 'onDataUpdated', 'onSelectionChanged', 'onSorted'], function(name) {
+  _.forEach(['onInitialized', 'onRendered', 'onDataSpliced', 'onDataUpdated', 'onColumnsSpliced', 'onSelectionChanged', 'onSorted'], function(name) {
     Constructor.options.events[name] = null;
   });
 

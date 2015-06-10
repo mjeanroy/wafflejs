@@ -48,6 +48,7 @@ describe('Grid', function() {
         onRendered: null,
         onDataSpliced: null,
         onDataUpdated: null,
+        onColumnsSpliced: null,
         onSelectionChanged: null,
         onSorted: null
       }
@@ -123,6 +124,7 @@ describe('Grid', function() {
         onRendered: null,
         onDataSpliced: onDataSpliced,
         onDataUpdated: null,
+        onColumnsSpliced: null,
         onSelectionChanged: null,
         onSorted: null
       }

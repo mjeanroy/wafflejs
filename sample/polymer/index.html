@@ -6,14 +6,19 @@
   <!-- Vendors -->
   <link rel="stylesheet" href="/vendors/bootstrap/dist/css/bootstrap.css">
   <script type="text/javascript" src="/vendors/Faker/faker.js"></script>
+  <script type="text/javascript" src="/vendors/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="/vendors/polymer/polymer.html">
 
   <!-- Waffle -->
   <link rel="stylesheet" href="/dist/waffle.css">
-  <script type="text/javascript" src="/dist/ie8/waffle-ie8.js"></script>
   <script type="text/javascript" src="/dist/waffle-standalone.js"></script>
 
-  <!-- Sample -->
+  <!-- sample -->
   <link rel="stylesheet" href="/sample.css">
+  <script type="text/javascript" src="/sample.js"></script>
+
+  <link rel="import" href="/polymer/waffle.html">
+  <link rel="import" href="/polymer/people-grid.html">
 </head>
 <body>
   <nav class="navbar navbar-default navbar-fixed-top">
@@ -24,10 +29,11 @@
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
           <li><a href="/bare">Bare</a></li>
-          <li class="active"><a href="/standalone">Standalone</a></li>
+          <li><a href="/standalone">Standalone</a></li>
           <li><a href="/jquery">jQuery</a></li>
           <li><a href="/underscore">Underscore.js</a></li>
           <li><a href="/angular">AngularJS</a></li>
+          <li class="active"><a href="/polymer">Polymer</a></li>
         </ul>
       </div>
     </div>
@@ -41,15 +47,9 @@
         <button id="clear" type="button" title="Clear" class="btn btn-primary">Clear</button>
       </div>
     </div>
-    <table id="waffle" 
-           class="table table-striped table-hover table-bordered"
-           data-scrollable="true"
-           data-selection='{"multi": true}'
-           data-sort-by="name()"></table>
+
+    <people-grid id="grid"></people-grid>
   </div>
 </body>
-
-<script type="text/javascript" src="/sample.js"></script>
-<script type="text/javascript" src="/standalone/sample.js"></script>
-
+<script type="text/javascript" src="/polymer/sample.js"></script>
 </html>

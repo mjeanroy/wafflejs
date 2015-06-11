@@ -1,0 +1,31 @@
+<dom-module id="people-grid">
+  <template>
+    <waffle-grid id="grid" options="{{options}}">
+      <table class="table table-striped table-bordered"
+             data-sort-by="name()"
+             data-scrollable="true"
+             data-selection='{"multi": true}'></table>
+    </waffle-grid>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'people-grid',
+
+      properties: {
+        options: {
+          type: Object,
+          value: window.options
+        }
+      },
+
+      ready: function() {
+        this.grid = this.$.grid.grid();
+      },
+
+      grid: function() {
+        return this.grid;
+      }
+    });
+  </script>
+</dom-module>

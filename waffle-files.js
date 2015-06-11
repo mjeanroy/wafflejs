@@ -7,7 +7,7 @@ var _ = require('underscore');
 
 var SRC = 'src/';
 var TEST = 'test/';
-var VENDOR_SRC = 'node_modules/';
+var VENDOR_SRC = 'vendors/';
 
 // Core files
 var $files = {
@@ -110,7 +110,7 @@ var $vendor = {
 };
 
 var $test = [
-  VENDOR_SRC + 'jasmine-utils/src/jasmine-utils.js'
+  'node_modules/jasmine-utils/src/jasmine-utils.js'
 ];
 
 // Module targets

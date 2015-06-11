@@ -40,6 +40,7 @@ var bump = require('gulp-bump');
 var gulpFilter = require('gulp-filter');
 var tag_version = require('gulp-tag-version');
 var karma = require('karma').server;
+var bower = require('gulp-bower');
 
 var files = require('./waffle-files');
 
@@ -49,6 +50,10 @@ gulp.task('help', taskListing);
 
 gulp.task('clean', function(done) {
   del(BUILD_FOLDER, done);
+});
+
+gulp.task('bower', function() {
+  return bower({ cmd: 'update'});
 });
 
 gulp.task('lint', function() {

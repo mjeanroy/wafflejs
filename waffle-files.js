@@ -22,6 +22,10 @@ var $files = {
     SRC + 'underscore-lite.js'
   ],
 
+  $underscoreSanitize: [
+    SRC + 'underscore/sanitize.js'
+  ],
+
   $coreParser: [
     SRC + 'parser.js'
   ],
@@ -136,7 +140,7 @@ var $targets = {
     src: [
       '$jq',
       '$coreParser',
-      '$coreSanitize',
+      '$underscoreSanitize',
       '$core'
     ],
     vendor: [
@@ -149,7 +153,7 @@ var $targets = {
   bare: {
     src: [
       '$coreParser',
-      '$coreSanitize',
+      '$underscoreSanitize',
       '$core',
       '$jqueryPlugin'
     ],

@@ -34,10 +34,13 @@ var $files = {
     SRC + 'sanitize.js'
   ],
 
+  $coreMap: [
+    SRC + 'map.js',
+  ],
+
   // Core source, mandatory source files appended to each target
   $core: [
     SRC + 'constants.js',
-    SRC + 'map.js',
     SRC + 'util.js',
     SRC + 'dom.js',
     SRC + 'event-bus.js',
@@ -111,6 +114,7 @@ var $targets = {
     src: [
       '$jq',
       '$underscore',
+      '$coreMap',
       '$coreParser',
       '$coreSanitize',
       '$core'
@@ -124,6 +128,7 @@ var $targets = {
   jquery: {
     src: [
       '$underscore',
+      '$coreMap',
       '$coreParser',
       '$coreSanitize',
       '$core',
@@ -139,6 +144,7 @@ var $targets = {
   underscore: {
     src: [
       '$jq',
+      '$coreMap',
       '$coreParser',
       '$underscoreSanitize',
       '$core'
@@ -152,6 +158,7 @@ var $targets = {
 
   bare: {
     src: [
+      '$coreMap',
       '$coreParser',
       '$underscoreSanitize',
       '$core',
@@ -168,6 +175,7 @@ var $targets = {
   angular: {
     src: [
       '$angularPlugin',
+      '$coreMap',
       '$core',
       '$angularDirective'
     ],

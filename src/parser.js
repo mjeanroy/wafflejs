@@ -24,67 +24,84 @@
 
 /* jshint eqnull:true */
 /* global _ */
+/* global HashMap */
+/* exported $parse */
 
-var $parse = function(key) {
-  var parts = $parse.$split(key);
-  var size = parts.length;
+var $parse = (function() {
+  var cache = new HashMap();
 
-  return function(object) {
-    var current = object;
+  // Transform bracket notation to dot notation
+  // This is a really simple parser that will turn attribute
+  // path to a normalized path
+  // Examples:
+  //  foo.bar           => foo.bar
+  //  foo[0]            => foo.0
+  //  foo['id']         => foo.id
+  //  foo["id"]         => foo.id
+  //  foo.bar[0]['id']  => foo.bar.0.id
+  var $normalize = function(key) {
+    var results = [];
+    var parts = key.split('.');
 
-    for (var i = 0; i < size; ++i) {
-      if (current == null || !_.isObject(current)) {
-        return undefined;
-      }
+    var arrayIndex = /(.+?)?(\[(\d+)\])/;
+    var bracketSingleQuote = /(.+?)?(\['(.+)'\])/;
+    var bracketDoubleQuote = /(.+?)?(\["(.+)"\])/;
 
-      current = _.result(current, parts[i]);
-    }
+    var replacer = function(match, p1, p2, p3) {
+      var prefix = p1 ? p1 + '.' : '';
+      return prefix + p3;
+    };
 
-    return current;
-  };
-};
-
-// Transform bracket notation to dot notation
-// This is a really simple parser that will turn attribute
-// path to a normalized path
-// Examples:
-//  foo.bar           => foo.bar
-//  foo[0]            => foo.0
-//  foo['id']         => foo.id
-//  foo["id"]         => foo.id
-//  foo.bar[0]['id']  => foo.bar.0.id
-$parse.$normalize = function(key) {
-  var results = [];
-  var parts = key.split('.');
-
-  var arrayIndex = /(.+?)?(\[(\d+)\])/;
-  var bracketSingleQuote = /(.+?)?(\['(.+)'\])/;
-  var bracketDoubleQuote = /(.+?)?(\["(.+)"\])/;
-
-  var replacer = function(match, p1, p2, p3) {
-    var prefix = p1 ? p1 + '.' : '';
-    return prefix + p3;
-  };
-
-  for (var i = 0, size = parts.length; i < size; ++i) {
-    var part = parts[i].replace(arrayIndex, replacer)
+    for (var i = 0, size = parts.length; i < size; ++i) {
+      var part = parts[i].replace(arrayIndex, replacer)
                          .replace(bracketSingleQuote, replacer)
                          .replace(bracketDoubleQuote, replacer);
 
-    // Remove parenthesis if name is a function call
-    var openParenthesis = part.indexOf('(');
-    if (openParenthesis > 0) {
-      part = part.slice(0, openParenthesis);
+      // Remove parenthesis if name is a function call
+      var openParenthesis = part.indexOf('(');
+      if (openParenthesis > 0) {
+        part = part.slice(0, openParenthesis);
+      }
+
+      results[i] = part;
     }
 
-    results[i] = part;
-  }
+    return results.join('.');
+  };
 
-  return results.join('.');
-};
+  // Split key value to an array containing each part of attribute.
+  // It should allow anyone to traverse deep objects
+  var $split = function(key) {
+    return $normalize(key).split('.');
+  };
 
-// Split key value to an array containing each part of attribute.
-// It should allow anyone to traverse deep objects
-$parse.$split = function(key) {
-  return $parse.$normalize(key).split('.');
-};
+  var o = function(key) {
+    if (!cache.contains(key)) {
+      var parts = $split(key);
+      var size = parts.length;
+
+      cache.put(key, function(object) {
+        var current = object;
+
+        for (var i = 0; i < size; ++i) {
+          if (current == null || !_.isObject(current)) {
+            return undefined;
+          }
+
+          current = _.result(current, parts[i]);
+        }
+
+        return current;
+      });
+    }
+
+    return cache.get(key);
+  };
+
+  o.$clear = function() {
+    cache.clear();
+    return o;
+  };
+
+  return o;
+})();

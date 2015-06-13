@@ -27,7 +27,7 @@
 var $json = {
   // Turn a javascript object to a json string
   toJson: function(value) {
-    if (!JSON.stringify) {
+    if (!JSON || !JSON.stringify) {
       throw new Error('JSON.stringify is not available in your browser');
     }
 
@@ -36,7 +36,7 @@ var $json = {
 
   // Turn a json string to a javascript object
   fromJson: function(value) {
-    if (!JSON.parse) {
+    if (!JSON || !JSON.parse) {
       throw new Error('JSON.parse is not available in your browser');
     }
 

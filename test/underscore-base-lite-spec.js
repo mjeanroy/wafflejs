@@ -42,6 +42,17 @@ describe('_', function() {
     expect(_.isBoolean(1)).toBe(false);
   });
 
+  it('should check if object is NaN', function() {
+    expect(_.isNaN(true)).toBe(false);
+    expect(_.isNaN(false)).toBe(false);
+    expect(_.isNaN(Boolean(''))).toBe(false);
+    expect(_.isNaN(undefined)).toBe(false);
+    expect(_.isNaN(null)).toBe(false);
+    expect(_.isNaN(1)).toBe(false);
+
+    expect(_.isNaN(NaN)).toBe(true);
+  });
+
   it('should bind function with context', function() {
     var fn = function() {
       return this;

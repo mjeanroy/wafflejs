@@ -178,6 +178,41 @@ describe('waffle-jq-angular', function() {
     expect($scope.grid.$data.toArray()).toEqual(options.data);
   });
 
+  fit('should build table using columns initialization', function() {
+    $scope.columns = [
+      { id: 'foo' },
+      { id: 'bar' }
+    ];
+
+    var table = '<table waffle waffle-grid="grid" columns="columns"></table>';
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+
+    var childNodes = $table[0].childNodes;
+    expect(childNodes.length).toBe(3);
+    expect(childNodes[0]).toBeDOMElement('thead');
+    expect(childNodes[1]).toBeDOMElement('tbody');
+    expect(childNodes[2]).toBeDOMElement('tfoot');
+
+    var thead = childNodes[0];
+    var tbody = childNodes[1];
+    var tfoot = childNodes[2];
+
+    expect(thead.childNodes[0].childNodes.length).toBe(3);
+    expect(tfoot.childNodes[0].childNodes.length).toBe(3);
+
+    var dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
+    expect(dataHeader).toVerify(function(node, idx) {
+      return node.innerHTML === options.columns[idx].title;
+    });
+
+    var dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
+    expect(dataFooter).toVerify(function(node, idx) {
+      return node.innerHTML === options.columns[idx].title;
+    });
+  });
+
   it('should trigger callbacks', function() {
     $scope.grid = options;
 

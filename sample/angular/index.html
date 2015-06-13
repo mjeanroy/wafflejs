@@ -38,14 +38,17 @@
       </div>
     </div>
     <table class="table table-striped table-hover table-bordered"
-            waffle
-            waffle-options="options"
-            waffle-grid="grid"
-            on-initialized="onInitialized()"
-            on-rendered="onRendered()"
-            on-sorted="onSorted()"
-            on-data-spliced="onDataSpliced()"
-            on-removed="onRemoved()">
+            data-waffle
+            data-waffle-options="options"
+            data-waffle-grid="grid"
+            data-scrollable="true"
+            data-selection='{"multi": true}'
+            data-sort-by="name()"
+            data-on-initialized="onInitialized()"
+            data-on-rendered="onRendered()"
+            data-on-sorted="onSorted()"
+            data-on-data-spliced="onDataSpliced()"
+            data-on-removed="onRemoved()">
     </table>
     <div>
       <p>Total Size: {{grid.data().length}}</p>

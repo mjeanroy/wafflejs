@@ -42,10 +42,5 @@ var columns = [
 
 var options = {
   data: generatedData,
-  columns: columns,
-  scrollable: true,
-  selection: {
-    multi: true
-  },
-  sortBy: 'name()'
+  columns: columns
 };

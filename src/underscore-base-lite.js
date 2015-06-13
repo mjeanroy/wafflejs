@@ -101,6 +101,11 @@ var _ = (function() {
     });
   };
 
+  // Is the given value NaN? (NaN is the only number which does not equal itself).
+  _.isNaN = function(obj) {
+    return _.isNumber(obj) && obj !== +obj;
+  };
+
   // Creates a version of the function that can only be called one time.
   // Repeated calls to the modified function will have no effect, returning the value
   // from the original call.

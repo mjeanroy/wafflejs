@@ -31,6 +31,9 @@ describe('Grid', function() {
   it('should define custom options', function() {
     expect(Grid.options).toEqual({
       key: 'id',
+      columns: null,
+      data: null,
+      sortBy: null,
       async: false,
       scrollable: false,
       sortable: true,
@@ -68,7 +71,14 @@ describe('Grid', function() {
 
     expect(grid.options).toBeDefined();
     expect(grid.options).not.toBe(Grid.options);
-    expect(grid.options).toEqual(jasmine.objectContaining(Grid.options));
+
+    var defaultOptions = jasmine.util.clone(Grid.options);
+
+    // We should ignore these properties
+    delete defaultOptions.columns;
+    delete defaultOptions.data;
+
+    expect(grid.options).toEqual(jasmine.objectContaining(defaultOptions));
   });
 
   it('should create grid with custom options', function() {
@@ -129,6 +139,63 @@ describe('Grid', function() {
         onSorted: null
       }
     }));
+  });
+
+  it('should create grid with columns set using html options', function() {
+    var table = document.createElement('table');
+    table.setAttribute('data-columns', '[{"id": "bar"}, {"id": "foo"}]');
+
+    var grid = new Grid(table, {
+      key: 'title',
+    });
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options.columns).toBeDefined();
+    expect(grid.options.columns.length).toBe(2);
+
+    expect(grid.$columns).toBeDefined();
+    expect(grid.$columns.length).toBe(2);
+
+    expect(grid.$columns[0]).toEqual(jasmine.objectContaining({
+      id: 'bar'
+    }));
+
+    expect(grid.$columns[1]).toEqual(jasmine.objectContaining({
+      id: 'foo'
+    }));
+  });
+
+  it('should initialize grid and set key value using html options', function() {
+    var table = document.createElement('table');
+    table.setAttribute('data-key', 'title');
+
+    var grid = new Grid(table);
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options.key).toBeDefined();
+    expect(grid.options.key).toBe('title');
+  });
+
+  it('should initialize grid and set scrollable value using html options', function() {
+    var table = document.createElement('table');
+    table.setAttribute('data-scrollable', 'true');
+
+    var grid = new Grid(table);
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options.scrollable).toBeDefined();
+    expect(grid.options.scrollable).toBe(true);
+  });
+
+  it('should initialize grid and set sortable value using html options', function() {
+    var table = document.createElement('table');
+    table.setAttribute('data-sortable', 'false');
+
+    var grid = new Grid(table);
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options.sortable).toBeDefined();
+    expect(grid.options.sortable).toBe(false);
   });
 
   it('should create grid with size values as numbers', function() {

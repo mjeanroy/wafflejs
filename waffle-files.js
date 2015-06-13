@@ -26,6 +26,10 @@ var $files = {
     SRC + 'underscore/sanitize.js'
   ],
 
+  $coreJson: [
+    SRC + 'json.js'
+  ],
+
   $coreParser: [
     SRC + 'parser.js'
   ],
@@ -68,6 +72,7 @@ var $files = {
     SRC + 'underscore-base-lite.js',
     SRC + 'angular/underscore-angular.js',
     SRC + 'angular/jq-angular.js',
+    SRC + 'angular/json-angular.js',
     SRC + 'angular/waffle-angular-module.js',
     SRC + 'angular/waffle-angular-run.js',
   ],
@@ -114,6 +119,7 @@ var $targets = {
     src: [
       '$jq',
       '$underscore',
+      '$coreJson',
       '$coreMap',
       '$coreParser',
       '$coreSanitize',
@@ -128,6 +134,7 @@ var $targets = {
   jquery: {
     src: [
       '$underscore',
+      '$coreJson',
       '$coreMap',
       '$coreParser',
       '$coreSanitize',
@@ -144,6 +151,7 @@ var $targets = {
   underscore: {
     src: [
       '$jq',
+      '$coreJson',
       '$coreMap',
       '$coreParser',
       '$underscoreSanitize',
@@ -158,6 +166,7 @@ var $targets = {
 
   bare: {
     src: [
+      '$coreJson',
       '$coreMap',
       '$coreParser',
       '$underscoreSanitize',

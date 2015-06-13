@@ -40,6 +40,47 @@ describe('$util', function() {
     expect($util.capitalize('Foo')).toBe('Foo');
   });
 
+  it('should parse json object', function() {
+    var o = $util.parse('{"id": 1, "name": "foo"}');
+    expect(o).toEqual({
+      id: 1,
+      name: 'foo'
+    });
+  });
+
+  it('should parse json array', function() {
+    var o = $util.parse('[{"id": 1, "name": "foo"}]');
+    expect(o).toEqual([{
+      id: 1,
+      name: 'foo'
+    }]);
+  });
+
+  it('should parse boolean value', function() {
+    var f = $util.parse('false');
+    var t = $util.parse('true');
+    expect(f).toBe(false);
+    expect(t).toBe(true);
+  });
+
+  it('should parse number value', function() {
+    var nb = $util.parse('25');
+    expect(nb).toBe(25);
+  });
+
+  it('should parse string value', function() {
+    var str1 = $util.parse('hello');
+    var str2 = $util.parse('"hello"');
+    expect(str1).toBe('hello');
+    expect(str2).toBe('hello');
+  });
+
+  it('should convert to spinal case string', function() {
+    expect($util.toSpinalCase('hello')).toBe('hello');
+    expect($util.toSpinalCase('helloWorld')).toBe('hello-world');
+    expect($util.toSpinalCase('hello-world')).toBe('hello-world');
+  });
+
   it('should destroy object', function() {
     var fn = jasmine.createSpy('fn');
     var protoFn = jasmine.createSpy('protoFn');

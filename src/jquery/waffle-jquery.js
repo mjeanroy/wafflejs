@@ -42,12 +42,7 @@ $.fn.waffle = function(options) {
       var $waffle = $this.data($PLUGIN_NAME);
 
       if (!$waffle) {
-        var opts = $.extend({}, $.fn.waffle.options);
-        if (_.isObject(options)) {
-          opts = $.extend(opts, options);
-        }
-
-        $waffle = new Grid(this, opts);
+        $waffle = new Grid(this, options);
         $this.data($PLUGIN_NAME, $waffle);
 
         // Destroy grid when node is removed

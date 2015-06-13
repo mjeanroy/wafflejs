@@ -84,6 +84,14 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
         return $parse(attr)(scope) || {};
       })();
 
+      // Initialize options using html attributes
+      // With angular, html attributes can be set on scope, that's why we use scope.$eval
+      _.forEach(_.keys(Grid.options), function(optName) {
+        if (!options[optName] && attrs[optName]) {
+          options[optName] = scope.$eval(attrs[optName]);
+        }
+      });
+
       // Create setter for two ways binding
       var setter = $parse(attrs.waffleGrid).assign || _.noop;
 

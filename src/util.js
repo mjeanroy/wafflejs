@@ -23,6 +23,7 @@
  */
 
 /* global _ */
+/* global $json */
 /* exported $util */
 
 /**
@@ -49,6 +50,27 @@ var $util = {
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
 
+  // Parse value
+  parse: function(json) {
+    try {
+      return $json.fromJson(json);
+    }
+    catch (e) {
+      // This should probably be a simple value
+
+      if (json === 'false') {
+        return false;
+      }
+
+      if (json === 'true') {
+        return true;
+      }
+
+      var nb = Number(json);
+      return _.isNaN(nb) ? json : nb;
+    }
+  },
+
   // Destroy object by setting null to object own properties.
   // Note that this function will also destroy prototype attribute,
   // so this function must be called when object does not need to
@@ -59,6 +81,22 @@ var $util = {
         o[i] = null;
       }
     }
+  },
+
+  // Turn a camel case string to a spinal case string.
+  toSpinalCase: function(str) {
+    var result = '';
+
+    for (var i = 0, size = str.length; i < size; ++i) {
+      var current = str.charAt(i);
+      if (current.toLowerCase() === current) {
+        result += current;
+      } else {
+        result += '-' + current.toLowerCase();
+      }
+    }
+
+    return result;
   },
 
   // Execute asynchronous tasks on small chunks of data.

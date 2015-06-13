@@ -105,20 +105,41 @@ var Grid = (function() {
       return new Constructor(table, options);
     }
 
-    var opts = options = options || {};
+    // Initialize main table
+    var $table = this.$table = $(table);
+
+    // Initialize options
+    var opts = this.options = options = options || {};
     var defaultOptions = Constructor.options;
 
-    // Initialize nested object of options with default values.
-    _.forEach(['events', 'selection', 'size'], function(optName) {
+    // Try to initialize options with default values
+    // - If option is already defined, use it (but initialize default values for nested object).
+    // - If option is not defined, try to get html value.
+    // - If option is still not defined, use default.
+    _.forEach(_.keys(defaultOptions), function(optName) {
       var opt = opts[optName];
-      if (_.isObject(opt) || _.isUndefined(opt)) {
-        opts[optName] = _.defaults(opt || {}, defaultOptions[optName]);
+      var def = defaultOptions[optName];
+
+      // Try to initialize from html
+      // If options is already defined, do not try to parse html
+      if (_.isUndefined(opt)) {
+        var attrName = $util.toSpinalCase(optName);
+        var htmlAttr = $table[0].getAttribute(attrName) || $table[0].getAttribute('data-' + attrName);
+        if (htmlAttr) {
+          opt = opts[optName] = $util.parse(htmlAttr);
+        }
+      }
+
+      // Initialize default values of nested objects
+      if (_.isObject(def) && (_.isObject(opt) || _.isUndefined(opt))) {
+        opt = opts[optName] = _.defaults(opt || {}, def);
+      }
+
+      // It it is still undefined, use default value
+      if (_.isUndefined(opt)) {
+        opt = opts[optName] = def;
       }
     });
-
-    // Initialize options with default values.
-    // Keep options as an internal property.
-    this.options = _.defaults(opts, defaultOptions);
 
     // Translate size to valid numbers.
     opts.size = {
@@ -134,16 +155,13 @@ var Grid = (function() {
     var isSortable = this.isSortable();
     var isScrollable = opts.scrollable;
 
-    // Initialize main table
-    this.$table = $(table);
-
     // Initialize data
     this.$data = new Collection(opts.data, {
       key: opts.key,
       model: opts.model
     });
 
-    if (!isSortable) {
+    if (!isSortable && opts.columns) {
       // Force column not to be sortable
       _.forEach(opts.columns, function(column) {
         column.sortable = false;
@@ -158,14 +176,14 @@ var Grid = (function() {
     this.$sortBy = [];
 
     // Add appropriate css to table
-    this.$table.addClass(CSS_GRID);
+    $table.addClass(CSS_GRID);
 
     if (isSelectable) {
-      this.$table.addClass(CSS_SELECTABLE);
+      $table.addClass(CSS_SELECTABLE);
     }
 
     if (isScrollable) {
-      this.$table.addClass(CSS_SCROLLABLE);
+      $table.addClass(CSS_SCROLLABLE);
     }
 
     // Create main nodes
@@ -535,6 +553,15 @@ var Grid = (function() {
   Constructor.options = {
     // Default identifier for data.
     key: 'id',
+
+    // Data initialization
+    data: null,
+
+    // Columns initialization
+    columns: null,
+
+    // Default sort
+    sortBy: null,
 
     // Asynchronous rendering, disable by default.
     // Should be used to improve user experience with large dataset.

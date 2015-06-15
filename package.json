@@ -38,7 +38,7 @@
     "phantomjs": "1.9.17",
     "open": "0.0.5",
     "underscore": "1.8.3",
-    "gulp-bump": "0.3.0",
+    "gulp-bump": "0.3.1",
     "gulp-git": "1.2.4",
     "gulp-tag-version": "1.2.1",
     "gulp-filter": "2.0.2"

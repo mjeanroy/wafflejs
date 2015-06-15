@@ -79,6 +79,10 @@ var $files = {
 
   $jqueryPlugin: [
     SRC + 'jquery/waffle-jquery.js',
+  ],
+
+  $polymerPlugin: [
+    SRC + 'polymer/waffle-polymer.js',
   ]
 };
 
@@ -200,6 +204,23 @@ var $targets = {
 
       // Add parser spec to check compatibilty with angular
       TEST + 'parser-spec.js'
+    ]
+  },
+
+  polymer: {
+    src: [
+      '$jq',
+      '$underscore',
+      '$coreJson',
+      '$coreMap',
+      '$coreParser',
+      '$coreSanitize',
+      '$core',
+      '$polymerPlugin'
+    ],
+    vendor: [
+    ],
+    test: [
     ]
   }
 };

@@ -39,12 +39,17 @@ var $files = {
   ],
 
   $coreMap: [
-    SRC + 'map.js',
+    SRC + 'map.js'
+  ],
+
+  $coreSniffer: [
+    SRC + 'sniffer.js'
   ],
 
   // Core source, mandatory source files appended to each target
   $core: [
     SRC + 'constants.js',
+    SRC + 'sniffer.js',
     SRC + 'util.js',
     SRC + 'dom.js',
     SRC + 'event-bus.js',
@@ -125,6 +130,7 @@ var $targets = {
       '$underscore',
       '$coreJson',
       '$coreMap',
+      '$coreSniffer',
       '$coreParser',
       '$coreSanitize',
       '$core'
@@ -140,6 +146,7 @@ var $targets = {
       '$underscore',
       '$coreJson',
       '$coreMap',
+      '$coreSniffer',
       '$coreParser',
       '$coreSanitize',
       '$core',
@@ -149,6 +156,8 @@ var $targets = {
       '$jquery'
     ],
     test: [
+      // Add jq-Lite spec to check compatibilty with jquery
+      TEST + 'jq-lite-spec.js',
     ]
   },
 
@@ -157,6 +166,7 @@ var $targets = {
       '$jq',
       '$coreJson',
       '$coreMap',
+      '$coreSniffer',
       '$coreParser',
       '$underscoreSanitize',
       '$core'
@@ -165,6 +175,8 @@ var $targets = {
       '$underscore'
     ],
     test: [
+      // Add underscore-Lite spec to check compatibilty with underscore
+      TEST + 'underscore-lite-spec.js',
     ]
   },
 
@@ -172,6 +184,7 @@ var $targets = {
     src: [
       '$coreJson',
       '$coreMap',
+      '$coreSniffer',
       '$coreParser',
       '$underscoreSanitize',
       '$core',
@@ -182,6 +195,11 @@ var $targets = {
       '$underscore'
     ],
     test: [
+      // Add jq-Lite spec to check compatibilty with jquery
+      TEST + 'jq-lite-spec.js',
+
+      // Add underscore-Lite spec to check compatibilty with underscore
+      TEST + 'underscore-lite-spec.js',
     ]
   },
 
@@ -205,7 +223,7 @@ var $targets = {
       // Add parser spec to check compatibilty with angular
       TEST + 'parser-spec.js'
     ]
-  },
+  }/*,
 
   polymer: {
     src: [
@@ -222,7 +240,7 @@ var $targets = {
     ],
     test: [
     ]
-  }
+  }*/
 };
 
 // Build files needed for each targets

@@ -29,6 +29,7 @@
 /* global $ */
 /* global _ */
 /* global $parse */
+/* global $sniffer */
 /* global $comparators */
 /* global $util */
 /* global EventBus */
@@ -150,17 +151,13 @@ var Grid = (function() {
     // Force scroll if height is specified.
     opts.scrollable = opts.scrollable || !!opts.size.height;
 
-    // Options flags
-    var isSelectable = this.isSelectable();
-    var isSortable = this.isSortable();
-    var isScrollable = opts.scrollable;
-
     // Initialize data
     this.$data = new Collection(opts.data, {
       key: opts.key,
       model: opts.model
     });
 
+    var isSortable = this.isSortable();
     if (!isSortable && opts.columns) {
       // Force column not to be sortable
       _.forEach(opts.columns, function(column) {
@@ -172,6 +169,11 @@ var Grid = (function() {
       key: 'id',
       model: Column
     });
+
+    // Options flags
+    var isScrollable = opts.scrollable;
+    var isSelectable = this.isSelectable();
+    var isEditable = this.isEditable();
 
     this.$sortBy = [];
 
@@ -193,6 +195,16 @@ var Grid = (function() {
     if (isSelectable || isSortable) {
       this.$thead.on('click', _.bind(GridDomHandlers.onClickThead, this));
       this.$tfoot.on('click', _.bind(GridDomHandlers.onClickTfoot, this));
+    }
+
+    // Bind input event if editable columns are updated
+    if (isEditable) {
+      // Bind appropriate event with a fallback for old browser
+      if ($sniffer.hasEvent('input')) {
+        this.$tbody.on('input', _.bind(GridDomHandlers.onInputTbody, this));
+      } else {
+        this.$tbody.on('keydown change', _.bind(GridDomHandlers.onInputTbody, this));
+      }
     }
 
     // Observe collection to update grid accordingly
@@ -247,6 +259,13 @@ var Grid = (function() {
     // Get selection collection
     selection: function() {
       return this.$selection;
+    },
+
+    // Check if grid hasat least
+    isEditable: function() {
+      return this.$columns.some(function(column) {
+        return !!column.editable;
+      });
     },
 
     // Check if grid is sortable
@@ -598,7 +617,7 @@ var Grid = (function() {
   };
 
   // Initialize events with noop
-  _.forEach(['onInitialized', 'onRendered', 'onDataSpliced', 'onDataUpdated', 'onColumnsSpliced', 'onSelectionChanged', 'onSorted'], function(name) {
+  _.forEach(['onInitialized', 'onRendered', 'onDataSpliced', 'onDataChanged', 'onDataUpdated', 'onColumnsSpliced', 'onSelectionChanged', 'onSorted'], function(name) {
     Constructor.options.events[name] = null;
   });
 

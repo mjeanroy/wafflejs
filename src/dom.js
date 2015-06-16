@@ -117,13 +117,13 @@ var $doc = (function() {
     scrollbarWidth: _.memoize(scrollbarWidth, hasher)
   };
 
-  _.forEach(['tr', 'td', 'th', 'tbody', 'thead','tfoot', 'input', 'span'], function(tagName) {
+  _.forEach(['tr', 'td', 'th', 'tbody', 'thead','tfoot', 'input', 'select', 'option', 'span'], function(tagName) {
     o[tagName] = function() {
       return this.create(tagName);
     };
   });
 
-  _.forEach(['text', 'checkbox'], function(type) {
+  _.forEach(['text', 'checkbox', 'number', 'email', 'url'], function(type) {
     var fnName = 'input' + $util.capitalize(type);
     o[fnName] = function() {
       var input = this.input();

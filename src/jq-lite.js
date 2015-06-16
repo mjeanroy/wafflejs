@@ -99,11 +99,17 @@ var $ = (function() {
       return new jqLite(this[index]);
     },
 
-    // Attach event
-    on: function(event, callback) {
-      return iterate(this, function(node) {
-        bind(this, event, callback, node);
-      });
+    // Attach event(s)
+    on: function(events, callback) {
+      var array = events.indexOf(' ') >= 0 ? events.split(' ') : [events];
+
+      for (var i = 0, size = array.length; i < size; ++i) {
+        for (var k = 0, ln = this.length; k < ln; ++k) {
+          bind(this, array[i], callback, this[k]);
+        }
+      }
+
+      return this;
     },
 
     // Detach events
@@ -233,6 +239,12 @@ var $ = (function() {
       return iterate(this, function(node) {
         node[property] = value;
       });
+    },
+
+    // Get the current value of the first element
+    // in the set of matched elements.
+    val: function() {
+      return this[0].value;
     }
   };
 

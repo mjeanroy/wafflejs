@@ -22,39 +22,38 @@
  * SOFTWARE.
  */
 
-/* exported $parse */
-/* exported $sanitize */
+/* global HashMap */
 /* exported $sniffer */
-/* global _ */
-/* global $renderers */
-/* global waffleModule */
 
-// Use $parse and $sanitize services from angularjs framework
+var $sniffer = (function() {
+  // This property is available only in IE
+  var msie = document.documentMode;
+  var cacheEvents = new HashMap();
 
-var $parse;
-var $sanitize;
-var $sniffer;
-
-waffleModule.run(['$injector', '$log', '$filter', function($injector, $log, $filter) {
-  // Service $parse is a mandatory module
-  $parse = $injector.get('$parse');
-  $sniffer = $injector.get('$sniffer');
-
-  try {
-    $sanitize = $injector.get('$sanitize');
-  } catch(e) {
-    // At least, log a warning
-    $log.warn('Module ngSanitize is not available, you should add this module to avoid xss injection');
-
-    // Fallback to identity function, should it be better ?
-    $sanitize = _.identity;
-  }
-
-  // Override $renderers lookup
-  var $getRenderer = $renderers.$get;
-  $renderers.$get = function(name) {
-    // An angular fitler should be a waffle renderer.
-    // Native waffle renderer should be check first.
-    return $getRenderer(name) || $filter(name);
+  // This is a map of events with tagName to use for feature
+  // detection.
+  var events = {
+    'input': 'input'
   };
-}]);
+
+  var o = {
+    hasEvent: function(event) {
+      // IE9 and IE10 support input event, but it is really
+      // buggy, so we disable this feature for these browsers
+      if (event === 'input' && msie < 11) {
+        return false;
+      }
+
+      if (!cacheEvents.contains(event)) {
+        var node = document.createElement(events[event] || 'div');
+        var support = ('on' + event) in node;
+        cacheEvents.put(event, !!support);
+        node = null;
+      }
+
+      return cacheEvents.get(event);
+    }
+  };
+
+  return o;
+})();

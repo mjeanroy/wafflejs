@@ -51,6 +51,7 @@ describe('Grid', function() {
         onRendered: null,
         onDataSpliced: null,
         onDataUpdated: null,
+        onDataChanged: null,
         onColumnsSpliced: null,
         onSelectionChanged: null,
         onSorted: null
@@ -134,6 +135,7 @@ describe('Grid', function() {
         onRendered: null,
         onDataSpliced: onDataSpliced,
         onDataUpdated: null,
+        onDataChanged: null,
         onColumnsSpliced: null,
         onSelectionChanged: null,
         onSorted: null
@@ -398,6 +400,50 @@ describe('Grid', function() {
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
     expect(onCalls[2].args).toContain('click', Function);
+  });
+
+  it('should bind input on body when grid is initialized if grid is editable and input event is available', function() {
+    spyOn(jq, 'on').and.callThrough();
+    spyOn($sniffer, 'hasEvent').and.returnValue(true);
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo', editable: true },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var onCalls = jq.on.calls.all();
+    expect(onCalls).toHaveLength(4);
+    expect(onCalls[0].args).toContain('click', Function);
+    expect(onCalls[1].args).toContain('click', Function);
+    expect(onCalls[2].args).toContain('input', Function);
+    expect(onCalls[3].args).toContain('click', Function);
+  });
+
+  it('should bind keydown and change events on body when grid is initialized if grid is editable and input event is not available', function() {
+    spyOn(jq, 'on').and.callThrough();
+    spyOn($sniffer, 'hasEvent').and.returnValue(false);
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo', editable: true },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var onCalls = jq.on.calls.all();
+    expect(onCalls).toHaveLength(4);
+    expect(onCalls[0].args).toContain('click', Function);
+    expect(onCalls[1].args).toContain('click', Function);
+    expect(onCalls[2].args).toContain('keydown change', Function);
+    expect(onCalls[3].args).toContain('click', Function);
   });
 
   it('should bind click on header and footer if grid is not selectable and not sortable', function() {

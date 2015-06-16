@@ -178,7 +178,7 @@ describe('waffle-jq-angular', function() {
     expect($scope.grid.$data.toArray()).toEqual(options.data);
   });
 
-  fit('should build table using columns initialization', function() {
+  it('should build table using columns initialization', function() {
     $scope.columns = [
       { id: 'foo' },
       { id: 'bar' }

@@ -87,6 +87,17 @@ var Column = (function() {
     this.sortable = isUndefined(sortable) ? true : !!sortable;
     this.asc = isUndefined(column.asc) ? null : !!column.asc;
 
+    // Editable column
+    var editable = column.editable === true ? {} : column.editable;
+    if (editable) {
+      editable = _.defaults(editable, {
+        type: 'text',
+        css: null
+      });
+    }
+
+    this.editable = editable;
+
     if (!this.css) {
       // Use id as default css.
       // Normalize css format : remove undesirable characters
@@ -185,7 +196,7 @@ var Column = (function() {
     render: function(object) {
       // Extract value
       var field = this.field;
-      var value = object == null ? '' : this.$parser(object);
+      var value = this.value(object);
 
       // Give extracted value as the first parameter
       // Give object as the second parameter to allow more flexibility
@@ -201,6 +212,17 @@ var Column = (function() {
       }
 
       return this.escape ? $sanitize(rendererValue) : rendererValue;
+    },
+
+    // Get or set value of object using column settings (parser).
+    value: function(object, value) {
+      var parser = this.$parser;
+
+      if (arguments.length === 2) {
+        return parser.assign(object, value);
+      } else {
+        return object == null ? '' : parser(object);
+      }
     }
   };
 

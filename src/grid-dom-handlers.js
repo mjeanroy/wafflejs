@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+/* global $ */
 /* global _ */
 /* global $doc */
 /* global CHAR_ORDER_ASC */
@@ -43,6 +44,16 @@ var GridDomHandlers = (function() {
 
   var isInputCheckbox = function(node) {
     return node.tagName === INPUT && node.getAttribute('type') === 'checkbox';
+  };
+
+  // Data formatter used when editable column cell is updated
+  var dataFormatters = {
+    number: function(value) {
+      return Number(value);
+    },
+    checkbox: function(value) {
+      return !!value;
+    }
   };
 
   var onClickTitle = function(e, tagName) {
@@ -143,6 +154,40 @@ var GridDomHandlers = (function() {
         }
         else {
           selection.reset([data]);
+        }
+      }
+    },
+
+    // Update grid data when editable column has been updated
+    onInputTbody: function(e) {
+      var target = e.target;
+      var columnId = target.getAttribute(DATA_WAFFLE_ID);
+      var column = columnId ? this.$columns.byKey(columnId) : null;
+
+      if (column && column.editable) {
+        var tr = $doc.findParent(target, 'TR');
+        if (tr) {
+          var type = column.editable.type;
+          var formatter = dataFormatters[type] || _.identity;
+          var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
+
+          var data = this.$data;
+          var object = data.at(idx);
+
+          var oldValue = column.value(object);
+          var newValue = formatter($(target).val());
+
+          if (oldValue !== newValue) {
+            column.value(object, newValue);
+
+            // Dispatch events
+            this.dispatchEvent('datachanged', {
+              index: idx,
+              object: object,
+              oldValue: oldValue,
+              newValue: newValue
+            });
+          }
         }
       }
     }

@@ -36,6 +36,7 @@ describe('Column', function() {
     expect(column.field).toBe('foo');
     expect(column.css).toBe('foo');
     expect(column.width).toBeUndefined();
+    expect(column.editable).toBeFalsy();
   });
 
   it('should initialize with custom values', function() {
@@ -56,6 +57,33 @@ describe('Column', function() {
     expect(column.field).toBe('foo.bar');
     expect(column.css).toBe('foo-bar');
     expect(column.width).toBe(100);
+  });
+
+  it('should create an editable column', function() {
+    var column = new Column({
+      id: 'foo',
+      editable: {
+        type: 'number',
+        css: 'form-control'
+      }
+    });
+
+    expect(column.editable).toEqual({
+      type: 'number',
+      css: 'form-control'
+    });
+  });
+
+  it('should create an editable column with default value', function() {
+    var column = new Column({
+      id: 'foo',
+      editable: true
+    });
+
+    expect(column.editable).toEqual({
+      type: 'text',
+      css: null
+    });
   });
 
   it('should normalize default css', function() {
@@ -279,6 +307,46 @@ describe('Column', function() {
     };
 
     expect(column.render(object)).toBe('FOO');
+  });
+
+  it('should get object value', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false,
+      width: 100
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'Foo'
+      }
+    };
+
+    expect(column.value()).toBe('');
+    expect(column.value(null)).toBe('');
+    expect(column.value(undefined)).toBe('');
+    expect(column.value(object)).toBe(1);
+  });
+
+  it('should set object value', function() {
+    var column = new Column({
+      id: 'id',
+      sortable: false,
+      width: 100
+    });
+
+    var object = {
+      id: 1,
+      nested: {
+        name: 'Foo'
+      }
+    };
+
+    var result = column.value(object, 2);
+
+    expect(result).toBe(2);
+    expect(object.id).toBe(2);
   });
 
   it('should get default css classes to apply', function() {

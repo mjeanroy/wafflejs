@@ -75,24 +75,60 @@ var $parse = (function() {
     return $normalize(key).split('.');
   };
 
+  var ensureObject = function(object) {
+    if (object == null) {
+      return {};
+    }
+
+    if (!_.isObject(object)) {
+      throw new Error('Cannot assign to ready property "' + object + '"');
+    }
+
+    return object;
+  };
+
+  var getter = function(parts, object) {
+    var size = parts.length;
+    var current = object;
+
+    for (var i = 0; i < size; ++i) {
+      if (current == null || !_.isObject(current)) {
+        return undefined;
+      }
+
+      current = _.result(current, parts[i]);
+    }
+
+    return current;
+  };
+
+  var setter = function(parts, object, value) {
+    var size = parts.length - 1;
+    var current = object;
+    var result = current;
+
+    for (var i = 0; i < size; ++i) {
+      result = _.result(current, parts[i]);
+      result = current[parts[i]] = ensureObject(result);
+    }
+
+    result[_.last(parts)] = value;
+    return value;
+  };
+
   var o = function(key) {
     if (!cache.contains(key)) {
       var parts = $split(key);
-      var size = parts.length;
 
-      cache.put(key, function(object) {
-        var current = object;
+      var $getter = function(object) {
+        return getter(parts, object);
+      };
 
-        for (var i = 0; i < size; ++i) {
-          if (current == null || !_.isObject(current)) {
-            return undefined;
-          }
+      $getter.assign = function(object, value) {
+        return setter(parts, object, value);
+      };
 
-          current = _.result(current, parts[i]);
-        }
-
-        return current;
-      });
+      cache.put(key, $getter);
     }
 
     return cache.get(key);
@@ -101,6 +137,10 @@ var $parse = (function() {
   o.$clear = function() {
     cache.clear();
     return o;
+  };
+
+  o.assign = function() {
+
   };
 
   return o;

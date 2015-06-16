@@ -455,4 +455,80 @@ describe('GridBuilder', function() {
     expect(td.childNodes[0].getAttribute('type')).toBe('checkbox');
     expect(td.childNodes[0].checked).toBeTrue();
   });
+
+  it('should create editable tbody cell', function() {
+    spyOn(GridBuilder, 'tbodyControl').and.callThrough();
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'text',
+      css: null
+    };
+
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var td1 = GridBuilder.tbodyCell(grid, data, grid.columns().at(0), 0);
+
+    expect(td1).toBeDefined();
+    expect(td1.tagName).toEqual('TD');
+    expect(td1.className).toContain('foo');
+    expect(td1.className).toContain('waffle-sortable');
+    expect(td1.getAttribute('data-waffle-id')).toBe('foo');
+
+    var childNodes = td1.childNodes;
+    expect(childNodes.length).toBe(1);
+    expect(childNodes[0].tagName).toBe('INPUT');
+    expect(childNodes[0].value).toBe('1');
+
+    expect(GridBuilder.tbodyControl).toHaveBeenCalledWith(column, data);
+  });
+
+  it('should create editable control for tbody cell', function() {
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'text'
+    };
+
+    var control = GridBuilder.tbodyControl(column, data);
+
+    expect(control).toBeDefined();
+    expect(control.tagName).toEqual('INPUT');
+    expect(control.getAttribute('type')).toBe('text');
+    expect(control.getAttribute('data-waffle-id')).toBe('foo');
+    expect(control.className).toBeEmpty();
+    expect(control.value).toBe('1');
+  });
+
+  it('should create editable control for tbody cell with css classes', function() {
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'text',
+      css: 'foo bar'
+    };
+
+    var control = GridBuilder.tbodyControl(column, data);
+
+    expect(control).toBeDefined();
+    expect(control.tagName).toEqual('INPUT');
+    expect(control.getAttribute('type')).toBe('text');
+    expect(control.getAttribute('data-waffle-id')).toBe('foo');
+    expect(control.value).toBe('1');
+    expect(control.className).toBe('foo bar');
+  });
 });

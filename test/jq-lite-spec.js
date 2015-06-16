@@ -44,10 +44,12 @@ describe('$', function() {
     expect($div[1]).toBe(node2);
   });
 
-  it('should return exact instance of $', function() {
+  it('should return instance of $', function() {
     var $div = $([node1, node2]);
     var $other = $($div);
-    expect($other).toBe($div);
+    expect($other.length).toBe($div.length);
+    expect($other[0]).toBe($div[0]);
+    expect($other[1]).toBe($div[1]);
   });
 
   describe('once created', function() {
@@ -192,17 +194,11 @@ describe('$', function() {
         ]);
       }
 
-      var e1 = document.createEvent('MouseEvent');
-      e1.initEvent('click', true, true);
+      triggerClick($div[0]);
+      triggerClick($div[1]);
 
-      var e2 = document.createEvent('MouseEvent');
-      e2.initEvent('click', true, true);
-
-      $div[0].dispatchEvent(e1);
-      $div[1].dispatchEvent(e2);
-
-      expect(callback).toHaveBeenCalledWith(e1);
-      expect(callback).toHaveBeenCalledWith(e2);
+      expect(callback).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalled();
 
       // Reset spy, Unbind and check callbacks
       callback.calls.reset();
@@ -213,8 +209,9 @@ describe('$', function() {
         expect($div.$$events).toEqual([]);
       }
 
-      $div[0].dispatchEvent(e1);
-      $div[1].dispatchEvent(e2);
+      triggerClick($div[0]);
+      triggerClick($div[1]);
+
       expect(callback).not.toHaveBeenCalled();
     });
 
@@ -279,6 +276,29 @@ describe('$', function() {
 
       expect(node1.checked).toBeFalse();
       expect(node2.checked).toBeFalse();
+    });
+
+    it('should get the value of input element', function() {
+      var input = document.createElement('input');
+      input.value = 'foo';
+      expect($(input).val()).toBe('foo');
+    });
+
+    it('should get the value of select element', function() {
+      var select = document.createElement('select');
+      select.multiple = false;
+
+      for (var i = 0; i < 3; i++) {
+        var option = document.createElement('option');
+        option.value = 'foo' + i;
+        select.appendChild(option);
+      }
+
+      select.selectedIndex = -1;
+      expect($(select).val()).toBeFalsy();
+
+      select.selectedIndex = 1;
+      expect($(select).val()).toBe('foo1');
     });
   });
 });

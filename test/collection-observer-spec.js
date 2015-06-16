@@ -171,4 +171,26 @@ describe('Collection observers', function() {
     expect(callback1).toHaveBeenCalledWith($$changes);
     expect(collection.$$changes).toEqual([]);
   });
+
+  it('should trigger an update change', function() {
+    collection.$$observers = [{
+      ctx: null,
+      callback: callback1
+    }];
+
+    collection.triggerUpdate(0);
+
+    expect(collection.$$changes).toEqual([
+      { type: 'update', index: 0, removed: [], addedCount: 0, object: collection }
+    ]);
+
+    expect(callback1).not.toHaveBeenCalled();
+
+    var $$changes = collection.$$changes;
+
+    jasmine.clock().tick(1);
+
+    expect(callback1).toHaveBeenCalledWith($$changes);
+    expect(collection.$$changes).toEqual([]);
+  });
 });

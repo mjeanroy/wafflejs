@@ -22,39 +22,10 @@
  * SOFTWARE.
  */
 
-/* exported $parse */
-/* exported $sanitize */
-/* exported $sniffer */
-/* global _ */
-/* global $renderers */
-/* global waffleModule */
+describe('sniffer', function() {
 
-// Use $parse and $sanitize services from angularjs framework
-
-var $parse;
-var $sanitize;
-var $sniffer;
-
-waffleModule.run(['$injector', '$log', '$filter', function($injector, $log, $filter) {
-  // Service $parse is a mandatory module
-  $parse = $injector.get('$parse');
-  $sniffer = $injector.get('$sniffer');
-
-  try {
-    $sanitize = $injector.get('$sanitize');
-  } catch(e) {
-    // At least, log a warning
-    $log.warn('Module ngSanitize is not available, you should add this module to avoid xss injection');
-
-    // Fallback to identity function, should it be better ?
-    $sanitize = _.identity;
-  }
-
-  // Override $renderers lookup
-  var $getRenderer = $renderers.$get;
-  $renderers.$get = function(name) {
-    // An angular fitler should be a waffle renderer.
-    // Native waffle renderer should be check first.
-    return $getRenderer(name) || $filter(name);
-  };
-}]);
+  it('should check if event is available', function() {
+    var result = $sniffer.hasEvent('input');
+    expect(result).toBeDefined();
+  });
+});

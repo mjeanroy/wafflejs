@@ -89,4 +89,50 @@ describe('parse', function() {
     var f2 = $parse('nested["id"]');
     expect(f1).toBe(f2);
   });
+
+  it('should set value on object', function() {
+    var o = {};
+    var parser = $parse('id');
+    var setter = parser.assign;
+
+    setter(o, 'foo');
+
+    expect(o).toEqual({
+      id: 'foo'
+    });
+  });
+
+  it('should set value on nested object', function() {
+    var o = {
+      nested: {
+      }
+    };
+
+    var parser = $parse('nested.id');
+    var setter = parser.assign;
+
+    setter(o, 'foo');
+
+    expect(o).toEqual({
+      nested: {
+        id: 'foo'
+      }
+    });
+  });
+
+  it('should set value on nested object and create nested object if needed', function() {
+    var o = {
+    };
+
+    var parser = $parse('nested.id');
+    var setter = parser.assign;
+
+    setter(o, 'foo');
+
+    expect(o).toEqual({
+      nested: {
+        id: 'foo'
+      }
+    });
+  });
 });

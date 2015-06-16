@@ -21,13 +21,14 @@ for (var i = 0; i < 20; i++) {
   generatedData[i] = createFakePerson();
 };
 
-var newColumn = function(id, title, renderer, width) {
+var newColumn = function(id, title, renderer, width, editable) {
   return {
     id: id,
     title: title,
     escape: false,
     comparator: '$string',
     renderer: renderer,
+    editable: editable,
     size: {
       width: width
     }
@@ -37,7 +38,10 @@ var newColumn = function(id, title, renderer, width) {
 var columns = [
   newColumn('name()', 'Name', ['$capitalize']),
   newColumn('userName', 'Login'), 
-  newColumn('email', 'Email', ['$lowercase', 'email'], 500)
+  newColumn('email', 'Email', ['$lowercase', 'email'], 500, {
+    type: 'email',
+    css: 'form-control'
+  })
 ];
 
 var options = {

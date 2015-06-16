@@ -137,6 +137,39 @@ describe('$doc', function() {
     expect(node.getAttribute('type')).toBe('text');
   });
 
+  it('should create input type "number" element', function() {
+    var node = $doc.inputNumber();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('number');
+  });
+
+  it('should create input type "email" element', function() {
+    var node = $doc.inputEmail();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('email');
+  });
+
+  it('should create input type "email" element', function() {
+    var node = $doc.inputUrl();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('url');
+  });
+
+  it('should create select element', function() {
+    var node = $doc.select();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('SELECT');
+  });
+
+  it('should create option element', function() {
+    var node = $doc.option();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('OPTION');
+  });
+
   it('should find parent', function() {
     var nodes = $doc.byTagName('span');
     var parent = $doc.findParent(nodes[0], 'DIV');

@@ -402,6 +402,16 @@ var Collection = (function() {
       return removed;
     },
 
+    // Force an update change.
+    // This will force a row update.
+    triggerUpdate: function(idx) {
+      this.trigger([
+        createChange(TYPE_UPDATE, [], idx, 0, this)
+      ]);
+
+      return this;
+    },
+
     // Replace data inside collection.
     // Index of data is retrieved from id and data at given index is replaced.
     // Appropriate changes are automatically triggered.

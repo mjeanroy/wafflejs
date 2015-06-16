@@ -24,6 +24,7 @@
 
 /* global $ */
 /* global $doc */
+/* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_IDX */
 /* global CSS_SELECTED */
 /* global CSS_CHECKBOX_CELL */
@@ -138,11 +139,20 @@ var GridBuilder = {
 
   // Create a cell for grid tbody node
   tbodyCell: function(grid, data, column, idx) {
-    return $($doc.td())
+    var $td = $($doc.td())
       .addClass(column.cssClasses(idx, false))
       .css(column.styles(idx, false))
-      .attr(column.attributes(idx, false))
-      .html(column.render(data))[0];
+      .attr(column.attributes(idx, false));
+
+    // Check for editable column
+    var editable = column.editable;
+    if (editable) {
+      $td.append(GridBuilder.tbodyControl(column, data));
+    } else {
+      $td.html(column.render(data));
+    }
+
+    return $td[0];
   },
 
   // Create a cell for grid tbody node
@@ -153,5 +163,22 @@ var GridBuilder = {
     return $($doc.td())
       .addClass(CSS_CHECKBOX_CELL)
       .append($checkbox[0])[0];
+  },
+
+  // Create control for editable cell
+  tbodyControl: function(column, data) {
+    var editable = column.editable;
+
+    var input = $doc.input();
+    input.setAttribute('type', editable.type);
+    input.setAttribute('value', column.value(data));
+    input.setAttribute(DATA_WAFFLE_ID, column.id);
+
+    // Append custom css
+    if (editable.css) {
+      input.className = editable.css;
+    }
+
+    return input;
   }
 };

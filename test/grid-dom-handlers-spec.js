@@ -51,6 +51,7 @@ describe('Grid Dom Handlers', function() {
     onClickThead = _.bind(GridDomHandlers.onClickThead, grid);
     onClickTfoot = _.bind(GridDomHandlers.onClickTfoot, grid);
     onClickTbody = _.bind(GridDomHandlers.onClickTbody, grid);
+    onInputTbody = _.bind(GridDomHandlers.onInputTbody, grid);
 
     event = jasmine.createSpyObj('event', [
       'preventDefault',
@@ -749,6 +750,90 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopPropagation).not.toHaveBeenCalled();
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('onInputTbody', function() {
+    var input;
+    var tr;
+
+    var column;
+    var data0;
+
+    beforeEach(function() {
+      data0 = grid.$data.at(0);
+      column = grid.$columns.at(0);
+
+      column.editable = {
+        type: 'number',
+        css: null
+      };
+
+      input = document.createElement('INPUT');
+      input.setAttribute('data-waffle-id', 'id');
+      input.value = 100;
+
+      tr = document.createElement('TR');
+      tr.setAttribute('data-waffle-idx', 0);
+
+      spyOn(column, 'value').and.callThrough();
+      spyOn($doc, 'findParent').and.callFake(function() {
+        return tr;
+      });
+
+      spyOn(grid.$data, 'triggerUpdate').and.callThrough();
+      spyOn(grid, 'dispatchEvent').and.callThrough();
+    });
+
+    it('should update object value', function() {
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect($doc.findParent).toHaveBeenCalledWith(input, 'TR');
+      expect(column.value).toHaveBeenCalledWith(data0, 100);
+      expect(data0.id).toBe(100);
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
+        index: 0,
+        object: data0,
+        oldValue: 1,
+        newValue: 100
+      });
+    });
+
+    it('should not update object value for input event not related to grid column', function() {
+      event.target = input;
+      event.target.removeAttribute('data-waffle-id');
+
+      onInputTbody(event);
+
+      expect($doc.findParent).not.toHaveBeenCalled();
+      expect(column.value).not.toHaveBeenCalled();
+      expect(data0.id).toBe(1);
+    });
+
+    it('should not update object value for input event not related to editable column', function() {
+      column.editable = false;
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect($doc.findParent).not.toHaveBeenCalled();
+      expect(column.value).not.toHaveBeenCalled();
+      expect(data0.id).toBe(1);
+    });
+
+    it('should not update object value for input event not related to grid row', function() {
+      $doc.findParent.and.returnValue(null);
+
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect($doc.findParent).toHaveBeenCalledWith(input, 'TR');
+      expect(column.value).not.toHaveBeenCalled();
+      expect(data0.id).toBe(1);
     });
   });
 });

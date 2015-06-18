@@ -531,4 +531,31 @@ describe('GridBuilder', function() {
     expect(control.value).toBe('1');
     expect(control.className).toBe('foo bar');
   });
+
+  it('should create editable control for tbody cell with select element', function() {
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'select',
+      options: [
+        { label: 'foo' }
+      ]
+    };
+
+    var control = GridBuilder.tbodyControl(column, data);
+
+    expect(control).toBeDefined();
+    expect(control.tagName).toEqual('SELECT');
+    expect(control.getAttribute('data-waffle-id')).toBe('foo');
+
+    expect(control.childNodes.length).toBe(1);
+    expect(control.childNodes[0].tagName).toBe('OPTION');
+    expect(control.childNodes[0].value).toBe('foo');
+    expect(control.childNodes[0].innerHTML).toBe('foo');
+  });
 });

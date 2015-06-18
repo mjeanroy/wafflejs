@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* jshint eqnull: true */
+/* global _ */
 /* global $ */
 /* global $doc */
 /* global DATA_WAFFLE_ID */
@@ -169,16 +171,38 @@ var GridBuilder = {
   tbodyControl: function(column, data) {
     var editable = column.editable;
 
-    var input = $doc.input();
-    input.setAttribute('type', editable.type);
-    input.setAttribute('value', column.value(data));
-    input.setAttribute(DATA_WAFFLE_ID, column.id);
+    var control;
+
+    if (editable.type === 'select') {
+      control = $doc.select();
+
+      // Append custom options
+      if (editable.options) {
+        _.forEach(editable.options, function(option) {
+          var opt = $doc.option();
+
+          opt.innerHTML = option.label != null ? option.label : '';
+
+          if (option.value != null) {
+            opt.value = option.value;
+          }
+
+          control.appendChild(opt);
+        });
+      }
+    } else {
+      control = $doc.input();
+      control.setAttribute('type', editable.type);
+    }
+
+    control.setAttribute('value', column.value(data));
+    control.setAttribute(DATA_WAFFLE_ID, column.id);
 
     // Append custom css
     if (editable.css) {
-      input.className = editable.css;
+      control.className = editable.css;
     }
 
-    return input;
+    return control;
   }
 };

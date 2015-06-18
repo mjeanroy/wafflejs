@@ -158,6 +158,27 @@ describe('$doc', function() {
     expect(node.getAttribute('type')).toBe('url');
   });
 
+  it('should create input type "date" element', function() {
+    var node = $doc.inputDate();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('date');
+  });
+
+  it('should create input type "time" element', function() {
+    var node = $doc.inputTime();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('time');
+  });
+
+  it('should create input type "datetime" element', function() {
+    var node = $doc.inputDatetime();
+    expect(node).toBeDefined();
+    expect(node.tagName).toBe('INPUT');
+    expect(node.getAttribute('type')).toBe('datetime');
+  });
+
   it('should create select element', function() {
     var node = $doc.select();
     expect(node).toBeDefined();

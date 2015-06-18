@@ -139,7 +139,7 @@ var $doc = (function() {
     };
   });
 
-  _.forEach(['text', 'checkbox', 'number', 'email', 'url'], function(type) {
+  _.forEach(['text', 'checkbox', 'number', 'email', 'url', 'date', 'time', 'datetime'], function(type) {
     var fnName = 'input' + $util.capitalize(type);
     o[fnName] = function() {
       var input = this.input();

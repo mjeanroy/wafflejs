@@ -81,6 +81,31 @@ var $doc = (function() {
       return node;
     },
 
+    // Merge two nodes.
+    // If nodes are text node, html content is replaced
+    // Otherwise, for node elements:
+    // - Update attributes
+    // - Update className
+    // - Update childs recursively
+    mergeNodes: function(oldNode, newNode) {
+      if (oldNode.nodeType === 3) {
+        // This is a text node
+        if (oldNode.nodeValue !== newNode.nodeValue) {
+          oldNode.nodeValue = newNode.nodeValue;
+        }
+      } else {
+        // This is a node element
+        o.updateAttributes(oldNode, newNode);
+        o.updateClassName(oldNode, newNode);
+
+        var oldChildNodes = oldNode.childNodes;
+        var newChildNodes = newNode.childNodes;
+        for (var i = 0, nbChilds = oldChildNodes.length; i < nbChilds; ++i) {
+          o.mergeNodes(oldChildNodes[i], newChildNodes[i]);
+        }
+      }
+    },
+
     // Update attributes of old node with attributes of new node
     updateAttributes: function(oldNode, newNode) {
       var oldAttributes = oldNode.attributes;
@@ -101,15 +126,6 @@ var $doc = (function() {
       var newClassName = newNode.className;
       if (oldClassName !== newClassName) {
         oldNode.className = newNode.className;
-      }
-    },
-
-    // Update attributes of old node with attributes of new node
-    updateContent: function(oldNode, newNode) {
-      var oldContent = oldNode.innerHTML;
-      var newContent = newNode.innerHTML;
-      if (oldContent !== newContent) {
-        oldNode.innerHTML = newContent;
       }
     },
 

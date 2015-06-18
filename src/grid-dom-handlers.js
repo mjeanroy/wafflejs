@@ -187,6 +187,11 @@ var GridDomHandlers = (function() {
               oldValue: oldValue,
               newValue: newValue
             });
+
+            // Another field may have been updated, so
+            // we should force an update to refresh the
+            // entire row.
+            data.triggerUpdate(idx);
           }
         }
       }

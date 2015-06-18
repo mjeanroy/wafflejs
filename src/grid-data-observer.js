@@ -124,23 +124,10 @@ var GridDataObserver = {
     var data = this.$data.at(index);
     var tbody = this.$tbody[0];
 
+    // Create new node representation and merge diff with old node
     var oldNode = tbody.childNodes[index];
     var newNode = GridBuilder.tbodyRow(this, data, index);
-
-    // We do not replace entire row, we just update what need to be updated
-    $doc.updateAttributes(oldNode, newNode);
-    $doc.updateClassName(oldNode, newNode);
-
-    // Update childs
-    var oldChilds = oldNode.childNodes;
-    var newChilds = newNode.childNodes;
-
-    _.forEach(newChilds, function(newTd, idx) {
-      var oldTd = oldChilds[idx];
-      $doc.updateAttributes(oldTd, newTd);
-      $doc.updateClassName(oldTd, newTd);
-      $doc.updateContent(oldTd, newTd);
-    });
+    $doc.mergeNodes(oldNode, newNode);
 
     // Trigger event
     this.dispatchEvent('dataupdated', {

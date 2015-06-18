@@ -800,6 +800,8 @@ describe('Grid Dom Handlers', function() {
         oldValue: 1,
         newValue: 100
       });
+
+      expect(grid.$data.triggerUpdate).toHaveBeenCalledWith(0);
     });
 
     it('should not update object value for input event not related to grid column', function() {

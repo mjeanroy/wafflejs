@@ -216,15 +216,37 @@ describe('$doc', function() {
     expect(node1.className).toBe('bar');
   });
 
-  it('should update node content', function() {
+  it('should merge two nodes', function() {
+    spyOn($doc, 'updateAttributes').and.callThrough();
+    spyOn($doc, 'updateClassName').and.callThrough();
+
     var node1 = document.createElement('div');
-    node1.innerHTML = 'foo bar';
-
     var node2 = document.createElement('div');
-    node2.innerHTML = 'bar';
 
-    $doc.updateContent(node1, node2);
+    var span1 = document.createElement('span');
+    span1.className = 'foo-1';
+    span1.setAttribute('foo', 'foo1');
+    span1.innerHTML = 'foo #1';
 
-    expect(node1.innerHTML).toBe('bar');
+    var span2 = document.createElement('span');
+    span2.className = 'foo-2';
+    span2.setAttribute('foo', 'foo2');
+    span2.innerHTML = 'foo #2';
+
+    node1.appendChild(span1);
+    node2.appendChild(span2);
+
+    $doc.mergeNodes(node1, node2);
+
+    expect($doc.updateAttributes).toHaveBeenCalledWith(node1, node2);
+    expect($doc.updateClassName).toHaveBeenCalledWith(node1, node2);
+
+    expect($doc.updateAttributes).toHaveBeenCalledWith(span1, span2);
+    expect($doc.updateClassName).toHaveBeenCalledWith(span1, span2);
+
+    expect(node1.childNodes.length).toBe(1);
+    expect(node1.childNodes[0].className).toBe('foo-2');
+    expect(node1.childNodes[0].getAttribute('foo')).toBe('foo2');
+    expect(node1.childNodes[0].innerHTML).toBe('foo #2');
   });
 });

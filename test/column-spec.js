@@ -345,7 +345,7 @@ describe('Column', function() {
 
     var result = column.value(object, 2);
 
-    expect(result).toBe(2);
+    expect(result).toBe(column);
     expect(object.id).toBe(2);
   });
 

@@ -219,7 +219,8 @@ var Column = (function() {
       var parser = this.$parser;
 
       if (arguments.length === 2) {
-        return parser.assign(object, value);
+        parser.assign(object, value);
+        return this;
       } else {
         return object == null ? '' : parser(object);
       }

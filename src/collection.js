@@ -721,7 +721,10 @@ var Collection = (function() {
 
     // Extract property of collection items
     pluck: function(name) {
-      return this.map($parse(name));
+      var getter = $parse(name);
+      return this.map(function(o) {
+        return getter(o);
+      });
     }
   };
 
@@ -747,7 +750,10 @@ var Collection = (function() {
     Constructor.prototype[fn] = function(callback, ctx) {
       // Support nested property in collection object
       if (_.isString(callback)) {
-        callback = $parse(callback);
+        var getter = $parse(callback);
+        callback = function(o) {
+          return getter(o);
+        };
       }
 
       return _[fn].call(_, this, callback, ctx);

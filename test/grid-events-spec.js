@@ -41,6 +41,22 @@ describe('Grid Events', function() {
     expect(onInitialized).toHaveBeenCalledWith(jasmine.any(Object));
   });
 
+  it('should dispatch "updated" event when grid is updated', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    spyOn(grid.$bus, 'dispatchEvent').and.callThrough();
+
+    grid.dispatchEvent('initialized');
+
+    expect(grid.$bus.dispatchEvent).toHaveBeenCalledWith(grid, 'updated');
+  });
+
   it('should call onRendered callbacks after body rendering', function() {
     var table = document.createElement('table');
     var onRendered = jasmine.createSpy('onRendered');

@@ -535,6 +535,11 @@ var Grid = (function() {
     // If lazy evaluation is needless, just put arguments next to event name.
     dispatchEvent: function(name, argFn) {
       this.$bus.dispatchEvent(this, name, argFn);
+
+      // Trigger events when one of other event is triggered
+      // This can be a way to add a single listener to all events
+      this.$bus.dispatchEvent(this, 'updated');
+
       return this;
     },
 
@@ -617,7 +622,7 @@ var Grid = (function() {
   };
 
   // Initialize events with noop
-  _.forEach(['onInitialized', 'onRendered', 'onDataSpliced', 'onDataChanged', 'onDataUpdated', 'onColumnsSpliced', 'onSelectionChanged', 'onSorted'], function(name) {
+  _.forEach(['onInitialized', 'onUpdated', 'onRendered', 'onDataSpliced', 'onDataChanged', 'onDataUpdated', 'onColumnsSpliced', 'onSelectionChanged', 'onSorted'], function(name) {
     Constructor.options.events[name] = null;
   });
 

@@ -521,4 +521,21 @@ describe('_', function() {
     expect(memoize()).toBe('foo');
     expect(expensive.calls.count()).toBe(1);
   });
+
+  it('should debounce function', function() {
+    var expensive = jasmine.createSpy('callback').and.returnValue('bar');
+    var debounced = _.debounce(expensive, 500);
+
+    debounced('foo');
+
+    expect(expensive).not.toHaveBeenCalled();
+
+    jasmine.clock().tick(250);
+    expect(expensive).not.toHaveBeenCalled();
+
+    debounced('foo');
+
+    jasmine.clock().tick(500);
+    expect(expensive).toHaveBeenCalledWith('foo');
+  });
 });

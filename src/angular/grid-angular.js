@@ -127,9 +127,9 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
       setter(scope, grid);
 
       // When data is spliced, we need to launch a new digest phase if needed
-      grid.addEventListener('dataspliced', function() {
+      grid.addEventListener('updated', _.debounce(function() {
         $apply();
-      });
+      }, 200));
 
       // If ngModel is specified, then it should be binded to the
       // current selection. If grid is not selectable, then

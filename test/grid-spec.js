@@ -48,6 +48,7 @@ describe('Grid', function() {
       },
       events: {
         onInitialized: null,
+        onUpdated: null,
         onRendered: null,
         onDataSpliced: null,
         onDataUpdated: null,
@@ -132,6 +133,7 @@ describe('Grid', function() {
       },
       events: {
         onInitialized: onInitialized,
+        onUpdated: null,
         onRendered: null,
         onDataSpliced: onDataSpliced,
         onDataUpdated: null,

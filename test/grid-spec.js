@@ -37,6 +37,7 @@ describe('Grid', function() {
       async: false,
       scrollable: false,
       sortable: true,
+      dnd: false,
       selection: {
         enable: true,
         checkbox: true,
@@ -283,6 +284,17 @@ describe('Grid', function() {
     expect(table.className).toContain('waffle-fixedheader');
   });
 
+  it('should create draggable grid', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      dnd: true
+    });
+
+    expect(grid.$columns).toVerify(function(column) {
+      return column.draggable;
+    });
+  });
+
   it('should create scrollable grid using size', function() {
     var table = document.createElement('table');
     var grid = new Grid(table, {
@@ -486,6 +498,33 @@ describe('Grid', function() {
     expect(onCalls[1].args).toContain('click', Function);
   });
 
+  it('should bind drag & drop events', function() {
+    spyOn(jq, 'on').and.callThrough();
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      selection: false,
+      sortable: false,
+      dnd: true,
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var onCalls = jq.on.calls.all();
+    expect(onCalls).toHaveLength(6);
+
+    expect(onCalls[0].args).toContain('dragstart', jasmine.any(Function));
+    expect(onCalls[1].args).toContain('dragover', jasmine.any(Function));
+    expect(onCalls[2].args).toContain('dragend', jasmine.any(Function));
+    expect(onCalls[3].args).toContain('dragleave', jasmine.any(Function));
+    expect(onCalls[4].args).toContain('dragenter', jasmine.any(Function));
+    expect(onCalls[5].args).toContain('drop', jasmine.any(Function));
+  });
+
   it('should destroy grid', function() {
     var table = document.createElement('table');
 
@@ -587,6 +626,7 @@ describe('Grid', function() {
     expect(grid.$selection).toBeDefined();
     expect(grid.$columns).toBeDefined();
 
+    var $table = grid.$table;
     var $thead = grid.$thead;
     var $tbody = grid.$tbody;
     var $tfoot = grid.$tfoot;
@@ -617,10 +657,11 @@ describe('Grid', function() {
     expect(jq.on).not.toHaveBeenCalled();
 
     var offCalls = jq.off.calls.all();
-    expect(offCalls).toHaveLength(3);
-    expect(offCalls[0].object).toEqual($thead);
-    expect(offCalls[1].object).toEqual($tfoot);
-    expect(offCalls[2].object).toEqual($tbody);
+    expect(offCalls).toHaveLength(4);
+    expect(offCalls[0].object).toEqual($table);
+    expect(offCalls[1].object).toEqual($thead);
+    expect(offCalls[2].object).toEqual($tfoot);
+    expect(offCalls[3].object).toEqual($tbody);
   });
 
   describe('once initialized', function() {

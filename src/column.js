@@ -33,6 +33,7 @@
 /* global CSS_SORTABLE */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SORTABLE_ASC */
+/* global CSS_DRAGGABLE */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
 /* global DATA_WAFFLE_ID */
@@ -85,6 +86,7 @@ var Column = (function() {
     this.escape = isUndefined(escape) ? true : !!escape;
     this.width = fromPx(column.width);
     this.sortable = isUndefined(sortable) ? true : !!sortable;
+    this.draggable = !!column.draggable;
     this.asc = isUndefined(column.asc) ? null : !!column.asc;
 
     // Editable column
@@ -142,6 +144,10 @@ var Column = (function() {
         classes.push(CSS_SORTABLE);
       }
 
+      if (this.draggable) {
+        classes.push(CSS_DRAGGABLE);
+      }
+
       // Add css to display current sort
       var asc = this.asc;
       if (asc != null) {
@@ -159,12 +165,18 @@ var Column = (function() {
       attributes[DATA_WAFFLE_ID] = this.id;
 
       // Set sort information as custom attributes
-      if (header && this.sortable) {
-        attributes[DATA_WAFFLE_SORTABLE] = true;
+      if (header) {
+        if (this.sortable) {
+          attributes[DATA_WAFFLE_SORTABLE] = true;
 
-        var asc = this.asc;
-        if (asc != null) {
-          attributes[DATA_WAFFLE_ORDER] = asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+          var asc = this.asc;
+          if (asc != null) {
+            attributes[DATA_WAFFLE_ORDER] = asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+          }
+        }
+
+        if (this.draggable) {
+          attributes.draggable = true;
         }
       }
 

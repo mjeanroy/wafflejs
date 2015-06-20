@@ -37,12 +37,18 @@
 /* exported CSS_SCROLLABLE */
 /* exported CSS_SELECTABLE */
 /* exported CSS_CHECKBOX_CELL */
+/* exported CSS_DRAGGABLE */
+/* exported CSS_DRAGGABLE_DRAG */
+/* exported CSS_DRAGGABLE_OVER */
 
 var CSS_PREFIX = 'waffle-';
 var CSS_GRID = 'waffle-grid';
 var CSS_SORTABLE = CSS_PREFIX + 'sortable';
 var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
 var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
+var CSS_DRAGGABLE = CSS_PREFIX + 'draggable';
+var CSS_DRAGGABLE_DRAG = CSS_DRAGGABLE + '-drag';
+var CSS_DRAGGABLE_OVER = CSS_DRAGGABLE + '-over';
 var CSS_SCROLLABLE = CSS_PREFIX + 'fixedheader';
 var CSS_SELECTABLE = CSS_PREFIX + 'selectable';
 var CSS_SELECTED = CSS_PREFIX + 'selected';

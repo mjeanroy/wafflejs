@@ -31,6 +31,8 @@
 /* global DATA_WAFFLE_IDX */
 /* global DATA_WAFFLE_ORDER */
 /* global DATA_WAFFLE_SORTABLE */
+/* global CSS_DRAGGABLE_DRAG */
+/* global CSS_DRAGGABLE_OVER */
 /* exported GridDomHandlers */
 
 var GridDomHandlers = (function() {
@@ -193,6 +195,87 @@ var GridDomHandlers = (function() {
             // entire row.
             data.triggerUpdate(idx);
           }
+        }
+      }
+    },
+
+    // Triggered when drag event is started
+    onDragStart: function(e) {
+      var target = e.target;
+      var originalEvent = e.originalEvent || e;
+      var dataTransfer = originalEvent.dataTransfer;
+
+      if (target.draggable) {
+        $(target).addClass(CSS_DRAGGABLE_DRAG);
+
+        dataTransfer.effectAllowed = 'move';
+        dataTransfer.setData('text', target.getAttribute(DATA_WAFFLE_ID));
+      }
+    },
+
+    // Triggered when drag event is finished
+    onDragEnd: function(e) {
+      var target = e.target;
+      if (target.draggable) {
+        _.forEach($doc.byTagName('th', this.$table[0]), function(node) {
+          $(node).removeClass(CSS_DRAGGABLE_OVER);
+        });
+
+        $(e.target).removeClass(CSS_DRAGGABLE_DRAG);
+
+        // Do not forget to clear dataTransfer object
+        var originalEvent = e.originalEvent || e;
+        var dataTransfer = originalEvent.dataTransfer;
+        dataTransfer.clearData();
+      }
+    },
+
+    // Triggerd when draggable element is over an other element.
+    onDragOver: function(e) {
+      e.preventDefault();
+
+      var originalEvent = e.originalEvent || e;
+      var dataTransfer = originalEvent.dataTransfer;
+      dataTransfer.dropEffect = 'move'; 
+    },
+
+    // Triggerd when draggable element enter inside other element.
+    onDragEnter: function(e) {
+      var target = e.target;
+      if (target.draggable) {
+        $(target).addClass(CSS_DRAGGABLE_OVER);
+      }
+    },
+
+    // Triggerd when draggable element leaves other element.
+    onDragLeave: function(e) {
+      var target = e.target;
+      if (target.draggable) {
+        $(target).removeClass(CSS_DRAGGABLE_OVER);
+      }
+    },
+
+    // Triggerd when draggable element is dropped on other element.
+    onDragDrop: function(e) {
+      var target = e.target;
+      if (target.draggable) {
+        var originalEvent = e.originalEvent || e;
+        var dataTransfer = originalEvent.dataTransfer;
+
+        var oldId = dataTransfer.getData('text');
+        var newId = target.getAttribute(DATA_WAFFLE_ID);
+
+        if (oldId !== newId) {
+          var columns = this.$columns;
+          var oldIdx = columns.indexOf(oldId);
+          var newIdx = columns.indexOf(newId);
+          columns.add(columns.remove(oldIdx, 1), newIdx);
+
+          // Do not forget to remove css class
+          $(target).removeClass(CSS_DRAGGABLE_OVER);
+
+          // Do not forget to clear dataTransfer object
+          dataTransfer.clearData();
         }
       }
     }

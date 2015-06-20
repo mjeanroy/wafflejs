@@ -37,6 +37,7 @@ describe('Column', function() {
     expect(column.css).toBe('foo');
     expect(column.width).toBeUndefined();
     expect(column.editable).toBeFalsy();
+    expect(column.draggable).toBeFalse();
   });
 
   it('should initialize with custom values', function() {
@@ -47,7 +48,8 @@ describe('Column', function() {
       css: 'foo-bar',
       escape: false,
       sortable: false,
-      width: 100
+      width: 100,
+      draggable: true
     });
 
     expect(column.escape).toBe(false);
@@ -57,6 +59,63 @@ describe('Column', function() {
     expect(column.field).toBe('foo.bar');
     expect(column.css).toBe('foo-bar');
     expect(column.width).toBe(100);
+    expect(column.draggable).toBeTrue();
+  });
+
+  it('should return column attributes for thead or tfoot', function() {
+    var column = new Column({
+      id: 'foo',
+      sortable: true
+    });
+
+    var attributes = column.attributes(0, true);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo',
+      'data-waffle-sortable': true
+    });
+  });
+
+  it('should return column attributes for tbody', function() {
+    var column = new Column({
+      id: 'foo',
+      sortable: true
+    });
+
+    var attributes = column.attributes(0, false);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo'
+    });
+  });
+
+  it('should return column attributes for thead element and draggable column', function() {
+    var column = new Column({
+      id: 'foo',
+      draggable: true,
+      sortable: false
+    });
+
+    var attributes = column.attributes(0, true);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo',
+      'draggable': true
+    });
+  });
+
+  it('should return column attributes for tbody element and draggable column', function() {
+    var column = new Column({
+      id: 'foo',
+      draggable: true,
+      sortable: false
+    });
+
+    var attributes = column.attributes(0, false);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo'
+    });
   });
 
   it('should create an editable column', function() {

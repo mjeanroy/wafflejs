@@ -26,6 +26,10 @@ describe('Grid Dom Handlers', function() {
 
   var grid, data, columns;
   var onClickTbody, onClickThead, onClickTfoot;
+
+  // Drag & Drop events
+  var onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDragDrop;
+
   var event;
 
   beforeEach(function() {
@@ -52,6 +56,14 @@ describe('Grid Dom Handlers', function() {
     onClickTfoot = _.bind(GridDomHandlers.onClickTfoot, grid);
     onClickTbody = _.bind(GridDomHandlers.onClickTbody, grid);
     onInputTbody = _.bind(GridDomHandlers.onInputTbody, grid);
+
+    // Drag & Drop
+    onDragStart = _.bind(GridDomHandlers.onDragStart, grid);
+    onDragEnd = _.bind(GridDomHandlers.onDragEnd, grid);
+    onDragOver = _.bind(GridDomHandlers.onDragOver, grid);
+    onDragEnter = _.bind(GridDomHandlers.onDragEnter, grid);
+    onDragLeave = _.bind(GridDomHandlers.onDragLeave, grid);
+    onDragDrop = _.bind(GridDomHandlers.onDragDrop, grid);
 
     event = jasmine.createSpyObj('event', [
       'preventDefault',
@@ -836,6 +848,300 @@ describe('Grid Dom Handlers', function() {
       expect($doc.findParent).toHaveBeenCalledWith(input, 'TR');
       expect(column.value).not.toHaveBeenCalled();
       expect(data0.id).toBe(1);
+    });
+  });
+
+  describe('Drag & Drop', function() {
+    var th1;
+
+    beforeEach(function() {
+      th1 = document.createElement('TH');
+      th1.draggable = true;
+      th1.setAttribute('data-waffle-id', 'id');
+
+      event.dataTransfer = {
+        setData: jasmine.createSpy('setData'),
+        getData: jasmine.createSpy('getData'),
+        clearData: jasmine.createSpy('clearData')
+      };
+    });
+
+    it('should start drag effect', function() {
+      event.target = th1;
+
+      onDragStart(event);
+
+      expect(th1.className).toContain('waffle-draggable-drag');
+      expect(event.dataTransfer.effectAllowed).toBe('move');
+      expect(event.dataTransfer.setData).toHaveBeenCalledWith('text', 'id');
+    });
+
+    it('should start drag effect and get dataTransfer object from originalEvent', function() {
+      event.target = th1;
+
+      var dataTransfer = event.dataTransfer;
+
+      // With jQuery, dataTransfer object is stored under "originalEvent"
+      delete event.dataTransfer;
+      event.originalEvent = {
+        dataTransfer: dataTransfer
+      };
+
+      onDragStart(event);
+
+      expect(th1.className).toContain('waffle-draggable-drag');
+      expect(dataTransfer.effectAllowed).toBe('move');
+      expect(dataTransfer.setData).toHaveBeenCalledWith('text', 'id');
+    });
+
+    it('should not start drag effect for non draggable element', function() {
+      th1.draggable = null;
+      event.target = th1;
+
+      onDragStart(event);
+
+      expect(th1.className).not.toContain('waffle-draggable-drag');
+      expect(event.dataTransfer.setData).not.toHaveBeenCalled();
+    });
+
+    it('should end drag effect', function() {
+      var th2 = document.createElement('TH');
+      var th3 = document.createElement('TH');
+
+      th1.className = 'waffle-draggable-over';
+      th2.className = 'waffle-draggable-over';
+      th3.className = 'waffle-draggable-over';
+
+      spyOn($doc, 'byTagName').and.returnValue([th2, th3]);
+
+      th1.className = 'waffle-draggable-drag';
+      event.target = th1;
+
+      onDragEnd(event);
+
+      expect(th1.className).not.toContain('waffle-draggable-drag');
+      expect(th1.className).not.toContain('waffle-draggable-over');
+
+      expect($doc.byTagName).toHaveBeenCalledWith('th', grid.$table[0]);
+      expect(th2.className).not.toContain('waffle-draggable-over');
+      expect(th3.className).not.toContain('waffle-draggable-over');
+
+      expect(event.dataTransfer.clearData).toHaveBeenCalled();
+    });
+
+    it('should end drag effect and get dataTransfer object from originalEvent', function() {
+      var th2 = document.createElement('TH');
+      var th3 = document.createElement('TH');
+
+      th1.className = 'waffle-draggable-over';
+      th2.className = 'waffle-draggable-over';
+      th3.className = 'waffle-draggable-over';
+
+      spyOn($doc, 'byTagName').and.returnValue([th2, th3]);
+
+      th1.className = 'waffle-draggable-drag';
+      event.target = th1;
+
+      var dataTransfer = event.dataTransfer;
+
+      // With jQuery, dataTransfer object is stored under "originalEvent"
+      delete event.dataTransfer;
+      event.originalEvent = {
+        dataTransfer: dataTransfer
+      };
+
+      onDragEnd(event);
+
+      expect(th1.className).not.toContain('waffle-draggable-drag');
+      expect(th1.className).not.toContain('waffle-draggable-over');
+
+      expect($doc.byTagName).toHaveBeenCalledWith('th', grid.$table[0]);
+      expect(th2.className).not.toContain('waffle-draggable-over');
+      expect(th3.className).not.toContain('waffle-draggable-over');
+
+      expect(dataTransfer.clearData).toHaveBeenCalled();
+    });
+
+    it('should not end drag effect for non draggable elements', function() {
+      th1.draggable = null;
+      spyOn($doc, 'byTagName');
+
+      event.target = th1;
+
+      onDragEnd(event);
+
+      expect($doc.byTagName).not.toHaveBeenCalled();
+    });
+
+    it('should drag over element', function() {
+      onDragOver(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.dataTransfer.dropEffect).toBe('move');
+    });
+
+    it('should drag over element and get dataTransfer object from originalEvent', function() {
+      var dataTransfer = event.dataTransfer;
+
+      // With jQuery, dataTransfer object is stored under "originalEvent"
+      delete event.dataTransfer;
+      event.originalEvent = {
+        dataTransfer: dataTransfer
+      };
+
+      onDragOver(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(dataTransfer.dropEffect).toBe('move');
+    });
+
+    it('should enter new element', function() {
+      var th2 = document.createElement('TH');
+      th2.draggable = true;
+
+      event.target = th2;
+
+      onDragEnter(event);
+
+      expect(th2.className).toContain('waffle-draggable-over');
+    });
+
+    it('should not enter new element for non draggable element', function() {
+      var th2 = document.createElement('TH');
+      th2.draggable = null;
+
+      event.target = th2;
+
+      onDragEnter(event);
+
+      expect(th2.className).not.toContain('waffle-draggable-over');
+    });
+
+    it('should leave element', function() {
+      var th2 = document.createElement('TH');
+      th2.draggable = true;
+      th2.className = 'waffle-draggable-over';
+
+      event.target = th2;
+
+      onDragLeave(event);
+
+      expect(th2.className).not.toContain('waffle-draggable-over');
+    });
+
+    it('should drop element', function() {
+      var columns = grid.$columns;
+      spyOn(columns, 'remove').and.callThrough();
+      spyOn(columns, 'add').and.callThrough();
+      spyOn(columns, 'indexOf').and.callThrough();
+
+      var oldColumn = columns.at(0);
+
+      var th2 = document.createElement('TH');
+      th2.draggable = true;
+      th2.setAttribute('data-waffle-id', 'firstName');
+      th2.className = 'waffle-draggable-over';
+
+      // Spy dataTransfer object
+      event.dataTransfer.getData.and.returnValue('id');
+
+      event.target = th2;
+
+      onDragDrop(event);
+
+      expect(th2.className).not.toContain('waffle-draggable-over');
+
+      expect(columns.remove).toHaveBeenCalledWith(0, 1);
+      expect(columns.add).toHaveBeenCalledWith([oldColumn], 1);
+      expect(event.dataTransfer.getData).toHaveBeenCalledWith('text');
+      expect(event.dataTransfer.clearData).toHaveBeenCalled();
+    });
+
+    it('should drop element and get dataTransfer object from originalEvent', function() {
+      var columns = grid.$columns;
+      spyOn(columns, 'remove').and.callThrough();
+      spyOn(columns, 'add').and.callThrough();
+      spyOn(columns, 'indexOf').and.callThrough();
+
+      var oldColumn = columns.at(0);
+
+      var th2 = document.createElement('TH');
+      th2.draggable = true;
+      th2.setAttribute('data-waffle-id', 'firstName');
+      th2.className = 'waffle-draggable-over';
+
+      // Spy dataTransfer object
+      var dataTransfer = event.dataTransfer;
+      dataTransfer.getData.and.returnValue('id');
+
+      // With jQuery, dataTransfer object is stored under "originalEvent"
+      delete event.dataTransfer;
+      event.originalEvent = {
+        dataTransfer: dataTransfer
+      };
+
+      event.target = th2;
+
+      onDragDrop(event);
+
+      expect(th2.className).not.toContain('waffle-draggable-over');
+
+      expect(columns.remove).toHaveBeenCalledWith(0, 1);
+      expect(columns.add).toHaveBeenCalledWith([oldColumn], 1);
+      expect(dataTransfer.getData).toHaveBeenCalledWith('text');
+      expect(dataTransfer.clearData).toHaveBeenCalled();
+    });
+
+    it('should drop element on non draggable elements', function() {
+      var columns = grid.$columns;
+      spyOn(columns, 'remove').and.callThrough();
+      spyOn(columns, 'add').and.callThrough();
+      spyOn(columns, 'indexOf').and.callThrough();
+
+      var oldColumn = columns.at(0);
+
+      var th2 = document.createElement('TH');
+      th2.draggable = null;
+      th2.setAttribute('data-waffle-id', 'firstName');
+
+      // Spy dataTransfer object
+      event.dataTransfer.getData.and.returnValue('id');
+
+      event.target = th2;
+
+      onDragDrop(event);
+
+      expect(th2.className).not.toContain('waffle-draggable-over');
+
+      expect(columns.remove).not.toHaveBeenCalled();
+      expect(columns.add).not.toHaveBeenCalled();
+      expect(event.dataTransfer.getData).not.toHaveBeenCalled();
+    });
+
+    it('should drop element on same element', function() {
+      var columns = grid.$columns;
+      spyOn(columns, 'remove').and.callThrough();
+      spyOn(columns, 'add').and.callThrough();
+      spyOn(columns, 'indexOf').and.callThrough();
+
+      var oldColumn = columns.at(0);
+
+      var th2 = document.createElement('TH');
+      th2.draggable = null;
+      th2.setAttribute('data-waffle-id', 'id');
+
+      // Spy dataTransfer object
+      event.dataTransfer.getData.and.returnValue('id');
+
+      event.target = th2;
+
+      onDragDrop(event);
+
+      expect(th2.className).not.toContain('waffle-draggable-over');
+
+      expect(columns.remove).not.toHaveBeenCalled();
+      expect(columns.add).not.toHaveBeenCalled();
+      expect(event.dataTransfer.getData).not.toHaveBeenCalled();
     });
   });
 });

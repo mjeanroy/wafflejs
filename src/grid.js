@@ -158,10 +158,19 @@ var Grid = (function() {
     });
 
     var isSortable = this.isSortable();
-    if (!isSortable && opts.columns) {
+    var isDraggable = this.isDraggable();
+
+    if (opts.columns && (!isSortable || isDraggable)) {
       // Force column not to be sortable
       _.forEach(opts.columns, function(column) {
-        column.sortable = false;
+        if (!isSortable) {
+          column.sortable = false;
+        }
+
+        // Force column to be draggable
+        if (isDraggable) {
+          column.draggable = true;
+        }
       });
     }
 
@@ -237,6 +246,15 @@ var Grid = (function() {
     this.$data.clearChanges();
     this.$columns.clearChanges();
 
+    if (isDraggable) {
+      this.$table.on('dragstart', _.bind(GridDomHandlers.onDragStart, this))
+                 .on('dragover', _.bind(GridDomHandlers.onDragOver, this))
+                 .on('dragend', _.bind(GridDomHandlers.onDragEnd, this))
+                 .on('dragleave', _.bind(GridDomHandlers.onDragLeave, this))
+                 .on('dragenter', _.bind(GridDomHandlers.onDragEnter, this))
+                 .on('drop', _.bind(GridDomHandlers.onDragDrop, this));
+    }
+
     this.dispatchEvent('initialized');
   };
 
@@ -298,6 +316,10 @@ var Grid = (function() {
       var s1 = this.$data.length;
       var s2 = this.$selection.length;
       return s1 > 0 && s1 === s2;
+    },
+
+    isDraggable: function() {
+      return !!this.options.dnd;
     },
 
     // Render entire grid
@@ -556,6 +578,7 @@ var Grid = (function() {
     // Destroy datagrid
     destroy: function() {
       // Unbind dom events
+      this.$table.off();
       this.$thead.off();
       this.$tfoot.off();
       this.$tbody.off();
@@ -601,6 +624,9 @@ var Grid = (function() {
     // Global sorting
     // Sort can also be disabled per column
     sortable: true,
+
+    // Drag&Drop
+    dnd: false,
 
     // Selection configuration.
     // By default it is enable.

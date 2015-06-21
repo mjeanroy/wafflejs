@@ -52,8 +52,8 @@ var $comparators = {
   // Compare two dates
   // Function accept timestamps as arguments
   $date: function(a, b) {
-    var t1 = new Date(a == null ? 0 : a).getTime();
-    var t2 = new Date(b == null ? 0 : b).getTime();
+    var t1 = _.isDate(a) ? a.getTime() : new Date(a == null ? 0 : a).getTime();
+    var t2 = _.isDate(b) ? b.getTime() : new Date(b == null ? 0 : b).getTime();
     return t1 - t2;
   },
 

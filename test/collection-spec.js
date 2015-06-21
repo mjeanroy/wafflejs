@@ -123,11 +123,11 @@ describe('collection', function() {
       o2 = { id: 2, name: 'bar' };
 
       o1.toString = function() {
-        return this.id;
+        return this.id.toString();
       };
 
       o2.toString = function() {
-        return this.id;
+        return this.id.toString();
       };
 
       collection = new Collection([o1, o2]);
@@ -202,7 +202,8 @@ describe('collection', function() {
     });
 
     it('should get locale string value', function() {
-      expect(collection.toLocaleString()).toBe('1,2');
+      var expectedValue = ['1', '2'].toLocaleString();
+      expect(collection.toLocaleString()).toBe(expectedValue);
     });
 
     it('should get json representation', function() {

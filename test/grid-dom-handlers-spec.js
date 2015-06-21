@@ -871,9 +871,11 @@ describe('Grid Dom Handlers', function() {
 
       onDragStart(event);
 
+      expect(event.preventDefault).not.toHaveBeenCalled();
       expect(th1.className).toContain('waffle-draggable-drag');
       expect(event.dataTransfer.effectAllowed).toBe('move');
-      expect(event.dataTransfer.setData).toHaveBeenCalledWith('text', 'id');
+      expect(event.dataTransfer.clearData).toHaveBeenCalled();
+      expect(event.dataTransfer.setData).toHaveBeenCalledWith('Text', 'id');
     });
 
     it('should start drag effect and get dataTransfer object from originalEvent', function() {
@@ -889,9 +891,10 @@ describe('Grid Dom Handlers', function() {
 
       onDragStart(event);
 
+      expect(event.preventDefault).not.toHaveBeenCalled();
       expect(th1.className).toContain('waffle-draggable-drag');
       expect(dataTransfer.effectAllowed).toBe('move');
-      expect(dataTransfer.setData).toHaveBeenCalledWith('text', 'id');
+      expect(dataTransfer.setData).toHaveBeenCalledWith('Text', 'id');
     });
 
     it('should not start drag effect for non draggable element', function() {
@@ -900,6 +903,7 @@ describe('Grid Dom Handlers', function() {
 
       onDragStart(event);
 
+      expect(event.preventDefault).not.toHaveBeenCalled();
       expect(th1.className).not.toContain('waffle-draggable-drag');
       expect(event.dataTransfer.setData).not.toHaveBeenCalled();
     });
@@ -919,6 +923,8 @@ describe('Grid Dom Handlers', function() {
 
       onDragEnd(event);
 
+      expect(event.preventDefault).not.toHaveBeenCalled();
+
       expect(th1.className).not.toContain('waffle-draggable-drag');
       expect(th1.className).not.toContain('waffle-draggable-over');
 
@@ -926,7 +932,7 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).not.toContain('waffle-draggable-over');
       expect(th3.className).not.toContain('waffle-draggable-over');
 
-      expect(event.dataTransfer.clearData).toHaveBeenCalled();
+      expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
     it('should end drag effect and get dataTransfer object from originalEvent', function() {
@@ -952,6 +958,8 @@ describe('Grid Dom Handlers', function() {
 
       onDragEnd(event);
 
+      expect(event.preventDefault).not.toHaveBeenCalled();
+
       expect(th1.className).not.toContain('waffle-draggable-drag');
       expect(th1.className).not.toContain('waffle-draggable-over');
 
@@ -959,7 +967,7 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).not.toContain('waffle-draggable-over');
       expect(th3.className).not.toContain('waffle-draggable-over');
 
-      expect(dataTransfer.clearData).toHaveBeenCalled();
+      expect(dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
     it('should not end drag effect for non draggable elements', function() {
@@ -970,6 +978,7 @@ describe('Grid Dom Handlers', function() {
 
       onDragEnd(event);
 
+      expect(event.preventDefault).not.toHaveBeenCalled();
       expect($doc.byTagName).not.toHaveBeenCalled();
     });
 
@@ -1003,6 +1012,7 @@ describe('Grid Dom Handlers', function() {
 
       onDragEnter(event);
 
+      expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).toContain('waffle-draggable-over');
     });
 
@@ -1014,6 +1024,7 @@ describe('Grid Dom Handlers', function() {
 
       onDragEnter(event);
 
+      expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).not.toContain('waffle-draggable-over');
     });
 
@@ -1026,6 +1037,7 @@ describe('Grid Dom Handlers', function() {
 
       onDragLeave(event);
 
+      expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).not.toContain('waffle-draggable-over');
     });
 
@@ -1049,12 +1061,13 @@ describe('Grid Dom Handlers', function() {
 
       onDragDrop(event);
 
+      expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).not.toContain('waffle-draggable-over');
 
       expect(columns.remove).toHaveBeenCalledWith(0, 1);
       expect(columns.add).toHaveBeenCalledWith([oldColumn], 1);
-      expect(event.dataTransfer.getData).toHaveBeenCalledWith('text');
-      expect(event.dataTransfer.clearData).toHaveBeenCalled();
+      expect(event.dataTransfer.getData).toHaveBeenCalledWith('Text');
+      expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
     it('should drop element and get dataTransfer object from originalEvent', function() {
@@ -1084,12 +1097,13 @@ describe('Grid Dom Handlers', function() {
 
       onDragDrop(event);
 
+      expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).not.toContain('waffle-draggable-over');
 
       expect(columns.remove).toHaveBeenCalledWith(0, 1);
       expect(columns.add).toHaveBeenCalledWith([oldColumn], 1);
-      expect(dataTransfer.getData).toHaveBeenCalledWith('text');
-      expect(dataTransfer.clearData).toHaveBeenCalled();
+      expect(dataTransfer.getData).toHaveBeenCalledWith('Text');
+      expect(dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
     it('should drop element on non draggable elements', function() {
@@ -1111,6 +1125,7 @@ describe('Grid Dom Handlers', function() {
 
       onDragDrop(event);
 
+      expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).not.toContain('waffle-draggable-over');
 
       expect(columns.remove).not.toHaveBeenCalled();
@@ -1137,6 +1152,7 @@ describe('Grid Dom Handlers', function() {
 
       onDragDrop(event);
 
+      expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).not.toContain('waffle-draggable-over');
 
       expect(columns.remove).not.toHaveBeenCalled();

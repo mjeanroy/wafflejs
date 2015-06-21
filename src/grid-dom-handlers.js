@@ -209,7 +209,8 @@ var GridDomHandlers = (function() {
         $(target).addClass(CSS_DRAGGABLE_DRAG);
 
         dataTransfer.effectAllowed = 'move';
-        dataTransfer.setData('text', target.getAttribute(DATA_WAFFLE_ID));
+        dataTransfer.clearData();
+        dataTransfer.setData('Text', target.getAttribute(DATA_WAFFLE_ID));
       }
     },
 
@@ -222,11 +223,6 @@ var GridDomHandlers = (function() {
         });
 
         $(e.target).removeClass(CSS_DRAGGABLE_DRAG);
-
-        // Do not forget to clear dataTransfer object
-        var originalEvent = e.originalEvent || e;
-        var dataTransfer = originalEvent.dataTransfer;
-        dataTransfer.clearData();
       }
     },
 
@@ -236,11 +232,13 @@ var GridDomHandlers = (function() {
 
       var originalEvent = e.originalEvent || e;
       var dataTransfer = originalEvent.dataTransfer;
-      dataTransfer.dropEffect = 'move'; 
+      dataTransfer.dropEffect = 'move';
     },
 
     // Triggerd when draggable element enter inside other element.
     onDragEnter: function(e) {
+      e.preventDefault();
+
       var target = e.target;
       if (target.draggable) {
         $(target).addClass(CSS_DRAGGABLE_OVER);
@@ -249,6 +247,8 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element leaves other element.
     onDragLeave: function(e) {
+      e.preventDefault();
+
       var target = e.target;
       if (target.draggable) {
         $(target).removeClass(CSS_DRAGGABLE_OVER);
@@ -257,12 +257,15 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element is dropped on other element.
     onDragDrop: function(e) {
+      e.preventDefault();
+
       var target = e.target;
       if (target.draggable) {
+
         var originalEvent = e.originalEvent || e;
         var dataTransfer = originalEvent.dataTransfer;
 
-        var oldId = dataTransfer.getData('text');
+        var oldId = dataTransfer.getData('Text');
         var newId = target.getAttribute(DATA_WAFFLE_ID);
 
         if (oldId !== newId) {
@@ -273,9 +276,6 @@ var GridDomHandlers = (function() {
 
           // Do not forget to remove css class
           $(target).removeClass(CSS_DRAGGABLE_OVER);
-
-          // Do not forget to clear dataTransfer object
-          dataTransfer.clearData();
         }
       }
     }

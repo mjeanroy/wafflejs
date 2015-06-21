@@ -438,7 +438,7 @@ describe('Grid', function() {
     expect(onCalls[3].args).toContain('click', Function);
   });
 
-  it('should bind keydown and change events on body when grid is initialized if grid is editable and input event is not available', function() {
+  it('should bind keyup and change events on body when grid is initialized if grid is editable and input event is not available', function() {
     spyOn(jq, 'on').and.callThrough();
     spyOn($sniffer, 'hasEvent').and.returnValue(false);
 
@@ -456,7 +456,7 @@ describe('Grid', function() {
     expect(onCalls).toHaveLength(4);
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
-    expect(onCalls[2].args).toContain('keydown change', Function);
+    expect(onCalls[2].args).toContain('keyup change', Function);
     expect(onCalls[3].args).toContain('click', Function);
   });
 

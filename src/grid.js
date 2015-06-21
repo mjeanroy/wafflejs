@@ -212,7 +212,7 @@ var Grid = (function() {
       if ($sniffer.hasEvent('input')) {
         this.$tbody.on('input', _.bind(GridDomHandlers.onInputTbody, this));
       } else {
-        this.$tbody.on('keydown change', _.bind(GridDomHandlers.onInputTbody, this));
+        this.$tbody.on('keyup change', _.bind(GridDomHandlers.onInputTbody, this));
       }
     }
 

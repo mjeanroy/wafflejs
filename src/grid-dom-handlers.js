@@ -52,6 +52,11 @@ var GridDomHandlers = (function() {
     return !!node.getAttribute('draggable');
   };
 
+  var hasParent = function(node, expectedParent) {
+    var parent = $doc.findParent(node, expectedParent.tagName);
+    return parent === expectedParent;
+  };
+
   // Data formatter used when editable column cell is updated
   var dataFormatters = {
     number: function(value) {
@@ -221,8 +226,11 @@ var GridDomHandlers = (function() {
     // Triggered when drag event is finished
     onDragEnd: function(e) {
       var target = e.target;
-      if (isDraggable(target)) {
-        $($doc.byTagName('th', this.$table[0])).removeClass(CSS_DRAGGABLE_OVER);
+      var table = this.$table[0];
+
+      $($doc.byTagName('th', table)).removeClass(CSS_DRAGGABLE_OVER);
+
+      if (isDraggable(target) && hasParent(target, table)) {
         $(e.target).removeClass(CSS_DRAGGABLE_DRAG);
       }
     },
@@ -232,7 +240,7 @@ var GridDomHandlers = (function() {
       e.preventDefault();
 
       var target = e.target;
-      if (isDraggable(target)) {
+      if (isDraggable(target) && hasParent(target, this.$table[0])) {
         var originalEvent = e.originalEvent || e;
         var dataTransfer = originalEvent.dataTransfer;
         dataTransfer.dropEffect = 'move';
@@ -244,7 +252,7 @@ var GridDomHandlers = (function() {
       e.preventDefault();
 
       var target = e.target;
-      if (isDraggable(target)) {
+      if (isDraggable(target) && hasParent(target, this.$table[0])) {
         $(target).addClass(CSS_DRAGGABLE_OVER);
       }
     },
@@ -254,7 +262,7 @@ var GridDomHandlers = (function() {
       e.preventDefault();
 
       var target = e.target;
-      if (isDraggable(target)) {
+      if (isDraggable(target) && hasParent(target, this.$table[0])) {
         $(target).removeClass(CSS_DRAGGABLE_OVER);
       }
     },
@@ -264,7 +272,7 @@ var GridDomHandlers = (function() {
       e.preventDefault();
 
       var target = e.target;
-      if (isDraggable(target)) {
+      if (isDraggable(target) && hasParent(target, this.$table[0])) {
 
         var originalEvent = e.originalEvent || e;
         var dataTransfer = originalEvent.dataTransfer;

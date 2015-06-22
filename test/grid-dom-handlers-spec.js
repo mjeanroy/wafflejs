@@ -24,7 +24,7 @@
 
 describe('Grid Dom Handlers', function() {
 
-  var grid, data, columns;
+  var table, grid, data, columns;
   var onClickTbody, onClickThead, onClickTfoot;
 
   // Drag & Drop events
@@ -33,7 +33,7 @@ describe('Grid Dom Handlers', function() {
   var event;
 
   beforeEach(function() {
-    var table = document.createElement('table');
+    table = document.createElement('table');
 
     columns = [
       { id: 'id', sortable: false },
@@ -918,6 +918,7 @@ describe('Grid Dom Handlers', function() {
       th3.className = 'waffle-draggable-over';
 
       spyOn($doc, 'byTagName').and.returnValue([th2, th3]);
+      spyOn($doc, 'findParent').and.returnValue(table);
 
       th1.className = 'waffle-draggable-drag';
       event.target = th1;
@@ -936,6 +937,33 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
+    it('should not remove css on end drag effect for non table childs', function() {
+      var th2 = document.createElement('TH');
+      var th3 = document.createElement('TH');
+
+      th1.className = 'waffle-draggable-over';
+      th2.className = 'waffle-draggable-over';
+      th3.className = 'waffle-draggable-over';
+
+      spyOn($doc, 'byTagName').and.returnValue([th2, th3]);
+      spyOn($doc, 'findParent').and.returnValue(document.createElement('table'));
+
+      th1.className = 'waffle-draggable-drag';
+      event.target = th1;
+
+      onDragEnd(event);
+
+      expect(event.preventDefault).not.toHaveBeenCalled();
+
+      expect(th1.className).toContain('waffle-draggable-drag');
+
+      expect($doc.byTagName).toHaveBeenCalledWith('th', grid.$table[0]);
+      expect(th2.className).not.toContain('waffle-draggable-drag');
+      expect(th3.className).not.toContain('waffle-draggable-drag');
+
+      expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
+    });
+
     it('should end drag effect and get dataTransfer object from originalEvent', function() {
       var th2 = document.createElement('TH');
       var th3 = document.createElement('TH');
@@ -944,6 +972,7 @@ describe('Grid Dom Handlers', function() {
       th2.className = 'waffle-draggable-over';
       th3.className = 'waffle-draggable-over';
 
+      spyOn($doc, 'findParent').and.returnValue(table);
       spyOn($doc, 'byTagName').and.returnValue([th2, th3]);
 
       th1.className = 'waffle-draggable-drag';
@@ -973,19 +1002,22 @@ describe('Grid Dom Handlers', function() {
 
     it('should not end drag effect for non draggable elements', function() {
       th1.removeAttribute('draggable');
-      spyOn($doc, 'byTagName');
+
+      spyOn($doc, 'byTagName').and.returnValue([]);
 
       event.target = th1;
 
       onDragEnd(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
-      expect($doc.byTagName).not.toHaveBeenCalled();
+      expect($doc.byTagName).toHaveBeenCalled();
     });
 
     it('should drag over element', function() {
       var th2 = document.createElement('TH');
       th2.setAttribute('draggable', true);
+
+      spyOn($doc, 'findParent').and.returnValue(table);
 
       event.target = th2;
 
@@ -993,6 +1025,20 @@ describe('Grid Dom Handlers', function() {
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(event.dataTransfer.dropEffect).toBe('move');
+    });
+
+    it('should not drag over element for non table childs element', function() {
+      var th2 = document.createElement('TH');
+      th2.setAttribute('draggable', true);
+
+      spyOn($doc, 'findParent').and.returnValue(document.createElement('table'));
+
+      event.target = th2;
+
+      onDragOver(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.dataTransfer.dropEffect).not.toBe('move');
     });
 
     it('should drag over element and get dataTransfer object from originalEvent', function() {
@@ -1007,6 +1053,8 @@ describe('Grid Dom Handlers', function() {
       var th2 = document.createElement('TH');
       th2.setAttribute('draggable', true);
 
+      spyOn($doc, 'findParent').and.returnValue(table);
+
       event.target = th2;
 
       onDragOver(event);
@@ -1019,6 +1067,8 @@ describe('Grid Dom Handlers', function() {
       var th2 = document.createElement('TH');
       th2.draggable = true;
 
+      spyOn($doc, 'findParent').and.returnValue(table);
+
       event.target = th2;
 
       onDragEnter(event);
@@ -1027,9 +1077,11 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).toContain('waffle-draggable-over');
     });
 
-    it('should not enter new element for non draggable element', function() {
+    it('should enter new element for non table childs', function() {
       var th2 = document.createElement('TH');
-      th2.removeAttribute('draggable');
+      th2.draggable = true;
+
+      spyOn($doc, 'findParent').and.returnValue(document.createElement('table'));
 
       event.target = th2;
 
@@ -1039,10 +1091,27 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).not.toContain('waffle-draggable-over');
     });
 
+    it('should not enter new element for non draggable element', function() {
+      var th2 = document.createElement('TH');
+      th2.removeAttribute('draggable');
+
+      spyOn($doc, 'findParent').and.returnValue(table);
+
+      event.target = th2;
+
+      onDragEnter(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(th2.className).not.toContain('waffle-draggable-over');
+      expect($doc.findParent).not.toHaveBeenCalled();
+    });
+
     it('should leave element', function() {
       var th2 = document.createElement('TH');
       th2.draggable = true;
       th2.className = 'waffle-draggable-over';
+
+      spyOn($doc, 'findParent').and.returnValue(table);
 
       event.target = th2;
 
@@ -1050,6 +1119,21 @@ describe('Grid Dom Handlers', function() {
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(th2.className).not.toContain('waffle-draggable-over');
+    });
+
+    it('should not leave element for non table childs', function() {
+      var th2 = document.createElement('TH');
+      th2.draggable = true;
+      th2.className = 'waffle-draggable-over';
+
+      spyOn($doc, 'findParent').and.returnValue(document.createElement('table'));
+
+      event.target = th2;
+
+      onDragLeave(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(th2.className).toContain('waffle-draggable-over');
     });
 
     it('should drop element', function() {
@@ -1068,6 +1152,8 @@ describe('Grid Dom Handlers', function() {
       // Spy dataTransfer object
       event.dataTransfer.getData.and.returnValue('id');
 
+      spyOn($doc, 'findParent').and.returnValue(table);
+
       event.target = th2;
 
       onDragDrop(event);
@@ -1079,6 +1165,35 @@ describe('Grid Dom Handlers', function() {
       expect(columns.add).toHaveBeenCalledWith([oldColumn], 1);
       expect(event.dataTransfer.getData).toHaveBeenCalledWith('Text');
       expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
+    });
+
+    it('should drop element on non table childs', function() {
+      var columns = grid.$columns;
+      spyOn(columns, 'remove').and.callThrough();
+      spyOn(columns, 'add').and.callThrough();
+      spyOn(columns, 'indexOf').and.callThrough();
+
+      var oldColumn = columns.at(0);
+
+      var th2 = document.createElement('TH');
+      th2.draggable = true;
+      th2.setAttribute('data-waffle-id', 'firstName');
+      th2.className = 'waffle-draggable-over';
+
+      // Spy dataTransfer object
+      event.dataTransfer.getData.and.returnValue('id');
+
+      spyOn($doc, 'findParent').and.returnValue(document.createElement('table'));
+
+      event.target = th2;
+
+      onDragDrop(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+
+      expect(columns.remove).not.toHaveBeenCalled();
+      expect(columns.add).not.toHaveBeenCalled();
+      expect(event.dataTransfer.getData).not.toHaveBeenCalled();
     });
 
     it('should drop element and get dataTransfer object from originalEvent', function() {
@@ -1103,6 +1218,8 @@ describe('Grid Dom Handlers', function() {
       event.originalEvent = {
         dataTransfer: dataTransfer
       };
+
+      spyOn($doc, 'findParent').and.returnValue(table);
 
       event.target = th2;
 
@@ -1144,7 +1261,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.getData).not.toHaveBeenCalled();
     });
 
-    it('should drop element on same element', function() {
+    it('should not drop element on same element', function() {
       var columns = grid.$columns;
       spyOn(columns, 'remove').and.callThrough();
       spyOn(columns, 'add').and.callThrough();

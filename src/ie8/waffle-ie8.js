@@ -97,7 +97,7 @@
             ctx = listener;
           }
 
-          handleEvent.call(ctx, new Event(e || window.event, element));
+          return handleEvent.call(ctx, new Event(e || window.event, element));
         };
 
         listeners.push({

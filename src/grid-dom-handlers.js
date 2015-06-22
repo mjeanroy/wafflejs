@@ -237,40 +237,42 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element is over an other element.
     onDragOver: function(e) {
-      e.preventDefault();
-
       var target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
         var originalEvent = e.originalEvent || e;
         var dataTransfer = originalEvent.dataTransfer;
         dataTransfer.dropEffect = 'move';
+
+        e.preventDefault();
+        return false;
       }
     },
 
     // Triggerd when draggable element enter inside other element.
     onDragEnter: function(e) {
-      e.preventDefault();
 
       var target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
         $(target).addClass(CSS_DRAGGABLE_OVER);
+
+        e.preventDefault();
+        return false;
       }
     },
 
     // Triggerd when draggable element leaves other element.
     onDragLeave: function(e) {
-      e.preventDefault();
-
       var target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
         $(target).removeClass(CSS_DRAGGABLE_OVER);
+
+        e.preventDefault();
+        return false;
       }
     },
 
     // Triggerd when draggable element is dropped on other element.
     onDragDrop: function(e) {
-      e.preventDefault();
-
       var target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
 
@@ -289,6 +291,9 @@ var GridDomHandlers = (function() {
           // Do not forget to remove css class
           $(target).removeClass(CSS_DRAGGABLE_OVER);
         }
+
+        e.preventDefault();
+        return false;
       }
     },
 
@@ -300,6 +305,7 @@ var GridDomHandlers = (function() {
       if (isDraggable(target)) {
         e.preventDefault();
         target.dragDrop();
+        return false;
       }
     }
   };

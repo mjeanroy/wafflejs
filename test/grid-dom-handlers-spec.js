@@ -1021,9 +1021,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragOver(event);
+      var result = onDragOver(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(result).toBeFalse();
+
       expect(event.dataTransfer.dropEffect).toBe('move');
     });
 
@@ -1035,9 +1037,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragOver(event);
+      var result = onDragOver(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
+
       expect(event.dataTransfer.dropEffect).not.toBe('move');
     });
 
@@ -1057,9 +1061,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragOver(event);
+      var result = onDragOver(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(result).toBeFalse();
+
       expect(dataTransfer.dropEffect).toBe('move');
     });
 
@@ -1071,9 +1077,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragEnter(event);
+      var result = onDragEnter(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(result).toBeFalse();
+
       expect(th2.className).toContain('waffle-draggable-over');
     });
 
@@ -1085,9 +1093,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragEnter(event);
+      var result = onDragEnter(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
+
       expect(th2.className).not.toContain('waffle-draggable-over');
     });
 
@@ -1099,9 +1109,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragEnter(event);
+      var result = onDragEnter(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
+
       expect(th2.className).not.toContain('waffle-draggable-over');
       expect($doc.findParent).not.toHaveBeenCalled();
     });
@@ -1115,9 +1127,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragLeave(event);
+      var result = onDragLeave(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(result).toBeFalse();
+
       expect(th2.className).not.toContain('waffle-draggable-over');
     });
 
@@ -1130,9 +1144,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragLeave(event);
+      var result = onDragLeave(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
+
       expect(th2.className).toContain('waffle-draggable-over');
     });
 
@@ -1187,9 +1203,10 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragDrop(event);
+      var result = onDragDrop(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
 
       expect(columns.remove).not.toHaveBeenCalled();
       expect(columns.add).not.toHaveBeenCalled();
@@ -1251,9 +1268,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragDrop(event);
+      var result = onDragDrop(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
+
       expect(th2.className).not.toContain('waffle-draggable-over');
 
       expect(columns.remove).not.toHaveBeenCalled();
@@ -1278,9 +1297,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      onDragDrop(event);
+      var result = onDragDrop(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
+
       expect(th2.className).not.toContain('waffle-draggable-over');
 
       expect(columns.remove).not.toHaveBeenCalled();
@@ -1293,9 +1314,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th1;
 
-      onSelectStart(event);
+      var result = onSelectStart(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(result).toBeFalse();
+
       expect(th1.dragDrop).toHaveBeenCalled();
     });
 
@@ -1305,9 +1328,11 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th1;
 
-      onSelectStart(event);
+      var result = onSelectStart(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(result).not.toBeFalse();
+
       expect(th1.dragDrop).not.toHaveBeenCalled();
     });
   });

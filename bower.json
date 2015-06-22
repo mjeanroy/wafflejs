@@ -30,6 +30,8 @@
     "angular": ">=1.2.0",
     "angular-sanitize": ">=1.2.0",
     "angular-mocks": ">=1.2.0",
-    "polymer": "Polymer/polymer#1.0.3"
+    "polymer": "Polymer/polymer#1.0.3",
+    "html5shiv": ">=3.7.2",
+    "Respond": ">=1.4.2"
   }
 }

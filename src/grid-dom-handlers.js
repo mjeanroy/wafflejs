@@ -222,10 +222,7 @@ var GridDomHandlers = (function() {
     onDragEnd: function(e) {
       var target = e.target;
       if (isDraggable(target)) {
-        _.forEach($doc.byTagName('th', this.$table[0]), function(node) {
-          $(node).removeClass(CSS_DRAGGABLE_OVER);
-        });
-
+        $($doc.byTagName('th', this.$table[0])).removeClass(CSS_DRAGGABLE_OVER);
         $(e.target).removeClass(CSS_DRAGGABLE_DRAG);
       }
     },

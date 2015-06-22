@@ -93,7 +93,7 @@
           var handleEvent = listener;
           var ctx = element;
           if (typeof listener !== 'function') {
-            handleEvent = listener.handleEvent;
+            handleEvent = typeof listener.handleEvent === 'function' ? listener.handleEvent : function() {};
             ctx = listener;
           }
 

@@ -53,13 +53,13 @@
       // Prevents the event from bubbling up the DOM tree, preventing any parent
       // handlers from being notified of the event.
       stopPropagation: function() {
-      	this.cancelBubble = true;
+        this.cancelBubble = true;
       },
 
       // Keeps the rest of the handlers from being executed and
       // prevents the event from bubbling up the DOM tree.
       stopImmediatePropagation: function() {
-      	this.cancelBubble = true;
+        this.cancelBubble = true;
       }
     };
 
@@ -90,7 +90,14 @@
       var callback;
       if (index === -1) {
         callback = function(e) {
-          listener.call(element, new Event(e || window.event, element));
+          var handleEvent = listener;
+          var ctx = element;
+          if (typeof listener !== 'function') {
+            handleEvent = listener.handleEvent;
+            ctx = listener;
+          }
+
+          handleEvent.call(ctx, new Event(e || window.event, element));
         };
 
         listeners.push({

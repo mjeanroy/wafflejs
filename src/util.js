@@ -36,6 +36,26 @@ var $util = {
     return document.documentMode;
   },
 
+  // Check if string end with given suffix
+  endWith: function(value, suffix) {
+    return !!value && value.slice(value.length - suffix.length) === suffix;
+  },
+
+  // Check if value is a pixel value
+  isPx: function(value) {
+    return $util.endWith(value, 'px');
+  },
+
+  // Check if value is a percentage value
+  isPercentage: function(value) {
+    return $util.endWith(value, '%');
+  },
+
+  // Convert percentage string value to percentage number
+  fromPercentage: function(value) {
+    return _.isString(value) ? Number(value.replace('%', '')) : value;
+  },
+
   // Translate a value to a valid px notation
   //   toPx(1OO) => '100px'
   //   toPx('100px') => '100px'

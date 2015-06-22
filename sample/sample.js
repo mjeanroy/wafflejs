@@ -22,21 +22,30 @@ for (var i = 0; i < 20; i++) {
 };
 
 var newColumn = function(id, title, renderer, width, editable) {
-  return {
+  var column = {
     id: id,
     title: title,
     escape: false,
-    comparator: '$string',
-    renderer: renderer,
-    editable: editable,
-    size: {
-      width: width
-    }
+    comparator: '$string'
   };
+
+  if (renderer) {
+    column.renderer = renderer;
+  }
+
+  if (editable) {
+    column.editable = editable;
+  }
+
+  if (width) {
+    column.width = width;
+  }
+
+  return column;
 };
 
 var columns = [
-  newColumn('name()', 'Name', ['$capitalize']),
+  newColumn('name()', 'Name', ['$capitalize'], '60%'),
   newColumn('userName', 'Login'), 
   newColumn('email', 'Email', ['$lowercase', 'email'], 500, {
     type: 'email',

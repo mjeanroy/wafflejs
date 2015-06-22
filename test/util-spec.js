@@ -34,6 +34,26 @@ describe('$util', function() {
     expect($util.fromPx(100)).toBe(100);
   });
 
+  it('should check if string end with given suffix', function() {
+    expect($util.endWith('10%', '%')).toBeTrue();
+    expect($util.endWith('10%', 'px')).toBeFalse();
+  });
+
+  it('should check if value is a percentage value', function() {
+    expect($util.isPercentage('10%')).toBeTrue();
+    expect($util.isPercentage('10px')).toBeFalse();
+  });
+
+  it('should convert percentage value', function() {
+    expect($util.fromPercentage(10)).toBe(10);
+    expect($util.fromPercentage('10%')).toBe(10);
+  });
+
+  it('should check if value is a percentage value', function() {
+    expect($util.isPx('10px')).toBeTrue();
+    expect($util.isPx('10%')).toBeFalse();
+  });
+
   it('should capitalize string', function() {
     expect($util.capitalize('foo')).toBe('Foo');
     expect($util.capitalize('FOO')).toBe('FOO');

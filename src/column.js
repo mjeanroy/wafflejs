@@ -84,7 +84,7 @@ var Column = (function() {
     this.field = column.field || this.id;
     this.css = column.css || '';
     this.escape = isUndefined(escape) ? true : !!escape;
-    this.width = fromPx(column.width);
+    this.width = column.width;
     this.sortable = isUndefined(sortable) ? true : !!sortable;
     this.draggable = !!column.draggable;
     this.asc = isUndefined(column.asc) ? null : !!column.asc;
@@ -188,11 +188,11 @@ var Column = (function() {
       var styles = {};
 
       // Set width as inline style
-      var width = toPx(this.width);
-      if (width) {
-        styles.width = width;
-        styles.maxWidth = width;
-        styles.minWidth = width;
+      var computedWidth = toPx(this.computedWidth);
+      if (computedWidth) {
+        styles.width = computedWidth;
+        styles.maxWidth = computedWidth;
+        styles.minWidth = computedWidth;
       }
 
       return styles;

@@ -44,6 +44,58 @@ describe('GridBuilder', function() {
     });
   });
 
+  it('should compute columns width', function() {
+    GridBuilder.computeWidth(300, grid.$columns);
+
+    // First column should have size equal to 100
+    // Second column should use remaining space, i.e 200
+    expect(grid.$columns[0].computedWidth).toBe(100);
+    expect(grid.$columns[1].computedWidth).toBe(200);
+  });
+
+  it('should compute columns width', function() {
+    grid.$columns[0].width = 120;
+    grid.$columns[1].width = 180;
+
+    GridBuilder.computeWidth(300, grid.$columns);
+
+    // Columns size should not be overridden
+    expect(grid.$columns[0].computedWidth).toBe(120);
+    expect(grid.$columns[1].computedWidth).toBe(180);
+  });
+
+  it('should compute columns width using functions', function() {
+    var width1 = jasmine.createSpy('width1').and.returnValue(120);
+    var width2 = jasmine.createSpy('width2').and.returnValue(180);
+
+    grid.$columns[0].width = width1;
+    grid.$columns[1].width = width2;
+
+    GridBuilder.computeWidth(300, grid.$columns);
+
+    // Columns size should not be overridden
+    expect(grid.$columns[0].computedWidth).toBe(120);
+    expect(grid.$columns[1].computedWidth).toBe(180);
+
+    expect(width1).toHaveBeenCalled();
+    expect(width2).toHaveBeenCalled();
+
+    expect(width1.calls.count()).toBe(1);
+    expect(width2.calls.count()).toBe(1);
+  });
+
+  it('should compute columns width using percentage', function() {
+    grid.$columns[0].width = '10%';
+    grid.$columns[1].width = 'auto';
+
+    GridBuilder.computeWidth(300, grid.$columns);
+
+    // First column should have size equal to 100
+    // Second column should use remaining space, i.e 200
+    expect(grid.$columns[0].computedWidth).toBe(30);
+    expect(grid.$columns[1].computedWidth).toBe(270);
+  });
+
   it('should create thead row with checkbox', function() {
     spyOn(GridBuilder, 'theadCell').and.callThrough();
 
@@ -85,8 +137,14 @@ describe('GridBuilder', function() {
   });
 
   it('should create thead cell', function() {
-    var th1 = GridBuilder.theadCell(grid, grid.columns().at(0), 0);
-    var th2 = GridBuilder.theadCell(grid, grid.columns().at(1), 1);
+    var col0 = grid.columns().at(0);
+    var col1 = grid.columns().at(1);
+
+    col0.computedWidth = '100px';
+    col1.computedWidth = null;
+
+    var th1 = GridBuilder.theadCell(grid, col0, 0);
+    var th2 = GridBuilder.theadCell(grid, col1, 1);
 
     expect(th1).toBeDefined();
     expect(th1.tagName).toEqual('TH');
@@ -211,8 +269,14 @@ describe('GridBuilder', function() {
   });
 
   it('should create tfoot cell', function() {
-    var th1 = GridBuilder.tfootCell(grid, grid.columns().at(0), 0);
-    var th2 = GridBuilder.theadCell(grid, grid.columns().at(1), 1);
+    var col0 = grid.columns().at(0);
+    var col1 = grid.columns().at(1);
+
+    col0.computedWidth = '100px';
+    col1.computedWidth = null;
+
+    var th1 = GridBuilder.tfootCell(grid, col0, 0);
+    var th2 = GridBuilder.theadCell(grid, col1, 1);
 
     expect(th1).toBeDefined();
     expect(th1.tagName).toEqual('TH');
@@ -404,8 +468,14 @@ describe('GridBuilder', function() {
       bar: 'hello world'
     };
 
-    var td1 = GridBuilder.tbodyCell(grid, data, grid.columns().at(0), 0);
-    var td2 = GridBuilder.tbodyCell(grid, data, grid.columns().at(1), 1);
+    var col0 = grid.columns().at(0);
+    var col1 = grid.columns().at(1);
+
+    col0.computedWidth = '100px';
+    col1.computedWidth = null;
+
+    var td1 = GridBuilder.tbodyCell(grid, data, col0, 0);
+    var td2 = GridBuilder.tbodyCell(grid, data, col1, 1);
 
     expect(td1).toBeDefined();
     expect(td1.tagName).toEqual('TD');

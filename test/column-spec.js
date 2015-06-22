@@ -477,8 +477,9 @@ describe('Column', function() {
     var column = new Column({
       id: 'id',
       sortable: false,
-      width: 100
     });
+
+    column.computedWidth = 100;
 
     expect(column.styles()).toEqual({
       width: '100px',
@@ -491,8 +492,9 @@ describe('Column', function() {
     var column = new Column({
       id: 'id',
       sortable: false,
-      width: '100px'
     });
+
+    column.computedWidth = '100px';
 
     expect(column.styles()).toEqual({
       width: '100px',

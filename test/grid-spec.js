@@ -224,8 +224,8 @@ describe('Grid', function() {
 
     expect(grid.options).toEqual(jasmine.objectContaining({
       size: {
-        width: 100,
-        height: 200
+        width: '100px',
+        height: '200px'
       }
     }));
   });
@@ -404,6 +404,129 @@ describe('Grid', function() {
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
     expect(childs[2]).toBe(grid.$tfoot[0]);
+  });
+
+  it('should create grid with fixed size', function() {
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      columns: [
+        { id: 'id' },
+        { id: 'foo' }
+      ],
+      size: {
+        width: '100px',
+        height: '200px'
+      }
+    });
+
+    expect(grid.options).toEqual(jasmine.objectContaining({
+      size: {
+        width: '100px',
+        height: '200px'
+      }
+    }));
+
+    expect(grid.$columns[0].computedWidth).toBeANumber();
+    expect(grid.$columns[1].computedWidth).toBeANumber();
+
+    var w1 = grid.$columns[0].computedWidth + 'px';
+    var w2 = grid.$columns[1].computedWidth + 'px';
+    expect(w1).toBe(w2);
+
+    var theads = grid.$thead[0].childNodes[0].childNodes;
+    expect(theads[1].style.maxWidth).toBe(w1);
+    expect(theads[1].style.minWidth).toBe(w1);
+    expect(theads[1].style.width).toBe(w1);
+
+    expect(theads[2].style.maxWidth).toBe(w2);
+    expect(theads[2].style.minWidth).toBe(w2);
+    expect(theads[2].style.width).toBe(w2);
+  });
+
+  it('should create grid with fixed size and compute size with functions', function() {
+    var width = jasmine.createSpy('width').and.returnValue('100px');
+    var height = jasmine.createSpy('height').and.returnValue('200px');
+
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      columns: [
+        { id: 'id' },
+        { id: 'foo' }
+      ],
+      size: {
+        width: width,
+        height: height
+      }
+    });
+
+    expect(grid.options).toEqual(jasmine.objectContaining({
+      size: {
+        width: width,
+        height: height
+      }
+    }));
+
+    expect(grid.$columns[0].computedWidth).toBeANumber();
+    expect(grid.$columns[1].computedWidth).toBeANumber();
+
+    var w1 = grid.$columns[0].computedWidth + 'px';
+    var w2 = grid.$columns[0].computedWidth + 'px';
+    expect(w1).toBe(w2);
+
+    var theads = grid.$thead[0].childNodes[0].childNodes;
+    expect(theads[1].style.maxWidth).toBe(w1);
+    expect(theads[1].style.minWidth).toBe(w1);
+    expect(theads[1].style.width).toBe(w1);
+
+    expect(theads[2].style.maxWidth).toBe(w2);
+    expect(theads[2].style.minWidth).toBe(w2);
+    expect(theads[2].style.width).toBe(w2);
+
+    expect(width).toHaveBeenCalled();
+    expect(height).toHaveBeenCalled();
+  });
+
+  it('should create grid with fixed size with percentages', function() {
+    var width = jasmine.createSpy('width').and.returnValue('100px');
+    var height = jasmine.createSpy('height').and.returnValue('200px');
+
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      columns: [
+        { id: 'id', width: '20%' },
+        { id: 'foo', width: 'auto' }
+      ],
+      size: {
+        width: width,
+        height: height
+      }
+    });
+
+    expect(grid.options).toEqual(jasmine.objectContaining({
+      size: {
+        width: width,
+        height: height
+      }
+    }));
+
+    expect(grid.$columns[0].computedWidth).toBeANumber();
+    expect(grid.$columns[1].computedWidth).toBeANumber();
+
+    var w1 = grid.$columns[0].computedWidth + 'px';
+    var w2 = grid.$columns[1].computedWidth + 'px';
+    expect(w1).not.toBe(w2);
+
+    var theads = grid.$thead[0].childNodes[0].childNodes;
+    expect(theads[1].style.maxWidth).toBe(w1);
+    expect(theads[1].style.minWidth).toBe(w1);
+    expect(theads[1].style.width).toBe(w1);
+
+    expect(theads[2].style.maxWidth).toBe(w2);
+    expect(theads[2].style.minWidth).toBe(w2);
+    expect(theads[2].style.width).toBe(w2);
+
+    expect(width).toHaveBeenCalled();
+    expect(height).toHaveBeenCalled();
   });
 
   it('should bind click on header and body when grid is initialized', function() {

@@ -54,7 +54,6 @@ var Grid = (function() {
   // Save bytes
   var msie = $util.msie;
   var toPx = $util.toPx;
-  var fromPx = $util.fromPx;
 
   // Normalize sort predicate
   // This function will return an array of id preprended with sort order
@@ -145,8 +144,8 @@ var Grid = (function() {
 
     // Translate size to valid numbers.
     opts.size = {
-      width: fromPx(opts.size.width),
-      height: fromPx(opts.size.height)
+      width: opts.size.width,
+      height: opts.size.height
     };
 
     // Force scroll if height is specified.
@@ -344,69 +343,45 @@ var Grid = (function() {
     // Calculate column width
     assignWidth: function() {
       var size = this.options.size;
-      var rowWidth = size.width;
+      var tableWidth = _.result(size, 'width');
+      var tableHeight = _.result(size, 'height');
 
-      if (size.height) {
+      var isFixedWidth = tableWidth && tableWidth !== 'auto';
+      var isFixedHeight = tableHeight && tableHeight !== 'auto';
+
+      // Fix table width
+      if (isFixedWidth) {
         var px = toPx(size.width);
         this.$table.css({
-                     width: px,
-                     maxWidth: px,
-                     minWidth: px
-                   });
+          width: px,
+          maxWidth: px,
+          minWidth: px
+        });
+      }
 
+      // Fix table height
+      if (isFixedHeight) {
         this.$tbody.css({
           maxHeight: toPx(size.height)
         });
-
-        rowWidth -= $doc.scrollbarWidth();
-
-        if (this.hasCheckbox()) {
-          rowWidth -= 30;
-        }
       }
 
-      var constrainedWidth = 0;
-      var constrainedColumnCount = 0;
-      this.$columns.forEach(function(col) {
-        var width = col.width;
-        if (width) {
-          constrainedWidth += width;
-          ++constrainedColumnCount;
-        }
-      });
+      // Compute available space
+      var rowWidth = isFixedWidth ? $util.fromPx(tableWidth) : null;
 
-      var columnCount = this.$columns.length;
-      var remainingColumns = columnCount - constrainedColumnCount;
-      var flooredCalculatedWidth = 0;
-      var remains = 0;
-      if (remainingColumns) {
-        var calculatedWidthColumn = (rowWidth - constrainedWidth) / remainingColumns;
-        flooredCalculatedWidth = Math.floor(calculatedWidthColumn);
-        remains = calculatedWidthColumn - flooredCalculatedWidth;
+      // Try to get width from real dom element
+      if (!rowWidth) {
+        rowWidth = this.$table[0].offsetWidth;
       }
 
-      var offset = 0;
-      this.$columns.forEach(function(col) {
-        var oldWidth = col.width;
-        var newWidth = oldWidth || 0;
+      // We have to retain scrollbar and checkbox space
+      rowWidth -= $doc.scrollbarWidth();
+      if (this.hasCheckbox()) {
+        rowWidth -= 30;
+      }
 
-        // If size is not explicitly specified, we should compute a size
-        // For now, use the same width for every column
-        if (!newWidth) {
-          offset += remains;
-          if (offset >= 1) {
-            newWidth = flooredCalculatedWidth + 1;
-            offset--;
-          } else {
-            newWidth = flooredCalculatedWidth;
-          }
-        }
-
-        // Update size if we detect a change
-        if (newWidth !== oldWidth) {
-          col.updateWidth(newWidth);
-        }
-      });
+      // Update column width
+      GridBuilder.computeWidth(rowWidth, this.$columns);
 
       return this;
     },

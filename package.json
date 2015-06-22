@@ -4,6 +4,7 @@
   "main": "dist/waffle-standalone.js",
   "version": "0.2.1",
   "description": "Javascript Datagrid with zero dependency",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git@github.com:mjeanroy/wafflejs.git"

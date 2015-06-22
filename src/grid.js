@@ -52,6 +52,7 @@
 var Grid = (function() {
 
   // Save bytes
+  var msie = $util.msie;
   var toPx = $util.toPx;
   var fromPx = $util.fromPx;
 
@@ -253,6 +254,11 @@ var Grid = (function() {
                  .on('dragleave', _.bind(GridDomHandlers.onDragLeave, this))
                  .on('dragenter', _.bind(GridDomHandlers.onDragEnter, this))
                  .on('drop', _.bind(GridDomHandlers.onDragDrop, this));
+
+      // IE <= 9 need this workaround to handle drag&drop
+      if (msie() <= 9) {
+        this.$table.on('selectstart', _.bind(GridDomHandlers.onSelectStart, this));
+      }
     }
 
     this.dispatchEvent('initialized');

@@ -31,6 +31,11 @@
  */
 
 var $util = {
+  // Get version of Internet Explorer
+  msie: function() {
+    return document.documentMode;
+  },
+
   // Translate a value to a valid px notation
   //   toPx(1OO) => '100px'
   //   toPx('100px') => '100px'

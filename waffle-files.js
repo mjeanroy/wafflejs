@@ -49,7 +49,6 @@ var $files = {
   // Core source, mandatory source files appended to each target
   $core: [
     SRC + 'constants.js',
-    SRC + 'sniffer.js',
     SRC + 'util.js',
     SRC + 'dom.js',
     SRC + 'event-bus.js',

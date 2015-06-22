@@ -24,8 +24,18 @@
 
 describe('Grid', function() {
 
+  var oldDocumentMode;
+
   beforeEach(function() {
     jq = $.fn || $.prototype;
+
+    // Spy ie version
+    oldDocumentMode = document.documentMode;
+    document.documentMode = undefined;
+  });
+
+  afterEach(function() {
+    document.documentMode = oldDocumentMode;
   });
 
   it('should define custom options', function() {
@@ -523,6 +533,37 @@ describe('Grid', function() {
     expect(onCalls[3].args).toContain('dragleave', jasmine.any(Function));
     expect(onCalls[4].args).toContain('dragenter', jasmine.any(Function));
     expect(onCalls[5].args).toContain('drop', jasmine.any(Function));
+  });
+
+  it('should bind drag & drop workaround event for IE <= 9', function() {
+    spyOn(jq, 'on').and.callThrough();
+
+    // Spy IE9
+    document.documentMode = 9;
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      selection: false,
+      sortable: false,
+      dnd: true,
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var onCalls = jq.on.calls.all();
+    expect(onCalls).toHaveLength(7);
+
+    expect(onCalls[0].args).toContain('dragstart', jasmine.any(Function));
+    expect(onCalls[1].args).toContain('dragover', jasmine.any(Function));
+    expect(onCalls[2].args).toContain('dragend', jasmine.any(Function));
+    expect(onCalls[3].args).toContain('dragleave', jasmine.any(Function));
+    expect(onCalls[4].args).toContain('dragenter', jasmine.any(Function));
+    expect(onCalls[5].args).toContain('drop', jasmine.any(Function));
+    expect(onCalls[6].args).toContain('selectstart', jasmine.any(Function));
   });
 
   it('should destroy grid', function() {

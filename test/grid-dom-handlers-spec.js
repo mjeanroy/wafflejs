@@ -28,7 +28,7 @@ describe('Grid Dom Handlers', function() {
   var onClickTbody, onClickThead, onClickTfoot;
 
   // Drag & Drop events
-  var onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDragDrop;
+  var onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDragDrop, onSelectStart;
 
   var event;
 
@@ -64,6 +64,7 @@ describe('Grid Dom Handlers', function() {
     onDragEnter = _.bind(GridDomHandlers.onDragEnter, grid);
     onDragLeave = _.bind(GridDomHandlers.onDragLeave, grid);
     onDragDrop = _.bind(GridDomHandlers.onDragDrop, grid);
+    onSelectStart = _.bind(GridDomHandlers.onSelectStart, grid);
 
     event = jasmine.createSpyObj('event', [
       'preventDefault',
@@ -898,7 +899,7 @@ describe('Grid Dom Handlers', function() {
     });
 
     it('should not start drag effect for non draggable element', function() {
-      th1.draggable = null;
+      th1.removeAttribute('draggable');
       event.target = th1;
 
       onDragStart(event);
@@ -971,7 +972,7 @@ describe('Grid Dom Handlers', function() {
     });
 
     it('should not end drag effect for non draggable elements', function() {
-      th1.draggable = null;
+      th1.removeAttribute('draggable');
       spyOn($doc, 'byTagName');
 
       event.target = th1;
@@ -983,6 +984,11 @@ describe('Grid Dom Handlers', function() {
     });
 
     it('should drag over element', function() {
+      var th2 = document.createElement('TH');
+      th2.setAttribute('draggable', true);
+
+      event.target = th2;
+
       onDragOver(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
@@ -997,6 +1003,11 @@ describe('Grid Dom Handlers', function() {
       event.originalEvent = {
         dataTransfer: dataTransfer
       };
+
+      var th2 = document.createElement('TH');
+      th2.setAttribute('draggable', true);
+
+      event.target = th2;
 
       onDragOver(event);
 
@@ -1018,7 +1029,7 @@ describe('Grid Dom Handlers', function() {
 
     it('should not enter new element for non draggable element', function() {
       var th2 = document.createElement('TH');
-      th2.draggable = null;
+      th2.removeAttribute('draggable');
 
       event.target = th2;
 
@@ -1115,7 +1126,7 @@ describe('Grid Dom Handlers', function() {
       var oldColumn = columns.at(0);
 
       var th2 = document.createElement('TH');
-      th2.draggable = null;
+      th2.removeAttribute('draggable');
       th2.setAttribute('data-waffle-id', 'firstName');
 
       // Spy dataTransfer object
@@ -1142,7 +1153,7 @@ describe('Grid Dom Handlers', function() {
       var oldColumn = columns.at(0);
 
       var th2 = document.createElement('TH');
-      th2.draggable = null;
+      th2.removeAttribute('draggable');
       th2.setAttribute('data-waffle-id', 'id');
 
       // Spy dataTransfer object
@@ -1158,6 +1169,29 @@ describe('Grid Dom Handlers', function() {
       expect(columns.remove).not.toHaveBeenCalled();
       expect(columns.add).not.toHaveBeenCalled();
       expect(event.dataTransfer.getData).not.toHaveBeenCalled();
+    });
+
+    it('should initiate drag&drop on text selection', function() {
+      th1.dragDrop = jasmine.createSpy('dragDrop');
+
+      event.target = th1;
+
+      onSelectStart(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(th1.dragDrop).toHaveBeenCalled();
+    });
+
+    it('should initiate drag&drop on text selection for non draggable elements', function() {
+      th1.removeAttribute('draggable');
+      th1.dragDrop = jasmine.createSpy('dragDrop');
+
+      event.target = th1;
+
+      onSelectStart(event);
+
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(th1.dragDrop).not.toHaveBeenCalled();
     });
   });
 });

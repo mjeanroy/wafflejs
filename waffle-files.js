@@ -51,6 +51,7 @@ var $files = {
     SRC + 'constants.js',
     SRC + 'util.js',
     SRC + 'dom.js',
+    SRC + 'vdom.js',
     SRC + 'event-bus.js',
     SRC + 'observable.js',
     SRC + 'collection.js',

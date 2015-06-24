@@ -23,7 +23,8 @@
  */
 
 /* global _ */
-/* global $doc */
+/* global $doc  */
+/* global $vdom */
 /* global $util */
 /* global GridBuilder */
 /* global DATA_WAFFLE_IDX */
@@ -127,7 +128,7 @@ var GridDataObserver = {
     // Create new node representation and merge diff with old node
     var oldNode = tbody.childNodes[index];
     var newNode = GridBuilder.tbodyRow(this, data, index);
-    $doc.mergeNodes(oldNode, newNode);
+    $vdom.mergeNodes(tbody, oldNode, newNode);
 
     // Trigger event
     this.dispatchEvent('dataupdated', {

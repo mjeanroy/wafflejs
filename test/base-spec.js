@@ -39,11 +39,11 @@ var createMap = function(entries) {
   return map;
 };
 
-var triggerClick = function(relatedTarget, shiftKey, ctrlKey) {
+var triggerMouseEvent = function(type, relatedTarget, shiftKey, ctrlKey) {
   var evt = document.createEvent('MouseEvent');
 
   evt.initMouseEvent(
-      'click',        // type
+      type,           // type
       true,           // canBubble
       true,           // cancelable,
       window,         // 'view'
@@ -61,6 +61,16 @@ var triggerClick = function(relatedTarget, shiftKey, ctrlKey) {
   );
 
   relatedTarget.dispatchEvent(evt);
+
+  return evt;
+}
+
+var triggerClick = function(relatedTarget, shiftKey, ctrlKey) {
+  return triggerMouseEvent('click', relatedTarget, shiftKey, ctrlKey);
+};
+
+var triggerDblClick = function(relatedTarget, shiftKey, ctrlKey) {
+  return triggerMouseEvent('dblclick', relatedTarget, shiftKey, ctrlKey);
 };
 
 // == Fixtures
@@ -82,4 +92,9 @@ beforeEach(function() {
 
 afterEach(function() {
   jasmine.clock().uninstall();
+});
+
+// == Unbind window events
+afterEach(function() {
+  $(window).off();
 });

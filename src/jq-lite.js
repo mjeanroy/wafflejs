@@ -38,7 +38,9 @@ var $ = (function() {
       return new jqLite(nodes);
     }
 
-    if (_.isElement(nodes)) {
+    if (nodes === window) {
+      nodes = [window];
+    } else if (_.isElement(nodes)) {
       nodes = [nodes];
     }
 
@@ -113,13 +115,18 @@ var $ = (function() {
     },
 
     // Detach events
-    off: function() {
+    off: function(event, listener) {
+      var $$events = [];
       for (var i = 0, size = this.$$events.length; i < size; ++i) {
         var e = this.$$events[i];
-        unbind(this, e.event, e.callback, e.node);
+        if ((!event || e.event === event) && (!listener || e.callback === listener)) {
+          unbind(this, e.event, e.callback, e.node);
+        } else {
+          $$events.push(e);
+        }
       }
 
-      this.$$events = [];
+      this.$$events = $$events;
     },
 
     // Clear node

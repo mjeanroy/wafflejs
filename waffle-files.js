@@ -60,6 +60,7 @@ var $files = {
     SRC + 'column.js',
     SRC + 'grid-builder.js',
     SRC + 'grid-dom-handlers.js',
+    SRC + 'grid-resizer.js',
     SRC + 'grid-builder.js',
     SRC + 'grid-data-observer.js',
     SRC + 'grid-columns-observer.js',

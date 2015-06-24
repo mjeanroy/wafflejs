@@ -268,4 +268,32 @@ describe('Grid Columns Observer', function() {
       });
     });
   });
+
+  describe('with update change', function() {
+    it('should update columns', function() {
+      var thead = grid.$thead[0];
+      var tbody = grid.$tbody[0];
+      var tfoot = grid.$tfoot[0];
+
+      expect(thead.childNodes[0].childNodes[1].style.maxWidth).toBeEmpty();
+      expect(tfoot.childNodes[0].childNodes[1].style.maxWidth).toBeEmpty();
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return !tr.childNodes[0].style.maxWidth;
+      });
+
+      $columns.at(0).computedWidth = 100;
+
+      var changes = [
+        { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
+      ];
+
+      GridColumnsObserver.on.call(grid, changes);
+
+      expect(thead.childNodes[0].childNodes[1].style.maxWidth).not.toBeEmpty();
+      expect(tfoot.childNodes[0].childNodes[1].style.maxWidth).not.toBeEmpty();
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes[1].style.maxWidth;
+      });
+    })
+  });
 });

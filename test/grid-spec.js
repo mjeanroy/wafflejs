@@ -529,6 +529,29 @@ describe('Grid', function() {
     expect(height).toHaveBeenCalled();
   });
 
+  it('should resizable grid', function() {
+    spyOn(jq, 'on').and.callThrough();
+    spyOn(jq, 'off').and.callThrough();
+
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      size: {
+        width: 100,
+        height: 200
+      }
+    });
+
+    expect(jq.on).toHaveBeenCalledWith('resize', grid.$$resizeFn);
+    expect(jq.on.calls.all()[3].object[0]).toBe(window);
+
+    var resizeFn = grid.$$resizeFn;
+
+    grid.destroy();
+
+    expect(jq.off).toHaveBeenCalledWith('resize', resizeFn);
+    expect(jq.off.calls.all()[4].object[0]).toBe(window);
+  });
+
   it('should bind click on header and body when grid is initialized', function() {
     spyOn(jq, 'on').and.callThrough();
 
@@ -863,6 +886,12 @@ describe('Grid', function() {
 
     it('should get column collection', function() {
       expect(grid.columns()).toBe(grid.$columns);
+    });
+
+    it('should resize grid', function() {
+      spyOn(GridResizer, 'resize');
+      grid.resize();
+      expect(GridResizer.resize).toHaveBeenCalled();
     });
   });
 });

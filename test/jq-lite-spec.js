@@ -52,6 +52,13 @@ describe('$', function() {
     expect($other[1]).toBe($div[1]);
   });
 
+  it('should return instance of $window', function() {
+    var $window = $(window);
+
+    expect($window.length).toBe(1);
+    expect($window[0]).toBe(window);
+  });
+
   describe('once created', function() {
     var $div;
 
@@ -213,6 +220,94 @@ describe('$', function() {
       triggerClick($div[1]);
 
       expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should bind and unbind specific event', function() {
+      // Bind and check callbacks
+      var callback = jasmine.createSpy('callback');
+      $div.on('click', callback);
+      $div.on('dblclick', callback);
+
+      // Test for internal jqLite
+      if ($div.$$events) {
+        expect($div.$$events).toEqual([
+          { event: 'click', node: $div[0], callback: callback },
+          { event: 'click', node: $div[1], callback: callback },
+          { event: 'dblclick', node: $div[0], callback: callback },
+          { event: 'dblclick', node: $div[1], callback: callback }
+        ]);
+      }
+
+      triggerClick($div[0]);
+      expect(callback).toHaveBeenCalled();
+      callback.calls.reset();
+
+      triggerDblClick($div[0]);
+      expect(callback).toHaveBeenCalled();
+      callback.calls.reset();
+
+      $div.off('dblclick');
+
+      // Test for internal jqLite
+      if ($div.$$events) {
+        expect($div.$$events).toEqual([
+          { event: 'click', node: $div[0], callback: callback },
+          { event: 'click', node: $div[1], callback: callback }
+        ]);
+      }
+
+      triggerClick($div[0]);
+      expect(callback).toHaveBeenCalled();
+      callback.calls.reset();
+
+      triggerDblClick($div[0]);
+      expect(callback).not.toHaveBeenCalled();
+      callback.calls.reset();
+    });
+
+    it('should bind and unbind specific listener', function() {
+      // Bind and check callbacks
+      var callback1 = jasmine.createSpy('callback1');
+      var callback2 = jasmine.createSpy('callback2');
+
+      $div.on('click', callback1);
+      $div.on('click', callback2);
+
+      // Test for internal jqLite
+      if ($div.$$events) {
+        expect($div.$$events).toEqual([
+          { event: 'click', node: $div[0], callback: callback1 },
+          { event: 'click', node: $div[1], callback: callback1 },
+          { event: 'click', node: $div[0], callback: callback2 },
+          { event: 'click', node: $div[1], callback: callback2 }
+        ]);
+      }
+
+      triggerClick($div[0]);
+
+      expect(callback1).toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalled();
+
+      callback1.calls.reset();
+      callback2.calls.reset();
+
+      $div.off('click', callback1);
+
+      // Test for internal jqLite
+      if ($div.$$events) {
+        expect($div.$$events).toEqual([
+          { event: 'click', node: $div[0], callback: callback2 },
+          { event: 'click', node: $div[1], callback: callback2 }
+        ]);
+      }
+
+      triggerClick($div[0]);
+
+      expect(callback1).not.toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalled();
+
+      callback1.calls.reset();
+      callback2.calls.reset();
     });
 
     it('should set node attribute', function() {

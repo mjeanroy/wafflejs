@@ -34,6 +34,7 @@
 /* global $util */
 /* global EventBus */
 /* global GridBuilder */
+/* global GridResizer */
 /* global GridDomHandlers */
 /* global GridDataObserver */
 /* global GridColumnsObserver */
@@ -50,10 +51,6 @@
 /* exported Grid */
 
 var Grid = (function() {
-
-  // Save bytes
-  var msie = $util.msie;
-  var toPx = $util.toPx;
 
   // Normalize sort predicate
   // This function will return an array of id preprended with sort order
@@ -234,7 +231,10 @@ var Grid = (function() {
 
     // If height is specified, we need to set column size.
     if (opts.size.height || opts.size.width) {
-      this.assignWidth();
+      this.resize();
+
+      this.$$resizeFn = _.bind(this.resize, this);
+      $(window).on('resize', this.$$resizeFn);
     }
 
     this.renderHeader()
@@ -255,7 +255,7 @@ var Grid = (function() {
                  .on('drop', _.bind(GridDomHandlers.onDragDrop, this));
 
       // IE <= 9 need this workaround to handle drag&drop
-      if (msie() <= 9) {
+      if ($util.msie() <= 9) {
         this.$table.on('selectstart', _.bind(GridDomHandlers.onSelectStart, this));
       }
     }
@@ -340,52 +340,6 @@ var Grid = (function() {
       return this;
     },
 
-    // Calculate column width
-    assignWidth: function() {
-      var size = this.options.size;
-      var tableWidth = _.result(size, 'width');
-      var tableHeight = _.result(size, 'height');
-
-      var isFixedWidth = tableWidth && tableWidth !== 'auto';
-      var isFixedHeight = tableHeight && tableHeight !== 'auto';
-
-      // Fix table width
-      if (isFixedWidth) {
-        var px = toPx(size.width);
-        this.$table.css({
-          width: px,
-          maxWidth: px,
-          minWidth: px
-        });
-      }
-
-      // Fix table height
-      if (isFixedHeight) {
-        this.$tbody.css({
-          maxHeight: toPx(size.height)
-        });
-      }
-
-      // Compute available space
-      var rowWidth = isFixedWidth ? $util.fromPx(tableWidth) : null;
-
-      // Try to get width from real dom element
-      if (!rowWidth) {
-        rowWidth = this.$table[0].offsetWidth;
-      }
-
-      // We have to retain scrollbar and checkbox space
-      rowWidth -= $doc.scrollbarWidth();
-      if (this.hasCheckbox()) {
-        rowWidth -= 30;
-      }
-
-      // Update column width
-      GridBuilder.computeWidth(rowWidth, this.$columns);
-
-      return this;
-    },
-
     // Render entire header of grid
     renderHeader: function() {
       var tr = GridBuilder.theadRow(this);
@@ -440,6 +394,12 @@ var Grid = (function() {
         onEnded();
       }
 
+      return this;
+    },
+
+    // Resize grid with new values
+    resize: function() {
+      GridResizer.resize(this);
       return this;
     },
 
@@ -563,6 +523,11 @@ var Grid = (function() {
       this.$thead.off();
       this.$tfoot.off();
       this.$tbody.off();
+
+      // Unbind resize event
+      if (this.$$resizeFn) {
+        $(window).off('resize', this.$$resizeFn);
+      }
 
       // Unobserve collection
       this.$data.unobserve();

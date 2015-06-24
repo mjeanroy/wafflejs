@@ -23,6 +23,7 @@
  */
 
 /* global _ */
+/* global $vdom */
 /* global $util */
 /* global GridBuilder */
 /* exported GridColumnsObserver */
@@ -43,15 +44,36 @@ var GridColumnsObserver = (function() {
     return parentNode.insertBefore(child, parentNode.childNodes[idx] || null);
   };
 
+  // Cell factories, related to parent tag name.
+  var cellFactories = {
+    tbody: function(column, nodeIndex, idx) {
+      return GridBuilder.tbodyCell(this, this.$data.at(idx), column, nodeIndex);
+    },
+    thead: function(column, nodeIndex) {
+      return GridBuilder.theadCell(this, column, nodeIndex);
+    },
+    tfoot: function(column, nodeIndex) {
+      return GridBuilder.tfootCell(this, column, nodeIndex);
+    }
+  };
+
+  // Cell updater.
+  // This function will update cell at given index for
+  // each row of given tag name.
+  var cellFactory = function(tagName, column, nodeIndex) {
+    return function(tr, index) {
+      var oldNode = tr.childNodes[nodeIndex];
+      var newNode = cellFactories[tagName].call(this, column, nodeIndex, index);
+      $vdom.mergeNodes(tr, oldNode, newNode);
+    };
+  };
+
   var o = {
     // Apply columns changes to grid.
     on: function(changes) {
       _.forEach(changes, function(change) {
         var fnName = 'on' + $util.capitalize(change.type);
-        var fn = GridColumnsObserver[fnName];
-        if (fn) {
-          fn.call(this, change);
-        }
+        o[fnName].call(this, change);
       }, this);
 
       return this;
@@ -137,6 +159,26 @@ var GridColumnsObserver = (function() {
           }
         });
       }
+
+      return this;
+    },
+
+    // Column has been updated
+    onUpdate: function(change) {
+      var index = change.index;
+      var nodeIndex = this.hasCheckbox() ? index + 1 : index;
+      var column = this.$columns.at(index);
+
+      var iteratee = function(tagName) {
+        _.forEach(
+          this['$' + tagName][0].childNodes,
+          cellFactory.call(this, tagName, column, nodeIndex),
+          this
+        );
+      };
+
+      // Iterate for each section
+      _.forEach(['thead', 'tfoot', 'tbody'], iteratee, this);
 
       return this;
     }

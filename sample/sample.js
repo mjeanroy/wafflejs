@@ -45,9 +45,9 @@ var newColumn = function(id, title, renderer, width, editable) {
 };
 
 var columns = [
-  newColumn('name()', 'Name', ['$capitalize'], '60%'),
+  newColumn('name()', 'Name', ['$capitalize'], '20%'),
   newColumn('userName', 'Login'), 
-  newColumn('email', 'Email', ['$lowercase', 'email'], 500, {
+  newColumn('email', 'Email', ['$lowercase', 'email'], '60%', {
     type: 'email',
     css: 'form-control'
   })

@@ -164,4 +164,44 @@ describe('Observable', function() {
     expect(callback1).toHaveBeenCalledWith($$changes);
     expect(Observable.$$changes).toEqual([]);
   });
+
+  it('should clear changes', function() {
+    Observable.$$observers = [{
+      ctx: null,
+      callback: callback1
+    }];
+
+    Observable.clearChanges();
+    expect(Observable.$$changes).not.toBeDefined();
+  });
+
+  it('should clear changes and create empty array', function() {
+    Observable.$$observers = [{
+      ctx: null,
+      callback: callback1
+    }];
+
+    var changes1 = [change1];
+    var changes2 = [change2];
+
+    Observable.trigger(changes1);
+    Observable.trigger(changes2);
+
+    expect(Observable.$$changes.length).toBe(2);
+
+    Observable.clearChanges();
+
+    expect(Observable.$$changes.length).toBe(0);
+  });
+
+  it('should get pending changes', function() {
+    Observable.$$observers = [{
+      ctx: null,
+      callback: callback1
+    }];
+
+    expect(Observable.pendingChanges()).toEqual([]);
+    Observable.trigger([change1]);
+    expect(Observable.pendingChanges()).toEqual([change1]);
+  });
 });

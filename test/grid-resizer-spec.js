@@ -161,6 +161,34 @@ describe('GridResizer', function() {
     expect(grid.$columns.triggerUpdate).toHaveBeenCalledWith(0);
   });
 
+  it('should not trigger update if there is a pending change', function() {
+    var change = {
+      type: 'update',
+      removed: [],
+      addedCount: 0,
+      index: 0,
+      object: grid.$columns
+    };
+
+    grid.$columns.$$changes = [change];
+
+    spyOn(grid.$columns, 'triggerUpdate');
+    spyOn(GridResizer, 'computeWidth').and.returnValue([
+      grid.$columns.at(0)
+    ]);
+
+    spyOn(grid, 'hasCheckbox').and.returnValue(true);
+    spyOn($doc, 'scrollbarWidth').and.returnValue(10);
+
+    grid.options.size = {
+      width: null
+    };
+
+    GridResizer.applySize(grid);
+
+    expect(grid.$columns.triggerUpdate).not.toHaveBeenCalled();
+  });
+
   it('should compute columns width', function() {
     GridResizer.computeWidth(300, grid.$columns);
 

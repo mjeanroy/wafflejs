@@ -107,9 +107,20 @@ var GridResizer = (function() {
       var columns = grid.$columns;
       var diff = o.computeWidth(rowWidth, columns);
 
-      // Trigger an update for each diff
-      for (var i = 0, ln = diff.length; i < ln; ++i) {
-        columns.triggerUpdate(columns.indexOf(diff[i]));
+      if (diff.length > 0) {
+        // If a pending change is already here for this column, then do not trigger
+        // a second one since the first will be enough to update column
+        var pendingChanges = _.indexBy(columns.pendingChanges(), function(change) {
+          return change.type + '_' + change.index;
+        });
+
+        for (var i = 0, ln = diff.length; i < ln; ++i) {
+          var index = columns.indexOf(diff[i]);
+          if (!_.has(pendingChanges, 'update_' + index)) {
+            // We can trigger the update
+            columns.triggerUpdate(index);
+          }
+        }
       }
 
       return this;

@@ -82,9 +82,17 @@ var Observable = (function() {
       return this;
     },
 
+    // Get pending changes
+    pendingChanges: function() {
+      return this.$$changes || [];
+    },
+
     // Clear pending changes
     clearChanges: function() {
-      this.$$changes = [];
+      if (this.$$changes) {
+        this.$$changes = [];
+      }
+
       return this;
     }
   };

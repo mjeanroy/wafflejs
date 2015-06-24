@@ -233,7 +233,7 @@ var Grid = (function() {
     if (opts.size.height || opts.size.width) {
       this.resize();
 
-      this.$$resizeFn = _.bind(this.resize, this);
+      this.$$resizeFn = _.debounce(_.bind(this.resize, this), 100);
       $(window).on('resize', this.$$resizeFn);
     }
 

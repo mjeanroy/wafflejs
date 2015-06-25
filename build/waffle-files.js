@@ -4,6 +4,7 @@
  */
 
 var _ = require('underscore');
+var log = require('log4js').getLogger();
 
 var SRC = 'src/';
 var TEST = 'test/';
@@ -61,7 +62,6 @@ var $files = {
     SRC + 'grid-builder.js',
     SRC + 'grid-dom-handlers.js',
     SRC + 'grid-resizer.js',
-    SRC + 'grid-builder.js',
     SRC + 'grid-data-observer.js',
     SRC + 'grid-columns-observer.js',
     SRC + 'grid-selection-observer.js',
@@ -126,6 +126,7 @@ var $test = [
 // Module targets
 var $targets = {
   standalone: {
+    template: 'wrap-template-standalone.js',
     src: [
       '$jq',
       '$underscore',
@@ -143,6 +144,7 @@ var $targets = {
   },
 
   jquery: {
+    template: 'wrap-template-jquery.js',
     src: [
       '$underscore',
       '$coreJson',
@@ -163,6 +165,7 @@ var $targets = {
   },
 
   underscore: {
+    template: 'wrap-template-underscore.js',
     src: [
       '$jq',
       '$coreJson',
@@ -182,6 +185,7 @@ var $targets = {
   },
 
   bare: {
+    template: 'wrap-template-bare.js',
     src: [
       '$coreJson',
       '$coreMap',
@@ -205,6 +209,7 @@ var $targets = {
   },
 
   angular: {
+    template: 'wrap-template-angular.js',
     src: [
       '$angularPlugin',
       '$coreMap',
@@ -224,35 +229,59 @@ var $targets = {
       // Add parser spec to check compatibilty with angular
       TEST + 'parser-spec.js'
     ]
-  }/*,
+  },
 
   polymer: {
+    template: 'wrap-template-polymer.js',
     src: [
-      '$jq',
-      '$underscore',
-      '$coreJson',
-      '$coreMap',
-      '$coreParser',
-      '$coreSanitize',
-      '$core',
+      '$standalone',
       '$polymerPlugin'
     ],
     vendor: [
     ],
     test: [
     ]
-  }*/
+  }
 };
 
 // Build files needed for each targets
 var targets = _.mapObject($targets, function(target, key) {
-  var src = target.src.concat('$core');
+  var template = target.template;
+  var src = target.src;
   var vendor = target.vendor;
 
+  log.debug('Load files for target: ' + key);
+
   // Create array of source files
-  src = _.map(src, function(val) {
-    return $files[val];
-  });
+  var ended = false;
+
+  var mapSrcFile = function(val) {
+    var sources;
+
+    if (_.isString(val)) {
+      sources = $files[val] || $targets[val.slice(1)] || val;
+    }
+
+    if (_.has(sources, 'src')) {
+      sources = sources.src;
+    }
+
+    if (!sources) {
+      sources = val;
+    }
+
+    return sources;
+  };
+
+  while (!ended) {
+    src = _.map(src, function(val) {
+      var source = mapSrcFile(val);
+      ended = ended || source === val;
+      return source;
+    });
+
+    src = _.flatten(src);
+  }
 
   // Create array of vendor test dependencies
   var vdrTests = _.map(vendor, function(val) {
@@ -289,6 +318,7 @@ var targets = _.mapObject($targets, function(target, key) {
     .concat(target.test);
 
   return {
+    template: template,
     src: src,
     vendor: vendor,
     test: test

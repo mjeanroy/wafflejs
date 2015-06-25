@@ -22,22 +22,29 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var wrench = require('wrench');
-var files = require('./build/waffle-files');
+(function(window, document, undefined) {
 
-// Options for each sub-tasks
-var options = {
-  basePath: __dirname,
-  dist: __dirname + '/dist',
-  files: files
-};
+  (function (factory) {
 
-// Read sub-tasks
-wrench.readdirSyncRecursive('./gulp').forEach(function(file) {
-  require('./gulp/' + file)(options);
-});
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        module.exports = factory();
+    } else {
+        // Browser globals
+        window.Waffle = factory();
+    }
 
-// Create default tasks
-gulp.task('build', ['lint', 'test', 'less', 'minify']);
-gulp.task('default', ['build']);
+  }(function () {
+
+'use strict';
+
+<%= contents %>
+
+return Waffle;
+
+  }));
+
+})(window, document, void 0);

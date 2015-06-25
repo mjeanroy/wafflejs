@@ -24,6 +24,7 @@
 
 var gulp = require('gulp');
 var karma = require('karma').server;
+var jasmine = require('gulp-jasmine');
 
 module.exports = function(options) {
   var files = options.files;
@@ -65,6 +66,16 @@ module.exports = function(options) {
     });
   });
 
-  gulp.task('tdd', tddTasks);
-  gulp.task('test', testTasks);
+  // Test files builder
+  gulp.task('test:build', function() {
+    return gulp.src([
+      'waffle-files.js',
+      'node_modules/jasmine-utils/src/jasmine-utils.js',
+      'build/waffle-files-spec.js'
+    ])
+    .pipe(jasmine());
+  });
+
+  gulp.task('tdd', ['test:build'].concat(tddTasks));
+  gulp.task('test', ['test:build'].concat(testTasks));
 };

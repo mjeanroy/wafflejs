@@ -42,7 +42,7 @@ module.exports = function(options) {
     concatTasks.push(concatTask);
     minifyTasks.push(minifyTask);
 
-    gulp.task(concatTask, function(done) {
+    gulp.task(concatTask, ['test:build'], function(done) {
       return gulp.src(files[target].src)
         .pipe(concat('waffle-' + target + '.js'))
         .pipe(strip({ block: true }))
@@ -68,6 +68,6 @@ module.exports = function(options) {
   });
 
   // Add shortcuts to launch each sub-tasks
-  gulp.task('concat', concatTasks);
-  gulp.task('minify', ['ie8'].concat(minifyTasks));
+  gulp.task('concat', ['test:build'].concat(concatTasks));
+  gulp.task('minify', ['test:build', 'ie8'].concat(minifyTasks));
 };

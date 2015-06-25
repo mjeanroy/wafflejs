@@ -27,6 +27,16 @@ var karma = require('karma').server;
 var jasmine = require('gulp-jasmine');
 
 module.exports = function(options) {
+  // Test files builder
+  gulp.task('test:build', function() {
+    return gulp.src([
+      'waffle-files.js',
+      'node_modules/jasmine-utils/src/jasmine-utils.js',
+      'build/waffle-files-spec.js'
+    ])
+    .pipe(jasmine());
+  });
+
   var files = options.files;
   var targets = Object.keys(files);
   var karmaConf = options.basePath + '/karma.conf.js';
@@ -46,7 +56,7 @@ module.exports = function(options) {
     testTasks.push(testTask);
 
     // Create tdd task for each target
-    gulp.task(tddTask, function(done) {
+    gulp.task(tddTask, ['test:build'], function(done) {
       karma.start({
         configFile: karmaConf,
         files: karmaFiles
@@ -54,7 +64,7 @@ module.exports = function(options) {
     });
 
     // Create test task for each target
-    gulp.task(testTask, function(done) {
+    gulp.task(testTask, ['test:build'], function(done) {
       karma.start({
         configFile: karmaConf,
         files: karmaFiles,
@@ -64,16 +74,6 @@ module.exports = function(options) {
         done();
       });
     });
-  });
-
-  // Test files builder
-  gulp.task('test:build', function() {
-    return gulp.src([
-      'waffle-files.js',
-      'node_modules/jasmine-utils/src/jasmine-utils.js',
-      'build/waffle-files-spec.js'
-    ])
-    .pipe(jasmine());
   });
 
   gulp.task('tdd', ['test:build'].concat(tddTasks));

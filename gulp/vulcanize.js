@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,26 @@
  */
 
 var gulp = require('gulp');
-var wrench = require('wrench');
-var files = require('./build/waffle-files');
+var rename = require('gulp-rename');
+var vulcanize = require('gulp-vulcanize');
 
-// Options for each sub-tasks
-var options = {
-  basePath: __dirname,
-  dist: __dirname + '/dist',
-  files: files
+module.exports = function(options) {
+  gulp.task('vulcanize:csp', ['less', 'minify:polymer'], function() {
+    return gulp.src('src/polymer/waffle-polymer.html')
+      .pipe(rename('waffle-polymer-csp.html'))
+      .pipe(gulp.dest(options.dist));
+  });
+
+  gulp.task('vulcanize', ['vulcanize:csp'], function() {
+    return gulp.src(options.dist + '/waffle-polymer-csp.html')
+        .pipe(vulcanize({
+            abspath: '',
+            excludes: [],
+            stripExcludes: false,
+            inlineScripts: true,
+            inlineCss: true
+        }))
+        .pipe(rename('waffle-polymer.html'))
+        .pipe(gulp.dest(options.dist));
+  });
 };
-
-// Read sub-tasks
-wrench.readdirSyncRecursive('./gulp').forEach(function(file) {
-  require('./gulp/' + file)(options);
-});
-
-// Create default tasks
-gulp.task('build', ['lint', 'test', 'less', 'minify', 'vulcanize']);
-gulp.task('default', ['build']);

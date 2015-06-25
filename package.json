@@ -40,6 +40,7 @@
     "gulp-tag-version": "1.2.1",
     "gulp-filter": "2.0.2",
     "gulp-jasmine": "2.0.1",
+    "gulp-vulcanize": "6.0.1",
     "log4js": "0.6.26",
     "wrench": "1.5.8"
   },

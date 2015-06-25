@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,14 @@
 
 (function(window, document, undefined) {
 
-  (function (factory) {
-
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(factory);
-    } else if (typeof exports === 'object') {
-        // Node/CommonJS
-        module.exports = factory();
-    } else {
-        // Browser globals
-        window.Waffle = factory();
-    }
-
-  }(function () {
-
 'use strict';
 
 <%= contents %>
 
-return Waffle;
-
-  }));
+// Use polymer api
+Polymer({
+  is: 'waffle-grid',
+  behaviors: [PolymerBehavior]
+});
 
 })(window, document, void 0);

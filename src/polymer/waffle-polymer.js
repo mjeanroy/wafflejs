@@ -27,9 +27,6 @@
 /* exported PolymerBehavior */
 
 var PolymerBehavior = {
-  // Component name
-  is: 'waffle-grid',
-
   // Bindable properties
   properties: {
     options: {

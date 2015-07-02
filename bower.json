@@ -1,6 +1,6 @@
 {
   "name": "wafflejs",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "authors": [
     "Mickael Jeanroy <mickael.jeanroy@gmail.com>"
   ],
@@ -20,8 +20,7 @@
     "test",
     "gulpfile.js"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "Faker": "1.1.0",
     "bootstrap": "3.3.5",

@@ -168,11 +168,12 @@ describe('$vdom', function() {
     rootNode.appendChild(node1);
     rootNode.appendChild(node2);
 
-    $vdom.mergeNodes(rootNode, node1, node2);
+    var result = $vdom.mergeNodes(rootNode, node1, node2);
 
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(node1, node2);
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(span1, span2);
 
+    expect(result).toBe(node1);
     expect(node1.childNodes.length).toBe(1);
     expect(node1.childNodes[0].className).toBe('foo-2');
     expect(node1.childNodes[0].getAttribute('foo')).toBe('foo2');
@@ -201,10 +202,12 @@ describe('$vdom', function() {
     rootNode.appendChild(node1);
     rootNode.appendChild(node2);
 
-    $vdom.mergeNodes(rootNode, node1, node2);
+    var result = $vdom.mergeNodes(rootNode, node1, node2);
 
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(node1, node2);
     expect($vdom.mergeAttributes).not.toHaveBeenCalledWith(span, input);
+
+    expect(result).toBe(node1);
     expect(node1.childNodes.length).toBe(1);
     expect(node1.childNodes[0]).toBe(input);
   });
@@ -238,14 +241,49 @@ describe('$vdom', function() {
     rootNode.appendChild(node1);
     rootNode.appendChild(node2);
 
-    $vdom.mergeNodes(rootNode, node1, node2);
+    var result = $vdom.mergeNodes(rootNode, node1, node2);
 
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(node1, node2);
     expect($vdom.mergeAttributes).not.toHaveBeenCalledWith(span1, span2);
     expect($vdom.mergeAttributes).not.toHaveBeenCalledWith(span1, input);
 
+    expect(result).toBe(node1);
     expect(node1.childNodes.length).toBe(2);
     expect(node1.childNodes[0]).toBe(span2);
     expect(node1.childNodes[1]).toBe(input);
+  });
+
+  it('should replace node if types are different', function() {
+    spyOn($vdom, 'mergeAttributes').and.callThrough();
+
+    var node1 = document.createElement('div');
+    var node2 = document.createElement('p');
+
+    var span1 = document.createElement('span');
+    span1.className = 'foo-1';
+    span1.setAttribute('foo', 'foo1');
+    span1.style.width = '100px';
+    span1.innerHTML = 'foo #1';
+
+    var span2 = document.createElement('span');
+    span2.className = 'foo-1';
+    span2.setAttribute('foo', 'foo1');
+    span2.style.width = '100px';
+    span2.innerHTML = 'foo #1';
+
+    node1.appendChild(span1);
+    node2.appendChild(span2);
+
+    var rootNode = document.createElement('div');
+    rootNode.appendChild(node1);
+    rootNode.appendChild(node2);
+
+    var result = $vdom.mergeNodes(rootNode, node1, node2);
+
+    expect($vdom.mergeAttributes).not.toHaveBeenCalled();
+
+    expect(result).toBe(node2);
+    expect(result.childNodes.length).toBe(1);
+    expect(result.childNodes[0]).toBe(span2);
   });
 });

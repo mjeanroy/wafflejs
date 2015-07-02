@@ -76,10 +76,13 @@ var $vdom = (function() {
       var oldTagName = oldNode.tagName;
       var newTagName = newNode.tagName;
 
+      var result = oldNode;
+
       if (oldType !== newType || oldTagName !== newTagName) {
         // We can't easily merge two different node, just replace
         // the old one with the new one
         replaceNode(rootNode, oldNode, newNode);
+        result = newNode;
       } else if (oldType === 3) {
         // Both are text nodes, we can just update the node value
         updateTextNode(oldNode, newNode);
@@ -87,6 +90,8 @@ var $vdom = (function() {
         // Both are same types and same tags, merge both
         mergeNodes(oldNode, newNode);
       }
+
+      return result;
     },
 
     // Update attributes of old node with attributes of new node

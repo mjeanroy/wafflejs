@@ -418,11 +418,15 @@ describe('Grid Sort', function() {
       expect(GridDataObserver.onUpdate).toHaveBeenCalled();
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
-        updatedNode: grid.$tbody[0].childNodes[0]
+        index: 0,
+        oldNode: grid.$tbody[0].childNodes[0],
+        newNode: grid.$tbody[0].childNodes[0]
       });
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
-        updatedNode: grid.$tbody[0].childNodes[2]
+        index: 2,
+        oldNode: grid.$tbody[0].childNodes[2],
+        newNode: grid.$tbody[0].childNodes[2]
       });
 
       expect(grid.$data[0].id).toBe(3);

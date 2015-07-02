@@ -128,11 +128,13 @@ var GridDataObserver = {
     // Create new node representation and merge diff with old node
     var oldNode = tbody.childNodes[index];
     var newNode = GridBuilder.tbodyRow(this, data, index);
-    $vdom.mergeNodes(tbody, oldNode, newNode);
+    var result = $vdom.mergeNodes(tbody, oldNode, newNode);
 
     // Trigger event
     this.dispatchEvent('dataupdated', {
-      updatedNode: oldNode
+      index: index,
+      oldNode: oldNode,
+      newNode: result
     });
 
     return this;

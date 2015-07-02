@@ -275,6 +275,20 @@ describe('Grid Columns Observer', function() {
       var tbody = grid.$tbody[0];
       var tfoot = grid.$tfoot[0];
 
+      var oldNodes = {
+        thead: [
+          thead.childNodes[0].childNodes[1]
+        ],
+        tfoot: [
+          tfoot.childNodes[0].childNodes[1]
+        ],
+        tbody: [
+          tbody.childNodes[0].childNodes[1],
+          tbody.childNodes[1].childNodes[1],
+          tbody.childNodes[2].childNodes[1]
+        ]
+      };
+
       expect(thead.childNodes[0].childNodes[1].style.maxWidth).toBeEmpty();
       expect(tfoot.childNodes[0].childNodes[1].style.maxWidth).toBeEmpty();
       expect(tbody.childNodes).toVerify(function(tr) {
@@ -293,6 +307,26 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[1].style.maxWidth).not.toBeEmpty();
       expect(tbody.childNodes).toVerify(function(tr) {
         return tr.childNodes[1].style.maxWidth;
+      });
+
+      var newNodes = {
+        thead: [
+          thead.childNodes[0].childNodes[1]
+        ],
+        tfoot: [
+          tfoot.childNodes[0].childNodes[1]
+        ],
+        tbody: [
+          tbody.childNodes[0].childNodes[1],
+          tbody.childNodes[1].childNodes[1],
+          tbody.childNodes[2].childNodes[1]
+        ]
+      };
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('columnsupdated', {
+        index: 0,
+        oldNodes: oldNodes,
+        newNodes: newNodes
       });
     })
   });

@@ -299,14 +299,14 @@ var _ = (function() {
 
   // Applies a function against an accumulator and each value
   // of the array (from left-to-right) has to reduce it to a single value.
-  _.reduce = function(array, callback, initialValue) {
+  _.reduce = function(array, callback, initialValue, ctx) {
     var nbArgs = arguments.length;
-    var step = nbArgs === 3 ? initialValue : array[0];
+    var step = nbArgs >= 3 ? initialValue : array[0];
     var size = array.length;
-    var i = nbArgs === 3 ? 0 : 1;
+    var i = nbArgs >= 3 ? 0 : 1;
 
     for (; i < size; ++i) {
-      step = callback.call(null, step, array[i], i, array);
+      step = callback.call(ctx, step, array[i], i, array);
     }
 
     return step;
@@ -314,14 +314,14 @@ var _ = (function() {
 
   // Applies a function against an accumulator and each value
   // of the array (from right-to-left) has to reduce it to a single value.
-  _.reduceRight = function(array, callback, initialValue) {
+  _.reduceRight = function(array, callback, initialValue, ctx) {
     var nbArgs = arguments.length;
     var size = array.length - 1;
-    var step = nbArgs === 3 ? initialValue : array[size];
-    var i = nbArgs === 3 ? size : size - 1;
+    var step = nbArgs >= 3 ? initialValue : array[size];
+    var i = nbArgs >= 3 ? size : size - 1;
 
     for (; i >= 0; --i) {
-      step = callback.call(null, step, array[i], i, array);
+      step = callback.call(ctx, step, array[i], i, array);
     }
 
     return step;

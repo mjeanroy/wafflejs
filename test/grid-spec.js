@@ -65,6 +65,7 @@ describe('Grid', function() {
         onDataUpdated: null,
         onDataChanged: null,
         onColumnsSpliced: null,
+        onColumnsUpdated: null,
         onSelectionChanged: null,
         onSorted: null
       }
@@ -150,6 +151,7 @@ describe('Grid', function() {
         onDataUpdated: null,
         onDataChanged: null,
         onColumnsSpliced: null,
+        onColumnsUpdated: null,
         onSelectionChanged: null,
         onSorted: null
       }

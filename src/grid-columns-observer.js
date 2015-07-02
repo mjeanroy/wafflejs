@@ -64,7 +64,11 @@ var GridColumnsObserver = (function() {
     return function(tr, index) {
       var oldNode = tr.childNodes[nodeIndex];
       var newNode = cellFactories[tagName].call(this, column, nodeIndex, index);
-      $vdom.mergeNodes(tr, oldNode, newNode);
+      var result = $vdom.mergeNodes(tr, oldNode, newNode);
+      return {
+        oldNode: oldNode,
+        newNode: result
+      };
     };
   };
 
@@ -170,15 +174,40 @@ var GridColumnsObserver = (function() {
       var column = this.$columns.at(index);
 
       var iteratee = function(tagName) {
-        _.forEach(
-          this['$' + tagName][0].childNodes,
-          cellFactory.call(this, tagName, column, nodeIndex),
-          this
-        );
+        var acc = [
+          [], // Store old nodes
+          []  // Store new nodes
+        ];
+
+        var childNodes = this['$' + tagName][0].childNodes;
+        var factory = cellFactory.call(this, tagName, column, nodeIndex);
+        var fn = function(acc, tr, index) {
+          var result = factory.call(this, tr, index);
+          acc[0].push(result.oldNode);
+          acc[1].push(result.newNode);
+          return acc;
+        };
+
+        return _.reduce(childNodes, fn, acc, this);
       };
 
       // Iterate for each section
-      _.forEach(['thead', 'tfoot', 'tbody'], iteratee, this);
+      var results = _.map(['thead', 'tfoot', 'tbody'], iteratee, this);
+
+      // Dispatch event
+      this.dispatchEvent('columnsupdated', {
+        index: index,
+        oldNodes: {
+          thead: results[0][0],
+          tfoot: results[1][0],
+          tbody: results[2][0]
+        },
+        newNodes: {
+          thead: results[0][1],
+          tfoot: results[1][1],
+          tbody: results[2][1]
+        }
+      });
 
       return this;
     }

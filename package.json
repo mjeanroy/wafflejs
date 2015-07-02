@@ -38,7 +38,8 @@
     "gulp-bump": "0.3.1",
     "gulp-git": "1.2.4",
     "gulp-tag-version": "1.2.1",
-    "gulp-filter": "2.0.2"
+    "gulp-filter": "2.0.2",
+    "wrench": "1.5.8"
   },
   "engines": {
     "node": ">=0.10.0"

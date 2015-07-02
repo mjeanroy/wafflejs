@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,24 @@
  */
 
 var gulp = require('gulp');
-var wrench = require('wrench');
-var files = require('./waffle-files');
+var server = require('gulp-express');
 
-// Options for each sub-tasks
-var options = {
-  basePath: __dirname,
-  dist: __dirname + '/dist',
-  files: files
+module.exports = function(options) {
+  var basePath = options.basePath;
+  var dist = options.dist;
+
+  gulp.task('server', ['ie8', 'concat', 'less'], function () {
+    server.run([basePath + '/sample-server.js']);
+
+    gulp.watch([basePath + '/src/**/*.js'], ['ie8', 'concat']);
+    gulp.watch([basePath + '/src/less/*.less'], ['less']);
+
+    gulp.watch([dist + '/**/*'], function() {
+      return server.notify();
+    });
+
+    gulp.watch([basePath + '/sample/**/*'], function() {
+      return server.notify();
+    });
+  });
 };
-
-// Read sub-tasks
-wrench.readdirSyncRecursive('./gulp').forEach(function(file) {
-  require('./gulp/' + file)(options);
-});
-
-// Create default tasks
-gulp.task('build', ['lint', 'test', 'less', 'minify']);
-gulp.task('default', ['build']);

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,18 @@
  */
 
 var gulp = require('gulp');
-var wrench = require('wrench');
-var files = require('./waffle-files');
+var del = require('del');
 
-// Options for each sub-tasks
-var options = {
-  basePath: __dirname,
-  dist: __dirname + '/dist',
-  files: files
+module.exports = function(options) {
+  gulp.task('clean', function(done) {
+    del(options.dist, done);
+  });
+
+  gulp.task('clean:css', function(done) {
+    del(options.dist + '/**/*.css', done);
+  });
+
+  gulp.task('clean:js', function(done) {
+    del(options.dist + '/**/*.js', done);
+  });
 };
-
-// Read sub-tasks
-wrench.readdirSyncRecursive('./gulp').forEach(function(file) {
-  require('./gulp/' + file)(options);
-});
-
-// Create default tasks
-gulp.task('build', ['lint', 'test', 'less', 'minify']);
-gulp.task('default', ['build']);

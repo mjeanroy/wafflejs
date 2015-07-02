@@ -32,6 +32,7 @@
     "karma-chrome-launcher": "0.2.0",
     "karma-jasmine": "0.3.5",
     "karma-phantomjs-launcher": "0.2.0",
+    "karma-coverage": "0.4.2",
     "phantomjs": "1.9.17",
     "open": "0.0.5",
     "underscore": "1.8.3",

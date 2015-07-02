@@ -59,7 +59,8 @@ module.exports = function(options) {
     gulp.task(tddTask, ['test:build'], function(done) {
       karma.start({
         configFile: karmaConf,
-        files: karmaFiles
+        files: karmaFiles,
+        reporters: ['progress']
       }, done);
     });
 

@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+/* global _ */
 /* global Polymer */
 /* global Waffle */
 /* exported PolymerBehavior */
@@ -56,10 +57,10 @@ var PolymerBehavior = {
     };
 
     var bindEvent = function(evtName) {
-      this.$grid.addEventListener(evtName.slice(2).toLowerCase(), eventListener.bind(this));
+      this.$grid.addEventListener(evtName.slice(2).toLowerCase(), _.bind(eventListener, this));
     };
 
-    Object.keys(Waffle.Grid.options.events).forEach(bindEvent.bind(this));
+    Object.keys(Waffle.Grid.options.events).forEach(_.bind(bindEvent, this));
 
     // Then flush dom modification
     Polymer.dom.flush();

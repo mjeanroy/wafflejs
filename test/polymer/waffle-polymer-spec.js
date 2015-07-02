@@ -24,19 +24,105 @@
 
 describe('waffle-polymer', function() {
 
-  var options;
+  var origPolymer;
+  var Polymer;
+  var table;
+
+  var restore = function(o, prop, val) {
+    if (val) {
+      o[prop] = val;
+    } else {
+      delete o[prop];
+    }
+  };
 
   beforeEach(function() {
-    options = {
-      data: [
-        { id: 1, name: 'foo' },
-        { id: 2, name: 'bar' },
-        { id: 3, name: 'foobar' }
-      ],
-      columns: [
-        { id: 'id', title: 'Id' },
-        { id: 'name', title: 'Name' }
-      ]
-    };
+    origPolymer = window.Polymer;
+
+    Polymer = jasmine.createSpyObj('Polymer', ['dom']);
+    Polymer.dom.flush = jasmine.createSpy('flush');
+    window.Polymer = Polymer;
+
+    table = document.createElement('table');
+  });
+
+  afterEach(function() {
+    restore(window, 'Polymer', origPolymer);
+  });
+
+  it('should have properties', function() {
+    expect(PolymerBehavior.properties).toEqual({
+      options: {
+        type: Object,
+        notify: false
+      }
+    });
+  });
+
+  it('should initialize grid on ready listener', function() {
+    spyOn(Waffle.Grid, 'create').and.callThrough();
+    spyOn(Waffle.Grid.prototype, 'addEventListener').and.callThrough();
+
+    var ctx = document.createElement('div');
+    ctx.appendChild(table);
+    ctx.fire = jasmine.createSpy('fire');
+
+    Polymer.dom.and.returnValue(ctx);
+
+    PolymerBehavior.ready.call(ctx);
+
+    expect(Polymer.dom).toHaveBeenCalledWith(ctx);
+    expect(Polymer.dom.flush).toHaveBeenCalled();
+
+    expect(Waffle.Grid.create).toHaveBeenCalledWith(table, undefined);
+    expect(ctx.$grid).toBeDefined();
+    expect(ctx.$grid.addEventListener).toHaveBeenCalled();
+
+    var events = _.keys(Waffle.Grid.options.events);
+    var nbEvents = events.length;
+    expect(ctx.$grid.addEventListener.calls.count()).toBe(nbEvents);
+
+    // Trigger one event and check that fire method is called
+    expect(ctx.fire).not.toHaveBeenCalled();
+    ctx.$grid.dispatchEvent('initialized');
+    expect(ctx.fire).toHaveBeenCalled();
+
+    // We should get the grid
+    expect(PolymerBehavior.grid.call(ctx)).toBe(ctx.$grid);
+  });
+
+  it('should initialize grid and create table on ready listener', function() {
+    spyOn(Waffle.Grid, 'create').and.callThrough();
+    spyOn(Waffle.Grid.prototype, 'addEventListener').and.callThrough();
+
+    var ctx = document.createElement('div');
+    ctx.fire = jasmine.createSpy('fire');
+    ctx.firstElementChild = null;
+    spyOn(ctx, 'appendChild').and.callThrough();
+
+    Polymer.dom.and.returnValue(ctx);
+
+    PolymerBehavior.ready.call(ctx);
+
+    expect(Polymer.dom).toHaveBeenCalledWith(ctx);
+    expect(Polymer.dom.flush).toHaveBeenCalled();
+    expect(ctx.appendChild).toHaveBeenCalled();
+
+    expect(Waffle.Grid.create).toHaveBeenCalled();
+    expect(ctx.$grid).toBeDefined();
+    expect(ctx.$grid.$table).toBeDefined();
+    expect(ctx.$grid.addEventListener).toHaveBeenCalled();
+
+    var events = _.keys(Waffle.Grid.options.events);
+    var nbEvents = events.length;
+    expect(ctx.$grid.addEventListener.calls.count()).toBe(nbEvents);
+
+    // Trigger one event and check that fire method is called
+    expect(ctx.fire).not.toHaveBeenCalled();
+    ctx.$grid.dispatchEvent('initialized');
+    expect(ctx.fire).toHaveBeenCalled();
+
+    // We should get the grid
+    expect(PolymerBehavior.grid.call(ctx)).toBe(ctx.$grid);
   });
 });

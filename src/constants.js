@@ -40,6 +40,10 @@
 /* exported CSS_DRAGGABLE */
 /* exported CSS_DRAGGABLE_DRAG */
 /* exported CSS_DRAGGABLE_OVER */
+/* exported TBODY */
+/* exported THEAD */
+/* exported TFOOT */
+/* exported TABLE */
 
 var CSS_PREFIX = 'waffle-';
 var CSS_GRID = 'waffle-grid';
@@ -62,3 +66,9 @@ var DATA_WAFFLE_IDX = DATA_PREFIX + 'idx';
 
 var CHAR_ORDER_ASC = '+';
 var CHAR_ORDER_DESC = '-';
+
+// Save bytes
+var TBODY = 'tbody';
+var THEAD = 'thead';
+var TFOOT = 'tfoot';
+var TABLE = 'table';

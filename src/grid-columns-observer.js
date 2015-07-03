@@ -26,6 +26,7 @@
 /* global $vdom */
 /* global $util */
 /* global GridBuilder */
+/* global GridDomBinders */
 /* exported GridColumnsObserver */
 
 var GridColumnsObserver = (function() {
@@ -147,6 +148,15 @@ var GridColumnsObserver = (function() {
       }
 
       if (removedCount > 0 || addedCount > 0) {
+        // Editable column may have been added, or editable columns
+        // may have been removed, so we should bind or unbind event.
+        var isEditable = this.isEditable();
+        if (addedCount > 0 && isEditable) {
+          GridDomBinders.bindEdition(this);
+        } else if (removedCount > 0 && !isEditable) {
+          GridDomBinders.unbindEdition(this);
+        }
+
         this.dispatchEvent('columnsspliced', {
           index: index,
 
@@ -193,6 +203,13 @@ var GridColumnsObserver = (function() {
 
       // Iterate for each section
       var results = _.map(['thead', 'tfoot', 'tbody'], iteratee, this);
+
+      // Update editable state
+      if (column.editable) {
+        GridDomBinders.bindEdition(this);
+      } else if (!this.isEditable()) {
+        GridDomBinders.unbindEdition(this);
+      }
 
       // Dispatch event
       this.dispatchEvent('columnsupdated', {

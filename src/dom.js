@@ -23,6 +23,9 @@
  */
 
 /* global _ */
+/* global THEAD */
+/* global TFOOT */
+/* global TBODY */
 /* global $util */
 /* exported $doc */
 
@@ -85,7 +88,7 @@ var $doc = (function() {
     scrollbarWidth: _.memoize(scrollbarWidth, hasher)
   };
 
-  _.forEach(['tr', 'td', 'th', 'tbody', 'thead','tfoot', 'input', 'select', 'option', 'span'], function(tagName) {
+  _.forEach(['tr', 'td', 'th', TBODY, THEAD, TFOOT, 'input', 'select', 'option', 'span'], function(tagName) {
     o[tagName] = function() {
       return this.create(tagName);
     };

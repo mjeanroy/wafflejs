@@ -267,6 +267,33 @@ describe('Grid Columns Observer', function() {
         }
       });
     });
+
+    it('should add new column and bind input events', function() {
+      spyOn(grid, 'isEditable').and.returnValue(true);
+      spyOn(GridDomBinders, 'bindEdition').and.callThrough();
+
+      $columns.push({
+        id: 'lastName',
+        editable: {
+          type: 'text'
+        }
+      });
+
+      jasmine.clock().tick();
+
+      expect(GridDomBinders.bindEdition).toHaveBeenCalledWith(grid);
+    });
+
+    it('should remove column and unbind input events', function() {
+      spyOn(grid, 'isEditable').and.returnValue(false);
+      spyOn(GridDomBinders, 'unbindEdition').and.callThrough();
+
+      $columns.splice(0, 1);
+
+      jasmine.clock().tick();
+
+      expect(GridDomBinders.unbindEdition).toHaveBeenCalledWith(grid);
+    });
   });
 
   describe('with update change', function() {
@@ -328,6 +355,52 @@ describe('Grid Columns Observer', function() {
         oldNodes: oldNodes,
         newNodes: newNodes
       });
-    })
+    });
+
+    it('should update columns and bind edition events', function() {
+      spyOn(GridDomBinders, 'bindEdition').and.callThrough();
+
+      $columns.at(0).editable = {
+        type: 'text'
+      };
+
+      var changes = [
+        { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
+      ];
+
+      GridColumnsObserver.on.call(grid, changes);
+
+      expect(GridDomBinders.bindEdition).toHaveBeenCalled();
+    });
+
+    it('should update columns and unbind edition events if grid is not editable anymore', function() {
+      spyOn(grid, 'isEditable').and.returnValue(false);
+      spyOn(GridDomBinders, 'unbindEdition').and.callThrough();
+
+      $columns.at(0).editable = false;
+
+      var changes = [
+        { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
+      ];
+
+      GridColumnsObserver.on.call(grid, changes);
+
+      expect(GridDomBinders.unbindEdition).toHaveBeenCalled();
+    });
+
+    it('should update columns and not unbind edition events if grid is still editable', function() {
+      spyOn(grid, 'isEditable').and.returnValue(true);
+      spyOn(GridDomBinders, 'unbindEdition').and.callThrough();
+
+      $columns.at(0).editable = false;
+
+      var changes = [
+        { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
+      ];
+
+      GridColumnsObserver.on.call(grid, changes);
+
+      expect(GridDomBinders.unbindEdition).not.toHaveBeenCalled();
+    });
   });
 });

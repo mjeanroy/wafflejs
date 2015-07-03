@@ -48,6 +48,7 @@ describe('Grid', function() {
       scrollable: false,
       sortable: true,
       dnd: false,
+      editable: false,
       selection: {
         enable: true,
         checkbox: true,
@@ -543,14 +544,14 @@ describe('Grid', function() {
       }
     });
 
-    expect(jq.on).toHaveBeenCalledWith('resize', grid.$$resizeFn);
+    expect(jq.on).toHaveBeenCalledWith('resize', grid.$$events.onResize);
     expect(jq.on.calls.all()[3].object[0]).toBe(window);
 
-    var resizeFn = grid.$$resizeFn;
+    var onResize = grid.$$events.onResize;
 
     grid.destroy();
 
-    expect(jq.off).toHaveBeenCalledWith('resize', resizeFn);
+    expect(jq.off).toHaveBeenCalledWith('resize', onResize);
     expect(jq.off.calls.all()[4].object[0]).toBe(window);
   });
 
@@ -596,6 +597,29 @@ describe('Grid', function() {
     expect(onCalls[3].args).toContain('click', Function);
   });
 
+  it('should bind input on body when grid is initialized if grid option is editable', function() {
+    spyOn(jq, 'on').and.callThrough();
+    spyOn($sniffer, 'hasEvent').and.returnValue(true);
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      editable: true,
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ]
+    });
+
+    var onCalls = jq.on.calls.all();
+    expect(onCalls).toHaveLength(4);
+    expect(onCalls[0].args).toContain('click', Function);
+    expect(onCalls[1].args).toContain('click', Function);
+    expect(onCalls[2].args).toContain('input', Function);
+    expect(onCalls[3].args).toContain('click', Function);
+  });
+
   it('should bind keyup and change events on body when grid is initialized if grid is editable and input event is not available', function() {
     spyOn(jq, 'on').and.callThrough();
     spyOn($sniffer, 'hasEvent').and.returnValue(false);
@@ -610,12 +634,19 @@ describe('Grid', function() {
       ]
     });
 
+    expect(grid.$$events).toEqual({
+      onClickThead: jasmine.any(Function),
+      onClickTfoot: jasmine.any(Function),
+      onClickTbody: jasmine.any(Function),
+      onInputTbody: jasmine.any(Function)
+    });
+
     var onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(4);
-    expect(onCalls[0].args).toContain('click', Function);
-    expect(onCalls[1].args).toContain('click', Function);
-    expect(onCalls[2].args).toContain('keyup change', Function);
-    expect(onCalls[3].args).toContain('click', Function);
+    expect(onCalls[0].args).toContain('click', grid.$$events.onClickThead);
+    expect(onCalls[1].args).toContain('click', grid.$$events.onClickTfoot);
+    expect(onCalls[2].args).toContain('keyup change', grid.$$events.onInputTbody);
+    expect(onCalls[3].args).toContain('click', grid.$$events.onClickTbody);
   });
 
   it('should bind click on header and footer if grid is not selectable and not sortable', function() {
@@ -650,10 +681,15 @@ describe('Grid', function() {
       ]
     });
 
+    expect(grid.$$events).toEqual({
+      onClickThead: jasmine.any(Function),
+      onClickTfoot: jasmine.any(Function)
+    });
+
     var onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(2);
-    expect(onCalls[0].args).toContain('click', Function);
-    expect(onCalls[1].args).toContain('click', Function);
+    expect(onCalls[0].args).toContain('click', grid.$$events.onClickThead);
+    expect(onCalls[1].args).toContain('click', grid.$$events.onClickTfoot);
   });
 
   it('should bind drag & drop events', function() {
@@ -672,15 +708,24 @@ describe('Grid', function() {
       ]
     });
 
+    expect(grid.$$events).toEqual({
+      onDragStart: jasmine.any(Function),
+      onDragOver: jasmine.any(Function),
+      onDragEnd: jasmine.any(Function),
+      onDragLeave: jasmine.any(Function),
+      onDragEnter: jasmine.any(Function),
+      onDragDrop: jasmine.any(Function)
+    });
+
     var onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(6);
 
-    expect(onCalls[0].args).toContain('dragstart', jasmine.any(Function));
-    expect(onCalls[1].args).toContain('dragover', jasmine.any(Function));
-    expect(onCalls[2].args).toContain('dragend', jasmine.any(Function));
-    expect(onCalls[3].args).toContain('dragleave', jasmine.any(Function));
-    expect(onCalls[4].args).toContain('dragenter', jasmine.any(Function));
-    expect(onCalls[5].args).toContain('drop', jasmine.any(Function));
+    expect(onCalls[0].args).toContain('dragstart', grid.$$events.onDragStart);
+    expect(onCalls[1].args).toContain('dragover', grid.$$events.onDragOver);
+    expect(onCalls[2].args).toContain('dragend', grid.$$events.onDragEnd);
+    expect(onCalls[3].args).toContain('dragleave', grid.$$events.onDragLeave);
+    expect(onCalls[4].args).toContain('dragenter', grid.$$events.onDragEnter);
+    expect(onCalls[5].args).toContain('drop', grid.$$events.onDragDrop);
   });
 
   it('should bind drag & drop workaround event for IE <= 9', function() {
@@ -702,16 +747,26 @@ describe('Grid', function() {
       ]
     });
 
+    expect(grid.$$events).toEqual({
+      onDragStart: jasmine.any(Function),
+      onDragOver: jasmine.any(Function),
+      onDragEnd: jasmine.any(Function),
+      onDragLeave: jasmine.any(Function),
+      onDragEnter: jasmine.any(Function),
+      onDragDrop: jasmine.any(Function),
+      onSelectStart: jasmine.any(Function)
+    });
+
     var onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(7);
 
-    expect(onCalls[0].args).toContain('dragstart', jasmine.any(Function));
-    expect(onCalls[1].args).toContain('dragover', jasmine.any(Function));
-    expect(onCalls[2].args).toContain('dragend', jasmine.any(Function));
-    expect(onCalls[3].args).toContain('dragleave', jasmine.any(Function));
-    expect(onCalls[4].args).toContain('dragenter', jasmine.any(Function));
-    expect(onCalls[5].args).toContain('drop', jasmine.any(Function));
-    expect(onCalls[6].args).toContain('selectstart', jasmine.any(Function));
+    expect(onCalls[0].args).toContain('dragstart', grid.$$events.onDragStart);
+    expect(onCalls[1].args).toContain('dragover', grid.$$events.onDragOver);
+    expect(onCalls[2].args).toContain('dragend', grid.$$events.onDragEnd);
+    expect(onCalls[3].args).toContain('dragleave', grid.$$events.onDragLeave);
+    expect(onCalls[4].args).toContain('dragenter', grid.$$events.onDragEnter);
+    expect(onCalls[5].args).toContain('drop', grid.$$events.onDragDrop);
+    expect(onCalls[6].args).toContain('selectstart', grid.$$events.onSelectStart);
   });
 
   it('should destroy grid', function() {
@@ -894,6 +949,29 @@ describe('Grid', function() {
       spyOn(GridResizer, 'resize');
       grid.resize();
       expect(GridResizer.resize).toHaveBeenCalled();
+    });
+
+    it('should check if grid is editable', function() {
+      grid.options.editable = true;
+      grid.$columns.forEach(function(column) {
+        column.editable = false;
+      });
+
+      expect(grid.isEditable()).toBe(true);
+
+      grid.options.editable = false;
+      grid.$columns.forEach(function(column) {
+        column.editable = true;
+      });
+
+      expect(grid.isEditable()).toBe(true);
+
+      grid.options.editable = false;
+      grid.$columns.forEach(function(column) {
+        column.editable = false;
+      });
+
+      expect(grid.isEditable()).toBe(false);
     });
   });
 });

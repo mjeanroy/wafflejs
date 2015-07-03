@@ -29,13 +29,12 @@
 /* global $ */
 /* global _ */
 /* global $parse */
-/* global $sniffer */
 /* global $comparators */
 /* global $util */
 /* global EventBus */
 /* global GridBuilder */
 /* global GridResizer */
-/* global GridDomHandlers */
+/* global GridDomBinders */
 /* global GridDataObserver */
 /* global GridColumnsObserver */
 /* global GridSelectionObserver */
@@ -48,6 +47,9 @@
 /* global DATA_WAFFLE_ORDER */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
+/* global THEAD */
+/* global TFOOT */
+/* global TBODY */
 /* exported Grid */
 
 var Grid = (function() {
@@ -195,32 +197,30 @@ var Grid = (function() {
     }
 
     // Create main nodes
-    _.forEach(['thead', 'tbody', 'tfoot'], createNode, this);
-
-    // Bind dom handlers only if needed
-    if (isSelectable || isSortable) {
-      this.$thead.on('click', _.bind(GridDomHandlers.onClickThead, this));
-      this.$tfoot.on('click', _.bind(GridDomHandlers.onClickTfoot, this));
-    }
-
-    // Bind input event if editable columns are updated
-    if (isEditable) {
-      // Bind appropriate event with a fallback for old browser
-      if ($sniffer.hasEvent('input')) {
-        this.$tbody.on('input', _.bind(GridDomHandlers.onInputTbody, this));
-      } else {
-        this.$tbody.on('keyup change', _.bind(GridDomHandlers.onInputTbody, this));
-      }
-    }
+    _.forEach([THEAD, TBODY, TFOOT], createNode, this);
 
     // Observe collection to update grid accordingly
     this.$data.observe(GridDataObserver.on, this);
     this.$columns.observe(GridColumnsObserver.on, this);
 
+    this.$$events = {};
+
+    // Bind dom handlers only if needed
+    if (isSortable) {
+      GridDomBinders.bindSort(this);
+    }
+
+    // Bind input event if editable columns are updated
+    if (isEditable) {
+      GridDomBinders.bindEdition(this);
+    }
+
     if (isSelectable) {
       this.$selection = new Collection([], this.$data.options());
-      this.$tbody.on('click', _.bind(GridDomHandlers.onClickTbody, this));
       this.$selection.observe(GridSelectionObserver.on, this);
+
+      // Bind selection events
+      GridDomBinders.bindSelection(this);
     }
 
     // Create event bus...
@@ -233,8 +233,8 @@ var Grid = (function() {
     if (opts.size.height || opts.size.width) {
       this.resize();
 
-      this.$$resizeFn = _.debounce(_.bind(this.resize, this), 100);
-      $(window).on('resize', this.$$resizeFn);
+      // Bind resize event to resize grid automatically when window view is resized
+      GridDomBinders.bindResize(this);
     }
 
     this.renderHeader()
@@ -247,17 +247,7 @@ var Grid = (function() {
     this.$columns.clearChanges();
 
     if (isDraggable) {
-      this.$table.on('dragstart', _.bind(GridDomHandlers.onDragStart, this))
-                 .on('dragover', _.bind(GridDomHandlers.onDragOver, this))
-                 .on('dragend', _.bind(GridDomHandlers.onDragEnd, this))
-                 .on('dragleave', _.bind(GridDomHandlers.onDragLeave, this))
-                 .on('dragenter', _.bind(GridDomHandlers.onDragEnter, this))
-                 .on('drop', _.bind(GridDomHandlers.onDragDrop, this));
-
-      // IE <= 9 need this workaround to handle drag&drop
-      if ($util.msie() <= 9) {
-        this.$table.on('selectstart', _.bind(GridDomHandlers.onSelectStart, this));
-      }
+      GridDomBinders.bindDragDrop(this);
     }
 
     this.dispatchEvent('initialized');
@@ -286,7 +276,7 @@ var Grid = (function() {
 
     // Check if grid hasat least
     isEditable: function() {
-      return this.$columns.some(function(column) {
+      return this.options.editable || this.$columns.some(function(column) {
         return !!column.editable;
       });
     },
@@ -525,8 +515,8 @@ var Grid = (function() {
       this.$tbody.off();
 
       // Unbind resize event
-      if (this.$$resizeFn) {
-        $(window).off('resize', this.$$resizeFn);
+      if (this.$$events.onResize) {
+        $(window).off('resize', this.$$events.onResize);
       }
 
       // Unobserve collection
@@ -536,6 +526,9 @@ var Grid = (function() {
 
       // Clear event bus
       this.$bus.clear();
+
+      // Clear event listeners
+      this.$$events = null;
 
       // Destroy internal property
       $util.destroy(this);
@@ -570,6 +563,11 @@ var Grid = (function() {
     // Global sorting
     // Sort can also be disabled per column
     sortable: true,
+
+    // Global edition
+    // This will be updated automatically if some columns are editable.
+    // Set this property to true if you want to add some editable columns after initialization
+    editable: false,
 
     // Drag&Drop
     dnd: false,

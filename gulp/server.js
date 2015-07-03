@@ -29,7 +29,7 @@ module.exports = function(options) {
   var basePath = options.basePath;
   var dist = options.dist;
 
-  gulp.task('server', ['ie8', 'concat', 'less', 'vulcanize'], function () {
+  gulp.task('server', ['bower:install', 'ie8', 'concat', 'less', 'vulcanize'], function () {
     server.run([basePath + '/sample-server.js']);
 
     gulp.watch([basePath + '/src/**/*.js'], ['ie8', 'concat']);

@@ -56,7 +56,7 @@ module.exports = function(options) {
     testTasks.push(testTask);
 
     // Create tdd task for each target
-    gulp.task(tddTask, ['test:build'], function(done) {
+    gulp.task(tddTask, ['test:build', 'bower:install'], function(done) {
       karma.start({
         configFile: karmaConf,
         files: karmaFiles,
@@ -65,7 +65,7 @@ module.exports = function(options) {
     });
 
     // Create test task for each target
-    gulp.task(testTask, ['test:build'], function(done) {
+    gulp.task(testTask, ['test:build', 'bower:install'], function(done) {
       karma.start({
         configFile: karmaConf,
         files: karmaFiles,

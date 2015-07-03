@@ -52,6 +52,6 @@
     "test": "gulp test",
     "build": "gulp build",
     "start": "gulp server",
-    "postinstall": "gulp bower"
+    "bower": "gulp bower:install"
   }
 }

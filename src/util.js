@@ -84,6 +84,29 @@ var $util = {
     return _.isFunction(fn) ? fn.apply(ctx, args) : fn;
   },
 
+  // Split array (or array like object) into smaller arrays.
+  // Returned value is an array of smaller arrays (a.k.a chunks).
+  split: function(array, size) {
+    var actualSize = size || 20;
+    var chunks = [];
+
+    var chunk = [];
+    for (var i = 0, length = array.length; i < length; ++i) {
+      chunk.push(array[i]);
+
+      if (chunk.length === actualSize) {
+        chunks.push(chunk);
+        chunk = [];
+      }
+    }
+
+    if (chunk.length > 0) {
+      chunks.push(chunk);
+    }
+
+    return chunks;
+  },
+
   // Parse value
   parse: function(json) {
     try {

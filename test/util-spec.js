@@ -110,6 +110,18 @@ describe('$util', function() {
     expect(fn).toHaveBeenCalledWith('foo');
   });
 
+  it('should split array into chunks', function() {
+    var array = [0, 1];
+    var chunks = $util.split(array, 1);
+    expect(chunks).toEqual([[0], [1]]);
+  });
+
+  it('should split collection into chunks of two elements', function() {
+    var array = [0, 1, 2];
+    var chunks = $util.split(array, 2);
+    expect(chunks).toEqual([[0, 1], [2]]);
+  });
+
   it('should destroy object', function() {
     var fn = jasmine.createSpy('fn');
     var protoFn = jasmine.createSpy('protoFn');

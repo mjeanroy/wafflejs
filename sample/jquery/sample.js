@@ -44,4 +44,16 @@
     grid.data().clear();
   });
 
+  $('#input-filter').on('keyup', function() {
+    var value = $(this).val();
+    grid.filter(function(current) {
+      return current.name().toLowerCase().indexOf(value.toLowerCase()) >= 0;
+    });
+  });
+
+  $('#clear-filter').on('click', function() {
+    $('#input-filter').val('');
+    grid.removeFilter();
+  });
+
 })(jQuery);

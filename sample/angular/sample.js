@@ -62,6 +62,17 @@
         $scope.grid.data().clear();
       };
 
+      $scope.updateFilter = function(value) {
+        $scope.grid.filter(function(current) {
+          return current.name().toLowerCase().indexOf(value.toLowerCase()) >= 0;
+        });
+      };
+
+      $scope.clearFilter = function() {
+        $scope.filter = '';
+        $scope.grid.removeFilter();
+      };
+
       $scope.onInitialized = function() {
         $log.debug('Grid initialized');
       };

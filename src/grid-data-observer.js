@@ -22,121 +22,165 @@
  * SOFTWARE.
  */
 
+/* global $ */
 /* global _ */
 /* global $doc  */
 /* global $vdom */
 /* global $util */
+/* global GridUtil */
 /* global GridBuilder */
 /* global DATA_WAFFLE_IDX */
 /* exported GridDataObserver */
 
-var GridDataObserver = {
-  // Apply data changes to grid.
-  on: function(changes) {
-    _.forEach(changes, function(change) {
-      var fnName = 'on' + $util.capitalize(change.type);
-      GridDataObserver[fnName].call(this, change);
-    }, this);
+var GridDataObserver = (function() {
+  var readDataIndex = GridUtil.getDataIndex;
+  var findPreviousIndex = GridUtil.getPreviousRowIndexForDataIndex;
+  var findIndex = GridUtil.getRowIndexForDataIndex;
 
-    return this;
-  },
+  var o = {
+    // Apply data changes to grid.
+    on: function(changes) {
+      _.forEach(changes, function(change) {
+        var fnName = 'on' + $util.capitalize(change.type);
+        o[fnName].call(this, change);
+      }, this);
 
-  // Update grid on splice change.
-  onSplice: function(change) {
-    var $tbody = this.$tbody;
-    var tbody = $tbody[0];
-    var childNodes = tbody.childNodes;
-    var index = change.index;
-    var addedCount = change.addedCount;
-    var collection = change.object;
+      return this;
+    },
 
-    var removedNodes;
-    var addedNodes;
-    var addedData;
-    var removedData = change.removed;
+    // Update grid on splice change.
+    onSplice: function(change) {
+      var $tbody = this.$tbody;
+      var tbody = $tbody[0];
+      var childNodes = tbody.childNodes;
+      var index = change.index;
+      var addedCount = change.addedCount;
+      var collection = change.object;
 
-    var removedCount = removedData.length;
-    if (removedCount > 0) {
-      if (index === 0 && removedCount === childNodes.length) {
-        removedNodes = _.toArray(childNodes);
-        $tbody.empty();
-      } else {
-        removedNodes = [];
-        for (var k = 0; k < removedCount; ++k) {
-          removedNodes.push(tbody.removeChild(childNodes[index]));
+      var removedNodes;
+      var addedNodes;
+      var addedData;
+      var removedData = change.removed;
+      var startIndex = findPreviousIndex(childNodes, index) + 1;
+
+      var removedCount = removedData.length;
+      if (removedCount > 0) {
+        var wasCleared = index === 0 && (collection.length - addedCount) === 0;
+        if (wasCleared) {
+          removedNodes = _.toArray(childNodes);
+          $tbody.empty();
+        } else {
+          removedNodes = [];
+
+          var removedRow = childNodes[startIndex];
+
+          for (var k = 0; k < removedCount && removedRow; ++k) {
+            // Remove if and only if row index match
+            var currentRemovedIndex = index + k;
+            var currentRowIndex = readDataIndex(removedRow);
+            if (currentRowIndex === currentRemovedIndex) {
+              removedNodes.push(tbody.removeChild(removedRow));
+              removedRow = childNodes[startIndex];
+            }
+          }
+        }
+
+        // Do not forget to remove previously selected data !
+        var $selection = this.$selection;
+        if ($selection && $selection.length > 0) {
+          $selection.remove(removedData);
         }
       }
 
-      // Do not forget to remove previously selected data !
-      var $selection = this.$selection;
-      if ($selection && $selection.length > 0) {
-        $selection.remove(removedData);
+      // Append new added data
+      if (addedCount > 0) {
+        addedNodes = [];
+        addedData = [];
+
+        var fragment = $doc.createFragment();
+        var predicate = this.$filter || _.constant(true);
+
+        for (var i = 0; i < addedCount; ++i) {
+          var rowIdx = i + index;
+          var data = collection.at(rowIdx);
+          var ctx = collection.ctx(data);
+
+          // Add
+          addedData.push(data);
+
+          // Update flag
+          ctx.visible = predicate(data);
+
+          // Append if and only if data must be visible
+          if (ctx.visible) {
+            var tr = GridBuilder.tbodyRow(this, data, rowIdx);
+            addedNodes.push(tr);
+            fragment.appendChild(tr);
+          }
+        }
+
+        if (addedNodes.length > 0) {
+          if (startIndex > 0) {
+            // Add after existing node
+            $(childNodes[startIndex - 1]).after(fragment);
+          } else {
+            // Add at the beginning
+            $tbody.prepend(fragment);
+          }
+        }
       }
+
+      if (removedNodes || addedNodes) {
+        // We need to update row index
+        var diff = addedCount - removedCount;
+        var start = index + _.size(addedNodes);
+
+        for (var length = childNodes.length; start < length; ++start) {
+          var childNode = childNodes[start];
+          var oldIdx = readDataIndex(childNode);
+          childNode.setAttribute(DATA_WAFFLE_IDX, oldIdx + diff);
+        }
+
+        // Trigger events
+        this.dispatchEvent('dataspliced', {
+          added: addedData || [],
+          addedNodes: addedNodes || [],
+          removedNodes: removedNodes || [],
+          removed: removedData,
+          index: index,
+          nodeIndex: startIndex
+        });
+      }
+
+      return this;
+    },
+
+    // Update grid on update change
+    onUpdate: function(change) {
+      var index = change.index;
+      var data = this.$data.at(index);
+
+      // Create new node representation and merge diff with old node
+      var tbody = this.$tbody[0];
+      var childNodes = tbody.childNodes;
+      var nodeIndex = findIndex(childNodes, index);
+      if (nodeIndex >= 0) {
+        var oldNode = childNodes[nodeIndex];
+        var newNode = GridBuilder.tbodyRow(this, data, index);
+        var result = $vdom.mergeNodes(tbody, oldNode, newNode);
+
+        // Trigger event
+        this.dispatchEvent('dataupdated', {
+          index: index,
+          nodeIndex: nodeIndex,
+          oldNode: oldNode,
+          newNode: result
+        });
+      }
+
+      return this;
     }
+  };
 
-    // Append new added data
-    if (addedCount > 0) {
-      addedNodes = [];
-      addedData = [];
-
-      var fragment = $doc.createFragment();
-
-      for (var i = 0; i < addedCount; ++i) {
-        var rowIdx = i + index;
-        var data = collection.at(rowIdx);
-        var tr = GridBuilder.tbodyRow(this, data, rowIdx);
-
-        addedNodes.push(tr);
-        addedData.push(data);
-        fragment.appendChild(tr);
-      }
-
-      if (index > 0) {
-        // Add after existing node
-        $tbody.children().eq(index - 1).after(fragment);
-      } else {
-        // Add at the beginning
-        $tbody.prepend(fragment);
-      }
-    }
-
-    if (removedNodes || addedNodes) {
-      // We need to update row index
-      for (var start = (index + addedCount), length = childNodes.length; start < length; ++start) {
-        childNodes[start].setAttribute(DATA_WAFFLE_IDX, start);
-      }
-
-      // Trigger events
-      this.dispatchEvent('dataspliced', {
-        added: addedData || [],
-        addedNodes: addedNodes || [],
-        removedNodes: removedNodes || [],
-        removed: removedData,
-        index: index
-      });
-    }
-
-    return this;
-  },
-
-  // Update grid on update change
-  onUpdate: function(change) {
-    var index = change.index;
-    var data = this.$data.at(index);
-    var tbody = this.$tbody[0];
-
-    // Create new node representation and merge diff with old node
-    var oldNode = tbody.childNodes[index];
-    var newNode = GridBuilder.tbodyRow(this, data, index);
-    var result = $vdom.mergeNodes(tbody, oldNode, newNode);
-
-    // Trigger event
-    this.dispatchEvent('dataupdated', {
-      index: index,
-      oldNode: oldNode,
-      newNode: result
-    });
-
-    return this;
-  }
-};
+  return o;
+})();

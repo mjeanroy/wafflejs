@@ -26,13 +26,12 @@
 /* global _ */
 /* global CSS_SELECTED */
 /* global $util */
+/* global GridUtil */
 /* exported GridSelectionObserver */
 
 var GridSelectionObserver = (function() {
-  var findCheckBox = function(row) {
-    return row.childNodes[0].childNodes[0];
-  };
-
+  var findIndex = GridUtil.getRowIndexForDataIndex;
+  var findCheckBox = GridUtil.getCheckbox;
   var updateCheckbox = function(checkbox, checked) {
     checkbox.checked = checked;
   };
@@ -59,6 +58,7 @@ var GridSelectionObserver = (function() {
 
       var idx;
       var row;
+      var rowIndex;
       var checkbox;
 
       var tbody = $tbody[0];
@@ -76,14 +76,17 @@ var GridSelectionObserver = (function() {
           // Data may not be in grid data collection, since this change
           // may have been triggered because data has been removed.
           if (idx >= 0) {
-            row = childNodes[idx];
+            rowIndex = findIndex(childNodes, idx);
+            row = childNodes[rowIndex];
 
-            $(row).removeClass(CSS_SELECTED);
+            if (row) {
+              $(row).removeClass(CSS_SELECTED);
 
-            if (this.hasCheckbox()) {
-              checkbox = findCheckBox(row);
-              if (checkbox) {
-                updateCheckbox(checkbox, false);
+              if (this.hasCheckbox()) {
+                checkbox = findCheckBox(row);
+                if (checkbox) {
+                  updateCheckbox(checkbox, false);
+                }
               }
             }
           }
@@ -94,14 +97,17 @@ var GridSelectionObserver = (function() {
       if (addedCount > 0) {
         for (var i = 0; i < addedCount; ++i) {
           idx = $data.indexOf($selection.at(index + i));
-          row = childNodes[idx];
+          rowIndex = findIndex(childNodes, idx);
+          row = childNodes[rowIndex];
 
-          $(row).addClass(CSS_SELECTED);
+          if (row) {
+            $(row).addClass(CSS_SELECTED);
 
-          if (this.hasCheckbox()) {
-            checkbox = findCheckBox(row);
-            if (checkbox) {
-              updateCheckbox(checkbox, true);
+            if (this.hasCheckbox()) {
+              checkbox = findCheckBox(row);
+              if (checkbox) {
+                updateCheckbox(checkbox, true);
+              }
             }
           }
         }

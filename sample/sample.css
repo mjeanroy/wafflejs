@@ -26,23 +26,17 @@ body {
   padding-top: 70px;
 }
 
-button {
-  margin-right: 5px;
-}
-
 /* Override top arrow color. */
-th.waffle-sortable-asc:before {
+.waffle-grid th.waffle-sortable-asc:before {
   border-bottom-color: blue;
 }
 
 /* Override bottom arrow color. */
-th.waffle-sortable-desc:before {
+.waffle-grid th.waffle-sortable-desc:before {
   border-top-color: blue;
 }
 
 table tbody {
-  height: 400px;
-  min-height: 400px;
   max-height: 400px;
 }
 
@@ -69,5 +63,10 @@ table .email {
 
 .actions-columns input {
   vertical-align: -2px;
+}
+
+.inline-control {
+  display: inline-block;
+  width: auto;
 }
 

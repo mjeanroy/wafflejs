@@ -59,6 +59,7 @@ var $files = {
     SRC + 'renderers.js',
     SRC + 'comparators.js',
     SRC + 'column.js',
+    SRC + 'grid-util.js',
     SRC + 'grid-dom-handlers.js',
     SRC + 'grid-dom-binders.js',
     SRC + 'grid-builder.js',
@@ -66,6 +67,7 @@ var $files = {
     SRC + 'grid-data-observer.js',
     SRC + 'grid-columns-observer.js',
     SRC + 'grid-selection-observer.js',
+    SRC + 'grid-filter.js',
     SRC + 'grid.js',
     SRC + 'waffle.js'
   ],

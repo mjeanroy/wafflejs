@@ -93,6 +93,14 @@ var _ = (function() {
     };
   };
 
+  // Creates a function that returns the same value that is used as the
+  // argument of _.constant.
+  _.constant = function(value) {
+    return function() {
+      return value;
+    };
+  };
+
   // Creates a real Array from the list (anything that can be iterated over).
   // Useful for transmuting the arguments object.
   _.toArray = function(obj) {
@@ -149,6 +157,10 @@ var _ = (function() {
 
   // Return the number of values in the list.
   _.size = function(array) {
+    if (array == null) {
+      return 0;
+    }
+
     return array.length;
   };
 

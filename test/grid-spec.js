@@ -72,6 +72,7 @@ describe('Grid', function() {
         onColumnsSpliced: null,
         onColumnsUpdated: null,
         onSelectionChanged: null,
+        onFilterUpdated: null,
         onSorted: null
       }
     });
@@ -158,6 +159,7 @@ describe('Grid', function() {
         onColumnsSpliced: null,
         onColumnsUpdated: null,
         onSelectionChanged: null,
+        onFilterUpdated: null,
         onSorted: null
       }
     }));
@@ -1161,6 +1163,21 @@ describe('Grid', function() {
       expect(grid.renderHeader).toHaveBeenCalled();
       expect(grid.renderFooter).toHaveBeenCalled();
       expect(grid.renderBody).toHaveBeenCalled();
+      expect(grid.clearChanges).toHaveBeenCalled();
+    });
+
+    it('should render grid asynchronously', function() {
+      spyOn(grid, 'renderHeader').and.callThrough();
+      spyOn(grid, 'renderFooter').and.callThrough();
+      spyOn(grid, 'renderBody').and.callThrough();
+      spyOn(grid, 'clearChanges').and.callThrough();
+
+      var result = grid.render(true);
+
+      expect(result).toBe(grid);
+      expect(grid.renderHeader).toHaveBeenCalled();
+      expect(grid.renderFooter).toHaveBeenCalled();
+      expect(grid.renderBody).toHaveBeenCalledWith(true);
       expect(grid.clearChanges).toHaveBeenCalled();
     });
 

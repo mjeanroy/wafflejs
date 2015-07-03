@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-describe('Grid Sort', function() {
+describe('Grid Data Observer', function() {
 
   var columns, data, table, grid, $data;
 
@@ -121,7 +121,8 @@ describe('Grid Sort', function() {
         addedNodes: expectedAddedNodes,
         removed: [],
         removedNodes: [],
-        index: 3
+        index: 3,
+        nodeIndex: 3
       });
 
       expect(grid.$data.length).toBe(5);
@@ -175,7 +176,8 @@ describe('Grid Sort', function() {
         addedNodes: expectedAddedNodes,
         removed: [],
         removedNodes: [],
-        index: 0
+        index: 0,
+        nodeIndex: 0
       });
 
       expect(grid.$data.length).toBe(5);
@@ -217,7 +219,8 @@ describe('Grid Sort', function() {
         addedNodes: [],
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
-        index: 1
+        index: 1,
+        nodeIndex: 1
       });
 
       expect(grid.$data.length).toBe(1);
@@ -249,7 +252,8 @@ describe('Grid Sort', function() {
         addedNodes: [],
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
-        index: 0
+        index: 0,
+        nodeIndex: 0
       });
 
       expect(grid.$data.length).toBe(2);
@@ -313,7 +317,8 @@ describe('Grid Sort', function() {
         addedNodes: expectedAddedNodes,
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
-        index: 1
+        index: 1,
+        nodeIndex: 1
       });
 
       expect(grid.$data.length).toBe(3);
@@ -358,7 +363,8 @@ describe('Grid Sort', function() {
         addedNodes: [],
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
-        index: 0
+        index: 0,
+        nodeIndex: 0
       });
 
       expect(grid.$data.length).toBe(0);
@@ -391,7 +397,8 @@ describe('Grid Sort', function() {
         addedNodes: [],
         removed: expectedRemovedData,
         removedNodes: expectedRemovedNodes,
-        index: 0
+        index: 0,
+        nodeIndex: 0
       });
 
       expect(grid.$data.length).toBe(2);
@@ -419,12 +426,14 @@ describe('Grid Sort', function() {
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
         index: 0,
+        nodeIndex: 0,
         oldNode: grid.$tbody[0].childNodes[0],
         newNode: grid.$tbody[0].childNodes[0]
       });
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
         index: 2,
+        nodeIndex: 2,
         oldNode: grid.$tbody[0].childNodes[2],
         newNode: grid.$tbody[0].childNodes[2]
       });

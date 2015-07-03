@@ -22,41 +22,54 @@
  * SOFTWARE.
  */
 
-(function($) {
+/* global DATA_WAFFLE_IDX */
+/* exported GridUtil */
 
-  'use strict';
+var GridUtil = (function() {
 
-  $.fn.waffle.addRenderer('email', function(value) {
-    return '<a href="mailto:' + value + '">' + value + '</a>';
-  });
+  var findRow = function(rows, index, def, stopOn) {
+    var max = rows.length - 1;
+    if (max < 0 || index < 0 || index <= def) {
+      return def;
+    }
 
-  var grid = $('#waffle').waffle(options).data('wafflejs');
+    var currentIndex = Math.min(index, max);
+    var dataIndex = index;
 
-  $('#add').on('click', function() {
-    grid.data().push(createFakePerson());
-  });
+    while (currentIndex >= 0 && dataIndex >= index) {
+      dataIndex = instance.getDataIndex(rows[currentIndex]);
+      if (stopOn(dataIndex, index)) {
+        return currentIndex;
+      }
 
-  $('#remove').on('click', function() {
-    grid.data().pop();
-  });
+      currentIndex--;
+    }
 
-  $('#clear').on('click', function() {
-    grid.data().clear();
-  });
-
-  var onFilterUpdate = function() {
-    var value = $(this).val();
-    grid.filter(function(current) {
-      return current.name().toLowerCase().indexOf(value.toLowerCase()) >= 0;
-    });
+    return def;
   };
 
-  $('#input-filter').on('keyup', _.debounce(onFilterUpdate, 150));
+  var instance = {
+    getDataIndex: function(row) {
+      return Number(row.getAttribute(DATA_WAFFLE_IDX));
+    },
 
-  $('#clear-filter').on('click', function() {
-    $('#input-filter').val('');
-    grid.removeFilter();
-  });
+    getRowIndexForDataIndex: function(rows, index) {
+      return findRow(rows, index, -1, function(dataIndex, index) {
+        return dataIndex === index;
+      });
+    },
 
-})(jQuery);
+    getPreviousRowIndexForDataIndex: function(rows, index) {
+      return findRow(rows, index - 1, -1, function(dataIndex, index) {
+        return dataIndex <= index;
+      });
+    },
 
+    getCheckbox: function(row) {
+      return row.childNodes[0].childNodes[0];
+    }
+  };
+
+  return instance;
+
+})();

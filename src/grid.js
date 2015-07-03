@@ -38,6 +38,7 @@
 /* global GridDataObserver */
 /* global GridColumnsObserver */
 /* global GridSelectionObserver */
+/* global GridFilter */
 /* global $$createComparisonFunction */
 /* global CSS_GRID */
 /* global CSS_SORTABLE_ASC */
@@ -364,15 +365,31 @@ var Grid = (function() {
       return selectionSize >= dataSize;
     },
 
+    // Check if grid columns should be draggable by default.
     isDraggable: function() {
       return !!this.options.dnd;
     },
 
+    // Check if given is visible (not filtered).
+    // If data is visible, then a row should exist.
+    isVisible: function(current) {
+      var ctx = this.$data.ctx(current);
+      return ctx && ctx.visible !== false;
+    },
+
+    // Get only visible data.
+    // An array will always be returned.
+    visibleData: function() {
+      var data = this.$data;
+      var filter = this.$filter;
+      return filter != null ? data.filter(this.isVisible, this) : data.toArray();
+    },
+
     // Render entire grid
-    render: function() {
+    render: function(async) {
       return this.renderHeader()
           .renderFooter()
-          .renderBody()
+          .renderBody(async)
           .clearChanges();
     },
 
@@ -427,10 +444,16 @@ var Grid = (function() {
         grid = empty = build = onEnded = null;
       };
 
+      // If grid is filtered, then we must only render visible data.
+      var dataToRender = this.$data;
+      if (this.$filter != null) {
+        dataToRender = this.visibleData();
+      }
+
       if (asyncRender) {
-        $util.asyncTask(this.$data.split(200), 10, build, onEnded);
+        $util.asyncTask($util.split(dataToRender, 200), 10, build, onEnded);
       } else {
-        build(this.$data, 0);
+        build(dataToRender, 0);
         onEnded();
       }
 
@@ -547,6 +570,27 @@ var Grid = (function() {
       }
 
       return this.dispatchEvent('sorted');
+    },
+
+    // Filter data
+    filter: function(predicate) {
+      // Store predicate...
+      this.$filter = predicate;
+
+      // ... and apply filter
+      GridFilter.applyFilter.call(this, predicate);
+
+      // Chain
+      return this;
+    },
+
+    // This is a shorthand for this.filter(null);
+    removeFilter: function() {
+      if (this.$filter != null) {
+        this.filter(undefined);
+      }
+
+      return this;
     },
 
     // Trigger events listeners
@@ -692,7 +736,21 @@ var Grid = (function() {
   };
 
   // Initialize events with noop
-  _.forEach(['onInitialized', 'onUpdated', 'onRendered', 'onDataSpliced', 'onDataChanged', 'onDataUpdated', 'onColumnsSpliced', 'onColumnsUpdated', 'onSelectionChanged', 'onSorted'], function(name) {
+  var events = [
+    'onInitialized',
+    'onUpdated',
+    'onRendered',
+    'onDataSpliced',
+    'onDataChanged',
+    'onDataUpdated',
+    'onColumnsSpliced',
+    'onColumnsUpdated',
+    'onSelectionChanged',
+    'onFilterUpdated',
+    'onSorted'
+  ];
+
+  _.forEach(events, function(name) {
     Constructor.options.events[name] = null;
   });
 

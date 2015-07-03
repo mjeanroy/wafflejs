@@ -74,6 +74,20 @@
         <button id="clear" type="button" title="Clear" class="btn btn-primary">Clear</button>
       </div>
     </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">Filter</div>
+      <div class="panel-body">
+        <label for="input-filter">Filter data (contains): </label>
+        <input id="input-filter"
+               type="text"
+               class="form-control inline-control"
+               placeholder="Filter data (by name)..."
+               ng-model="filter"
+               ng-change="updateFilter(filter)">
+
+        <i id="clear-filter" role="button" class="Clear Filter"><big><strong>&times</strong></big></i>
+      </div>
+    </div>
     <table id="waffle"
            class="table table-striped table-hover table-bordered"
            data-waffle-scrollable="true"

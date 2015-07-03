@@ -46,7 +46,13 @@
   options.sortBy = 'name()';
 
   var App = React.createClass({
-    getDefaultProps: function() {
+    getInitialState: function() {
+      return {
+        filter: ''
+      };
+    },
+
+    getInitialGridOptions: function() {
       return options;
     },
 
@@ -61,13 +67,52 @@
               <button type="button" onClick={this.clearAll} className="btn btn-primary" title="Clear">Clear</button>
             </div>
           </div>
-          <Waffle ref="waffle" {...this.props}></Waffle>
+          <div className="panel panel-default">
+            <div className="panel-heading">Filter</div>
+            <div className="panel-body">
+              <label>Filter data (contains): </label>
+              <input id="input-filter"
+                     type="text"
+                     className="form-control inline-control"
+                     placeholder="Filter data (by name)..."
+                     value={this.state.filter}
+                     onChange={this.updateFilter}
+                     ref="inputFilter"/>
+
+              <i id="clear-filter" role="button" className="Clear Filter" onClick={this.clearFilter}>
+                <big>
+                  <strong dangerouslySetInnerHTML={{__html: '&times;'}}></strong>
+                </big>
+              </i>
+            </div>
+          </div>
+          <Waffle ref="waffle" {...this.getInitialGridOptions()}></Waffle>
         </div>
       );
     },
 
     grid: function() {
       return this.refs.waffle.getGrid();
+    },
+
+    updateFilter: function(event) {
+      var value = event.target.value;
+
+      this.setState({
+        filter: value
+      });
+
+      this.grid().filter(function(current) {
+        return current.name().toLowerCase().indexOf(value.toLowerCase()) >= 0;
+      });
+    },
+
+    clearFilter: function() {
+      this.setState({
+        filter: ''
+      });
+
+      this.grid().removeFilter();
     },
 
     addPerson: function() {

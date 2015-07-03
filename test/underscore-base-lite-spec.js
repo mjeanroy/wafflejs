@@ -67,6 +67,13 @@ describe('_', function() {
     expect(fn()).toBe(ctx);
   });
 
+  it('should get a constant function', function() {
+    expect(_.constant(true)()).toBe(true);
+    expect(_.constant(false)()).toBe(false);
+    expect(_.constant('foo')()).toBe('foo');
+    expect(_.constant('')()).toBe('');
+  });
+
   it('should call function once and only once', function() {
     var callback = jasmine.createSpy('callback').and.returnValue('foo');
     var func = _.once(callback);
@@ -146,6 +153,8 @@ describe('_', function() {
   });
 
   it('should get size of list', function() {
+    expect(_.size(undefined)).toBe(0);
+    expect(_.size(null)).toBe(0);
     expect(_.size([])).toBe(0);
     expect(_.size([1])).toBe(1);
     expect(_.size([1, 2])).toBe(2);

@@ -26,6 +26,7 @@
 
 /* global _ */
 /* global $parse */
+/* global $util */
 /* global HashMap */
 /* global Observable */
 /* exported Collection */
@@ -312,12 +313,18 @@ var Collection = (function() {
       return index >= 0 ? this.at(index) : undefined;
     },
 
+    // Get current context of given data.
+    ctx: function(o) {
+      var key = _.isObject(o) ? this.$$key(o) : o;
+      return this.$$map.contains(key) ? this.$$map.get(key) : null;
+    },
+
     // Get index of data in collection.
     // This function use internal id to check index faster.
     // This function accept data or data identifier as argument.
     indexOf: function(o) {
-      var key = _.isObject(o) ? this.$$key(o) : o;
-      return this.$$map.contains(key) ? this.$$map.get(key).idx : -1;
+      var ctx = this.ctx(o);
+      return ctx ? ctx.idx : -1;
     },
 
     // Check if data object is already inside collection.
@@ -687,23 +694,7 @@ var Collection = (function() {
     // Split collection into smaller arrays
     // Returned value is an array of smaller arrays.
     split: function(size) {
-      var actualSize = size || 20;
-      var chunks = [];
-
-      var chunk = [];
-      for (var i = 0, length = this.length; i < length; ++i) {
-        chunk.push(this.at(i));
-        if (chunk.length === actualSize) {
-          chunks.push(chunk);
-          chunk = [];
-        }
-      }
-
-      if (chunk.length > 0) {
-        chunks.push(chunk);
-      }
-
-      return chunks;
+      return $util.split(this, size);
     },
 
     // Custom json representation

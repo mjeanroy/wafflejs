@@ -76,6 +76,14 @@ var Column = (function() {
   };
 
   var Constructor = function(column) {
+    // If a string is given as parameter, then this is a
+    // shortcut for column id.
+    if (_.isString(column)) {
+      column = {
+        id: column
+      };
+    }
+
     var escape = column.escape;
     var sortable = column.sortable;
 

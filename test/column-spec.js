@@ -40,6 +40,20 @@ describe('Column', function() {
     expect(column.draggable).toBeFalse();
   });
 
+  it('should initialize with a string', function() {
+    var column = new Column('foo');
+
+    expect(column.escape).toBe(true);
+    expect(column.sortable).toBe(true);
+    expect(column.title).toBe('');
+    expect(column.id).toBe('foo');
+    expect(column.field).toBe('foo');
+    expect(column.css).toBe('foo');
+    expect(column.width).toBeUndefined();
+    expect(column.editable).toBeFalsy();
+    expect(column.draggable).toBeFalse();
+  });
+
   it('should initialize with custom values', function() {
     var column = new Column({
       id: 'foo',

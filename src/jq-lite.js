@@ -115,14 +115,31 @@ var $ = (function() {
     },
 
     // Detach events
-    off: function(event, listener) {
+    off: function(events, listener) {
+      var array = events ?
+        (events.indexOf(' ') >= 0 ? events.split(' ') : [events]) :
+        [];
+
+      var nbEvents = array.length;
+
       var $$events = [];
+
       for (var i = 0, size = this.$$events.length; i < size; ++i) {
         var e = this.$$events[i];
-        if ((!event || e.event === event) && (!listener || e.callback === listener)) {
-          unbind(this, e.event, e.callback, e.node);
-        } else {
+        var found = nbEvents === 0;
+
+        for (var k = 0; k < nbEvents; ++k) {
+          var current = array[k];
+          if ((!current || e.event === current) && (!listener || e.callback === listener)) {
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
           $$events.push(e);
+        } else {
+          unbind(this, e.event, e.callback, e.node);
         }
       }
 

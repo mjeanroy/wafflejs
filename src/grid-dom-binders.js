@@ -50,7 +50,8 @@ var GridDomBinders = (function() {
   };
 
   var inputEvents = function() {
-    return $sniffer.hasEvent('input') ? 'input' : 'keyup change';
+    var mainEvent = $sniffer.hasEvent('input') ? 'input' : 'keyup';
+    return mainEvent += ' change';
   };
 
   // Save bytes

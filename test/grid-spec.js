@@ -593,7 +593,7 @@ describe('Grid', function() {
     expect(onCalls).toHaveLength(4);
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
-    expect(onCalls[2].args).toContain('input', Function);
+    expect(onCalls[2].args).toContain('input change', Function);
     expect(onCalls[3].args).toContain('click', Function);
   });
 
@@ -616,7 +616,7 @@ describe('Grid', function() {
     expect(onCalls).toHaveLength(4);
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
-    expect(onCalls[2].args).toContain('input', Function);
+    expect(onCalls[2].args).toContain('input change', Function);
     expect(onCalls[3].args).toContain('click', Function);
   });
 

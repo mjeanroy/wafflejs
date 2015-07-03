@@ -92,7 +92,7 @@ describe('Grid Dom Binders', function() {
     expect(grid.$table.on).not.toHaveBeenCalled();
     expect(grid.$thead.on).not.toHaveBeenCalled();
     expect(grid.$tfoot.on).not.toHaveBeenCalled();
-    expect(grid.$tbody.on).toHaveBeenCalledWith('input', grid.$$events.onInputTbody);
+    expect(grid.$tbody.on).toHaveBeenCalledWith('input change', grid.$$events.onInputTbody);
 
     // It should not bind twice
     grid.$table.on.calls.reset();
@@ -179,7 +179,7 @@ describe('Grid Dom Binders', function() {
     expect(grid.$table.off).not.toHaveBeenCalled();
     expect(grid.$thead.off).not.toHaveBeenCalled();
     expect(grid.$tfoot.off).not.toHaveBeenCalled();
-    expect(grid.$tbody.off).toHaveBeenCalledWith('input', onInputTbody);
+    expect(grid.$tbody.off).toHaveBeenCalledWith('input change', onInputTbody);
     expect(grid.$$events).toEqual({
       onInputTbody: null
     });

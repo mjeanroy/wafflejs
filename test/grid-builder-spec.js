@@ -579,6 +579,49 @@ describe('GridBuilder', function() {
     expect(control.value).toBe('1');
   });
 
+  it('should create editable control for checkbox input', function() {
+    var data = {
+      foo: true,
+      bar: 'hello world'
+    };
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'checkbox'
+    };
+
+    var control = GridBuilder.tbodyControl(column, data);
+
+    expect(control).toBeDefined();
+    expect(control.tagName).toEqual('INPUT');
+    expect(control.getAttribute('type')).toBe('checkbox');
+    expect(control.getAttribute('data-waffle-id')).toBe('foo');
+    expect(control.className).toBeEmpty();
+    expect(control.checked).toBe(true);
+  });
+
+  it('should create editable control for checkbox input and convert to truthy/falsy value', function() {
+    var data = {
+      bar: 'hello world'
+    };
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'checkbox'
+    };
+
+    var control = GridBuilder.tbodyControl(column, data);
+
+    expect(control).toBeDefined();
+    expect(control.tagName).toEqual('INPUT');
+    expect(control.getAttribute('type')).toBe('checkbox');
+    expect(control.getAttribute('data-waffle-id')).toBe('foo');
+    expect(control.className).toBeEmpty();
+    expect(control.checked).toBe(false);
+  });
+
   it('should create editable control for tbody cell with css classes', function() {
     var data = {
       foo: 1,

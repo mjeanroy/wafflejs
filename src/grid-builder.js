@@ -53,6 +53,12 @@ var GridBuilder = (function() {
     return total / size;
   };
 
+  var formatters = {
+    checkbox: function(value) {
+      return !!value;
+    }
+  };
+
   var o = {
     // Compute width for each columns
     computeWidth: function(totalWidth, columns) {
@@ -260,8 +266,13 @@ var GridBuilder = (function() {
         control.setAttribute('type', editable.type);
       }
 
-      control.setAttribute('value', column.value(data));
+      // Add column id to control to simplify parsing
       control.setAttribute(DATA_WAFFLE_ID, column.id);
+
+      // For checkbox inputs, we must set the 'checked' property...
+      var prop = editable.type === 'checkbox' ? 'checked' : 'value';
+      var formatter = formatters[editable.type] || _.identity;
+      control[prop] = formatter(column.value(data));
 
       // Append custom css
       if (editable.css) {

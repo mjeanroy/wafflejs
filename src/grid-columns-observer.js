@@ -73,6 +73,16 @@ var GridColumnsObserver = (function() {
     };
   };
 
+  // Update column flag according to grid options
+  var updateColumn = function(grid, column) {
+    // Update draggable flag
+    column.draggable = !!column.draggable || !!grid.isDraggable();
+
+    if (!grid.isSortable()) {
+      column.sortable = false;
+    }
+  };
+
   var o = {
     // Apply columns changes to grid.
     on: function(changes) {
@@ -126,8 +136,8 @@ var GridColumnsObserver = (function() {
 
           var column = $columns.at(idx);
 
-          // Update draggable flag
-          column.draggable = !!column.draggable || !!this.isDraggable();
+          // Update column flags
+          updateColumn(this, column);
 
           var th1 = GridBuilder.theadCell(this, column, idx);
           var th2 = GridBuilder.tfootCell(this, column, idx);
@@ -188,8 +198,8 @@ var GridColumnsObserver = (function() {
       var nodeIndex = this.hasCheckbox() ? index + 1 : index;
       var column = this.$columns.at(index);
 
-      // Update draggable flag
-      column.draggable = !!column.draggable || !!this.isDraggable();
+      // Update column flags
+      updateColumn(this, column);
 
       var iteratee = function(tagName) {
         var acc = [

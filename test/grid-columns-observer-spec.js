@@ -157,6 +157,24 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[3].getAttribute('draggable')).toBe('true');
     });
 
+    it('should add new column and disable sort if grid is not sortable', function() {
+      grid.options.sortable = false;
+
+      $columns.push({
+        id: 'lastName'
+      });
+
+      jasmine.clock().tick();
+
+      expect($columns.last().sortable).toBe(false);
+
+      var thead = grid.$thead[0];
+      var tfoot = grid.$tfoot[0];
+
+      expect(thead.childNodes[0].childNodes[3].getAttribute('waffle-sortable')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[3].getAttribute('waffle-sortable')).toBeNull();
+    });
+
     it('should remove column', function() {
       var thead = grid.$thead[0];
       var tbody = grid.$tbody[0];
@@ -449,6 +467,24 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[0].getAttribute('draggable')).toBeNull();
       expect(tfoot.childNodes[0].childNodes[1].getAttribute('draggable')).toBe('true');
       expect(tfoot.childNodes[0].childNodes[2].getAttribute('draggable')).toBeNull();
+    });
+
+    it('should add new column and disable sort if grid is not sortable', function() {
+      grid.options.sortable = false;
+
+      var changes = [
+        { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
+      ];
+
+      GridColumnsObserver.on.call(grid, changes);
+
+      expect(grid.$columns.at(0).sortable).toBe(false);
+
+      var thead = grid.$thead[0];
+      var tfoot = grid.$tfoot[0];
+
+      expect(thead.childNodes[0].childNodes[1].getAttribute('waffle-sortable')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[1].getAttribute('waffle-sortable')).toBeNull();
     });
   });
 });

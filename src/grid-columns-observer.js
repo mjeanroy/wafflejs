@@ -124,8 +124,13 @@ var GridColumnsObserver = (function() {
         for (i = 0; i < addedCount; ++i) {
           idx = index + i;
 
-          var th1 = GridBuilder.theadCell(this, $columns.at(idx), idx);
-          var th2 = GridBuilder.tfootCell(this, $columns.at(idx), idx);
+          var column = $columns.at(idx);
+
+          // Update draggable flag
+          column.draggable = !!column.draggable || !!this.isDraggable();
+
+          var th1 = GridBuilder.theadCell(this, column, idx);
+          var th2 = GridBuilder.tfootCell(this, column, idx);
 
           tr = thead.childNodes[0];
           theadAddedNodes.push(insertBefore(tr, th1, hasCheckbox ? idx + 1 : idx));
@@ -182,6 +187,9 @@ var GridColumnsObserver = (function() {
       var index = change.index;
       var nodeIndex = this.hasCheckbox() ? index + 1 : index;
       var column = this.$columns.at(index);
+
+      // Update draggable flag
+      column.draggable = !!column.draggable || !!this.isDraggable();
 
       var iteratee = function(tagName) {
         var acc = [

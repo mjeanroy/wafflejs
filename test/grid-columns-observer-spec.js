@@ -132,6 +132,31 @@ describe('Grid Columns Observer', function() {
       });
     });
 
+    it('should add new column with draggable flag', function() {
+      grid.options.dnd = true;
+
+      $columns.push({
+        id: 'lastName'
+      });
+
+      jasmine.clock().tick();
+
+      expect($columns.last().draggable).toBe(true);
+
+      var thead = grid.$thead[0];
+      var tfoot = grid.$tfoot[0];
+
+      expect(thead.childNodes[0].childNodes[0].getAttribute('draggable')).toBeNull();
+      expect(thead.childNodes[0].childNodes[1].getAttribute('draggable')).toBeNull();
+      expect(thead.childNodes[0].childNodes[2].getAttribute('draggable')).toBeNull();
+      expect(thead.childNodes[0].childNodes[3].getAttribute('draggable')).toBe('true');
+
+      expect(tfoot.childNodes[0].childNodes[0].getAttribute('draggable')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[1].getAttribute('draggable')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[2].getAttribute('draggable')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[3].getAttribute('draggable')).toBe('true');
+    });
+
     it('should remove column', function() {
       var thead = grid.$thead[0];
       var tbody = grid.$tbody[0];
@@ -401,6 +426,29 @@ describe('Grid Columns Observer', function() {
       GridColumnsObserver.on.call(grid, changes);
 
       expect(GridDomBinders.unbindEdition).not.toHaveBeenCalled();
+    });
+
+    it('should update columns and update draggable flag', function() {
+      grid.options.dnd = true;
+
+      var changes = [
+        { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
+      ];
+
+      GridColumnsObserver.on.call(grid, changes);
+
+      expect(grid.$columns.at(0).draggable).toBe(true);
+
+      var thead = grid.$thead[0];
+      var tfoot = grid.$tfoot[0];
+
+      expect(thead.childNodes[0].childNodes[0].getAttribute('draggable')).toBeNull();
+      expect(thead.childNodes[0].childNodes[1].getAttribute('draggable')).toBe('true');
+      expect(thead.childNodes[0].childNodes[2].getAttribute('draggable')).toBeNull();
+
+      expect(tfoot.childNodes[0].childNodes[0].getAttribute('draggable')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[1].getAttribute('draggable')).toBe('true');
+      expect(tfoot.childNodes[0].childNodes[2].getAttribute('draggable')).toBeNull();
     });
   });
 });

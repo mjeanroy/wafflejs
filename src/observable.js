@@ -30,19 +30,22 @@ var Observable = (function() {
     return array && array.length > 0;
   };
 
-  var callObserver = function(o) {
-    o.callback.call(o.ctx, this.$$changes);
-  };
-
   var asyncFn = function() {
     var changes = this.$$changes;
     var observers = this.$$observers;
 
     if (isNotEmpty(changes) && isNotEmpty(observers)) {
-      _.forEach(observers, callObserver, this);
-    }
+      // Current changes will be executed accross all observers
+      // If other changes are added by observers during iteration, then they will
+      // be executed asynchronously later
+      // Remove changes to be executed and use them for each observers.
+      var removed = changes.splice(0, changes.length);
 
-    this.clearChanges();
+      // Trigger changes for each observer
+      _.forEach(observers, function(o) {
+        o.callback.call(o.ctx, removed);
+      });
+    }
   };
 
   var o = {
@@ -77,8 +80,17 @@ var Observable = (function() {
     // Trigger changes
     // Note that callbacks will be called asynchronously
     trigger: function(changes) {
-      this.$$changes = (this.$$changes || []).concat(changes);
+      if (!_.isArray(changes)) {
+        changes = [changes];
+      }
+
+      // Append new change
+      this.$$changes = this.$$changes || [];
+      this.$$changes.push.apply(this.$$changes, changes);
+
+      // Trigger asynchronous task
       setTimeout(_.bind(asyncFn, this));
+
       return this;
     },
 
@@ -90,7 +102,7 @@ var Observable = (function() {
     // Clear pending changes
     clearChanges: function() {
       if (this.$$changes) {
-        this.$$changes = [];
+        this.$$changes.splice(0, this.$$changes.length);
       }
 
       return this;

@@ -22,6 +22,14 @@ table tbody {
   max-height: 400px;
 }
 
+table td,
+table th {
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  vertical-align: middle;
+}
+
 table .name,
 table .userName,
 table .email {
@@ -29,3 +37,13 @@ table .email {
   max-width: 365px;
   min-width: 365px;
 }
+
+.actions-columns input,
+.actions-columns label {
+  cursor: pointer;
+}
+
+.actions-columns input {
+  vertical-align: -2px;
+}
+

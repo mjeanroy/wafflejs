@@ -115,6 +115,13 @@ var GridColumnsObserver = (function() {
       var i, k, idx, tr, dataSize;
 
       var removedCount = removedData.length;
+
+      var hasDiff = removedCount > 0 || addedCount > 0;
+      if (hasDiff && this.isResizable()) {
+        // Columns have been added or removed, a new resize should be applied
+        this.resize();
+      }
+
       if (removedCount > 0) {
         for (i = 0; i < removedCount; ++i) {
           idx = hasCheckbox ? index + 1 : index;
@@ -162,7 +169,7 @@ var GridColumnsObserver = (function() {
         }
       }
 
-      if (removedCount > 0 || addedCount > 0) {
+      if (hasDiff) {
         // Editable column may have been added, or editable columns
         // may have been removed, so we should bind or unbind event.
         var isEditable = this.isEditable();

@@ -42,7 +42,10 @@ describe('Collection observers', function() {
     o2 = { id: 2, name: 'bar' };
 
     collection = new Collection([o1, o2]);
+    collection.clearChanges();
+
     expect(collection.length).toBe(2);
+    expect(collection.$$changes).toBeEmpty();
 
     jasmine.clock().tick(1);
 
@@ -122,7 +125,7 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual(changes);
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes;
+    var $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -138,10 +141,11 @@ describe('Collection observers', function() {
 
     collection.trigger(change1);
 
+    expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([change1]);
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes;
+    var $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -158,13 +162,18 @@ describe('Collection observers', function() {
     var changes1 = [change1];
     collection.trigger(changes1);
 
+    expect(collection.$$changes.length).toBe(1);
+    expect(collection.$$changes).toEqual([change1]);
+
     var changes2 = [change2];
     collection.trigger(changes2);
 
-    expect(collection.$$changes).toEqual(changes1.concat(changes2));
+    expect(collection.$$changes.length).toBe(2);
+    expect(collection.$$changes).toEqual([change1, change2]);
+
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes;
+    var $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -180,13 +189,14 @@ describe('Collection observers', function() {
 
     collection.triggerUpdate(0);
 
+    expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([
       { type: 'update', index: 0, removed: [], addedCount: 0, object: collection }
     ]);
 
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes;
+    var $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 

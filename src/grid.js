@@ -230,7 +230,7 @@ var Grid = (function() {
     _.forEach(_.keys(opts.events), callbackWrapper, this);
 
     // If height is specified, we need to set column size.
-    if (opts.size.height || opts.size.width) {
+    if (this.isResizable()) {
       this.resize();
 
       // Bind resize event to resize grid automatically when window view is resized
@@ -290,6 +290,12 @@ var Grid = (function() {
     isSelectable: function() {
       var selection = this.options.selection;
       return selection && selection.enable;
+    },
+
+    // Check if grid is resizable
+    isResizable: function() {
+      var size = this.options.size;
+      return !!size.height || !!size.width;
     },
 
     // Check if grid render checkbox as first column

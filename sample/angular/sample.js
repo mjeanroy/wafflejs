@@ -9,10 +9,20 @@ angular.module('SampleApp', ['waffle'])
   }])
 
   .controller('SampleController', ['$scope', '$log', function($scope, $log) {
+    $scope.columns = angular.copy(options.columns);
     $scope.options = options;
 
     $scope.nbSort = 0;
     $scope.grid = null;
+
+    $scope.toggleColumn = function(column, index) {
+      var columns = $scope.grid.columns();
+      if (columns.contains(column)) {
+        columns.splice(index, 1);
+      } else {
+        columns.splice(index, 0, column);
+      }
+    };
 
     $scope.add = function() {
       $scope.grid.data().push(createFakePerson());

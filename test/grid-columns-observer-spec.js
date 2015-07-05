@@ -337,6 +337,54 @@ describe('Grid Columns Observer', function() {
 
       expect(GridDomBinders.unbindEdition).toHaveBeenCalledWith(grid);
     });
+
+    it('should add new column and trigger new resize', function() {
+      spyOn(grid, 'isResizable').and.returnValue(true);
+      spyOn(grid, 'resize');
+
+      $columns.push({
+        id: 'lastName'
+      });
+
+      jasmine.clock().tick();
+
+      expect(grid.resize).toHaveBeenCalled();
+    });
+
+    it('should add new column and not trigger new resize if grid is not resizable', function() {
+      spyOn(grid, 'isResizable').and.returnValue(false);
+      spyOn(grid, 'resize');
+
+      $columns.push({
+        id: 'lastName'
+      });
+
+      jasmine.clock().tick();
+
+      expect(grid.resize).not.toHaveBeenCalled();
+    });
+
+    it('should remove column and trigger new resize', function() {
+      spyOn(grid, 'isResizable').and.returnValue(true);
+      spyOn(grid, 'resize');
+
+      $columns.splice(0, 1);
+
+      jasmine.clock().tick();
+
+      expect(grid.resize).toHaveBeenCalled();
+    });
+
+    it('should remove column and not trigger new resize if grid is not resizable', function() {
+      spyOn(grid, 'isResizable').and.returnValue(false);
+      spyOn(grid, 'resize');
+
+      $columns.splice(0, 1);
+
+      jasmine.clock().tick();
+
+      expect(grid.resize).not.toHaveBeenCalled();
+    });
   });
 
   describe('with update change', function() {

@@ -45,7 +45,11 @@ describe('waffle-jq-angular', function() {
       columns: [
         { id: 'id', title: 'Id' },
         { id: 'name', title: 'Name' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     };
 
     compileTable = function(table, $scope) {
@@ -190,25 +194,17 @@ describe('waffle-jq-angular', function() {
     expect($table).toBeDefined();
 
     var childNodes = $table[0].childNodes;
-    expect(childNodes.length).toBe(3);
+    expect(childNodes.length).toBe(2);
     expect(childNodes[0]).toBeDOMElement('thead');
     expect(childNodes[1]).toBeDOMElement('tbody');
-    expect(childNodes[2]).toBeDOMElement('tfoot');
 
     var thead = childNodes[0];
     var tbody = childNodes[1];
-    var tfoot = childNodes[2];
 
     expect(thead.childNodes[0].childNodes.length).toBe(3);
-    expect(tfoot.childNodes[0].childNodes.length).toBe(3);
 
     var dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
     expect(dataHeader).toVerify(function(node, idx) {
-      return node.innerHTML === options.columns[idx].title;
-    });
-
-    var dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
-    expect(dataFooter).toVerify(function(node, idx) {
       return node.innerHTML === options.columns[idx].title;
     });
   });

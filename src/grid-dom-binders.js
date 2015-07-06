@@ -36,15 +36,17 @@
 var GridDomBinders = (function() {
 
   var bind = function(grid, target, events, handlerName) {
-    if (!grid.$$events[handlerName]) {
+    var el = grid['$' + target];
+    if (el && !grid.$$events[handlerName]) {
       grid.$$events[handlerName] = _.bind(GridDomHandlers[handlerName], grid);
-      grid['$' + target].on(events, grid.$$events[handlerName]);
+      el.on(events, grid.$$events[handlerName]);
     }
   };
 
   var unbind = function(grid, target, events, handlerName) {
-    if (grid.$$events[handlerName]) {
-      grid['$' + target].off(events, grid.$$events[handlerName]);
+    var el = grid['$' + target];
+    if (el && grid.$$events[handlerName]) {
+      el.off(events, grid.$$events[handlerName]);
       grid.$$events[handlerName] = null;
     }
   };

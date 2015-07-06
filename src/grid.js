@@ -197,7 +197,19 @@ var Grid = (function() {
     }
 
     // Create main nodes
-    _.forEach([THEAD, TBODY, TFOOT], createNode, this);
+    var view = [TBODY];
+
+    // Check if we should append table header
+    if (opts.view.thead) {
+      view.unshift(THEAD);
+    }
+
+    // Check if we should append table footer
+    if (opts.view.tfoot) {
+      view.push(TFOOT);
+    }
+
+    _.forEach(view, createNode, this);
 
     // Observe collection to update grid accordingly
     this.$data.observe(GridDataObserver.on, this);
@@ -303,6 +315,16 @@ var Grid = (function() {
       return this.isSelectable() && this.options.selection.checkbox;
     },
 
+    // Check if grid has a table header
+    hasHeader: function() {
+      return !!this.$thead;
+    },
+
+    // Check if grid has a table footer
+    hasFooter: function() {
+      return !!this.$tfoot;
+    },
+
     // Without parameter, check if grid is selected.
     // If first parameter is set, check if data is selected.
     isSelected: function(data) {
@@ -338,15 +360,19 @@ var Grid = (function() {
 
     // Render entire header of grid
     renderHeader: function() {
-      var tr = GridBuilder.theadRow(this);
-      this.$thead.empty().append(tr);
+      if (this.hasHeader()) {
+        var tr = GridBuilder.theadRow(this);
+        this.$thead.empty().append(tr);
+      }
       return this;
     },
 
     // Render entire footer of grid
     renderFooter: function() {
-      var tr = GridBuilder.tfootRow(this);
-      this.$tfoot.empty().append(tr);
+      if (this.hasFooter()) {
+        var tr = GridBuilder.tfootRow(this);
+        this.$tfoot.empty().append(tr);
+      }
       return this;
     },
 
@@ -431,12 +457,32 @@ var Grid = (function() {
 
       this.$sortBy = normalizedSortBy;
 
-      // Remove order flag
-      var $headers = this.$thead.children().eq(0).children();
-      var $footers = this.$tfoot.children().eq(0).children();
+      var hasHeader = this.hasHeader();
+      var hasFooter = this.hasFooter();
 
-      $headers.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC).removeAttr(DATA_WAFFLE_ORDER);
-      $footers.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC).removeAttr(DATA_WAFFLE_ORDER);
+      var $headers = hasHeader ? this.$thead.children().eq(0).children() : null;
+      var $footers = hasFooter ? this.$tfoot.children().eq(0).children() : null;
+
+      var clearSort = function($items) {
+        $items.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC)
+              .removeAttr(DATA_WAFFLE_ORDER);
+      };
+
+      var addSort = function($items, index, asc, flag) {
+        $items.eq(index)
+              .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
+              .attr(DATA_WAFFLE_ORDER, flag);
+      };
+
+      // Remove order flag
+
+      if ($headers) {
+        clearSort($headers);
+      }
+
+      if ($footers) {
+        clearSort($footers);
+      }
 
       // Create comparators object that will be used to create comparison function
       var $columns = this.$columns;
@@ -457,14 +503,13 @@ var Grid = (function() {
           column.asc = asc;
 
           // Update order flag
-          $headers.eq(thIndex)
-                  .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
-                  .attr(DATA_WAFFLE_ORDER, flag);
+          if ($headers) {
+            addSort($headers, thIndex, asc, flag);
+          }
 
-          $footers.eq(thIndex)
-                  .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
-                  .attr(DATA_WAFFLE_ORDER, flag);
-
+          if ($footers) {
+            addSort($footers, thIndex, asc, flag);
+          }
         } else {
           column = {};
         }
@@ -516,9 +561,15 @@ var Grid = (function() {
     destroy: function() {
       // Unbind dom events
       this.$table.off();
-      this.$thead.off();
-      this.$tfoot.off();
       this.$tbody.off();
+
+      if (this.hasHeader()) {
+        this.$thead.off();
+      }
+
+      if (this.hasFooter()) {
+        this.$tfoot.off();
+      }
 
       // Unbind resize event
       if (this.$$events.onResize) {
@@ -584,6 +635,13 @@ var Grid = (function() {
       enable: true,
       checkbox: true,
       multi: false
+    },
+
+    // Display view
+    // By default, table header is visible, footer is not.
+    view: {
+      thead: true,
+      tfoot: false
     },
 
     // Size of grid, default is to use automatic size.

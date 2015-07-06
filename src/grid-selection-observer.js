@@ -102,22 +102,31 @@ var GridSelectionObserver = (function() {
         var diff = addedCount - removedCount;
         if (diff && this.hasCheckbox()) {
           var selectionLength = $selection.length;
-          var thead = this.$thead[0];
-          var tfoot = this.$tfoot[0];
+          var isSelected = this.isSelected();
+          var isIndeterminate = selectionLength > 0 && $data.length !== selectionLength;
 
-          var theadCell = thead.childNodes[0].childNodes[0];
-          var theadSpan = theadCell.childNodes[0];
-          var theadCheckbox = theadCell.childNodes[1];
+          var thead = this.hasHeader() ? this.$thead[0] : null;
+          var tfoot = this.hasFooter() ? this.$tfoot[0] : null;
 
-          var tfootCell = tfoot.childNodes[0].childNodes[0];
-          var tfootSpan = tfootCell.childNodes[1];
-          var tfootCheckbox = tfootCell.childNodes[0];
+          if (thead) {
+            var theadCell = thead.childNodes[0].childNodes[0];
+            var theadSpan = theadCell.childNodes[0];
+            var theadCheckbox = theadCell.childNodes[1];
 
-          tfootSpan.innerHTML = theadSpan.innerHTML = selectionLength;
-          tfootSpan.title = theadSpan.title = selectionLength;
+            theadSpan.innerHTML = theadSpan.title = selectionLength;
+            theadCheckbox.checked = isSelected;
+            theadCheckbox.indeterminate = isIndeterminate;
+          }
 
-          tfootCheckbox.checked = theadCheckbox.checked = this.isSelected();
-          tfootCheckbox.indeterminate = theadCheckbox.indeterminate = selectionLength > 0 && $data.length !== selectionLength;
+          if (tfoot) {
+            var tfootCell = tfoot.childNodes[0].childNodes[0];
+            var tfootSpan = tfootCell.childNodes[1];
+            var tfootCheckbox = tfootCell.childNodes[0];
+
+            tfootSpan.innerHTML = tfootSpan.title = selectionLength;
+            tfootCheckbox.checked = isSelected;
+            tfootCheckbox.indeterminate = isIndeterminate;
+          }
         }
 
         // Trigger event

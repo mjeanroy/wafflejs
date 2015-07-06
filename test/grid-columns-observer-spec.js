@@ -41,26 +41,19 @@ describe('Grid Columns Observer', function() {
     table = document.createElement('table');
     fixtures.appendChild(table);
 
+    spyOn(GridColumnsObserver, 'onSplice').and.callThrough();
+    spyOn(Grid.prototype, 'dispatchEvent').and.callThrough();
+
+  });
+
+  it('should call onSplice for a "splice" change', function() {
     grid = new Grid(table, {
       data: data,
       columns: columns
     });
 
-    $columns = grid.$columns;
-
-    spyOn(GridColumnsObserver, 'onSplice').and.callThrough();
-    spyOn(grid, 'dispatchEvent').and.callThrough();
-
     jasmine.clock().tick();
 
-    expect(grid.$thead[0].childNodes[0].childNodes.length).toBe(1 + 2);
-    expect(grid.$tfoot[0].childNodes[0].childNodes.length).toBe(1 + 2);
-    expect(grid.$tbody[0].childNodes).toVerify(function(tr) {
-      return tr.childNodes.length === (1 + 2);
-    });
-  });
-
-  it('should call onSplice for a "splice" change', function() {
     var changes = [
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data }
     ];
@@ -71,6 +64,21 @@ describe('Grid Columns Observer', function() {
   });
 
   describe('with splice change', function() {
+    beforeEach(function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        view: {
+          thead: true,
+          tfoot: true
+        }
+      });
+
+      $columns = grid.$columns;
+
+      jasmine.clock().tick();
+    });
+
     it('should add new column', function() {
       var thead = grid.$thead[0];
       var tbody = grid.$tbody[0];
@@ -388,6 +396,21 @@ describe('Grid Columns Observer', function() {
   });
 
   describe('with update change', function() {
+    beforeEach(function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        view: {
+          thead: true,
+          tfoot: true
+        }
+      });
+
+      $columns = grid.$columns;
+
+      jasmine.clock().tick();
+    });
+
     it('should update columns', function() {
       var thead = grid.$thead[0];
       var tbody = grid.$tbody[0];

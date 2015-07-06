@@ -54,6 +54,10 @@ describe('Grid', function() {
         checkbox: true,
         multi: false
       },
+      view: {
+        thead: true,
+        tfoot: false
+      },
       size: {
         width: null,
         height: null
@@ -325,7 +329,7 @@ describe('Grid', function() {
     expect(table.className).not.toContain('waffle-fixedheader');
   });
 
-  it('should retrieve thead and tbody element', function() {
+  it('should retrieve thead, tfoot and tbody element', function() {
     var table = document.createElement('table');
     var thead = document.createElement('thead');
     var tfoot = document.createElement('tfoot');
@@ -339,7 +343,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$table).toBeDefined();
@@ -354,7 +362,7 @@ describe('Grid', function() {
     expect(grid.$tfoot[0]).toBe(tfoot);
   });
 
-  it('should create thead and tbody element', function() {
+  it('should create thead, tfoot and tbody element', function() {
     var table = document.createElement('table');
 
     var grid = new Grid(table, {
@@ -362,7 +370,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$table).toBeDefined();
@@ -391,7 +403,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$table).toBeDefined();
@@ -532,7 +548,7 @@ describe('Grid', function() {
     expect(height).toHaveBeenCalled();
   });
 
-  it('should resizable grid', function() {
+  it('should create resizable grid', function() {
     spyOn(jq, 'on').and.callThrough();
     spyOn(jq, 'off').and.callThrough();
 
@@ -541,6 +557,10 @@ describe('Grid', function() {
       size: {
         width: 100,
         height: 200
+      },
+      view: {
+        thead: true,
+        tfoot: true
       }
     });
 
@@ -565,7 +585,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     var onCalls = jq.on.calls.all();
@@ -586,7 +610,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo', editable: true },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     var onCalls = jq.on.calls.all();
@@ -609,7 +637,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     var onCalls = jq.on.calls.all();
@@ -631,7 +663,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo', editable: true },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$$events).toEqual({
@@ -661,7 +697,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(jq.on).not.toHaveBeenCalled();
@@ -678,7 +718,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$$events).toEqual({
@@ -705,7 +749,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$$events).toEqual({
@@ -744,7 +792,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$$events).toEqual({
@@ -777,7 +829,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$table).toBeDefined();
@@ -804,6 +860,50 @@ describe('Grid', function() {
 
     expect($data.unobserve).toHaveBeenCalled();
     expect($selection.unobserve).toHaveBeenCalled();
+  });
+
+  it('should destroy without footer', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ],
+      view: {
+        thead: true,
+        tfoot: false
+      }
+    });
+
+    expect(grid.$tfoot).not.toBeDefined();
+
+    grid.destroy();
+
+    expect(grid.$tfoot).not.toBeDefined();
+  });
+
+  it('should destroy without header', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: [
+        { id: 'foo', title: 'Foo' },
+        { id: 'bar', title: 'Boo' }
+      ],
+      view: {
+        thead: false,
+        tfoot: true
+      }
+    });
+
+    expect(grid.$thead).not.toBeDefined();
+
+    grid.destroy();
+
+    expect(grid.$thead).not.toBeDefined();
   });
 
   it('should unobserve collections when grid is destroyed', function() {
@@ -860,7 +960,11 @@ describe('Grid', function() {
       columns: [
         { id: 'foo', title: 'Foo' },
         { id: 'bar', title: 'Boo' }
-      ]
+      ],
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     expect(grid.$table).toBeDefined();
@@ -903,9 +1007,9 @@ describe('Grid', function() {
     var offCalls = jq.off.calls.all();
     expect(offCalls).toHaveLength(4);
     expect(offCalls[0].object).toEqual($table);
-    expect(offCalls[1].object).toEqual($thead);
-    expect(offCalls[2].object).toEqual($tfoot);
-    expect(offCalls[3].object).toEqual($tbody);
+    expect(offCalls[1].object).toEqual($tbody);
+    expect(offCalls[2].object).toEqual($thead);
+    expect(offCalls[3].object).toEqual($tfoot);
   });
 
   describe('once initialized', function() {

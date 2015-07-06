@@ -24,7 +24,7 @@
 
 describe('Grid Selection Observer', function() {
 
-  var columns, data, table, grid, $data;
+  var columns, data, table;
 
   beforeEach(function() {
     columns = [
@@ -42,18 +42,16 @@ describe('Grid Selection Observer', function() {
     table = document.createElement('table');
     fixtures.appendChild(table);
 
-    grid = new Grid(table, {
+    spyOn(GridSelectionObserver, 'onSplice').and.callThrough();
+    spyOn(Grid.prototype, 'dispatchEvent').and.callThrough();
+  });
+
+  it('should call onSplice for a "splice" change', function() {
+    var grid = new Grid(table, {
       data: data,
       columns: columns
     });
 
-    $selection = grid.$selection;
-
-    spyOn(GridSelectionObserver, 'onSplice').and.callThrough();
-    spyOn(grid, 'dispatchEvent').and.callThrough();
-  });
-
-  it('should call onSplice for a "splice" change', function() {
     var changes = [
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data }
     ];
@@ -64,6 +62,11 @@ describe('Grid Selection Observer', function() {
   });
 
   it('should not call onUpdate for an "update" change', function() {
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
     var changes = [
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
     ];
@@ -72,6 +75,11 @@ describe('Grid Selection Observer', function() {
   });
 
   it('should call all changes', function() {
+    var grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
     var changes = [
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data },
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
@@ -82,221 +90,609 @@ describe('Grid Selection Observer', function() {
     expect(GridSelectionObserver.onSplice).toHaveBeenCalledWith(changes[0]);
   });
 
-  describe('with splice change', function() {
-    it('should select data', function() {
-      var d0 = grid.$data[0];
+  describe('with header and footer', function() {
+    var grid;
+    var $selection;
 
-      $selection.push(d0);
-      jasmine.clock().tick();
-
-      var tbody = grid.$tbody[0];
-      var childNodes = tbody.childNodes;
-      expect(childNodes[0].className).toContain('waffle-selected');
-      expect(childNodes[1].className).not.toContain('waffle-selected');
-      expect(childNodes[2].className).not.toContain('waffle-selected');
-
-      var thead = grid.$thead[0];
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-
-      var tfoot = grid.$tfoot[0];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
-
-      // Main checkbox should be updated
-      expect(theadSpan.innerHTML).toBe('1');
-      expect(theadSpan.getAttribute('title')).toBe('1');
-      expect(tfootSpan.innerHTML).toBe('1');
-      expect(tfootSpan.getAttribute('title')).toBe('1');
-
-      expect(theadCheckbox.checked).toBeFalse();
-      expect(theadCheckbox.indeterminate).toBeTrue();
-      expect(tfootCheckbox.checked).toBeFalse();
-      expect(tfootCheckbox.indeterminate).toBeTrue();
-
-      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
-
-      var call = grid.dispatchEvent.calls.mostRecent();
-      var evt = call.args[1].call(grid);
-      expect(evt).toEqual({
-        selection: grid.$selection.toArray()
+    beforeEach(function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        view: {
+          thead: true,
+          tfoot: true
+        }
       });
+
+      $selection = grid.$selection;
     });
 
-    it('should select multiple data', function() {
-      var d1 = grid.$data[1];
-      var d2 = grid.$data[2];
+    describe('with splice change', function() {
+      it('should select data', function() {
+        var d0 = grid.$data[0];
 
-      $selection.push(d1, d2);
-      jasmine.clock().tick();
+        $selection.push(d0);
+        jasmine.clock().tick();
 
-      var tbody = grid.$tbody[0];
-      var childNodes = tbody.childNodes;
-      expect(childNodes[0].className).not.toContain('waffle-selected');
-      expect(childNodes[1].className).toContain('waffle-selected');
-      expect(childNodes[2].className).toContain('waffle-selected');
+        var tbody = grid.$tbody[0];
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
 
-      var thead = grid.$thead[0];
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
 
-      var tfoot = grid.$tfoot[0];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
-      // Main checkbox should be updated
-      expect(theadSpan.innerHTML).toBe('2');
-      expect(theadSpan.getAttribute('title')).toBe('2');
-      expect(tfootSpan.innerHTML).toBe('2');
-      expect(tfootSpan.getAttribute('title')).toBe('2');
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('1');
+        expect(theadSpan.getAttribute('title')).toBe('1');
+        expect(tfootSpan.innerHTML).toBe('1');
+        expect(tfootSpan.getAttribute('title')).toBe('1');
 
-      expect(theadCheckbox.checked).toBeFalse();
-      expect(theadCheckbox.indeterminate).toBeTrue();
-      expect(tfootCheckbox.checked).toBeFalse();
-      expect(tfootCheckbox.indeterminate).toBeTrue();
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
 
-      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
 
-      var call = grid.dispatchEvent.calls.mostRecent();
-      var evt = call.args[1].call(grid);
-      expect(evt).toEqual({
-        selection: grid.$selection.toArray()
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should select multiple data', function() {
+        var d1 = grid.$data[1];
+        var d2 = grid.$data[2];
+
+        $selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).toContain('waffle-selected');
+
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('2');
+        expect(theadSpan.getAttribute('title')).toBe('2');
+        expect(tfootSpan.innerHTML).toBe('2');
+        expect(tfootSpan.getAttribute('title')).toBe('2');
+
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should unselect multiple data', function() {
+        var d1 = grid.$data[1];
+        var d2 = grid.$data[2];
+
+        $selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('2');
+        expect(theadSpan.getAttribute('title')).toBe('2');
+        expect(tfootSpan.innerHTML).toBe('2');
+        expect(tfootSpan.getAttribute('title')).toBe('2');
+
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        $selection.pop();
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('1');
+        expect(theadSpan.getAttribute('title')).toBe('1');
+        expect(tfootSpan.innerHTML).toBe('1');
+        expect(tfootSpan.getAttribute('title')).toBe('1');
+
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        $selection.pop();
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('0');
+        expect(theadSpan.getAttribute('title')).toBe('0');
+        expect(tfootSpan.innerHTML).toBe('0');
+        expect(tfootSpan.getAttribute('title')).toBe('0');
+
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeFalse();
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeFalse();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should unselect removed data', function() {
+        var d1 = grid.$data[0];
+        var d2 = grid.$data[1];
+
+        grid.$selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+
+        var childNodes = tbody.childNodes;
+        expect(childNodes.length).toBe(3);
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Now remove, data !
+        grid.$data.shift();
+        jasmine.clock().tick();
+        jasmine.clock().tick();
+
+        expect(childNodes.length).toBe(2);
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('1');
+        expect(theadSpan.getAttribute('title')).toBe('1');
+        expect(tfootSpan.innerHTML).toBe('1');
+        expect(tfootSpan.getAttribute('title')).toBe('1');
+
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
       });
     });
+  });
 
-    it('should unselect multiple data', function() {
-      var d1 = grid.$data[1];
-      var d2 = grid.$data[2];
+  describe('without footer', function() {
+    var grid;
+    var $selection;
 
-      $selection.push(d1, d2);
-      jasmine.clock().tick();
-
-      var tbody = grid.$tbody[0];
-      var thead = grid.$thead[0];
-      var tfoot = grid.$tbody[0];
-
-      var childNodes = tbody.childNodes;
-      expect(childNodes[0].className).not.toContain('waffle-selected');
-      expect(childNodes[1].className).toContain('waffle-selected');
-      expect(childNodes[2].className).toContain('waffle-selected');
-
-      // Main checkbox should be updated
-      var thead = grid.$thead[0];
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-
-      var tfoot = grid.$tfoot[0];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
-
-      // Main checkbox should be updated
-      expect(theadSpan.innerHTML).toBe('2');
-      expect(theadSpan.getAttribute('title')).toBe('2');
-      expect(tfootSpan.innerHTML).toBe('2');
-      expect(tfootSpan.getAttribute('title')).toBe('2');
-
-      expect(theadCheckbox.checked).toBeFalse();
-      expect(theadCheckbox.indeterminate).toBeTrue();
-      expect(tfootCheckbox.checked).toBeFalse();
-      expect(tfootCheckbox.indeterminate).toBeTrue();
-
-      $selection.pop();
-      jasmine.clock().tick();
-
-      expect(childNodes[0].className).not.toContain('waffle-selected');
-      expect(childNodes[1].className).toContain('waffle-selected');
-      expect(childNodes[2].className).not.toContain('waffle-selected');
-
-      // Main checkbox should be updated
-      expect(theadSpan.innerHTML).toBe('1');
-      expect(theadSpan.getAttribute('title')).toBe('1');
-      expect(tfootSpan.innerHTML).toBe('1');
-      expect(tfootSpan.getAttribute('title')).toBe('1');
-
-      expect(theadCheckbox.checked).toBeFalse();
-      expect(theadCheckbox.indeterminate).toBeTrue();
-      expect(tfootCheckbox.checked).toBeFalse();
-      expect(tfootCheckbox.indeterminate).toBeTrue();
-
-      $selection.pop();
-      jasmine.clock().tick();
-
-      expect(childNodes[0].className).not.toContain('waffle-selected');
-      expect(childNodes[1].className).not.toContain('waffle-selected');
-      expect(childNodes[2].className).not.toContain('waffle-selected');
-
-      // Main checkbox should be updated
-      expect(theadSpan.innerHTML).toBe('0');
-      expect(theadSpan.getAttribute('title')).toBe('0');
-      expect(tfootSpan.innerHTML).toBe('0');
-      expect(tfootSpan.getAttribute('title')).toBe('0');
-
-      expect(theadCheckbox.checked).toBeFalse();
-      expect(theadCheckbox.indeterminate).toBeFalse();
-      expect(tfootCheckbox.checked).toBeFalse();
-      expect(tfootCheckbox.indeterminate).toBeFalse();
-
-      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
-
-      var call = grid.dispatchEvent.calls.mostRecent();
-      var evt = call.args[1].call(grid);
-      expect(evt).toEqual({
-        selection: grid.$selection.toArray()
+    beforeEach(function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        view: {
+          thead: true,
+          tfoot: false
+        }
       });
+
+      $selection = grid.$selection;
     });
 
-    it('should unselect removed data', function() {
-      var d1 = grid.$data[0];
-      var d2 = grid.$data[1];
+    describe('with splice change', function() {
+      it('should select data', function() {
+        var d0 = grid.$data[0];
 
-      grid.$selection.push(d1, d2);
-      jasmine.clock().tick();
+        $selection.push(d0);
+        jasmine.clock().tick();
 
-      var tbody = grid.$tbody[0];
-      var thead = grid.$thead[0];
-      var tfoot = grid.$tbody[0];
+        var tbody = grid.$tbody[0];
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
 
-      var childNodes = tbody.childNodes;
-      expect(childNodes.length).toBe(3);
-      expect(childNodes[0].className).toContain('waffle-selected');
-      expect(childNodes[1].className).toContain('waffle-selected');
-      expect(childNodes[2].className).not.toContain('waffle-selected');
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
 
-      // Now remove, data !
-      grid.$data.shift();
-      jasmine.clock().tick();
-      jasmine.clock().tick();
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('1');
+        expect(theadSpan.getAttribute('title')).toBe('1');
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
 
-      expect(childNodes.length).toBe(2);
-      expect(childNodes[0].className).toContain('waffle-selected');
-      expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
 
-      // Main checkbox should be updated
-      var thead = grid.$thead[0];
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
 
-      var tfoot = grid.$tfoot[0];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      it('should select multiple data', function() {
+        var d1 = grid.$data[1];
+        var d2 = grid.$data[2];
 
-      // Main checkbox should be updated
-      expect(theadSpan.innerHTML).toBe('1');
-      expect(theadSpan.getAttribute('title')).toBe('1');
-      expect(tfootSpan.innerHTML).toBe('1');
-      expect(tfootSpan.getAttribute('title')).toBe('1');
+        $selection.push(d1, d2);
+        jasmine.clock().tick();
 
-      expect(theadCheckbox.checked).toBeFalse();
-      expect(theadCheckbox.indeterminate).toBeTrue();
-      expect(tfootCheckbox.checked).toBeFalse();
-      expect(tfootCheckbox.indeterminate).toBeTrue();
+        var tbody = grid.$tbody[0];
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).toContain('waffle-selected');
 
-      expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
 
-      var call = grid.dispatchEvent.calls.mostRecent();
-      var evt = call.args[1].call(grid);
-      expect(evt).toEqual({
-        selection: grid.$selection.toArray()
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('2');
+        expect(theadSpan.getAttribute('title')).toBe('2');
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should unselect multiple data', function() {
+        var d1 = grid.$data[1];
+        var d2 = grid.$data[2];
+
+        $selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('2');
+        expect(theadSpan.getAttribute('title')).toBe('2');
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+
+        $selection.pop();
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('1');
+        expect(theadSpan.getAttribute('title')).toBe('1');
+
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+
+        $selection.pop();
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('0');
+        expect(theadSpan.getAttribute('title')).toBe('0');
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeFalse();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should unselect removed data', function() {
+        var d1 = grid.$data[0];
+        var d2 = grid.$data[1];
+
+        grid.$selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+
+        var childNodes = tbody.childNodes;
+        expect(childNodes.length).toBe(3);
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Now remove, data !
+        grid.$data.shift();
+        jasmine.clock().tick();
+        jasmine.clock().tick();
+
+        expect(childNodes.length).toBe(2);
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        var thead = grid.$thead[0];
+        var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+        var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+        // Main checkbox should be updated
+        expect(theadSpan.innerHTML).toBe('1');
+        expect(theadSpan.getAttribute('title')).toBe('1');
+        expect(theadCheckbox.checked).toBeFalse();
+        expect(theadCheckbox.indeterminate).toBeTrue();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+    });
+  });
+
+  describe('without header', function() {
+    var grid;
+    var $selection;
+
+    beforeEach(function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        view: {
+          thead: false,
+          tfoot: true
+        }
+      });
+
+      $selection = grid.$selection;
+    });
+
+    describe('with splice change', function() {
+      it('should select data', function() {
+        var d0 = grid.$data[0];
+
+        $selection.push(d0);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+        // Main checkbox should be updated
+        expect(tfootSpan.innerHTML).toBe('1');
+        expect(tfootSpan.getAttribute('title')).toBe('1');
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should select multiple data', function() {
+        var d1 = grid.$data[1];
+        var d2 = grid.$data[2];
+
+        $selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).toContain('waffle-selected');
+
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+        // Main checkbox should be updated
+        expect(tfootSpan.innerHTML).toBe('2');
+        expect(tfootSpan.getAttribute('title')).toBe('2');
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should unselect multiple data', function() {
+        var d1 = grid.$data[1];
+        var d2 = grid.$data[2];
+
+        $selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+
+        var childNodes = tbody.childNodes;
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+        // Main checkbox should be updated
+        expect(tfootSpan.innerHTML).toBe('2');
+        expect(tfootSpan.getAttribute('title')).toBe('2');
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        $selection.pop();
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        expect(tfootSpan.innerHTML).toBe('1');
+        expect(tfootSpan.getAttribute('title')).toBe('1');
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        $selection.pop();
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Main checkbox should be updated
+        expect(tfootSpan.innerHTML).toBe('0');
+        expect(tfootSpan.getAttribute('title')).toBe('0');
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeFalse();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
+      });
+
+      it('should unselect removed data', function() {
+        var d1 = grid.$data[0];
+        var d2 = grid.$data[1];
+
+        grid.$selection.push(d1, d2);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+
+        var childNodes = tbody.childNodes;
+        expect(childNodes.length).toBe(3);
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+
+        // Now remove, data !
+        grid.$data.shift();
+        jasmine.clock().tick();
+        jasmine.clock().tick();
+
+        expect(childNodes.length).toBe(2);
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+
+        var tfoot = grid.$tfoot[0];
+        var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+        var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+        // Main checkbox should be updated
+        expect(tfootSpan.innerHTML).toBe('1');
+        expect(tfootSpan.getAttribute('title')).toBe('1');
+        expect(tfootCheckbox.checked).toBeFalse();
+        expect(tfootCheckbox.indeterminate).toBeTrue();
+
+        expect(grid.dispatchEvent).toHaveBeenCalledWith('selectionchanged', jasmine.any(Function));
+
+        var call = grid.dispatchEvent.calls.mostRecent();
+        var evt = call.args[1].call(grid);
+        expect(evt).toEqual({
+          selection: grid.$selection.toArray()
+        });
       });
     });
   });

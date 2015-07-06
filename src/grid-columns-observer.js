@@ -27,6 +27,9 @@
 /* global $util */
 /* global GridBuilder */
 /* global GridDomBinders */
+/* global THEAD */
+/* global TFOOT */
+/* global TBODY */
 /* exported GridColumnsObserver */
 
 var GridColumnsObserver = (function() {
@@ -96,9 +99,9 @@ var GridColumnsObserver = (function() {
 
     // Update columns on splice change.
     onSplice: function(change) {
-      var thead = this.$thead[0];
       var tbody = this.$tbody[0];
-      var tfoot = this.$tfoot[0];
+      var thead = this.hasHeader() ? this.$thead[0] : null;
+      var tfoot = this.hasFooter() ? this.$tfoot[0] : null;
 
       var hasCheckbox = this.hasCheckbox();
       var index = change.index;
@@ -125,9 +128,15 @@ var GridColumnsObserver = (function() {
       if (removedCount > 0) {
         for (i = 0; i < removedCount; ++i) {
           idx = hasCheckbox ? index + 1 : index;
-          theadRemovedNodes.push.apply(theadRemovedNodes, removeColumns(thead, idx));
           tbodyRemovedNodes.push.apply(tbodyRemovedNodes, removeColumns(tbody, idx));
-          tfootRemovedNodes.push.apply(tfootRemovedNodes, removeColumns(tfoot, idx));
+
+          if (thead) {
+            theadRemovedNodes.push.apply(theadRemovedNodes, removeColumns(thead, idx));
+          }
+
+          if (tfoot) {
+            tfootRemovedNodes.push.apply(tfootRemovedNodes, removeColumns(tfoot, idx));
+          }
         }
       }
 
@@ -146,14 +155,17 @@ var GridColumnsObserver = (function() {
           // Update column flags
           updateColumn(this, column);
 
-          var th1 = GridBuilder.theadCell(this, column, idx);
-          var th2 = GridBuilder.tfootCell(this, column, idx);
+          if (thead) {
+            var th1 = GridBuilder.theadCell(this, column, idx);
+            tr = thead.childNodes[0];
+            theadAddedNodes.push(insertBefore(tr, th1, hasCheckbox ? idx + 1 : idx));
+          }
 
-          tr = thead.childNodes[0];
-          theadAddedNodes.push(insertBefore(tr, th1, hasCheckbox ? idx + 1 : idx));
-
-          tr = tfoot.childNodes[0];
-          tfootAddedNodes.push(insertBefore(tr, th2, hasCheckbox ? idx + 1 : idx));
+          if (tfoot) {
+            var th2 = GridBuilder.tfootCell(this, column, idx);
+            tr = tfoot.childNodes[0];
+            tfootAddedNodes.push(insertBefore(tr, th2, hasCheckbox ? idx + 1 : idx));
+          }
         }
 
         // Update body rows
@@ -214,20 +226,26 @@ var GridColumnsObserver = (function() {
           []  // Store new nodes
         ];
 
-        var childNodes = this['$' + tagName][0].childNodes;
-        var factory = cellFactory.call(this, tagName, column, nodeIndex);
-        var fn = function(acc, tr, index) {
-          var result = factory.call(this, tr, index);
-          acc[0].push(result.oldNode);
-          acc[1].push(result.newNode);
-          return acc;
-        };
+        var el = this['$' + tagName];
 
-        return _.reduce(childNodes, fn, acc, this);
+        if (el) {
+          var childNodes = el[0].childNodes;
+          var factory = cellFactory.call(this, tagName, column, nodeIndex);
+          var fn = function(acc, tr, index) {
+            var result = factory.call(this, tr, index);
+            acc[0].push(result.oldNode);
+            acc[1].push(result.newNode);
+            return acc;
+          };
+
+          acc = _.reduce(childNodes, fn, acc, this);
+        }
+
+        return acc;
       };
 
       // Iterate for each section
-      var results = _.map(['thead', 'tfoot', 'tbody'], iteratee, this);
+      var results = _.map([THEAD, TFOOT, TBODY], iteratee, this);
 
       // Update editable state
       if (column.editable) {

@@ -34,7 +34,11 @@ describe('Grid Render', function() {
 
     var grid = new Grid(table, {
       data: [],
-      columns: columns
+      columns: columns,
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     var tbody = grid.$tbody[0];
@@ -82,6 +86,52 @@ describe('Grid Render', function() {
     });
   });
 
+  it('should not render header', function() {
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo' }
+    ];
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: columns,
+      view: {
+        thead: false,
+        tfoot: true
+      }
+    });
+
+    expect(grid.$thead).not.toBeDefined();
+
+    var nodes = table.getElementsByTagName('thead');
+    expect(nodes.length).toBe(0);
+  });
+
+  it('should not render footer', function() {
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo' }
+    ];
+
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      data: [],
+      columns: columns,
+      view: {
+        thead: true,
+        tfoot: false
+      }
+    });
+
+    expect(grid.$tfoot).not.toBeDefined();
+
+    var nodes = table.getElementsByTagName('tfoot');
+    expect(nodes.length).toBe(0);
+  });
+
   it('should render column header with unsortable column', function() {
     var columns = [
       { id: 'foo', title: 'Foo' },
@@ -92,7 +142,11 @@ describe('Grid Render', function() {
 
     var grid = new Grid(table, {
       data: [],
-      columns: columns
+      columns: columns,
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     var tbody = grid.$tbody[0];
@@ -135,7 +189,11 @@ describe('Grid Render', function() {
 
     var grid = new Grid(table, {
       data: [],
-      columns: columns
+      columns: columns,
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     var tbody = grid.$tbody[0];
@@ -193,7 +251,11 @@ describe('Grid Render', function() {
 
     var grid = new Grid(table, {
       data: [],
-      columns: columns
+      columns: columns,
+      view: {
+        thead: true,
+        tfoot: true
+      }
     });
 
     var tbody = grid.$tbody[0];

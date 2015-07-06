@@ -177,7 +177,11 @@ describe('Grid Selection', function() {
     beforeEach(function() {
       grid = new Grid(table, {
         data: data,
-        columns: columns
+        columns: columns,
+        view: {
+          thead: true,
+          tfoot: true
+        }
       });
 
       tbody = grid.$tbody[0];
@@ -368,6 +372,10 @@ describe('Grid Selection', function() {
         columns: columns,
         selection: {
           multi: true
+        },
+        view: {
+          thead: true,
+          tfoot: true
         }
       });
 
@@ -616,5 +624,131 @@ describe('Grid Selection', function() {
       expect(trs[1].getAttribute('class')).not.toContain(CSS_SELECTED);
       expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
     });
-  })
+  });
+
+  describe('without footer', function() {
+    beforeEach(function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        view: {
+          thead: true,
+          tfoot: false
+        }
+      });
+
+      tbody = grid.$tbody[0];
+      thead = grid.$thead[0];
+    });
+
+    it('should select data when row is clicked', function() {
+      var row = tbody.childNodes[1];
+
+      triggerClick(row);
+
+      var expectedSelection = [grid.$data[1]];
+      expect(grid.$selection.toArray()).toEqual(expectedSelection);
+
+      jasmine.clock().tick();
+
+      var trs = tbody.childNodes;
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
+
+      // Check status of checkbox
+      expect(findCheckbox(trs[0]).checked).toBeFalse();
+      expect(findCheckbox(trs[1]).checked).toBeTrue();
+      expect(findCheckbox(trs[2]).checked).toBeFalse();
+
+      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+
+      // Main checkbox should be updated
+      expect(theadSpan.innerHTML).toBe('1');
+      expect(theadSpan.getAttribute('title')).toBe('1');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeTrue();
+
+      // New click should toggle selection
+      triggerClick(row);
+
+      expect(grid.$selection).toBeEmpty();
+
+      jasmine.clock().tick();
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        var className = tr.getAttribute('class') || '';
+        return className.indexOf(CSS_SELECTED) < 0;
+      });
+
+      // Main checkbox should be updated
+      expect(theadSpan.innerHTML).toBe('0');
+      expect(theadSpan.getAttribute('title')).toBe('0');
+      expect(theadCheckbox.checked).toBeFalse();
+      expect(theadCheckbox.indeterminate).toBeFalse();
+    });
+  });
+
+  describe('without header', function() {
+    beforeEach(function() {
+      grid = new Grid(table, {
+        data: data,
+        columns: columns,
+        view: {
+          thead: false,
+          tfoot: true
+        }
+      });
+
+      tbody = grid.$tbody[0];
+      tfoot = grid.$tfoot[0];
+    });
+
+    it('should select data when row is clicked', function() {
+      var row = tbody.childNodes[1];
+
+      triggerClick(row);
+
+      var expectedSelection = [grid.$data[1]];
+      expect(grid.$selection.toArray()).toEqual(expectedSelection);
+
+      jasmine.clock().tick();
+
+      var trs = tbody.childNodes;
+      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
+
+      // Check status of checkbox
+      expect(findCheckbox(trs[0]).checked).toBeFalse();
+      expect(findCheckbox(trs[1]).checked).toBeTrue();
+      expect(findCheckbox(trs[2]).checked).toBeFalse();
+
+      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+
+      expect(tfootSpan.innerHTML).toBe('1');
+      expect(tfootSpan.getAttribute('title')).toBe('1');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeTrue();
+
+      // New click should toggle selection
+      triggerClick(row);
+
+      expect(grid.$selection).toBeEmpty();
+
+      jasmine.clock().tick();
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        var className = tr.getAttribute('class') || '';
+        return className.indexOf(CSS_SELECTED) < 0;
+      });
+
+      expect(tfootSpan.innerHTML).toBe('0');
+      expect(tfootSpan.getAttribute('title')).toBe('0');
+      expect(tfootCheckbox.checked).toBeFalse();
+      expect(tfootCheckbox.indeterminate).toBeFalse();
+    });
+  });
 });

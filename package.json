@@ -27,7 +27,7 @@
     "gulp-minify-css": "1.2.0",
     "gulp-wrap": "0.11.0",
     "jasmine-core": "2.3.4",
-    "jasmine-utils": "0.2.1",
+    "jasmine-utils": "0.2.2",
     "karma": "0.12.37",
     "karma-chrome-launcher": "0.2.0",
     "karma-jasmine": "0.3.5",

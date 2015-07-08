@@ -40,7 +40,8 @@ describe('GridBuilder', function() {
     var table = document.createElement('table');
     grid = new Grid(table, {
       data: data,
-      columns: columns
+      columns: columns,
+      key: 'foo'
     });
   });
 
@@ -382,6 +383,10 @@ describe('GridBuilder', function() {
 
     expect(fragment.childNodes).toVerify(function(node, idx) {
       return node.getAttribute('data-waffle-idx') === idx.toString();
+    });
+
+    expect(fragment.childNodes).toVerify(function(node, idx) {
+      return node.getAttribute('data-waffle-id') === data[idx].foo.toString();
     });
   });
 

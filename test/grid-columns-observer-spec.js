@@ -24,7 +24,7 @@
 
 describe('Grid Columns Observer', function() {
 
-  var columns, data, table, grid, $columns;
+  var columns, data, table, grid, $columns, $data;
 
   beforeEach(function() {
     columns = [
@@ -47,6 +47,7 @@ describe('Grid Columns Observer', function() {
     });
 
     $columns = grid.$columns;
+    $data = grid.$data;
 
     spyOn(GridColumnsObserver, 'onSplice').and.callThrough();
     spyOn(grid, 'dispatchEvent').and.callThrough();
@@ -384,6 +385,64 @@ describe('Grid Columns Observer', function() {
       jasmine.clock().tick();
 
       expect(grid.resize).not.toHaveBeenCalled();
+    });
+
+    it('should not try to add unknow cells in tbody', function() {
+      var thead = grid.$thead[0];
+      var tbody = grid.$tbody[0];
+      var tfoot = grid.$tfoot[0];
+
+      $columns.splice(0, 0, {
+        id: 'lastName'
+      });
+
+      $data.splice(0, 0, {
+        id: 4,
+        firstName: 'foo4',
+        lastName: 'bar4'
+      });
+
+      jasmine.clock().tick();
+
+      // One column for checkbox, three columns for daya
+      var expectedColumnsSize = 1 + 3;
+
+      expect(thead.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
+      expect(tfoot.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes.length === expectedColumnsSize;
+      });
+
+      expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
+      expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
+      expect(thead.childNodes[0].childNodes[2].getAttribute('data-waffle-id')).toBe($columns.at(1).id);
+      expect(thead.childNodes[0].childNodes[3].getAttribute('data-waffle-id')).toBe($columns.at(2).id);
+
+      expect(tfoot.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
+      expect(tfoot.childNodes[0].childNodes[2].getAttribute('data-waffle-id')).toBe($columns.at(1).id);
+      expect(tfoot.childNodes[0].childNodes[3].getAttribute('data-waffle-id')).toBe($columns.at(2).id);
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
+      });
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id;
+      });
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id;
+      });
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes[3].getAttribute('data-waffle-id') === $columns.at(2).id;
+      });
+
+      // Check content
+      expect(tbody.childNodes).toVerify(function(tr, idx) {
+        return tr.childNodes[1].innerHTML === $data.at(idx).lastName.toString();
+      });
     });
   });
 

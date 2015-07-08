@@ -444,6 +444,50 @@ describe('Grid Columns Observer', function() {
         return tr.childNodes[1].innerHTML === $data.at(idx).lastName.toString();
       });
     });
+
+    it('should not try to remove unknow cells in tbody', function() {
+      var thead = grid.$thead[0];
+      var tbody = grid.$tbody[0];
+      var tfoot = grid.$tfoot[0];
+
+      $data.reset([
+        { id: 4, firstName: 'foo4', lastName: 'bar4' },
+        { id: 5, firstName: 'foo5', lastName: 'bar5' },
+        { id: 6, firstName: 'foo6', lastName: 'bar6' }
+      ]);
+
+      $columns.splice(1, $columns.length);
+
+      jasmine.clock().tick();
+
+      // One column for checkbox, one columns for data
+      var expectedColumnsSize = 1 + 1;
+
+      expect(thead.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
+      expect(tfoot.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes.length === expectedColumnsSize;
+      });
+
+      expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
+      expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
+
+      expect(tfoot.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
+      expect(tfoot.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
+      });
+
+      expect(tbody.childNodes).toVerify(function(tr) {
+        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id;
+      });
+
+      // Check content
+      expect(tbody.childNodes).toVerify(function(tr, idx) {
+        return tr.childNodes[1].innerHTML === $data.at(idx).id.toString();
+      });
+    });
   });
 
   describe('with update change', function() {

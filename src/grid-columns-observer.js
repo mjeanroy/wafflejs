@@ -32,11 +32,23 @@
 
 var GridColumnsObserver = (function() {
 
-  var removeColumns = function(wrapper, idx) {
+  var tdIndexer = function(td) {
+    return td.getAttribute(DATA_WAFFLE_ID);
+  };
+
+  var removeColumns = function(wrapper, columns) {
     var removedNodes = [];
     var childNodes = wrapper.childNodes;
     for (var i = 0, size = childNodes.length; i < size; ++i) {
-      removedNodes.push(childNodes[i].removeChild(childNodes[i].childNodes[idx]));
+      var row = childNodes[i];
+      var map = _.indexBy(row.childNodes, tdIndexer);
+
+      for (var k = 0, count = columns.length; k < count; ++k) {
+        var childToRemove = map[columns[k].id];
+        if (childToRemove) {
+          removedNodes.push(row.removeChild(childToRemove));
+        }
+      }
     }
 
     return removedNodes;
@@ -116,6 +128,7 @@ var GridColumnsObserver = (function() {
       var i, k, idx, tr, dataSize;
 
       var removedCount = removedData.length;
+      
 
       var hasDiff = removedCount > 0 || addedCount > 0;
       if (hasDiff && this.isResizable()) {
@@ -124,14 +137,9 @@ var GridColumnsObserver = (function() {
       }
 
       if (removedCount > 0) {
-        for (i = 0; i < removedCount; ++i) {
-          idx = hasCheckbox ? index + 1 : index;
-          theadRemovedNodes.push.apply(theadRemovedNodes, removeColumns(thead, idx));
-          tfootRemovedNodes.push.apply(tfootRemovedNodes, removeColumns(tfoot, idx));
-
-          // Remove nodes on tbody
-          tbodyRemovedNodes.push.apply(tbodyRemovedNodes, removeColumns(tbody, idx));
-        }
+        theadRemovedNodes.push.apply(theadRemovedNodes, removeColumns(thead, removedData));
+        tfootRemovedNodes.push.apply(tfootRemovedNodes, removeColumns(tfoot, removedData));
+        tbodyRemovedNodes.push.apply(tbodyRemovedNodes, removeColumns(tbody, removedData));
       }
 
       var theadAddedNodes = [];

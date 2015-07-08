@@ -27,6 +27,7 @@
 /* global $util */
 /* global GridBuilder */
 /* global GridDomBinders */
+/* global DATA_WAFFLE_ID */
 /* global THEAD */
 /* global TFOOT */
 /* global TBODY */
@@ -34,11 +35,23 @@
 
 var GridColumnsObserver = (function() {
 
-  var removeColumns = function(wrapper, idx) {
+  var tdIndexer = function(td) {
+    return td.getAttribute(DATA_WAFFLE_ID);
+  };
+
+  var removeColumns = function(wrapper, columns) {
     var removedNodes = [];
     var childNodes = wrapper.childNodes;
     for (var i = 0, size = childNodes.length; i < size; ++i) {
-      removedNodes.push(childNodes[i].removeChild(childNodes[i].childNodes[idx]));
+      var row = childNodes[i];
+      var map = _.indexBy(row.childNodes, tdIndexer);
+
+      for (var k = 0, count = columns.length; k < count; ++k) {
+        var childToRemove = map[columns[k].id];
+        if (childToRemove) {
+          removedNodes.push(row.removeChild(childToRemove));
+        }
+      }
     }
 
     return removedNodes;
@@ -126,17 +139,14 @@ var GridColumnsObserver = (function() {
       }
 
       if (removedCount > 0) {
-        for (i = 0; i < removedCount; ++i) {
-          idx = hasCheckbox ? index + 1 : index;
-          tbodyRemovedNodes.push.apply(tbodyRemovedNodes, removeColumns(tbody, idx));
+        tbodyRemovedNodes.push.apply(tbodyRemovedNodes, removeColumns(tbody, removedData));
 
-          if (thead) {
-            theadRemovedNodes.push.apply(theadRemovedNodes, removeColumns(thead, idx));
-          }
+        if (thead) {
+          theadRemovedNodes.push.apply(theadRemovedNodes, removeColumns(thead, removedData));
+		}
 
-          if (tfoot) {
-            tfootRemovedNodes.push.apply(tfootRemovedNodes, removeColumns(tfoot, idx));
-          }
+        if (tfoot) {
+          tfootRemovedNodes.push.apply(tfootRemovedNodes, removeColumns(tfoot, removedData));
         }
       }
 
@@ -169,9 +179,19 @@ var GridColumnsObserver = (function() {
         }
 
         // Update body rows
-        for (k = 0, dataSize = $data.length; k < dataSize; ++k) {
+        // It is important to run through tbody nodes (and not data collection), since
+        // some data may have been added, and associate change is still pending (so row
+        // are not added yet).
+        for (k = 0, dataSize = tbody.childNodes.length; k < dataSize; ++k) {
           tr = tbody.childNodes[k];
-          var data = $data.at(k);
+
+          // We should retrieve data by its id
+          // It is really important to do this way since data may have been unshift
+          // or spliced at an arbitrary index, so row index may not be sync with data index
+          // at this step (it will be updated by a pending change).
+          var dataId = tr.getAttribute(DATA_WAFFLE_ID);
+          var data = $data.byKey(dataId);
+
           for (i = 0; i < addedCount; ++i) {
             idx = index + i;
 

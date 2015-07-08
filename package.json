@@ -2,7 +2,7 @@
   "name": "wafflejs",
   "author": "mickael.jeanroy@gmail.com",
   "main": "dist/waffle-standalone.js",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Javascript Datagrid with zero dependency",
   "license": "MIT",
   "repository": {

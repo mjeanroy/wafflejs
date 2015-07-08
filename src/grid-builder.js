@@ -194,6 +194,9 @@ var GridBuilder = (function() {
       // Add index
       $tr.attr(DATA_WAFFLE_IDX, idx);
 
+      // Add id value
+      $tr.attr(DATA_WAFFLE_ID, grid.$data.$$key(data));
+
       // Add css for selected row
       if (grid.isSelectable() && grid.$selection.contains(data)) {
         $tr.addClass(CSS_SELECTED);

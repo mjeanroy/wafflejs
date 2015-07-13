@@ -3102,6 +3102,11 @@ var GridColumnsObserver = (function() {
         for (k = 0, dataSize = tbody.childNodes.length; k < dataSize; ++k) {
           tr = tbody.childNodes[k];
 
+          // Index current cell
+          // If grid has already been rendered due to a previous change,
+          // columns may already be here
+          var map = _.indexBy(tr.childNodes, tdIndexer);
+
           // We should retrieve data by its id
           // It is really important to do this way since data may have been unshift
           // or spliced at an arbitrary index, so row index may not be sync with data index
@@ -3111,6 +3116,13 @@ var GridColumnsObserver = (function() {
 
           for (i = 0; i < addedCount; ++i) {
             idx = index + i;
+
+            var currentColumn = $columns.at(idx);
+            var columnId = currentColumn.id;
+            if (map[columnId]) {
+              // Remove, it will be added right after at the right position
+              tr.removeChild(map[columnId]);
+            }
 
             var td = GridBuilder.tbodyCell(this, data, $columns.at(idx), idx);
             tbodyAddedNodes.push(insertBefore(tr, td, hasCheckbox ? idx + 1 : idx));

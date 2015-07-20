@@ -230,9 +230,10 @@ describe('waffle-jq-angular', function() {
     expect($scope.onRendered).toHaveBeenCalled();
     expect($scope.onDataSpliced).not.toHaveBeenCalled();
 
-    $scope.grid.data().push([
-      { id: 10, name: 'foo' }
-    ]);
+    $scope.grid.data().push({
+      id: 10,
+      name: 'foo'
+    });
 
     jasmine.clock().tick();
 

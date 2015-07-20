@@ -148,13 +148,23 @@ var Collection = (function() {
       throw new Error('Waffle collections are not array, only object are allowed');
     }
 
+    var result;
+
     if (o instanceof collection.$$model) {
       // It is already an instance of model object !
-      return o;
+      result = o;
+    } else {
+      // Create new model instance and return it.
+      result = new collection.$$model(o);
     }
 
-    // Create new model instance and return it.
-    return new collection.$$model(o);
+    // Try to get model identitifer
+    var id = collection.$$key(result);
+    if (id == null) {
+      throw new Error('Collection elements must have an id, you probably missed to specify the id key on initialization ?');
+    }
+
+    return result;
   };
 
   // Add entry at given index.

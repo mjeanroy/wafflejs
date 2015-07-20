@@ -41,6 +41,7 @@ describe('GridResizer', function() {
     fixtures.appendChild(table);
 
     grid = new Grid(table, {
+      key: 'foo',
       data: data,
       columns: columns
     });

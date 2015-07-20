@@ -160,7 +160,7 @@ describe('collection', function() {
       };
 
       var add = function() {
-        collection.add(0, [o3, o4]);
+        collection.add([o3, o4], 0);
       };
 
       var splice = function() {
@@ -178,6 +178,42 @@ describe('collection', function() {
       expect(collection.length).toBe(2);
       expect(collection[0]).toBe(o1);
       expect(collection[1]).toBe(o2);
+    });
+
+    it('should fail if added value is does not have an id', function() {
+      var o1 = { name: 'foo' };
+      var collection = new Collection([]);
+
+      var create = function() {
+        return new Collection([o1]);
+      };
+
+      var push = function() {
+        collection.push(o1);
+      };
+
+      var unshift = function() {
+        collection.unshift(o1);
+      };
+
+      var add = function() {
+        collection.add([o1], 0);
+      };
+
+      var splice = function() {
+        collection.splice(0, 0, o1);
+      };
+
+      var error = new Error('Collection elements must have an id, you probably missed to specify the id key on initialization ?');
+
+      expect(create).toThrow(error);
+      expect(push).toThrow(error);
+      expect(unshift).toThrow(error);
+      expect(add).toThrow(error);
+      expect(splice).toThrow(error);
+
+      // Check collection has not been updated
+      expect(collection.length).toBe(0);
     });
 
     it('get element by key', function() {

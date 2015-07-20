@@ -649,6 +649,7 @@ describe('GridBuilder', function() {
     var column = grid.$columns.at(0);
 
     column.editable = {
+      enable: true,
       type: 'text',
       css: null
     };
@@ -672,6 +673,62 @@ describe('GridBuilder', function() {
     expect(childNodes[0].value).toBe('1');
 
     expect(GridBuilder.tbodyControl).toHaveBeenCalledWith(column, data);
+  });
+
+  it('should create editable tbody cell using data condition', function() {
+    spyOn(GridBuilder, 'tbodyControl').and.callThrough();
+
+    var column = grid.$columns.at(0);
+
+    var fn = jasmine.createSpy('fn').and.callFake(function(data) {
+      return data.foo === 1;
+    });
+
+    column.editable = {
+      enable: fn,
+      type: 'text',
+      css: null
+    };
+
+    var data1 = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var data2 = {
+      foo: 2,
+      bar: 'hello world'
+    };
+
+    var td1 = GridBuilder.tbodyCell(grid, data1, grid.columns().at(0), 0);
+    var td2 = GridBuilder.tbodyCell(grid, data2, grid.columns().at(0), 0);
+
+    expect(td1).toBeDefined();
+    expect(td1.tagName).toEqual('TD');
+    expect(td1.className).toContain('foo');
+    expect(td1.className).toContain('waffle-sortable');
+    expect(td1.getAttribute('data-waffle-id')).toBe('foo');
+
+    expect(td2).toBeDefined();
+    expect(td2.tagName).toEqual('TD');
+    expect(td2.className).toContain('foo');
+    expect(td2.className).toContain('waffle-sortable');
+    expect(td2.getAttribute('data-waffle-id')).toBe('foo');
+
+    expect(fn).toHaveBeenCalledWith(data1);
+    expect(fn).toHaveBeenCalledWith(data2);
+
+    // Should be editable
+    var childNodes1 = td1.childNodes;
+    expect(childNodes1.length).toBe(1);
+    expect(childNodes1[0].tagName).toBe('INPUT');
+    expect(childNodes1[0].value).toBe('1');
+
+    // Should not be editable
+    var childNodes2 = td2.childNodes;
+    expect(childNodes2.length).toBe(1);
+    expect(childNodes2[0].tagName).not.toBe('INPUT');
+    expect(childNodes2[0].nodeValue).toBe('2');
   });
 
   it('should create editable control for tbody cell', function() {

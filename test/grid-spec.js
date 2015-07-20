@@ -1202,7 +1202,11 @@ describe('Grid', function() {
 
       grid.options.editable = false;
       grid.$columns.forEach(function(column) {
-        column.editable = true;
+        column.editable = {
+          enable: true,
+          type: 'text',
+          css: null
+        };
       });
 
       expect(grid.isEditable()).toBe(true);

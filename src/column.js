@@ -43,6 +43,12 @@
 
 var Column = (function() {
 
+  var DEFAULT_EDITABLE = {
+    enable: true,
+    type: 'text',
+    css: null
+  };
+
   var CSS_PLACHOLDERS = {
     '.': '-',
     '(': '',
@@ -103,10 +109,7 @@ var Column = (function() {
     // Editable column
     var editable = column.editable === true ? {} : column.editable;
     if (editable) {
-      editable = _.defaults(editable, {
-        type: 'text',
-        css: null
-      });
+      editable = _.defaults(editable, DEFAULT_EDITABLE);
     }
 
     this.editable = editable;
@@ -213,6 +216,23 @@ var Column = (function() {
     updateWidth: function(width) {
       this.width = fromPx(width);
       return this;
+    },
+
+    // Check if column or given data is editable
+    isEditable: function(data) {
+      // It may be always false
+      if (!this.editable || !this.editable.enable) {
+        return false;
+      }
+
+      // May be call without argument
+      if (!data) {
+        return true;
+      }
+
+      // If call with an argument, this will be used to check if data
+      // is editable or not.
+      return $util.resultWith(this.editable.enable, this, [data]);
     },
 
     // Render object using column settings

@@ -295,7 +295,7 @@ var Grid = (function() {
     // Check if grid hasat least
     isEditable: function() {
       return this.options.editable || this.$columns.some(function(column) {
-        return !!column.editable;
+        return column.isEditable();
       });
     },
 

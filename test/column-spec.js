@@ -151,6 +151,7 @@ describe('Column', function() {
     });
 
     expect(column.editable).toEqual({
+      enable: true,
       type: 'number',
       css: 'form-control'
     });
@@ -163,9 +164,43 @@ describe('Column', function() {
     });
 
     expect(column.editable).toEqual({
+      enable: true,
       type: 'text',
       css: null
     });
+  });
+
+  it('should check if column is editable', function() {
+    var column = new Column({
+      id: 'foo',
+      editable: false
+    });
+
+    expect(column.isEditable()).toBe(false);
+
+    column = new Column({
+      id: 'foo',
+      editable: {
+        enable: false
+      }
+    });
+
+    expect(column.isEditable()).toBe(false);
+
+    var fn = jasmine.createSpy('fn').and.callFake(function(data) {
+      return data.id === 1;
+    });
+
+    column = new Column({
+      id: 'foo',
+      editable: {
+        enable: fn
+      }
+    });
+
+    expect(column.isEditable()).toBe(true);
+    expect(column.isEditable({ id: 1 })).toBe(true);
+    expect(column.isEditable({ id: 2 })).toBe(false);
   });
 
   it('should normalize default css', function() {

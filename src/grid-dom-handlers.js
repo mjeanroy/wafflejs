@@ -185,7 +185,7 @@ var GridDomHandlers = (function() {
       var columnId = target.getAttribute(DATA_WAFFLE_ID);
       var column = columnId ? this.$columns.byKey(columnId) : null;
 
-      if (column && column.editable) {
+      if (column && column.isEditable()) {
         var tr = $doc.findParent(target, 'TR');
         if (tr) {
           var type = column.editable.type;

@@ -833,6 +833,7 @@ describe('Grid Dom Handlers', function() {
       column = grid.$columns.at(0);
 
       column.editable = {
+        enable: true,
         type: 'number',
         css: null
       };
@@ -875,6 +876,7 @@ describe('Grid Dom Handlers', function() {
 
     it('should update object value using checked checkbox', function() {
       column.editable = {
+        enable: true,
         type: 'checkbox'
       };
 
@@ -904,6 +906,7 @@ describe('Grid Dom Handlers', function() {
 
     it('should update object value using unchecked checkbox', function() {
       column.editable = {
+        enable: true,
         type: 'checkbox'
       };
 
@@ -944,6 +947,22 @@ describe('Grid Dom Handlers', function() {
 
     it('should not update object value for input event not related to editable column', function() {
       column.editable = false;
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect($doc.findParent).not.toHaveBeenCalled();
+      expect(column.value).not.toHaveBeenCalled();
+      expect(data0.id).toBe(1);
+    });
+
+    it('should not update object value for input event not related to editable column using enable attribute', function() {
+      column.editable = {
+        enable: false,
+        type: 'text',
+        css: null
+      };
+
       event.target = input;
 
       onInputTbody(event);

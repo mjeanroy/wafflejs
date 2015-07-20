@@ -230,8 +230,8 @@ var GridBuilder = (function() {
         .css(column.styles(idx, false))
         .attr(column.attributes(idx, false));
 
-      // Check for editable column
-      var editable = column.editable;
+      // Check for editable cell
+      var editable = column.isEditable(data);
       if (editable) {
         $td.append(o.tbodyControl(column, data));
       } else {

@@ -343,6 +343,13 @@ describe('Grid', function() {
 
   it('should create draggable grid', function() {
     var table = document.createElement('table');
+
+    var columns = [
+      { id: 'id' },
+      { id: 'foo' },
+      { id: 'bar' }
+    ];
+
     var grid = new Grid(table, {
       dnd: true
     });
@@ -361,6 +368,24 @@ describe('Grid', function() {
     });
 
     expect(table.className).toContain('waffle-fixedheader');
+  });
+
+  it('should not override draggable flags of columns', function() {
+    var table = document.createElement('table');
+    var columns = [
+      { id: 'id', draggable: false },
+      { id: 'foo', draggable: true },
+      { id: 'bar' }
+    ];
+
+    var grid = new Grid(table, {
+      dnd: true,
+      columns: columns
+    });
+
+    expect(grid.$columns.at(0).draggable).toBeFalse();
+    expect(grid.$columns.at(1).draggable).toBeTrue();
+    expect(grid.$columns.at(2).draggable).toBeTrue();
   });
 
   it('should not create scrollable grid', function() {

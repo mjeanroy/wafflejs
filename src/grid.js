@@ -175,7 +175,7 @@ var Grid = (function() {
 
         // Force column to be draggable
         if (isDraggable) {
-          column.draggable = true;
+          column.draggable = column.draggable == null ? true : !!column.draggable;
         }
       });
     }

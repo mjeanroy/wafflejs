@@ -36,7 +36,7 @@ module.exports = function(options) {
   gulp.task('vulcanize', ['vulcanize:csp'], function() {
     return gulp.src(options.dist + '/waffle-polymer-csp.html')
         .pipe(vulcanize({
-            abspath: '',
+            abspath: '/',
             excludes: [],
             stripExcludes: false,
             inlineScripts: true,

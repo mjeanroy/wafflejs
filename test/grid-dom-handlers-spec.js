@@ -865,6 +865,7 @@ describe('Grid Dom Handlers', function() {
       expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
         index: 0,
         object: data0,
+        field: 'id',
         oldValue: 1,
         newValue: 100
       });
@@ -893,6 +894,7 @@ describe('Grid Dom Handlers', function() {
       expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
         index: 0,
         object: data0,
+        field: 'id',
         oldValue: 1,
         newValue: true
       });
@@ -921,6 +923,7 @@ describe('Grid Dom Handlers', function() {
       expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
         index: 0,
         object: data0,
+        field: 'id',
         oldValue: 1,
         newValue: false
       });

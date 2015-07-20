@@ -206,6 +206,7 @@ var GridDomHandlers = (function() {
             this.dispatchEvent('datachanged', {
               index: idx,
               object: object,
+              field: columnId,
               oldValue: oldValue,
               newValue: newValue
             });

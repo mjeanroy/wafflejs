@@ -23,8 +23,9 @@
  */
 
 var gulp = require('gulp');
-var karma = require('karma').server;
+var karma = require('karma');
 var jasmine = require('gulp-jasmine');
+var KarmaServer = karma.Server;
 
 module.exports = function(options) {
   // Test files builder
@@ -57,16 +58,18 @@ module.exports = function(options) {
 
     // Create tdd task for each target
     gulp.task(tddTask, ['test:build', 'bower:install'], function(done) {
-      karma.start({
+      var server = new KarmaServer({
         configFile: karmaConf,
         files: karmaFiles,
         reporters: ['progress']
       }, done);
+
+      server.start();
     });
 
     // Create test task for each target
     gulp.task(testTask, ['test:build', 'bower:install'], function(done) {
-      karma.start({
+      var server = new KarmaServer({
         configFile: karmaConf,
         files: karmaFiles,
         singleRun: true,
@@ -74,6 +77,8 @@ module.exports = function(options) {
       }, function() {
         done();
       });
+
+      server.start();
     });
   });
 

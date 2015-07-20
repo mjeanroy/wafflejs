@@ -483,6 +483,56 @@ describe('Column', function() {
     expect(column.cssClasses()).toEqual('foo waffle-sortable');
   });
 
+  it('should get default custom css classes to apply using function', function() {
+    var fn = jasmine.createSpy('fn').and.callFake(function() {
+      return 'foo';
+    });
+
+    var column = new Column({
+      id: 'id',
+      css: fn
+    });
+
+    expect(column.cssClasses()).toEqual('foo waffle-sortable');
+    expect(fn).toHaveBeenCalledWith();
+  });
+
+  it('should get default custom css classes to apply using function and data', function() {
+    var fn = jasmine.createSpy('fn').and.callFake(function() {
+      return 'foo';
+    });
+
+    var data = {
+      id: 1
+    };
+
+    var column = new Column({
+      id: 'id',
+      css: fn
+    });
+
+    expect(column.cssClasses(0, false, data)).toEqual('foo waffle-sortable');
+    expect(fn).toHaveBeenCalledWith(data);
+  });
+
+  it('should get default custom css classes to apply using function that return an array', function() {
+    var fn = jasmine.createSpy('fn').and.callFake(function() {
+      return ['foo'];
+    });
+
+    var data = {
+      id: 1
+    };
+
+    var column = new Column({
+      id: 'id',
+      css: fn
+    });
+
+    expect(column.cssClasses(0, false, data)).toEqual('foo waffle-sortable');
+    expect(fn).toHaveBeenCalledWith(data);
+  });
+
   it('should get css classes if column is sorted in ascendant order', function() {
     var column = new Column({
       id: 'id'

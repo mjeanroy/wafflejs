@@ -571,11 +571,17 @@ describe('GridBuilder', function() {
     var col0 = grid.columns().at(0);
     var col1 = grid.columns().at(1);
 
+    spyOn(col0, 'cssClasses').and.callThrough();
+    spyOn(col1, 'cssClasses').and.callThrough();
+
     col0.computedWidth = '100px';
     col1.computedWidth = null;
 
     var td1 = GridBuilder.tbodyCell(grid, data, col0, 0);
     var td2 = GridBuilder.tbodyCell(grid, data, col1, 1);
+
+    expect(col0.cssClasses).toHaveBeenCalledWith(0, false, data);
+    expect(col1.cssClasses).toHaveBeenCalledWith(1, false, data);
 
     expect(td1).toBeDefined();
     expect(td1.tagName).toEqual('TD');

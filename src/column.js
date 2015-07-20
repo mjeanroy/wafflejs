@@ -64,6 +64,7 @@ var Column = (function() {
   var defaultComparator = '$auto';
 
   // Save bytes
+  var resultWith = $util.resultWith;
   var fromPx = $util.fromPx;
   var toPx = $util.toPx;
 
@@ -150,8 +151,14 @@ var Column = (function() {
 
   Constructor.prototype = {
     // Get css class to append to each cell
-    cssClasses: function() {
-      var classes = [this.css];
+    cssClasses: function(idx, header, data) {
+      var args = data ? [data] : [];
+      var css = resultWith(this.css, this, args);
+      if (_.isArray(css)) {
+        css = css.join(' ');
+      }
+
+      var classes = [css];
 
       if (this.sortable) {
         // Add css to display that column is sortable
@@ -232,7 +239,7 @@ var Column = (function() {
 
       // If call with an argument, this will be used to check if data
       // is editable or not.
-      return $util.resultWith(this.editable.enable, this, [data]);
+      return resultWith(this.editable.enable, this, [data]);
     },
 
     // Render object using column settings

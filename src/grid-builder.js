@@ -226,7 +226,7 @@ var GridBuilder = (function() {
     // Create a cell for grid tbody node
     tbodyCell: function(grid, data, column, idx) {
       var $td = $($doc.td())
-        .addClass(column.cssClasses(idx, false))
+        .addClass(column.cssClasses(idx, false, data))
         .css(column.styles(idx, false))
         .attr(column.attributes(idx, false));
 

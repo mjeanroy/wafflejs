@@ -101,6 +101,15 @@ describe('$util', function() {
     expect($util.toSpinalCase('hello-world')).toBe('hello-world');
   });
 
+  it('should get result', function() {
+    expect($util.resultWith('foo')).toBe('foo');
+
+    var ctx = {};
+    var fn = jasmine.createSpy('fn').and.returnValue('bar');
+    expect($util.resultWith(fn, ctx, ['foo'])).toBe('bar');
+    expect(fn).toHaveBeenCalledWith('foo');
+  });
+
   it('should destroy object', function() {
     var fn = jasmine.createSpy('fn');
     var protoFn = jasmine.createSpy('protoFn');

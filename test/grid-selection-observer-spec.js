@@ -93,11 +93,19 @@ describe('Grid Selection Observer', function() {
   describe('with header and footer', function() {
     var grid;
     var $selection;
+    var selectable;
 
     beforeEach(function() {
+      selectable = jasmine.createSpy('selectable').and.callFake(function(data) {
+        return data.id !== 5;
+      });
+
       grid = new Grid(table, {
         data: data,
         columns: columns,
+        selection: {
+          enable: selectable
+        },
         view: {
           thead: true,
           tfoot: true
@@ -319,6 +327,41 @@ describe('Grid Selection Observer', function() {
         expect(evt).toEqual({
           selection: grid.$selection.toArray()
         });
+      });
+
+      it('should not try to update checkbox if it does not exist', function() {
+        var d1 = grid.$data.at(0);
+        var d5 = {
+          id: 5
+        };
+
+        grid.$data.push(d5);
+        jasmine.clock().tick();
+
+        var tbody = grid.$tbody[0];
+        var childNodes = tbody.childNodes;
+
+        expect(childNodes.length).toBe(4);
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+        expect(childNodes[3].className).not.toContain('waffle-selected');
+
+        grid.$selection.push(d1, d5);
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+        expect(childNodes[3].className).toContain('waffle-selected');
+
+        grid.$selection.clear();
+        jasmine.clock().tick();
+
+        expect(childNodes[0].className).not.toContain('waffle-selected');
+        expect(childNodes[1].className).not.toContain('waffle-selected');
+        expect(childNodes[2].className).not.toContain('waffle-selected');
+        expect(childNodes[3].className).not.toContain('waffle-selected');
       });
     });
   });

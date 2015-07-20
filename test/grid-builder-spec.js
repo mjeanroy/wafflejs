@@ -207,6 +207,38 @@ describe('GridBuilder', function() {
     expect(checkbox.indeterminate).toBe(false);
   });
 
+  it('should create thead cell for main checkbox with checked state', function() {
+    var fn = jasmine.createSpy('fn').and.callFake(function(data) {
+      return data.foo === 'foo1';
+    });
+
+    var selectableData = grid.$data.filter(fn);
+
+    grid.options.selection = {
+      enable: fn
+    };
+
+    grid.$selection.add(selectableData);
+
+    var th = GridBuilder.theadCheckboxCell(grid);
+
+    expect(th).toBeDefined();
+    expect(th.tagName).toEqual('TH');
+    expect(th.className).toContain('waffle-checkbox');
+    expect(th.childNodes.length).toBe(2);
+
+    var span = th.childNodes[0];
+    expect(span.tagName).toBe('SPAN');
+    expect(span.innerHTML).toBe('1');
+    expect(span.getAttribute('title')).toBe('1');
+
+    var checkbox = th.childNodes[1];
+    expect(checkbox.tagName).toBe('INPUT');
+    expect(checkbox.getAttribute('type')).toBe('checkbox');
+    expect(checkbox.checked).toBe(true);
+    expect(checkbox.indeterminate).toBe(false);
+  });
+
   it('should create thead cell for main checkbox with undeterminate state', function() {
     grid.$selection.push(grid.$data[0]);
 
@@ -432,6 +464,8 @@ describe('GridBuilder', function() {
 
     expect(tr).toBeDefined();
     expect(tr.tagName).toEqual('TR');
+    expect(tr.className).toContain('waffle-selectable');
+    expect(tr.className).not.toContain('waffle-selected');
     expect(tr.getAttribute('data-waffle-idx')).toBe('0');
 
     // 2 columns + 1 column for checkbox
@@ -461,7 +495,68 @@ describe('GridBuilder', function() {
     expect(tr).toBeDefined();
     expect(tr.tagName).toEqual('TR');
     expect(tr.getAttribute('data-waffle-idx')).toBe('0');
+    expect(tr.className).toContain('waffle-selectable');
+    expect(tr.className).not.toContain('waffle-selected');
     expect(tr.childNodes.length).toBe(2);
+    expect(tr.childNodes).toVerify(function(node) {
+      return node.tagName === 'TD';
+    });
+  });
+
+  it('should not create selectable tbody row', function() {
+    spyOn(GridBuilder, 'tbodyCell').and.callThrough();
+    spyOn(grid, 'hasCheckbox').and.returnValue(true);
+    spyOn(grid, 'isSelectable').and.callFake(function(data) {
+      return !data;
+    });
+
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var tr = GridBuilder.tbodyRow(grid, data, 0);
+
+    var columns = grid.columns();
+    expect(GridBuilder.tbodyCell.calls.count()).toBe(2);
+    expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(0), 0);
+    expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(1), 1);
+
+    expect(tr).toBeDefined();
+    expect(tr.tagName).toEqual('TR');
+    expect(tr.getAttribute('data-waffle-idx')).toBe('0');
+    expect(tr.className).not.toContain('waffle-selectable');
+    expect(tr.className).not.toContain('waffle-selected');
+    expect(tr.childNodes.length).toBe(3);
+    expect(tr.childNodes).toVerify(function(node) {
+      return node.tagName === 'TD';
+    });
+  });
+
+  it('should create selected tbody row', function() {
+    spyOn(GridBuilder, 'tbodyCell').and.callThrough();
+    spyOn(grid, 'hasCheckbox').and.returnValue(true);
+    spyOn(grid, 'isSelectable').and.returnValue(true);
+    spyOn(grid.$selection, 'contains').and.returnValue(true);
+
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var tr = GridBuilder.tbodyRow(grid, data, 0);
+
+    var columns = grid.columns();
+    expect(GridBuilder.tbodyCell.calls.count()).toBe(2);
+    expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(0), 0);
+    expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(1), 1);
+
+    expect(tr).toBeDefined();
+    expect(tr.tagName).toEqual('TR');
+    expect(tr.getAttribute('data-waffle-idx')).toBe('0');
+    expect(tr.className).toContain('waffle-selectable');
+    expect(tr.className).toContain('waffle-selected');
+    expect(tr.childNodes.length).toBe(3);
     expect(tr.childNodes).toVerify(function(node) {
       return node.tagName === 'TD';
     });
@@ -501,8 +596,12 @@ describe('GridBuilder', function() {
   });
 
   it('should create tbody cell for row checkbox', function() {
-    var td = GridBuilder.tbodyCheckboxCell(grid, grid.$data[0]);
+    spyOn(grid, 'isSelectable').and.returnValue(true);
 
+    var data = grid.$data[0];
+    var td = GridBuilder.tbodyCheckboxCell(grid, data);
+
+    expect(grid.isSelectable).toHaveBeenCalledWith(data);
     expect(td).toBeDefined();
     expect(td.tagName).toEqual('TD');
     expect(td.className).toContain('waffle-checkbox');
@@ -510,6 +609,19 @@ describe('GridBuilder', function() {
     expect(td.childNodes[0].tagName).toBe('INPUT');
     expect(td.childNodes[0].getAttribute('type')).toBe('checkbox');
     expect(td.childNodes[0].checked).toBeFalse();
+  });
+
+  it('should create tbody cell for row checkbox', function() {
+    spyOn(grid, 'isSelectable').and.returnValue(false);
+
+    var data = grid.$data[0];
+    var td = GridBuilder.tbodyCheckboxCell(grid, data);
+
+    expect(grid.isSelectable).toHaveBeenCalledWith(data);
+    expect(td).toBeDefined();
+    expect(td.tagName).toEqual('TD');
+    expect(td.className).toContain('waffle-checkbox');
+    expect(td.childNodes.length).toBe(0);
   });
 
   it('should create tbody cell for row checkbox and check data if it is selected', function() {

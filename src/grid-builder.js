@@ -29,6 +29,7 @@
 /* global $util */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_IDX */
+/* global CSS_SELECTABLE */
 /* global CSS_SELECTED */
 /* global CSS_CHECKBOX_CELL */
 /* exported GridBuilder */
@@ -131,15 +132,15 @@ var GridBuilder = (function() {
     // Create cell for grid thead node.
     theadCheckboxCell: function(grid) {
       var selectionLength = grid.$selection.size();
-      var dataLength = grid.$data.size();
 
       var $span = $($doc.span())
         .attr('title', selectionLength)
         .html(selectionLength);
 
+      var isSelected = grid.isSelected();
       var $input = $($doc.inputCheckbox())
-        .prop('checked', grid.isSelected())
-        .prop('indeterminate', selectionLength > 0 && selectionLength !== dataLength);
+        .prop('checked', isSelected)
+        .prop('indeterminate', !isSelected && selectionLength > 0);
 
       return $($doc.th())
         .addClass(CSS_CHECKBOX_CELL)
@@ -198,12 +199,21 @@ var GridBuilder = (function() {
       $tr.attr(DATA_WAFFLE_ID, grid.$data.$$key(data));
 
       // Add css for selected row
-      if (grid.isSelectable() && grid.$selection.contains(data)) {
-        $tr.addClass(CSS_SELECTED);
-      }
+      if (grid.isSelectable()) {
+        // Add css to show that row is selectable
+        if (grid.isSelectable(data)) {
+          $tr.addClass(CSS_SELECTABLE);
+        }
 
-      if (grid.hasCheckbox()) {
-        $tr[0].appendChild(o.tbodyCheckboxCell(grid, data));
+        // Data may be selected programmatically, but not selectable
+        if (grid.$selection.contains(data)) {
+          $tr.addClass(CSS_SELECTED);
+        }
+
+        // Append cell if grid is defined with checkbox
+        if (grid.hasCheckbox()) {
+          $tr[0].appendChild(o.tbodyCheckboxCell(grid, data));
+        }
       }
 
       grid.$columns.forEach(function(column, idx) {
@@ -233,12 +243,17 @@ var GridBuilder = (function() {
 
     // Create a cell for grid tbody node
     tbodyCheckboxCell: function(grid, data) {
-      var $checkbox = $($doc.inputCheckbox())
-        .prop('checked', grid.isSelected(data));
+      var $td = $($doc.td())
+        .addClass(CSS_CHECKBOX_CELL);
 
-      return $($doc.td())
-        .addClass(CSS_CHECKBOX_CELL)
-        .append($checkbox[0])[0];
+      if (grid.isSelectable(data)) {
+        var $checkbox = $($doc.inputCheckbox())
+          .prop('checked', grid.isSelected(data));
+
+        $td.append($checkbox[0]);
+      }
+
+      return $td[0];
     },
 
     // Create control for editable cell

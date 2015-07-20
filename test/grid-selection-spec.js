@@ -118,6 +118,44 @@ describe('Grid Selection', function() {
     expect(grid.isSelected(grid.$data[2])).toBeFalse();
   });
 
+  it('should select everything', function() {
+    grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    expect(grid.$selection.length).toBe(0);
+
+    grid.select();
+
+    expect(grid.$selection.length).toBe(grid.$data.length);
+  });
+
+  it('should select all selectable data', function() {
+    var isEven = function(data) {
+      return data.id % 2 === 0;
+    };
+
+    var fn = jasmine.createSpy('fn').and.callFake(isEven);
+
+    grid = new Grid(table, {
+      data: data,
+      columns: columns,
+      selection: {
+        enable: fn
+      }
+    });
+
+    expect(grid.$selection.length).toBe(0);
+
+    grid.select();
+
+    expect(grid.$selection.length).not.toBeZero();
+    expect(grid.$selection.length).not.toBe(grid.$data.length);
+    expect(grid.$selection.length).toBe(1);
+    expect(grid.$selection).toVerify(isEven);
+  });
+
   it('should check if data is selected', function() {
     grid = new Grid(table, {
       data: data,
@@ -139,6 +177,50 @@ describe('Grid Selection', function() {
     grid.$selection.push(grid.$data[1]);
 
     expect(grid.isSelected()).toBeFalse();
+    expect(grid.isSelected(grid.$data[0])).toBeTrue();
+    expect(grid.isSelected(grid.$data[1])).toBeTrue();
+    expect(grid.isSelected(grid.$data[2])).toBeFalse();
+
+    grid.$selection.push(grid.$data[2]);
+
+    expect(grid.isSelected()).toBeTrue();
+    expect(grid.isSelected(grid.$data[0])).toBeTrue();
+    expect(grid.isSelected(grid.$data[1])).toBeTrue();
+    expect(grid.isSelected(grid.$data[2])).toBeTrue();
+  });
+
+  it('should check if data is selected', function() {
+    var fn = jasmine.createSpy('fn').and.callFake(function(data) {
+      return data.id % 2 === 0;
+    });
+
+    grid = new Grid(table, {
+      data: data,
+      columns: columns,
+      selection: {
+        enable: fn
+      }
+    });
+
+    fn.calls.reset();
+
+    expect(grid.isSelected()).toBeFalse();
+    expect(grid.isSelected(grid.$data[0])).toBeFalse();
+    expect(grid.isSelected(grid.$data[1])).toBeFalse();
+    expect(grid.isSelected(grid.$data[2])).toBeFalse();
+    expect(fn).not.toHaveBeenCalled();
+
+    grid.$selection.push(grid.$data[0]);
+
+    expect(grid.isSelected()).toBeTrue();
+    expect(grid.isSelected(grid.$data[0])).toBeTrue();
+    expect(grid.isSelected(grid.$data[1])).toBeFalse();
+    expect(grid.isSelected(grid.$data[2])).toBeFalse();
+    expect(fn).toHaveBeenCalled();
+
+    grid.$selection.push(grid.$data[1]);
+
+    expect(grid.isSelected()).toBeTrue();
     expect(grid.isSelected(grid.$data[0])).toBeTrue();
     expect(grid.isSelected(grid.$data[1])).toBeTrue();
     expect(grid.isSelected(grid.$data[2])).toBeFalse();

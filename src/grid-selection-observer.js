@@ -57,7 +57,7 @@ var GridSelectionObserver = (function() {
       var $data = this.$data;
       var $selection = change.object;
 
-      var idx, row;
+      var idx, row, checkbox;
 
       var tbody = $tbody[0];
       var childNodes = tbody.childNodes;
@@ -77,8 +77,12 @@ var GridSelectionObserver = (function() {
             row = childNodes[idx];
 
             $(row).removeClass(CSS_SELECTED);
+
             if (this.hasCheckbox()) {
-              updateCheckbox(findCheckBox(row), false);
+              checkbox = findCheckBox(row);
+              if (checkbox) {
+                updateCheckbox(checkbox, false);
+              }
             }
           }
         }
@@ -91,8 +95,12 @@ var GridSelectionObserver = (function() {
           row = childNodes[idx];
 
           $(row).addClass(CSS_SELECTED);
+
           if (this.hasCheckbox()) {
-            updateCheckbox(findCheckBox(row), true);
+            checkbox = findCheckBox(row);
+            if (checkbox) {
+              updateCheckbox(checkbox, true);
+            }
           }
         }
       }

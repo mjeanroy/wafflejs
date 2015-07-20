@@ -131,6 +131,12 @@ var GridDomHandlers = (function() {
       var tr = $doc.findParent(e.target, TR);
       var idx = tr.getAttribute(DATA_WAFFLE_IDX);
       var data = this.$data.at(idx);
+
+      // If data is not selectable, ignore event
+      if (!this.isSelectable(data)) {
+        return;
+      }
+
       var selection = this.$selection;
 
       if (this.options.selection.multi) {
@@ -143,7 +149,7 @@ var GridDomHandlers = (function() {
           var toAdd = [];
           for (var i = lowerBound; i <= upperBound; ++i) {
             var current = this.$data.at(i);
-            if (!selection.contains(current)) {
+            if (!selection.contains(current) && this.isSelectable(current)) {
               toAdd.push(current);
             }
           }

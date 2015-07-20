@@ -54,6 +54,9 @@
 
 var Grid = (function() {
 
+  // Save bytes
+  var resultWith = $util.resultWith;
+
   // Normalize sort predicate
   // This function will return an array of id preprended with sort order
   // For exemple:
@@ -302,9 +305,15 @@ var Grid = (function() {
     },
 
     // Check if grid is selectable
-    isSelectable: function() {
+    isSelectable: function(data) {
       var selection = this.options.selection;
-      return selection && selection.enable;
+
+      // We are sure it is disable
+      if (!selection || !selection.enable) {
+        return false;
+      }
+
+      return data ? resultWith(selection.enable, this, [data]) : true;
     },
 
     // Check if grid is resizable
@@ -339,9 +348,20 @@ var Grid = (function() {
         return this.$selection.contains(data);
       }
 
-      var s1 = this.$data.length;
-      var s2 = this.$selection.length;
-      return s1 > 0 && s1 === s2;
+      var selectionSize = this.$selection.length;
+      if (selectionSize === 0) {
+        return false;
+      }
+
+      var dataSize = this.$data.length;
+
+      // If some data may not be selectable, then we should check size
+      // against all selectable data.
+      if (_.isFunction(this.options.selection.enable)) {
+        dataSize = this.$data.filter(this.isSelectable, this).length;
+      }
+
+      return selectionSize >= dataSize;
     },
 
     isDraggable: function() {
@@ -350,14 +370,10 @@ var Grid = (function() {
 
     // Render entire grid
     render: function() {
-      this.renderHeader()
+      return this.renderHeader()
           .renderFooter()
-          .renderBody();
-
-      // Grid is up to date !
-      this.clearChanges();
-
-      return this;
+          .renderBody()
+          .clearChanges();
     },
 
     // Render entire header of grid
@@ -430,7 +446,7 @@ var Grid = (function() {
     // Select everything
     select: function() {
       if (this.$selection.length !== this.$data.length) {
-        this.$selection.add(this.$data.toArray());
+        this.$selection.add(this.$data.filter(this.isSelectable, this));
       }
 
       return this;
@@ -571,6 +587,8 @@ var Grid = (function() {
       if (this.$selection) {
         this.$selection.clearChanges();
       }
+
+      return this;
     },
 
     // Destroy datagrid

@@ -75,6 +75,15 @@ var $util = {
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
 
+  // Get the result of given function.
+  // If first argument is not a function, then it is automatically
+  // returned.
+  // Otherwise, function is executed using ctx as context and args as
+  // arguments.
+  resultWith: function(fn, ctx, args) {
+    return _.isFunction(fn) ? fn.apply(ctx, args) : fn;
+  },
+
   // Parse value
   parse: function(json) {
     try {

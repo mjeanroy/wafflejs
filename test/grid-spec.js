@@ -1134,6 +1134,39 @@ describe('Grid', function() {
       expect(grid.clearChanges).toHaveBeenCalled();
     });
 
+    it('should check if data is selectable', function() {
+      var data1 = {
+        id: 1
+      };
+
+      var data2 = {
+        id: 2
+      };
+
+      var fn = jasmine.createSpy('fn').and.callFake(function(data) {
+        return data.id === 1;
+      });
+
+      grid.options.selection = false;
+
+      expect(grid.isSelectable(data1)).toBe(false);
+      expect(grid.isSelectable(data2)).toBe(false);
+
+      grid.options.selection = {
+        enable: false
+      };
+
+      expect(grid.isSelectable(data1)).toBe(false);
+      expect(grid.isSelectable(data2)).toBe(false);
+
+      grid.options.selection = {
+        enable: fn
+      };
+
+      expect(grid.isSelectable(data1)).toBe(true);
+      expect(grid.isSelectable(data2)).toBe(false);
+    });
+
     it('should check if grid is editable', function() {
       grid.options.editable = true;
       grid.$columns.forEach(function(column) {

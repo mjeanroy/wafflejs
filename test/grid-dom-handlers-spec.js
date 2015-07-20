@@ -44,7 +44,7 @@ describe('Grid Dom Handlers', function() {
     data = [
       { id: 1, firstName: 'foo1', lastName: 'bar1' },
       { id: 2, firstName: 'foo2', lastName: 'bar2' },
-      { id: 3, firstName: 'foo2', lastName: 'bar3' }
+      { id: 3, firstName: 'foo3', lastName: 'bar3' }
     ];
 
     grid = new Grid(table, {
@@ -553,6 +553,24 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$selection.reset).not.toHaveBeenCalled();
     });
 
+    it('should not select data if grid is selectable but data is not', function() {
+      var fn = jasmine.createSpy('fn').and.returnValue(false);
+
+      grid.options.selection.enable = fn;
+
+      event.shiftKey = false;
+      event.ctrlKey = false;
+      event.target = document.createElement('TR');
+      event.target.setAttribute('data-waffle-idx', '0');
+
+      onClickTbody(event);
+
+      expect(fn).toHaveBeenCalledWith(grid.$data[0]);
+      expect(grid.$selection.push).not.toHaveBeenCalled();
+      expect(grid.$selection.remove).not.toHaveBeenCalled();
+      expect(grid.$selection.reset).not.toHaveBeenCalled();
+    });
+
     describe('with single selection', function() {
       beforeEach(function() {
         grid.options.selection.multi = false;
@@ -671,7 +689,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should other data', function() {
+      it('should select other data', function() {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -700,7 +718,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should set of data with shift key', function() {
+      it('should select set of data with shift key', function() {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -726,6 +744,43 @@ describe('Grid Dom Handlers', function() {
         expect(grid.$selection[0]).toBe(grid.$data[0]);
         expect(grid.$selection[1]).toBe(grid.$data[1]);
         expect(grid.$selection[2]).toBe(grid.$data[2]);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(event.stopPropagation).not.toHaveBeenCalled();
+        expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
+      });
+
+      it('should select set of selectable data with shift key', function() {
+        var fn = jasmine.createSpy('fn').and.callFake(function(data) {
+          return data.firstName !== 'foo2';
+        });
+
+        grid.options.selection.enable = fn;
+
+        event.shiftKey = false;
+        event.ctrlKey = false;
+        event.target = document.createElement('TR');
+        event.target.setAttribute('data-waffle-idx', '0');
+
+        onClickTbody(event);
+
+        expect(grid.$selection.length).toBe(1);
+        expect(grid.$selection[0]).toBe(grid.$data[0]);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(event.stopPropagation).not.toHaveBeenCalled();
+        expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
+
+        event.shiftKey = true;
+        event.ctrlKey = false;
+        event.target = document.createElement('TR');
+        event.target.setAttribute('data-waffle-idx', '2');
+
+        onClickTbody(event);
+
+        expect(grid.$selection.length).toBe(2);
+        expect(grid.$selection[0]).toBe(grid.$data[0]);
+        expect(grid.$selection[1]).toBe(grid.$data[2]);
 
         expect(event.preventDefault).not.toHaveBeenCalled();
         expect(event.stopPropagation).not.toHaveBeenCalled();

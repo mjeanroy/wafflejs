@@ -547,11 +547,15 @@ var Grid = (function() {
       return this;
     },
 
+    // Add new event listener.
+    // Type of event is case insensitive.
     addEventListener: function(type, listener) {
       this.$bus.addEventListener(type, listener);
       return this;
     },
 
+    // Remove existing event listener.
+    // Type of event is case insensitive.
     removeEventListener: function(type, listener) {
       this.$bus.removeEventListener(type, listener);
       return this;

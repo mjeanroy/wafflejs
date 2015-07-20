@@ -263,12 +263,6 @@ var $ = (function() {
       return iterate(this, function(node) {
         node[property] = value;
       });
-    },
-
-    // Get the current value of the first element
-    // in the set of matched elements.
-    val: function() {
-      return this[0].value;
     }
   };
 

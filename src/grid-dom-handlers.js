@@ -67,6 +67,10 @@ var GridDomHandlers = (function() {
     }
   };
 
+  var inputValue = {
+    checkbox: 'checked'
+  };
+
   var onClickTitle = function(e, tagName) {
     var target = e.target;
     var th = $doc.findParent(e.target, TH);
@@ -186,13 +190,14 @@ var GridDomHandlers = (function() {
         if (tr) {
           var type = column.editable.type;
           var formatter = dataFormatters[type] || _.identity;
-          var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
+          var inputProp = inputValue[type] || 'value';
 
+          var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
           var data = this.$data;
           var object = data.at(idx);
 
           var oldValue = column.value(object);
-          var newValue = formatter($(target).val());
+          var newValue = formatter(target[inputProp]);
 
           if (oldValue !== newValue) {
             column.value(object, newValue);

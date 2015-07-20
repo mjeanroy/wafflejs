@@ -448,28 +448,5 @@ describe('$', function() {
       expect(node1.checked).toBeFalse();
       expect(node2.checked).toBeFalse();
     });
-
-    it('should get the value of input element', function() {
-      var input = document.createElement('input');
-      input.value = 'foo';
-      expect($(input).val()).toBe('foo');
-    });
-
-    it('should get the value of select element', function() {
-      var select = document.createElement('select');
-      select.multiple = false;
-
-      for (var i = 0; i < 3; i++) {
-        var option = document.createElement('option');
-        option.value = 'foo' + i;
-        select.appendChild(option);
-      }
-
-      select.selectedIndex = -1;
-      expect($(select).val()).toBeFalsy();
-
-      select.selectedIndex = 1;
-      expect($(select).val()).toBe('foo1');
-    });
   });
 });

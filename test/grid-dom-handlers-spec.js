@@ -872,6 +872,62 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.triggerUpdate).toHaveBeenCalledWith(0);
     });
 
+    it('should update object value using checked checkbox', function() {
+      column.editable = {
+        type: 'checkbox'
+      };
+
+      var checkbox = document.createElement('input');
+      checkbox.setAttribute('type', 'checkbox');
+      checkbox.setAttribute('data-waffle-id', 'id');
+      checkbox.checked = true;
+
+      event.target = checkbox;
+
+      onInputTbody(event);
+
+      expect($doc.findParent).toHaveBeenCalledWith(checkbox, 'TR');
+      expect(column.value).toHaveBeenCalledWith(data0, true);
+      expect(data0.id).toBe(true);
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
+        index: 0,
+        object: data0,
+        oldValue: 1,
+        newValue: true
+      });
+
+      expect(grid.$data.triggerUpdate).toHaveBeenCalledWith(0);
+    });
+
+    it('should update object value using unchecked checkbox', function() {
+      column.editable = {
+        type: 'checkbox'
+      };
+
+      var checkbox = document.createElement('input');
+      checkbox.setAttribute('type', 'checkbox');
+      checkbox.setAttribute('data-waffle-id', 'id');
+      checkbox.checked = false;
+
+      event.target = checkbox;
+
+      onInputTbody(event);
+
+      expect($doc.findParent).toHaveBeenCalledWith(checkbox, 'TR');
+      expect(column.value).toHaveBeenCalledWith(data0, false);
+      expect(data0.id).toBe(false);
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
+        index: 0,
+        object: data0,
+        oldValue: 1,
+        newValue: false
+      });
+
+      expect(grid.$data.triggerUpdate).toHaveBeenCalledWith(0);
+    });
+
     it('should not update object value for input event not related to grid column', function() {
       event.target = input;
       event.target.removeAttribute('data-waffle-id');

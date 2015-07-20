@@ -95,7 +95,10 @@ var Column = (function() {
     this.width = column.width;
     this.sortable = isUndefined(sortable) ? true : !!sortable;
     this.draggable = !!column.draggable;
-    this.asc = isUndefined(column.asc) ? null : !!column.asc;
+
+    // On initialization, column is not sorted
+    // Use grid 'sortBy' option instead.
+    this.asc = null;
 
     // Editable column
     var editable = column.editable === true ? {} : column.editable;

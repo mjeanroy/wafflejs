@@ -40,6 +40,15 @@ describe('Column', function() {
     expect(column.draggable).toBeFalse();
   });
 
+  it('should not initialize asc property', function() {
+    var column = new Column({
+      id: 'foo',
+      asc: true
+    });
+
+    expect(column.asc).toBeNull();
+  });
+
   it('should initialize with a string', function() {
     var column = new Column('foo');
 
@@ -441,9 +450,10 @@ describe('Column', function() {
 
   it('should get css classes if column is sorted in ascendant order', function() {
     var column = new Column({
-      id: 'id',
-      asc: true
+      id: 'id'
     });
+
+    column.asc = true;
 
     var classes = column.cssClasses();
 
@@ -454,9 +464,10 @@ describe('Column', function() {
 
   it('should get css classes if column is sorted in descendant order', function() {
     var column = new Column({
-      id: 'id',
-      asc: false
+      id: 'id'
     });
+
+    column.asc = false;
 
     var classes = column.cssClasses();
 

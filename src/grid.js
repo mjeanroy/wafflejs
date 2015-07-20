@@ -107,6 +107,7 @@ var Grid = (function() {
 
     // Initialize main table
     var $table = this.$table = $(table);
+    var tableEl = $table[0];
 
     // Initialize options
     var opts = this.options = options = options || {};
@@ -124,7 +125,10 @@ var Grid = (function() {
       // If options is already defined, do not try to parse html
       if (_.isUndefined(opt)) {
         var attrName = $util.toSpinalCase(optName);
-        var htmlAttr = $table[0].getAttribute(attrName) || $table[0].getAttribute('data-' + attrName);
+        var htmlAttr = tableEl.getAttribute('data-waffle-' + attrName) ||
+          tableEl.getAttribute('data-' + attrName) ||
+          tableEl.getAttribute(attrName);
+
         if (htmlAttr) {
           opt = opts[optName] = $util.parse(htmlAttr);
         }

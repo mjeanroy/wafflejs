@@ -203,6 +203,30 @@ describe('Grid', function() {
     }));
   });
 
+  it('should create grid with columns set using data-waffle html options', function() {
+    var table = document.createElement('table');
+    table.setAttribute('data-waffle-columns', '[{"id": "bar"}, {"id": "foo"}]');
+
+    var grid = new Grid(table, {
+      key: 'title',
+    });
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options.columns).toBeDefined();
+    expect(grid.options.columns.length).toBe(2);
+
+    expect(grid.$columns).toBeDefined();
+    expect(grid.$columns.length).toBe(2);
+
+    expect(grid.$columns[0]).toEqual(jasmine.objectContaining({
+      id: 'bar'
+    }));
+
+    expect(grid.$columns[1]).toEqual(jasmine.objectContaining({
+      id: 'foo'
+    }));
+  });
+
   it('should initialize grid and set key value using html options', function() {
     var table = document.createElement('table');
     table.setAttribute('data-key', 'title');

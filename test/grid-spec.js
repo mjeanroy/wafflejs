@@ -163,6 +163,22 @@ describe('Grid', function() {
     }));
   });
 
+  it('should initialize grid and clear changes', function() {
+    spyOn(Grid.prototype, 'clearChanges');
+
+    var columns = [
+      { id: 'foo', title: 'Foo' },
+      { id: 'bar', title: 'Boo' }
+    ];
+
+    var table = document.createElement('table');
+    var grid = new Grid(table, {
+      columns: columns
+    });
+
+    expect(grid.clearChanges).toHaveBeenCalled();
+  });
+
   it('should create grid with columns set using html options', function() {
     var table = document.createElement('table');
     table.setAttribute('data-columns', '[{"id": "bar"}, {"id": "foo"}]');
@@ -1053,6 +1069,45 @@ describe('Grid', function() {
       spyOn(GridResizer, 'resize');
       grid.resize();
       expect(GridResizer.resize).toHaveBeenCalled();
+    });
+
+    it('should clear changes', function() {
+      spyOn(grid.$data, 'clearChanges');
+      spyOn(grid.$columns, 'clearChanges');
+      spyOn(grid.$selection, 'clearChanges');
+
+      grid.clearChanges();
+
+      expect(grid.$data.clearChanges).toHaveBeenCalled();
+      expect(grid.$columns.clearChanges).toHaveBeenCalled();
+      expect(grid.$selection.clearChanges).toHaveBeenCalled();
+    });
+
+    it('should clear changes without selection', function() {
+      spyOn(grid.$data, 'clearChanges');
+      spyOn(grid.$columns, 'clearChanges');
+
+      grid.$selection = undefined;
+
+      grid.clearChanges();
+
+      expect(grid.$data.clearChanges).toHaveBeenCalled();
+      expect(grid.$columns.clearChanges).toHaveBeenCalled();
+    });
+
+    it('should render grid', function() {
+      spyOn(grid, 'renderHeader').and.callThrough();
+      spyOn(grid, 'renderFooter').and.callThrough();
+      spyOn(grid, 'renderBody').and.callThrough();
+      spyOn(grid, 'clearChanges').and.callThrough();
+
+      var result = grid.render();
+
+      expect(result).toBe(grid);
+      expect(grid.renderHeader).toHaveBeenCalled();
+      expect(grid.renderFooter).toHaveBeenCalled();
+      expect(grid.renderBody).toHaveBeenCalled();
+      expect(grid.clearChanges).toHaveBeenCalled();
     });
 
     it('should check if grid is editable', function() {

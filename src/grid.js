@@ -255,8 +255,7 @@ var Grid = (function() {
         .renderBody();
 
     // Grid is up to date !
-    this.$data.clearChanges();
-    this.$columns.clearChanges();
+    this.clearChanges();
 
     if (isDraggable) {
       GridDomBinders.bindDragDrop(this);
@@ -352,8 +351,7 @@ var Grid = (function() {
           .renderBody();
 
       // Grid is up to date !
-      this.$columns.clearChanges();
-      this.$data.clearChanges();
+      this.clearChanges();
 
       return this;
     },
@@ -561,6 +559,16 @@ var Grid = (function() {
       return this;
     },
 
+    // Clear all pending changes.
+    clearChanges: function() {
+      this.$data.clearChanges();
+      this.$columns.clearChanges();
+
+      if (this.$selection) {
+        this.$selection.clearChanges();
+      }
+    },
+
     // Destroy datagrid
     destroy: function() {
       // Unbind dom events
@@ -581,6 +589,7 @@ var Grid = (function() {
       }
 
       // Unobserve collection
+      this.clearChanges();
       this.$data.unobserve();
       this.$columns.unobserve();
       this.$selection.unobserve();

@@ -22,52 +22,22 @@
  * SOFTWARE.
  */
 
-body {
-  padding-top: 70px;
-}
+/* global _ */
+/* global WaffleReactMixin */
+/* global React */
+/* exported WaffleComponent */
 
-button {
-  margin-right: 5px;
-}
+var WaffleComponent = React.createClass({
+  // React display name.
+  displayName: 'Waffle',
 
-/* Override top arrow color. */
-th.waffle-sortable-asc:before {
-  border-bottom-color: blue;
-}
+  // Define mixin to handle component lifecycle
+  mixins: [WaffleReactMixin],
 
-/* Override bottom arrow color. */
-th.waffle-sortable-desc:before {
-  border-top-color: blue;
-}
-
-table tbody {
-  height: 400px;
-  min-height: 400px;
-  max-height: 400px;
-}
-
-table td,
-table th {
-  height: 42px;
-  min-height: 42px;
-  max-height: 42px;
-  vertical-align: middle;
-}
-
-table .name,
-table .userName,
-table .email {
-  width: 365px;
-  max-width: 365px;
-  min-width: 365px;
-}
-
-.actions-columns input,
-.actions-columns label {
-  cursor: pointer;
-}
-
-.actions-columns input {
-  vertical-align: -2px;
-}
-
+  // Render a simple table.
+  // Everything else will be rendered using Waffle.
+  // TODO we should handle sever side rendering.
+  render: function() {
+    return React.DOM.table(_.extend({}, this.props));
+  },
+});

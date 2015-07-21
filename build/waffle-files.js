@@ -81,15 +81,20 @@ var $files = {
     SRC + 'angular/jq-angular.js',
     SRC + 'angular/json-angular.js',
     SRC + 'angular/waffle-angular-module.js',
-    SRC + 'angular/waffle-angular-run.js',
+    SRC + 'angular/waffle-angular-run.js'
   ],
 
   $jqueryPlugin: [
-    SRC + 'jquery/waffle-jquery.js',
+    SRC + 'jquery/waffle-jquery.js'
   ],
 
   $polymerPlugin: [
-    SRC + 'polymer/waffle-polymer.js',
+    SRC + 'polymer/waffle-polymer.js'
+  ],
+
+  $reactPlugin: [
+    SRC + 'react/waffle-react-mixin.js',
+    SRC + 'react/waffle-react.js'
   ]
 };
 
@@ -116,6 +121,14 @@ var $vendor = {
     ],
     test: [
       VENDOR_SRC + 'angular-mocks/angular-mocks.js'
+    ]
+  },
+  $react: {
+    src: [
+      VENDOR_SRC + 'es5-shim/es5-shim.js',
+      VENDOR_SRC + 'react/react-with-addons.js'
+    ],
+    test: [
     ]
   }
 };
@@ -239,6 +252,19 @@ var $targets = {
       '$polymerPlugin'
     ],
     vendor: [
+    ],
+    test: [
+    ]
+  },
+
+  react: {
+    template: 'wrap-template-react.js',
+    src: [
+      '$standalone',
+      '$reactPlugin'
+    ],
+    vendor: [
+      '$react'
     ],
     test: [
     ]

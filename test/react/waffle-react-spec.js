@@ -22,52 +22,27 @@
  * SOFTWARE.
  */
 
-body {
-  padding-top: 70px;
-}
+describe('WaffleComponent', function() {
 
-button {
-  margin-right: 5px;
-}
+  var TestUtils = React.addons.TestUtils;
 
-/* Override top arrow color. */
-th.waffle-sortable-asc:before {
-  border-bottom-color: blue;
-}
+  beforeEach(function() {
+    expect(TestUtils).toBeDefined();
 
-/* Override bottom arrow color. */
-th.waffle-sortable-desc:before {
-  border-top-color: blue;
-}
+    spyOn(React.DOM, 'table').and.callThrough();
+  });
 
-table tbody {
-  height: 400px;
-  min-height: 400px;
-  max-height: 400px;
-}
+  it('should render component', function() {
+    var waffle = React.createElement(WaffleComponent);
+    var component = TestUtils.renderIntoDocument(waffle);
+    var domComponent = TestUtils.findRenderedDOMComponentWithTag(component, 'table');
+    var el = domComponent.getDOMNode();
 
-table td,
-table th {
-  height: 42px;
-  min-height: 42px;
-  max-height: 42px;
-  vertical-align: middle;
-}
+    expect(el).toBeDefined();
+    expect(el.tagName).toBe('TABLE');
+    expect(el.childNodes[0].tagName).toBe('THEAD');
+    expect(el.childNodes[1].tagName).toBe('TBODY');
 
-table .name,
-table .userName,
-table .email {
-  width: 365px;
-  max-width: 365px;
-  min-width: 365px;
-}
-
-.actions-columns input,
-.actions-columns label {
-  cursor: pointer;
-}
-
-.actions-columns input {
-  vertical-align: -2px;
-}
-
+    expect(React.DOM.table).toHaveBeenCalledWith(waffle.props);
+  });
+});

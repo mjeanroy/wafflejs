@@ -26,28 +26,27 @@
 
 <html>
 <head>
-  <title>WaffleJS sample - Polymer</title>
+  <title>WaffleJS sample</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!-- HTML5 shim for IE8 support of HTML5 elements -->
   <!--[if lt IE 9]>
     <script src="/vendors/html5shiv/dist/html5shiv.js"></script>
-    <script src="/vendors/Respond/dest/respond.src.js"></script>
   <![endif]-->
 
   <!-- Vendors -->
   <link rel="stylesheet" href="/vendors/bootstrap/dist/css/bootstrap.css">
   <script type="text/javascript" src="/vendors/Faker/faker.js"></script>
-  <script type="text/javascript" src="/vendors/webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="/vendors/polymer/polymer.html">
+  <script type="text/javascript" src="/vendors/underscore/underscore.js"></script>
+  <script type="text/javascript" src="/vendors/react/react.js"></script>
+  <script type="text/javascript" src="/vendors/react/JSXTransformer.js"></script>
 
-  <!-- sample -->
+  <!-- Waffle -->
+  <link rel="stylesheet" href="/dist/waffle.css">
+  <script type="text/javascript" src="/dist/waffle-react.js"></script>
+
+  <!-- Sample -->
   <link rel="stylesheet" href="/sample.css">
-  <script type="text/javascript" src="/sample.js"></script>
-
-  <link rel="import" href="/dist/waffle-polymer.html">
-  <link rel="import" href="/polymer/people-grid.html">
 </head>
 <body>
   <nav class="navbar navbar-default navbar-fixed-top">
@@ -62,24 +61,15 @@
           <li><a href="/jquery">jQuery</a></li>
           <li><a href="/underscore">Underscore.js</a></li>
           <li><a href="/angular">AngularJS</a></li>
-          <li class="active"><a href="/polymer">Polymer</a></li>
-          <li><a href="/react">React</a></li>
+          <li class="active"><a href="/react">React</a></li>
         </ul>
       </div>
     </div>
   </nav>
-  <div class="container">
-    <div class="panel panel-default">
-      <div class="panel-heading">Actions</div>
-      <div class="panel-body">
-        <button id="add" type="button" title="Add Person" class="btn btn-primary">Add Person</button>
-        <button id="remove" type="button" title="Remove Last" class="btn btn-primary">Remove Last</button>
-        <button id="clear" type="button" title="Clear" class="btn btn-primary">Clear</button>
-      </div>
-    </div>
-
-    <people-grid id="grid"></people-grid>
-  </div>
+  <div id="container" class="container"></div>
 </body>
-<script type="text/javascript" src="/polymer/sample.js"></script>
+
+<script type="text/javascript" src="/sample.js"></script>
+<script type="text/jsx" src="/react/sample.js"></script>
+
 </html>

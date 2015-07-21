@@ -22,52 +22,45 @@
  * SOFTWARE.
  */
 
-body {
-  padding-top: 70px;
-}
+/* global _ */
+/* global Waffle */
+/* exported WaffleReactMixin */
 
-button {
-  margin-right: 5px;
-}
+var WaffleReactMixin = {
+  // Get component default props.
+  getDefaultProps: function() {
+    var defaultOptions = _.extend({}, Waffle.options);
 
-/* Override top arrow color. */
-th.waffle-sortable-asc:before {
-  border-bottom-color: blue;
-}
+    // Add default css.
+    // These css are bootstrap styles.
+    defaultOptions.className = 'table table-striped table-hover table-bordered';
 
-/* Override bottom arrow color. */
-th.waffle-sortable-desc:before {
-  border-top-color: blue;
-}
+    return defaultOptions;
+  },
 
-table tbody {
-  height: 400px;
-  min-height: 400px;
-  max-height: 400px;
-}
+  // Call just after component has been mount into dom.
+  // This step is used to initialized grid.
+  componentDidMount: function() {
+    this.grid = Waffle.create(this.getDOMNode(), this.props);
+  },
 
-table td,
-table th {
-  height: 42px;
-  min-height: 42px;
-  max-height: 42px;
-  vertical-align: middle;
-}
+  // Call just before component is destroyed.
+  componentWillUnmount: function() {
+    this.grid.destroy();
+  },
 
-table .name,
-table .userName,
-table .email {
-  width: 365px;
-  max-width: 365px;
-  min-width: 365px;
-}
+  // Update will be handled by Waffle.
+  shouldComponentUpdate: function() {
+    return false;
+  },
 
-.actions-columns input,
-.actions-columns label {
-  cursor: pointer;
-}
+  // If state is updated, then render everything.
+  componentDidUpdate: function() {
+    this.grid.render();
+  },
 
-.actions-columns input {
-  vertical-align: -2px;
-}
-
+  // Get created grid.
+  getGrid: function() {
+    return this.grid;
+  }
+};

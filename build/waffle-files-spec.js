@@ -402,4 +402,65 @@ describe('waffle-files', function() {
       expect($polymer.template).toBe('wrap-template-polymer.js');
     });
   });
+
+  describe('react', function() {
+    var $react = $file.react;
+
+    it('should have source files', function() {
+      expect($react.src).toBeDefined();
+      expect($react.src).toContainsDistinctValues();
+      expect($react.src).toVerify(function(file) {
+        return file.trim().slice(0, 4) === 'src/';
+      });
+
+      expect($react.src).toEqual([
+        'src/jq-lite.js',
+        'src/underscore-base-lite.js',
+        'src/underscore-lite.js',
+        'src/json.js',
+        'src/map.js',
+        'src/sniffer.js',
+        'src/parser.js',
+        'src/sanitize.js',
+        'src/constants.js',
+        'src/util.js',
+        'src/dom.js',
+        'src/vdom.js',
+        'src/event-bus.js',
+        'src/observable.js',
+        'src/collection.js',
+        'src/renderers.js',
+        'src/comparators.js',
+        'src/column.js',
+        'src/grid-dom-handlers.js',
+        'src/grid-dom-binders.js',
+        'src/grid-builder.js',
+        'src/grid-resizer.js',
+        'src/grid-data-observer.js',
+        'src/grid-columns-observer.js',
+        'src/grid-selection-observer.js',
+        'src/grid.js',
+        'src/waffle.js',
+        'src/react/waffle-react-mixin.js',
+        'src/react/waffle-react.js'
+      ]);
+    });
+
+    it('should have spec files', function() {
+      expect($react.test).toBeDefined();
+      expect($react.test).toContainsDistinctValues();
+    });
+
+    it('should have vendors files', function() {
+      expect($react.vendor).toBeDefined();
+      expect($react.vendor).toEqual([
+        'vendors/es5-shim/es5-shim.js',
+        'vendors/react/react-with-addons.js'
+      ]);
+    });
+
+    it('should have a template', function() {
+      expect($react.template).toBe('wrap-template-react.js');
+    });
+  });
 });

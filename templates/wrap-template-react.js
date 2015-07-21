@@ -22,52 +22,26 @@
  * SOFTWARE.
  */
 
-body {
-  padding-top: 70px;
-}
+(function(window, document, undefined) {
 
-button {
-  margin-right: 5px;
-}
+  (function (factory) {
 
-/* Override top arrow color. */
-th.waffle-sortable-asc:before {
-  border-bottom-color: blue;
-}
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['react'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        module.exports = factory(require('react'));
+    } else {
+        // Browser globals
+        window.Waffle = factory(React);
+    }
 
-/* Override bottom arrow color. */
-th.waffle-sortable-desc:before {
-  border-top-color: blue;
-}
+  }(function (React) {
 
-table tbody {
-  height: 400px;
-  min-height: 400px;
-  max-height: 400px;
-}
+'use strict';
+<%= contents %>
+return WaffleComponent;
+  }));
 
-table td,
-table th {
-  height: 42px;
-  min-height: 42px;
-  max-height: 42px;
-  vertical-align: middle;
-}
-
-table .name,
-table .userName,
-table .email {
-  width: 365px;
-  max-width: 365px;
-  min-width: 365px;
-}
-
-.actions-columns input,
-.actions-columns label {
-  cursor: pointer;
-}
-
-.actions-columns input {
-  vertical-align: -2px;
-}
-
+})(window, document, void 0);

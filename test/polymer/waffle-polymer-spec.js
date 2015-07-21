@@ -60,8 +60,8 @@ describe('waffle-polymer', function() {
   });
 
   it('should initialize grid on ready listener', function() {
-    spyOn(Waffle.Grid, 'create').and.callThrough();
-    spyOn(Waffle.Grid.prototype, 'addEventListener').and.callThrough();
+    spyOn(Waffle, 'create').and.callThrough();
+    spyOn(Grid.prototype, 'addEventListener').and.callThrough();
 
     var ctx = document.createElement('div');
     ctx.appendChild(table);
@@ -74,11 +74,11 @@ describe('waffle-polymer', function() {
     expect(Polymer.dom).toHaveBeenCalledWith(ctx);
     expect(Polymer.dom.flush).toHaveBeenCalled();
 
-    expect(Waffle.Grid.create).toHaveBeenCalledWith(table, undefined);
+    expect(Waffle.create).toHaveBeenCalledWith(table, undefined);
     expect(ctx.$grid).toBeDefined();
     expect(ctx.$grid.addEventListener).toHaveBeenCalled();
 
-    var events = _.keys(Waffle.Grid.options.events);
+    var events = _.keys(Waffle.options.events);
     var nbEvents = events.length;
     expect(ctx.$grid.addEventListener.calls.count()).toBe(nbEvents);
 
@@ -92,8 +92,8 @@ describe('waffle-polymer', function() {
   });
 
   it('should initialize grid and create table on ready listener', function() {
-    spyOn(Waffle.Grid, 'create').and.callThrough();
-    spyOn(Waffle.Grid.prototype, 'addEventListener').and.callThrough();
+    spyOn(Waffle, 'create').and.callThrough();
+    spyOn(Grid.prototype, 'addEventListener').and.callThrough();
 
     var ctx = document.createElement('div');
     ctx.fire = jasmine.createSpy('fire');
@@ -108,12 +108,12 @@ describe('waffle-polymer', function() {
     expect(Polymer.dom.flush).toHaveBeenCalled();
     expect(ctx.appendChild).toHaveBeenCalled();
 
-    expect(Waffle.Grid.create).toHaveBeenCalled();
+    expect(Waffle.create).toHaveBeenCalled();
     expect(ctx.$grid).toBeDefined();
     expect(ctx.$grid.$table).toBeDefined();
     expect(ctx.$grid.addEventListener).toHaveBeenCalled();
 
-    var events = _.keys(Waffle.Grid.options.events);
+    var events = _.keys(Waffle.options.events);
     var nbEvents = events.length;
     expect(ctx.$grid.addEventListener.calls.count()).toBe(nbEvents);
 

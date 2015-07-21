@@ -42,7 +42,7 @@ $.fn.waffle = function(options) {
       var $waffle = $this.data($PLUGIN_NAME);
 
       if (!$waffle) {
-        $waffle = new Grid(this, options);
+        $waffle = Waffle.create(this, options);
         $this.data($PLUGIN_NAME, $waffle);
 
         // Destroy grid when node is removed

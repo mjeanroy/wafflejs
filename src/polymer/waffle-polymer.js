@@ -49,7 +49,7 @@ var PolymerBehavior = {
     }
 
     // Initialize grid
-    this.$grid = Waffle.Grid.create(table, this.options);
+    this.$grid = Waffle.create(table, this.options);
 
     // Bind Waffle events and trigger polymer events
     var eventListener = function(e) {
@@ -60,7 +60,7 @@ var PolymerBehavior = {
       this.$grid.addEventListener(evtName.slice(2).toLowerCase(), _.bind(eventListener, this));
     };
 
-    Object.keys(Waffle.Grid.options.events).forEach(_.bind(bindEvent, this));
+    Object.keys(Waffle.options.events).forEach(_.bind(bindEvent, this));
 
     // Then flush dom modification
     Polymer.dom.flush();

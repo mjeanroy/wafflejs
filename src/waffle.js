@@ -27,7 +27,18 @@
 /* global $comparators */
 
 var Waffle = {
+  // Make Grid constructor available.
+  // This is deprecated, create function should be used instead.
+  // @deprecated
   Grid: Grid,
+
+  // Get default options
+  options: Grid.options,
+
+  // Create new grid
+  create: function(table, options) {
+    return Grid.create(table, options);
+  },
 
   // Add new "global" renderer
   addRenderer: function(id, fn) {

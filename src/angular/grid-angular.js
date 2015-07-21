@@ -24,6 +24,7 @@
 
 /* global waffleModule */
 /* global Grid */
+/* global Waffle */
 /* global _ */
 
 waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $rootScope) {
@@ -121,7 +122,7 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
       });
 
       // Create grid object
-      var grid = Grid.create(table, options);
+      var grid = Waffle.create(table, options);
 
       // Implement two-ways binding and set it to grid attribute
       setter(scope, grid);

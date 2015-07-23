@@ -53,7 +53,7 @@ var Collection = (function() {
       var obj = {};
       obj[0] = 1;
       return !!ArrayProto.toString.call(obj);
-    } catch(error) {
+    } catch (error) {
       return false;
     }
   })();
@@ -255,7 +255,9 @@ var Collection = (function() {
     var sizeArray = array.length;
     var newSize = sizeCollection + sizeArray;
 
-    var changes = [], change;
+    var changes = [];
+    var change;
+
     var j = sizeCollection - 1;
     var k = sizeArray - 1;
     for (var i = newSize - 1; i >= 0; --i) {
@@ -389,8 +391,7 @@ var Collection = (function() {
 
           removed.push(o);
           lastChangeIdx = i;
-        }
-        else {
+        } else {
           // Keep
           if (idx !== i) {
             unsetAt(this, i);
@@ -596,7 +597,7 @@ var Collection = (function() {
 
       var changes;
 
-       // We need to split between existing data and new data to add.
+      // We need to split between existing data and new data to add.
       var parts = _.groupBy(models, this.contains, this);
       var existing = parts[true] || [];
       var added = parts[false] || [];
@@ -609,8 +610,7 @@ var Collection = (function() {
           // We need to keep sort: sort added elements and merge everything
           added.sort(sortFn);
           changes = merge(this, added);
-        }
-        else {
+        } else {
           // Shift and put elements at given indexes
           shiftRight(this, actualStart, addedCount);
 

@@ -85,7 +85,7 @@ var _ = (function() {
   // the value of this will be the object.
   _.bind = function(fn, ctx) {
     if (nativeBind) {
-    return fn.bind(ctx);
+      return fn.bind(ctx);
     }
 
     return function() {
@@ -286,7 +286,7 @@ var _ = (function() {
     return newArray;
   };
 
-  // Returns the values in list without the elements that the truth test (predicate) passes. 
+  // Returns the values in list without the elements that the truth test (predicate) passes.
   _.reject = function(array, callback, ctx) {
     var newArray = [];
     for (var i = 0, size = array.length; i < size; ++i) {

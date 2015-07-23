@@ -40,7 +40,9 @@
   }(function ($) {
 
 'use strict';
+
 <%= contents %>
+
 return Waffle;
 
   }));

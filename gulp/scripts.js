@@ -28,6 +28,7 @@ var concat = require('gulp-concat');
 var wrap = require('gulp-wrap');
 var rename = require('gulp-rename');
 var strip = require('gulp-strip-comments');
+var esformatter = require('gulp-esformatter');
 
 module.exports = function(options) {
   var files = options.files;
@@ -47,6 +48,7 @@ module.exports = function(options) {
         .pipe(concat('waffle-' + target + '.js'))
         .pipe(strip({ block: true }))
         .pipe(wrap({ src: 'templates/wrap-template-' + target + '.js' }))
+        .pipe(esformatter({indent: {value: '  '}}))
         .pipe(gulp.dest(options.dist));
     });
 

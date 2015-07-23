@@ -128,7 +128,11 @@ var GridColumnsObserver = (function() {
       var $data = this.$data;
       var $columns = this.$columns;
 
-      var i, k, idx, tr, dataSize;
+      var i;
+      var k;
+      var idx;
+      var tr;
+      var dataSize;
 
       var removedCount = removedData.length;
 
@@ -143,7 +147,7 @@ var GridColumnsObserver = (function() {
 
         if (thead) {
           theadRemovedNodes.push.apply(theadRemovedNodes, removeColumns(thead, removedData));
-		}
+        }
 
         if (tfoot) {
           tfootRemovedNodes.push.apply(tfootRemovedNodes, removeColumns(tfoot, removedData));

@@ -54,10 +54,8 @@ $.fn.waffle = function(options) {
         });
       }
     });
-  }
-
-  // Call method
-  else if (_.isString(options)) {
+  } else if (_.isString(options)) {
+    // Call method
     retValue = $.fn.waffle[options].apply(null, args) || retValue;
   }
 

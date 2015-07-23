@@ -55,7 +55,7 @@
     return type === 'function' || type === 'object' && !!obj;
   };
 
-    // Check that given object is a DOM element
+  // Check that given object is a DOM element
   _.isElement = function(obj) {
     return !!(obj && obj.nodeType === 1);
   };

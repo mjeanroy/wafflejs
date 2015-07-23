@@ -24,11 +24,19 @@
 
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
+var jscs = require('gulp-jscs');
 
 module.exports = function() {
-  gulp.task('lint', function() {
+  gulp.task('jshint', function() {
     return gulp.src('src/**/*.js')
       .pipe(jshint())
-      .pipe(jshint.reporter('default'));
+      .pipe(jshint.reporter('default'))
   });
+
+  gulp.task('jscs', function() {
+    return gulp.src('src/**/*.js')
+      .pipe(jscs());
+  });
+
+  gulp.task('lint', ['jshint', 'jscs']);
 };

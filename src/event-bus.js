@@ -92,7 +92,7 @@ var EventBus = (function() {
       for (var i = 0, size = listeners.length; i < size; ++i) {
         try {
           listeners[i].call(grid, evt);
-        } catch(e) {
+        } catch (e) {
           // Do not fail everything if one listener fail...
         }
       }

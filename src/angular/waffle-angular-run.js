@@ -42,7 +42,7 @@ waffleModule.run(['$injector', '$log', '$filter', function($injector, $log, $fil
 
   try {
     $sanitize = $injector.get('$sanitize');
-  } catch(e) {
+  } catch (e) {
     // At least, log a warning
     $log.warn('Module ngSanitize is not available, you should add this module to avoid xss injection');
 

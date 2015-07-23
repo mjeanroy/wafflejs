@@ -40,8 +40,11 @@
   }(function ($, _) {
 
 'use strict';
+
 <%= contents %>
+
 return Waffle;
+
   }));
 
 })(window, document, void 0);

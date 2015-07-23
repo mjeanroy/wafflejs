@@ -25,7 +25,7 @@
 (function(window, document, undefined) {
 
   if (!window.addEventListener) {
-  	// Polyfill event
+    // Polyfill event
     var Event = function(e, element) {
       if (!(this instanceof Event)) {
         return new Event(e, element);
@@ -117,7 +117,7 @@
       var element = this;
       var listeners = element.$$listeners || [];
       var iterator = listenerIterator(type, listener);
-      
+
       var o;
       var index = findIndex(listeners, iterator);
       if (index !== -1) {
@@ -142,8 +142,7 @@
     if ('Element' in window) {
       // IE8
       apply([document, window, Element.prototype]);
-    }
-    else {
+    } else {
       // IE7
       apply([document, window]);
 

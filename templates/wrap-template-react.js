@@ -40,8 +40,11 @@
   }(function (React) {
 
 'use strict';
+
 <%= contents %>
+
 return WaffleComponent;
+
   }));
 
 })(window, document, void 0);

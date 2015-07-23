@@ -41,7 +41,7 @@ var $vdom = (function() {
       oldNode.removeChild(oldNode.firstChild);
     }
 
-    while(newNode.firstChild) {
+    while (newNode.firstChild) {
       oldNode.appendChild(newNode.firstChild);
     }
   };

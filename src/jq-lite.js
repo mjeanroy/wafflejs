@@ -181,7 +181,8 @@ var $ = (function() {
 
     // Add inline style
     css: function(propertyName, value) {
-      var styles, keys;
+      var styles;
+      var keys;
 
       if (_.isObject(propertyName)) {
         styles = propertyName;

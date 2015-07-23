@@ -80,17 +80,18 @@ var GridDomHandlers = (function() {
       return;
     }
 
-    // Checkbox
     if (this.isSelectable() && isInputCheckbox(target)) {
+      // Checkbox
+
       if (target.checked) {
         this.select();
       } else {
         this.deselect();
       }
-    }
 
-    // Column header
-    else if (th && th.getAttribute(DATA_WAFFLE_SORTABLE)) {
+    } else if (th && th.getAttribute(DATA_WAFFLE_SORTABLE)) {
+      // Column header
+
       var id = th.getAttribute(DATA_WAFFLE_ID);
       var currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
       var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
@@ -161,19 +162,16 @@ var GridDomHandlers = (function() {
           if (toAdd.length > 0) {
             selection.push.apply(selection, toAdd);
           }
-        }
-        else {
+        } else {
           selection.toggle(data);
           this.$$selectAnchor = idx;
         }
-      }
-      else {
+      } else {
         var dataIdx = selection.indexOf(data);
 
         if (dataIdx >= 0) {
           selection.remove(dataIdx, 1);
-        }
-        else {
+        } else {
           selection.reset([data]);
         }
       }

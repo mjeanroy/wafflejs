@@ -57,7 +57,9 @@ var GridSelectionObserver = (function() {
       var $data = this.$data;
       var $selection = change.object;
 
-      var idx, row, checkbox;
+      var idx;
+      var row;
+      var checkbox;
 
       var tbody = $tbody[0];
       var childNodes = tbody.childNodes;

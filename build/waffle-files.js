@@ -72,6 +72,7 @@ var $files = {
 
   $angularDirective: [
     SRC + 'angular/waffle-angular-service.js',
+    SRC + 'angular/grid-angular-template.js',
     SRC + 'angular/grid-angular.js'
   ],
 

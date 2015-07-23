@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-describe('waffle-jq-angular', function() {
+describe('Waffle Angular Directive', function() {
 
   var $rootScope;
   var $compile;

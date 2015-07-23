@@ -32,7 +32,7 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
     restrict: 'AE',
     replace: false,
     require: '?ngModel',
-    template: '<table><thead></thead><tbody></tbody></table>',
+    templateUrl: 'views/waffle.html',
 
     link: function(scope, element, attrs, ngModel) {
       var noop = _.noop;

@@ -139,9 +139,5 @@ var $parse = (function() {
     return o;
   };
 
-  o.assign = function() {
-
-  };
-
   return o;
 })();

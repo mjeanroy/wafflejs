@@ -173,7 +173,7 @@ var Grid = (function() {
           column.sortable = false;
         }
 
-        // Force column to be draggable
+        // Force column to be draggable if flag is not set.
         if (isDraggable) {
           column.draggable = column.draggable == null ? true : !!column.draggable;
         }

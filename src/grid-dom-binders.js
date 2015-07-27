@@ -64,7 +64,8 @@ var GridDomBinders = (function() {
       if (!grid.$$events.onResize) {
         var resizeFn = _.bind(grid.resize, grid);
         grid.$$events.onResize = _.debounce(resizeFn, 100);
-        $(window).on('resize', grid.$$events.onResize);
+        grid.$window = $(window);
+        grid.$window.on('resize', grid.$$events.onResize);
       }
     },
 

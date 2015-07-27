@@ -629,12 +629,17 @@ describe('Grid', function() {
       }
     });
 
+    expect(grid.$window).toBeDefined();
     expect(jq.on).toHaveBeenCalledWith('resize', grid.$$events.onResize);
     expect(jq.on.calls.all()[3].object[0]).toBe(window);
 
     var onResize = grid.$$events.onResize;
+    var $window = grid.$window;
 
     grid.destroy();
+
+    expect($window.off).toHaveBeenCalledWith('resize', jasmine.any(Function));
+    expect(grid.$window).toBeNull();
 
     expect(jq.off).toHaveBeenCalledWith('resize', onResize);
     expect(jq.off.calls.all()[4].object[0]).toBe(window);

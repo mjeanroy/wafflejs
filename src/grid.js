@@ -606,8 +606,9 @@ var Grid = (function() {
       }
 
       // Unbind resize event
-      if (this.$$events.onResize) {
-        $(window).off('resize', this.$$events.onResize);
+      if (this.$$events.onResize && this.$window) {
+        this.$window.off('resize', this.$$events.onResize);
+        this.$window = null;
       }
 
       // Unobserve collection

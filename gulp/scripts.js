@@ -43,6 +43,28 @@ module.exports = function(options) {
     concatTasks.push(concatTask);
     minifyTasks.push(minifyTask);
 
+    var uglifyOptions = {
+      mangle: true,
+      compress: {
+        screw_ie8: false,
+        sequences: true,
+        dead_code: true,
+        drop_debugger: true,
+        comparisons: true,
+        conditionals: true,
+        evaluate: true,
+        booleans: true,
+        loops: true,
+        unused: true,
+        hoist_funs: false,
+        hoist_vars: false,
+        if_return: true,
+        join_vars: true,
+        cascade: true,
+        drop_console: true
+      }
+    };
+
     gulp.task(concatTask, ['test:build'], function(done) {
       return gulp.src(files[target].src)
         .pipe(concat('waffle-' + target + '.js'))
@@ -54,7 +76,7 @@ module.exports = function(options) {
 
     gulp.task(minifyTask, [concatTask], function(done) {
       return gulp.src(options.dist + '/waffle-' + target + '.js')
-        .pipe(uglify())
+        .pipe(uglify(uglifyOptions))
         .pipe(rename('waffle-' + target + '.min.js'))
         .pipe(gulp.dest(options.dist));
     });

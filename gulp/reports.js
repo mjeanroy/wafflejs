@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,41 @@
  */
 
 var gulp = require('gulp');
-var wrench = require('wrench');
-var files = require('./build/waffle-files');
+var gutil = require('gulp-util');
+var prettyBytes = require('pretty-bytes');
+var gzipSize = require('gzip-size');
+var through = require('through2');
+var pad = require('pad');
 
-// Options for each sub-tasks
-var options = {
-  basePath: __dirname,
-  dist: __dirname + '/dist',
-  files: files
+module.exports = function(options) {
+  function log(filename, size, gzipFileSize) {
+    var msg = '' +
+      gutil.colors.blue(pad(filename, 30)) + ' ' +
+      gutil.colors.magenta(pad(prettyBytes(size), 10)) + ' -- ' +
+      gutil.colors.green(pad(prettyBytes(gzipFileSize), 10)) + gutil.colors.gray(' (gzipped)');
+
+    gutil.log(msg);
+  }
+
+  function run() {
+    return through.obj(function (file, enc, cb) {
+      if (file.isNull()) {
+        cb(null, file);
+        return;
+      }
+
+      if (file.isStream()) {
+        cb(new gutil.PluginError('gulp-size', 'Streaming not supported'));
+        return;
+      }
+
+      log(file.relative, file.contents.length, gzipSize.sync(file.contents));
+      cb(null, file);
+    });
+  }
+
+  gulp.task('size', ['less', 'minify', 'vulcanize'], function() {
+    return gulp.src(options.dist + '/**/*')
+      .pipe(run());
+  });
 };
-
-// Read sub-tasks
-wrench.readdirSyncRecursive('./gulp').forEach(function(file) {
-  require('./gulp/' + file)(options);
-});
-
-// Create default tasks
-gulp.task('build', ['lint', 'test', 'less', 'minify', 'vulcanize', 'size']);
-gulp.task('default', ['build']);

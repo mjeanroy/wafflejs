@@ -45,7 +45,12 @@
     "gulp-jasmine": "2.0.1",
     "gulp-vulcanize": "6.0.1",
     "log4js": "0.6.26",
-    "wrench": "1.5.8"
+    "wrench": "1.5.8",
+    "pretty-bytes": "2.0.1",
+    "gzip-size": "1.0.0",
+    "through2": "2.0.0",
+    "gulp-util": "3.0.6",
+    "pad": "0.1.0"
   },
   "engines": {
     "node": ">=0.10.0"

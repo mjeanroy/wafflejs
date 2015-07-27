@@ -423,15 +423,6 @@ var Collection = (function() {
       return this;
     },
 
-    // Replace data inside collection.
-    // Index of data is retrieved from id and data at given index is replaced.
-    // Appropriate changes are automatically triggered.
-    replace: function(data) {
-      var args = [0, 0].concat(data);
-      this.splice.apply(this, args);
-      return this;
-    },
-
     // Adds one or more elements to the end of the collection
     // and returns the new length of the collection.
     // Semantic is the same as [].push function

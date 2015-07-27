@@ -30,6 +30,7 @@
 /* global _ */
 /* global $parse */
 /* global $comparators */
+/* global $filters */
 /* global $util */
 /* global EventBus */
 /* global GridBuilder */
@@ -575,10 +576,10 @@ var Grid = (function() {
     // Filter data
     filter: function(predicate) {
       // Store predicate...
-      this.$filter = predicate;
+      this.$filter = predicate == null ? undefined : $filters.$create(predicate);
 
       // ... and apply filter
-      GridFilter.applyFilter.call(this, predicate);
+      GridFilter.applyFilter.call(this, this.$filter);
 
       // Chain
       return this;

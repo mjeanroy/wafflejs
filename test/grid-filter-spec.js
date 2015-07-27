@@ -176,6 +176,19 @@ describe('Grid Filter', function() {
     });
   });
 
+  it('should filter using a simple value', function() {
+    var value = 'foo';
+    var predicate = jasmine.createSpy('predicate').and.returnValue(false);
+    spyOn($filters, '$create').and.returnValue(predicate);
+
+    grid.filter(value);
+
+    expect(grid.$filter).toBeDefined();
+    expect(grid.$filter).toBeAFunction();
+    expect(grid.$filter).toBe(predicate);
+    expect($filters.$create).toHaveBeenCalledWith(value);
+  });
+
   it('should remove filter', function() {
     grid.filter(oddPredicate);
 

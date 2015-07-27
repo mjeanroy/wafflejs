@@ -58,6 +58,7 @@ var $files = {
     SRC + 'collection.js',
     SRC + 'renderers.js',
     SRC + 'comparators.js',
+    SRC + 'filters.js',
     SRC + 'column.js',
     SRC + 'grid-util.js',
     SRC + 'grid-dom-handlers.js',

@@ -70,9 +70,10 @@
 
   document.getElementById('input-filter').addEventListener('keyup', function() {
     var value = this.value;
-    grid.filter(function(current) {
+    grid.filter(value);
+    /*grid.filter(function(current) {
       return current.name().toLowerCase().indexOf(value.toLowerCase()) >= 0;
-    });
+    });*/
   });
 
   document.getElementById('clear-filter').addEventListener('click', function() {

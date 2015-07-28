@@ -575,8 +575,12 @@ var Grid = (function() {
 
     // Filter data
     filter: function(predicate) {
+      // Check if predicate is empty.
+      // Note that an empty string should remove filter since everything will match.
+      var isEmptyPredicate = predicate == null || predicate === '';
+
       // Store predicate...
-      this.$filter = predicate == null ? undefined : $filters.$create(predicate);
+      this.$filter = isEmptyPredicate ? undefined : $filters.$create(predicate);
 
       // ... and apply filter
       GridFilter.applyFilter.call(this, this.$filter);

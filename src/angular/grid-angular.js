@@ -27,7 +27,7 @@
 /* global Waffle */
 /* global _ */
 
-waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $rootScope) {
+waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', function($parse, $rootScope, $interpolate) {
   return {
     restrict: 'AE',
     replace: false,
@@ -35,6 +35,7 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
     templateUrl: 'views/waffle.html',
 
     link: function(scope, element, attrs, ngModel) {
+      var unwatchers = [];
       var noop = _.noop;
 
       // Execute given function in a digest cycle.
@@ -157,12 +158,38 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', function($parse, $root
             return !value || !value.length;
           };
         }
+
+        // Watch filter if it specified.
+        var filterAttr = _.find(['waffleFilter', 'filter'], function(attrName) {
+          return _.has(attrs, attrName);
+        });
+
+        if (filterAttr) {
+          // Check if attribute must be interpolated.
+          // If attribute is not an interpolated attribute, then interpolate function will undefined,
+          // in this case, attribute will be read using $parse service.
+          var evalFn = $interpolate(element.attr(attrs.$attr[filterAttr]), true) || $parse(attrs[filterAttr]);
+
+          var updateFilter = function(newValue) {
+            return grid.filter(newValue);
+          };
+
+          var readFilterValue = function() {
+            return evalFn(scope);
+          };
+
+          unwatchers.push(scope.$watch(readFilterValue, updateFilter));
+        }
       }
 
       // Destroy grid when scope is destroyed
       scope.$on('$destroy', function() {
+        _.forEach(unwatchers, function(unwatcher) {
+          unwatcher();
+        });
+
         grid.destroy();
-        grid = options = setter = table = null;
+        grid = options = setter = table = unwatchers = null;
       });
     }
   };

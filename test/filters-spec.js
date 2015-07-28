@@ -37,28 +37,7 @@ describe('filters', function() {
     expect(filter).toBeAFunction();
   });
 
-  it('should check if values match', function() {
-    var truePredicate = jasmine.createSpy('predicate').and.returnValue(true);
-    var falsePredicate = jasmine.createSpy('predicate').and.returnValue(false);
-
-    expect($filters.$match('FOO BAR', 'FOO', truePredicate)).toBeTrue();
-    expect(truePredicate).toHaveBeenCalledWith('FOO BAR', 'FOO');
-
-    expect($filters.$match('FOO BAR', 'FOO', falsePredicate)).toBeFalse();
-    expect(falsePredicate).toHaveBeenCalledWith('FOO BAR', 'FOO');
-  });
-
-  it('should check if value contains predicate', function() {
-    expect($filters.$contains('foo bar', 'foo')).toBeTrue();
-    expect($filters.$contains('bar foo', 'foo')).toBeTrue();
-    expect($filters.$contains('foo bar', 'FOO')).toBeTrue();
-    expect($filters.$contains('bar foo', 'FOO')).toBeTrue();
-    expect($filters.$contains('bar', 'foo')).toBeFalse();
-  });
-
   it('should create a function that try to match object with predicate', function() {
-    spyOn($filters, '$contains').and.callThrough();
-
     var filter = $filters.$create('foo');
 
     var o1 = {
@@ -73,12 +52,9 @@ describe('filters', function() {
 
     expect(filter(o1)).toBe(true);
     expect(filter(o2)).toBe(false);
-    expect($filters.$contains).toHaveBeenCalled();
   });
 
   it('should create a function that try to match nested objects with predicate', function() {
-    spyOn($filters, '$contains').and.callThrough();
-
     var filter = $filters.$create('foo');
 
     var o1 = {
@@ -97,12 +73,9 @@ describe('filters', function() {
 
     expect(filter(o1)).toBe(true);
     expect(filter(o2)).toBe(false);
-    expect($filters.$contains).toHaveBeenCalled();
   });
 
   it('should create a function that try to match objects with predicate as object', function() {
-    spyOn($filters, '$contains').and.callThrough();
-
     var filter = $filters.$create({
       name: 'foo'
     });
@@ -119,12 +92,9 @@ describe('filters', function() {
 
     expect(filter(o1)).toBe(true);
     expect(filter(o2)).toBe(false);
-    expect($filters.$contains).toHaveBeenCalled();
   });
 
   it('should create a function that try to match every objects values with predicate as object', function() {
-    spyOn($filters, '$contains').and.callThrough();
-
     var filter = $filters.$create({
       id: 1,
       name: 'foo'
@@ -142,6 +112,5 @@ describe('filters', function() {
 
     expect(filter(o1)).toBe(true);
     expect(filter(o2)).toBe(false);
-    expect($filters.$contains).toHaveBeenCalled();
   });
 });

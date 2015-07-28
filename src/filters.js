@@ -28,10 +28,23 @@
 /* exported $filters */
 
 var $filters = (function() {
-  var instance = {};
-
   var toString = function(val) {
     return val == null ? '' : val.toString();
+  };
+
+  var $match = function(value, predicate, matcher) {
+    var str1 = toString(value);
+    var str2 = toString(predicate);
+    return matcher(str1, str2);
+  };
+
+  // Case-insensitive matching
+  var $ciMatching = function(o1, o2) {
+    return o1.toLowerCase().indexOf(o2.toLowerCase()) >= 0;
+  };
+
+  var $contains = function(value, predicate) {
+    return $match(value, predicate, $ciMatching);
   };
 
   var createPredicateFromValue = function(predicateValue) {
@@ -40,7 +53,7 @@ var $filters = (function() {
         var propValue = value[prop];
         return _.isObject(propValue) ?
           newPredicate(propValue) :
-          instance.$contains(value[prop], predicateValue);
+          $contains(value[prop], predicateValue);
       });
     };
 
@@ -50,7 +63,7 @@ var $filters = (function() {
   var createPredicateFromObject = function(predicateObject) {
     var predicates = _.map(_.keys(predicateObject), function(prop) {
       return function(value) {
-        return instance.$contains($parse(prop)(value), predicateObject[prop]);
+        return $contains($parse(prop)(value), predicateObject[prop]);
       };
     });
 
@@ -61,39 +74,26 @@ var $filters = (function() {
     };
   };
 
-  // Check that value and predicate match according
-  // to given matcher function.
-  instance.$match = function(value, predicate, matcher) {
-    var str1 = toString(value);
-    var str2 = toString(predicate);
-    return matcher(str1, str2);
-  };
-
-  // Check that predicate is included in given value.
-  instance.$contains = function(value, predicate) {
-    return instance.$match(value, predicate, function(o1, o2) {
-      // Use a case-insensitive matching
-      return o1.toLowerCase().indexOf(o2.toLowerCase()) >= 0;
-    });
-  };
-
   // Create filter function from a custom predicate
-  instance.$create = function(predicate) {
-    if (_.isFunction(predicate)) {
-      return predicate;
+  return {
+    $create: function(predicate) {
+      if (_.isFunction(predicate)) {
+        // If it is already a function, return it.
+        return predicate;
+      }
+
+      // Get appropriate factory
+      var predicateFactory = _.isObject(predicate) ?
+        createPredicateFromObject :
+        createPredicateFromValue;
+
+      // Create predicate function using factory
+      var predicateFn = predicateFactory(predicate);
+
+      // Store original predicate value
+      predicateFn.$predicate = predicate;
+
+      return predicateFn;
     }
-
-    // Get appropriate factory
-    var predicateFactory = _.isObject(predicate) ? createPredicateFromObject : createPredicateFromValue;
-
-    // Create predicate function using factory
-    var predicateFn = predicateFactory(predicate);
-
-    // Store original predicate value
-    predicateFn.$predicate = predicate;
-
-    return predicateFn;
   };
-
-  return instance;
 })();

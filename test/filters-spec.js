@@ -99,4 +99,49 @@ describe('filters', function() {
     expect(filter(o2)).toBe(false);
     expect($filters.$contains).toHaveBeenCalled();
   });
+
+  it('should create a function that try to match objects with predicate as object', function() {
+    spyOn($filters, '$contains').and.callThrough();
+
+    var filter = $filters.$create({
+      name: 'foo'
+    });
+
+    var o1 = {
+      id: 1,
+      name: 'foo'
+    };
+
+    var o2 = {
+      id: 1,
+      name: 'bar'
+    };
+
+    expect(filter(o1)).toBe(true);
+    expect(filter(o2)).toBe(false);
+    expect($filters.$contains).toHaveBeenCalled();
+  });
+
+  it('should create a function that try to match every objects values with predicate as object', function() {
+    spyOn($filters, '$contains').and.callThrough();
+
+    var filter = $filters.$create({
+      id: 1,
+      name: 'foo'
+    });
+
+    var o1 = {
+      id: 1,
+      name: 'foo'
+    };
+
+    var o2 = {
+      id: 2,
+      name: 'foo'
+    };
+
+    expect(filter(o1)).toBe(true);
+    expect(filter(o2)).toBe(false);
+    expect($filters.$contains).toHaveBeenCalled();
+  });
 });

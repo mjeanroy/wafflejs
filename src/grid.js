@@ -578,12 +578,19 @@ var Grid = (function() {
       // Check if predicate is empty.
       // Note that an empty string should remove filter since everything will match.
       var isEmptyPredicate = predicate == null || predicate === '';
+      var newPredicate = isEmptyPredicate ? undefined : predicate;
 
-      // Store predicate...
-      this.$filter = isEmptyPredicate ? undefined : $filters.$create(predicate);
+      var oldFilter = this.$filter;
+      var oldPredicate = oldFilter ? oldFilter.$predicate : null;
+      var isUpdated = oldPredicate == null || oldPredicate !== newPredicate;
 
-      // ... and apply filter
-      GridFilter.applyFilter.call(this, this.$filter);
+      if (isUpdated) {
+        // Store predicate...
+        this.$filter = newPredicate == null ? undefined : $filters.$create(newPredicate);
+
+        // ... and apply filter
+        GridFilter.applyFilter.call(this, this.$filter);
+      }
 
       // Chain
       return this;

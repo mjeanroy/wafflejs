@@ -178,7 +178,7 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
             return evalFn(scope);
           };
 
-          unwatchers.push(scope.$watch(readFilterValue, updateFilter));
+          unwatchers.push(scope.$watchCollection(readFilterValue, updateFilter));
         }
       }
 

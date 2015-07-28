@@ -24,6 +24,7 @@
 
 /* jshint eqnull: true */
 /* global _ */
+/* global $parse */
 /* exported $filters */
 
 var $filters = (function() {
@@ -44,6 +45,20 @@ var $filters = (function() {
     };
 
     return newPredicate;
+  };
+
+  var createPredicateFromObject = function(predicateObject) {
+    var predicates = _.map(_.keys(predicateObject), function(prop) {
+      return function(value) {
+        return instance.$contains($parse(prop)(value), predicateObject[prop]);
+      };
+    });
+
+    return function(value) {
+      return _.every(predicates, function(predicate) {
+        return predicate(value);
+      });
+    };
   };
 
   // Check that value and predicate match according
@@ -68,10 +83,16 @@ var $filters = (function() {
       return predicate;
     }
 
-    // Return a function.
-    // This function will return true if at least one property
-    // of given object match predicate value.
-    return createPredicateFromValue(predicate);
+    // Get appropriate factory
+    var predicateFactory = _.isObject(predicate) ? createPredicateFromObject : createPredicateFromValue;
+
+    // Create predicate function using factory
+    var predicateFn = predicateFactory(predicate);
+
+    // Store original predicate value
+    predicateFn.$predicate = predicate;
+
+    return predicateFn;
   };
 
   return instance;

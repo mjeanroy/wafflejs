@@ -474,4 +474,116 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.filter).toHaveBeenCalledWith('hello foo');
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
+
+  it('should update filter using an object', function() {
+    spyOn(Grid.prototype, 'filter').and.callThrough();
+
+    var table = '' +
+      '<table waffle ' +
+      '       waffle-grid="grid" ' +
+      '       waffle-filter="{ foo: filter }" ' +
+      '></table>';
+
+    $scope.filter = 'foo';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid).toBeDefined();
+
+    expect($scope.grid.filter).toHaveBeenCalledWith({
+      foo: 'foo'
+    });
+
+    expect($scope.grid.filter.calls.count()).toBe(1);
+  });
+
+  it('should update filter using a new object', function() {
+    spyOn(Grid.prototype, 'filter').and.callThrough();
+
+    var table = '' +
+      '<table waffle ' +
+      '       waffle-grid="grid" ' +
+      '       waffle-filter="{ foo: filter }" ' +
+      '></table>';
+
+    $scope.filter = 'foo';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid).toBeDefined();
+
+    expect($scope.grid.filter.calls.count()).toBe(1);
+    expect($scope.grid.filter).toHaveBeenCalledWith({
+      foo: 'foo'
+    });
+
+    $scope.grid.filter.calls.reset();
+
+    $scope.$apply(function() {
+      $scope.filter = 'bar';
+    });
+
+    expect($scope.grid.filter.calls.count()).toBe(1);
+    expect($scope.grid.filter).toHaveBeenCalledWith({
+      foo: 'bar'
+    });
+  });
+
+  it('should update filter using an object in scope', function() {
+    spyOn(Grid.prototype, 'filter').and.callThrough();
+
+    var table = '' +
+      '<table waffle ' +
+      '       waffle-grid="grid" ' +
+      '       waffle-filter="filter" ' +
+      '></table>';
+
+    $scope.filter = {
+      foo: 'foo'
+    };
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid).toBeDefined();
+
+    expect($scope.grid.filter.calls.count()).toBe(1);
+    expect($scope.grid.filter).toHaveBeenCalledWith({
+      foo: 'foo'
+    });
+
+    $scope.grid.filter.calls.reset();
+
+    $scope.$apply(function() {
+      $scope.filter.foo = 'bar';
+    });
+
+    expect($scope.grid.filter.calls.count()).toBe(1);
+    expect($scope.grid.filter).toHaveBeenCalledWith({
+      foo: 'bar'
+    });
+  });
+
+  it('should update filter using a static object', function() {
+    spyOn(Grid.prototype, 'filter').and.callThrough();
+
+    var table = '' +
+      '<table waffle ' +
+      '       waffle-grid="grid" ' +
+      '       waffle-filter="{ foo: \'foo\' }" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid).toBeDefined();
+
+    expect($scope.grid.filter).toHaveBeenCalledWith({
+      foo: 'foo'
+    });
+
+    expect($scope.grid.filter.calls.count()).toBe(1);
+  });
 });

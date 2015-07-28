@@ -189,6 +189,43 @@ describe('Grid Filter', function() {
     expect($filters.$create).toHaveBeenCalledWith(value);
   });
 
+  it('should filter using object value', function() {
+    var value = {
+      name: 'foo'
+    };
+
+    var predicate = jasmine.createSpy('predicate').and.returnValue(false);
+
+    spyOn($filters, '$create').and.returnValue(predicate);
+
+    grid.filter(value);
+
+    expect(grid.$filter).toBeDefined();
+    expect(grid.$filter).toBeAFunction();
+    expect(grid.$filter).toBe(predicate);
+    expect($filters.$create).toHaveBeenCalledWith(value);
+  });
+
+  it('should not filter twice if predicate value is still the same', function() {
+    var value = 'foo';
+    var predicate = jasmine.createSpy('predicate').and.returnValue(false);
+
+    spyOn($filters, '$create').and.callThrough();
+
+    grid.filter(value);
+
+    expect(grid.$filter).toBeDefined();
+    expect(grid.$filter).toBeAFunction();
+    expect($filters.$create).toHaveBeenCalledWith(value);
+    expect($filters.$create.calls.count()).toBe(1);
+
+    $filters.$create.calls.reset();
+
+    grid.filter(value);
+
+    expect($filters.$create).not.toHaveBeenCalled();
+  });
+
   it('should remove filter', function() {
     grid.filter(oddPredicate);
 

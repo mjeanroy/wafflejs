@@ -45,11 +45,9 @@
   });
 
   var onFilterUpdate = function() {
-    var value = $(this).val();
-    grid.filter(value);
-    /*grid.filter(function(current) {
-      return current.name().toLowerCase().indexOf(value.toLowerCase()) >= 0;
-    });*/
+    grid.filter({
+      'name()': $(this).val()
+    });
   };
 
   $('#input-filter').on('keyup', _.debounce(onFilterUpdate, 150));

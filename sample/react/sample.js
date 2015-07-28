@@ -102,8 +102,8 @@
         filter: value
       });
 
-      this.grid().filter(function(current) {
-        return current.name().toLowerCase().indexOf(value.toLowerCase()) >= 0;
+      this.grid().filter({
+        'name()': value
       });
     },
 

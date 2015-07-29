@@ -538,6 +538,19 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$selection.reset).not.toHaveBeenCalled();
     });
 
+    it('should not select data if target element is an editable input control', function() {
+      var input = document.createElement('INPUT');
+      input.setAttribute('data-waffle-id', 10);
+
+      event.target = input;
+
+      onClickTbody(event);
+
+      expect(grid.$selection.push).not.toHaveBeenCalled();
+      expect(grid.$selection.remove).not.toHaveBeenCalled();
+      expect(grid.$selection.reset).not.toHaveBeenCalled();
+    });
+
     it('should not select data if grid is not selectable', function() {
       grid.options.selection.enable = false;
 

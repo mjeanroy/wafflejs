@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+/* jshint eqnull: true */
 /* global $ */
 /* global _ */
 /* global $doc */
@@ -43,9 +44,16 @@ var GridDomHandlers = (function() {
   var TH = 'TH';
   var TR = 'TR';
   var INPUT = 'INPUT';
+  var SELECT = 'SELECT';
 
   var isInputCheckbox = function(node) {
     return node.tagName === INPUT && node.getAttribute('type') === 'checkbox';
+  };
+
+  var isEditableControl = function(node) {
+    var tagName = node.tagName;
+    var isControl = tagName === INPUT || tagName === SELECT;
+    return isControl && node.getAttribute(DATA_WAFFLE_ID) != null;
   };
 
   var isDraggable = function(node) {
@@ -128,14 +136,19 @@ var GridDomHandlers = (function() {
         return;
       }
 
-      // If target is tbody it means click was pressed in a tr and released in another
-      if (e.target.tagName === TBODY) {
+      var target = e.target;
+
+      // If target is tbody it means click was pressed in a tr and released in another.
+      // If target is an editable control added by waffle, then we should not update selection, since
+      // this is not a real row click event.
+      if (target.tagName === TBODY || isEditableControl(target)) {
         return;
       }
 
-      var tr = $doc.findParent(e.target, TR);
+      var tr = $doc.findParent(target, TR);
       var idx = tr.getAttribute(DATA_WAFFLE_IDX);
-      var data = this.$data.at(idx);
+      var $data = this.$data;
+      var data = $data.at(idx);
 
       // If data is not selectable, ignore event
       if (!this.isSelectable(data)) {
@@ -153,7 +166,7 @@ var GridDomHandlers = (function() {
 
           var toAdd = [];
           for (var i = lowerBound; i <= upperBound; ++i) {
-            var current = this.$data.at(i);
+            var current = $data.at(i);
             if (!selection.contains(current) && this.isSelectable(current)) {
               toAdd.push(current);
             }

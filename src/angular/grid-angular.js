@@ -158,28 +158,28 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
             return !value || !value.length;
           };
         }
+      }
 
-        // Watch filter if it specified.
-        var filterAttr = _.find(['waffleFilter', 'filter'], function(attrName) {
-          return _.has(attrs, attrName);
-        });
+      // Watch filter if it specified.
+      var filterAttr = _.find(['waffleFilter', 'filter'], function(attrName) {
+        return _.has(attrs, attrName);
+      });
 
-        if (filterAttr) {
-          // Check if attribute must be interpolated.
-          // If attribute is not an interpolated attribute, then interpolate function will undefined,
-          // in this case, attribute will be read using $parse service.
-          var evalFn = $interpolate(element.attr(attrs.$attr[filterAttr]), true) || $parse(attrs[filterAttr]);
+      if (filterAttr) {
+        // Check if attribute must be interpolated.
+        // If attribute is not an interpolated attribute, then interpolate function will undefined,
+        // in this case, attribute will be read using $parse service.
+        var evalFn = $interpolate(element.attr(attrs.$attr[filterAttr]), true) || $parse(attrs[filterAttr]);
 
-          var updateFilter = function(newValue) {
-            return grid.filter(newValue);
-          };
+        var updateFilter = function(newValue) {
+          return grid.filter(newValue);
+        };
 
-          var readFilterValue = function() {
-            return evalFn(scope);
-          };
+        var readFilterValue = function() {
+          return evalFn(scope);
+        };
 
-          unwatchers.push(scope.$watchCollection(readFilterValue, updateFilter));
-        }
+        unwatchers.push(scope.$watchCollection(readFilterValue, updateFilter));
       }
 
       // Destroy grid when scope is destroyed

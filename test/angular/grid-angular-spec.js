@@ -586,4 +586,26 @@ describe('Waffle Angular Directive', function() {
 
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
+
+  it('should use filter even if datagrid is not selectable', function() {
+    spyOn(Grid.prototype, 'filter').and.callThrough();
+
+    var table = '' +
+      '<table waffle ' +
+      '       data-waffle-grid="grid" ' +
+      '       data-waffle-selection="{ enable: false }" ' +
+      '       data-waffle-filter="{ foo: \'foo\' }" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid).toBeDefined();
+
+    expect($scope.grid.filter).toHaveBeenCalledWith({
+      foo: 'foo'
+    });
+
+    expect($scope.grid.filter.calls.count()).toBe(1);
+  });
 });

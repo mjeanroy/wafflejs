@@ -84,6 +84,39 @@ describe('parse', function() {
     expect($parse('nested[\'id\']')(nestedObj)).toBe(1);
   });
 
+  it('should throw error if expression is malformed', function() {
+    var withoutClosingBracket = function() {
+      return $parse('nested["id"');
+    };
+
+    var withoutClosingParenthesis = function() {
+      return $parse('nested(');
+    };
+
+    var withoutClosingDoubleQuote = function() {
+      return $parse('nested["id]');
+    };
+
+    var withoutClosingSingleQuote = function() {
+      return $parse('nested[\'id]');
+    };
+
+    var withoutClosingQuote = function() {
+      return $parse('nested["id\']');
+    };
+
+    var withLastDot = function() {
+      return $parse('nested.');
+    };
+
+    expect(withoutClosingBracket).toThrow();
+    expect(withoutClosingParenthesis).toThrow();
+    expect(withoutClosingDoubleQuote).toThrow();
+    expect(withoutClosingSingleQuote).toThrow();
+    expect(withoutClosingQuote).toThrow();
+    expect(withLastDot).toThrow();
+  });
+
   it('should use cache', function() {
     var f1 = $parse('nested["id"]');
     var f2 = $parse('nested["id"]');

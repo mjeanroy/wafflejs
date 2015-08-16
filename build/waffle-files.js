@@ -32,6 +32,7 @@ var $files = {
   ],
 
   $coreParser: [
+    SRC + 'stack.js',
     SRC + 'parser.js'
   ],
 

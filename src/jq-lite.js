@@ -22,20 +22,20 @@
  * SOFTWARE.
  */
 
-/*jshint newcap: false */
+/* jshint newcap: false */
 
 /* global _ */
 /* exported $ */
 
 var $ = (function() {
 
-  var jqLite = function(nodes) {
-    if (nodes instanceof jqLite) {
+  var JqLite = function(nodes) {
+    if (nodes instanceof JqLite) {
       return nodes;
     }
 
-    if (!(this instanceof jqLite)) {
-      return new jqLite(nodes);
+    if (!(this instanceof JqLite)) {
+      return new JqLite(nodes);
     }
 
     if (nodes === window) {
@@ -80,7 +80,7 @@ var $ = (function() {
     return $o;
   };
 
-  jqLite.prototype = {
+  JqLite.prototype = {
     // Get the children of each element in the set of matched elements.
     children: function() {
       var children = [];
@@ -93,12 +93,12 @@ var $ = (function() {
         });
       });
 
-      return new jqLite(children);
+      return new JqLite(children);
     },
 
     // Reduce the set of matched elements to the one at the specified index.
     eq: function(index) {
-      return new jqLite(this[index]);
+      return new JqLite(this[index]);
     },
 
     // Attach event(s)
@@ -267,5 +267,5 @@ var $ = (function() {
     }
   };
 
-  return jqLite;
+  return JqLite;
 })();

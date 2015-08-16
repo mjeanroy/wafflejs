@@ -39,13 +39,20 @@ module.exports = function(options) {
 
   ['minor', 'major', 'patch'].forEach(function(level) {
     gulp.task('release:' + level, ['build'], function(done) {
-      var packageJsonFilter = gulpFilter(function(file) {
-        return file.path.indexOf('package.json') >= 0;
-      });
+      var restoreOptions = {
+        restore: true
+      };
 
-      var distFilter = gulpFilter(function(file) {
+      var isPackageJson = function(file) {
+        return file.path.indexOf('package.json') >= 0;
+      };
+
+      var isDist = function(file) {
         return file.path === options.dist;
-      });
+      };
+
+      var packageJsonFilter = gulpFilter(isPackageJson, restoreOptions);
+      var distFilter = gulpFilter(isDist, restoreOptions);
 
       return gulp.src(src)
         .pipe(bump({type: level}))
@@ -54,7 +61,7 @@ module.exports = function(options) {
         .pipe(git.commit('release: release version'))
         .pipe(packageJsonFilter)
         .pipe(tag_version())
-        .pipe(packageJsonFilter.restore())
+        .pipe(packageJsonFilter.restore)
         .pipe(distFilter)
         .pipe(git.rm({ args: '-r' }))
         .pipe(git.commit('release: start new release'));

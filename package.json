@@ -47,13 +47,13 @@
     "log4js": "0.6.26",
     "wrench": "1.5.8",
     "pretty-bytes": "2.0.1",
-    "gzip-size": "1.0.0",
+    "gzip-size": "2.1.0",
     "through2": "2.0.0",
     "gulp-util": "3.0.6",
     "pad": "0.1.0"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=0.12.0"
   },
   "scripts": {
     "test": "gulp test",

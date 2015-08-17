@@ -168,6 +168,12 @@ var Collection = (function() {
     return result;
   };
 
+  // Iteratee to use to transform object to models
+  // Should be used with _.map iteration
+  var parseModelIteratee = function(o) {
+    return parseModel(this, o);
+  };
+
   // Add entry at given index.
   // Internal map is updated to keep track of indexes.
   var put = function(collection, o, i, id) {
@@ -491,9 +497,12 @@ var Collection = (function() {
       var oldSize = this.length;
       var newSize = array.length;
 
+      // Transform models before anything else
+      var models = _.map(array, parseModelIteratee, this);
+
       var sortFn = this.$$sortFn;
       if (sortFn) {
-        array.sort(sortFn);
+        models.sort(sortFn);
       }
 
       this.$$map.clear();
@@ -506,7 +515,7 @@ var Collection = (function() {
           removed.push(this.at(i));
         }
 
-        put(this, parseModel(this, array[i]), i);
+        put(this, models[i], i);
       }
 
       for (; i < oldSize; ++i) {
@@ -551,14 +560,9 @@ var Collection = (function() {
       var size = this.length;
       var data = _.rest(arguments, 2);
 
-      // Iterator that will translate object to model elements
-      var transformIteratee = function(m) {
-        return parseModel(this, m);
-      };
-
       // Data to model transformation.
       // This iteration will also check for undefined / null values.
-      var models = _.map(data, transformIteratee, this);
+      var models = _.map(data, parseModelIteratee, this);
 
       // Index at which to start changing the array.
       // If greater than the length of the array, actual starting index will

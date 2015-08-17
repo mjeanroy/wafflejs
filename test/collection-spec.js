@@ -333,6 +333,67 @@ describe('collection', function() {
       });
     });
 
+    it('should reset collection', function() {
+      expect(collection.length).toBe(2);
+
+      var o3 = {
+        id: 3,
+        name: 'foo3'
+      };
+
+      var o4 = {
+        id: 4,
+        name: 'foo4'
+      };
+
+      var o5 = {
+        id: 5,
+        name: 'foo5'
+      };
+
+      collection.reset([o3, o4, o5]);
+
+      expect(collection.length).toBe(3);
+      expect(collection[0]).toBe(o3);
+      expect(collection[1]).toBe(o4);
+      expect(collection[2]).toBe(o5);
+    });
+
+    it('should reset collection with order', function() {
+      var Model = function(data) {
+        this.id = data.id;
+      };
+
+      Model.prototype.name = function() {
+        return 'foo ' + this.id;
+      };
+
+      var sortFn = jasmine.createSpy('sortFn').and.callFake(function(o1, o2) {
+        return o1.name().localeCompare(o2.name());
+      });
+
+      var m1 = { id: 1 };
+      var m2 = { id: 2 };
+      var collection = new Collection([m1, m2], {
+        model: Model
+      });
+
+      collection.sort(sortFn);
+
+      expect(collection.length).toBe(2);
+      expect(collection[0]).toEqual(jasmine.objectContaining(m1));
+      expect(collection[1]).toEqual(jasmine.objectContaining(m2));
+
+      var m3 = { id: 3 };
+      var m4 = { id: 4 };
+
+      collection.reset([m4, m3]);
+
+      expect(collection.length).toBe(2);
+      expect(collection[0]).toEqual(jasmine.objectContaining(m3));
+      expect(collection[1]).toEqual(jasmine.objectContaining(m4));
+    });
+
     it('should remove data', function() {
       spyOn(collection, 'trigger').and.callThrough();
 

@@ -27,6 +27,7 @@
 /* global _ */
 /* global $parse */
 /* global $util */
+/* global $json */
 /* global HashMap */
 /* global Observable */
 /* exported Collection */
@@ -704,7 +705,7 @@ var Collection = (function() {
     // Custom json representation
     // Need JSON.stringify to be available
     toJSON: function() {
-      return JSON.stringify(this.toArray());
+      return $json.toJson(this.toArray());
     },
 
     // Sort given collection in place

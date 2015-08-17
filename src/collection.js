@@ -732,7 +732,26 @@ var Collection = (function() {
   _.extend(Constructor.prototype, Observable);
 
   // Add underscore functions to Collection prototype
-  _.forEach(['size', 'first', 'last', 'initial', 'rest', 'partition', 'forEach', 'map', 'every', 'some', 'reduce', 'reduceRight', 'filter', 'reject', 'find', 'toArray'], function(fn) {
+  var underscoreMethods = [
+    'size',
+    'first',
+    'last',
+    'initial',
+    'rest',
+    'partition',
+    'forEach',
+    'map',
+    'every',
+    'some',
+    'reduce',
+    'reduceRight',
+    'filter',
+    'reject',
+    'find',
+    'toArray'
+  ];
+
+  _.forEach(underscoreMethods, function(fn) {
     if (_[fn]) {
       Constructor.prototype[fn] = function() {
         var args = [this].concat(_.toArray(arguments));

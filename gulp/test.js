@@ -25,6 +25,8 @@
 var gulp = require('gulp');
 var karma = require('karma');
 var jasmine = require('gulp-jasmine');
+var Q = require('q');
+var gutil = require('gulp-util');
 var KarmaServer = karma.Server;
 
 module.exports = function(options) {
@@ -45,43 +47,82 @@ module.exports = function(options) {
   var tddTasks = [];
   var testTasks = [];
 
-  targets.forEach(function(target) {
-    var tddTask = 'tdd:' + target;
-    var testTask = 'test:' + target;
-    var karmaFiles = []
+  var getFiles = function(target) {
+    return []
       .concat(files[target].vendor)  // Vendor libs
       .concat(files[target].src)     // Waffle sources
       .concat(files[target].test);   // Test sources
+  };
+
+  // Run karma.
+  // Done callback is wrapped into a promise.
+  var runKarma = function(target, singleRun) {
+    var deferred = Q.defer();
+
+    var onDone = function() {
+      deferred.resolve();
+    };
+
+    var config = {
+      configFile: karmaConf,
+      files: getFiles(target)
+    };
+
+    if (singleRun) {
+      // Continuous integration mode
+      config.singleRun = true;
+      config.autoWatch = false;
+      config.browsers = ['PhantomJS'];
+    } else {
+      // Dev mode
+      config.singleRun = false;
+      config.autoWatch = true;
+      config.reporters = ['progress'];
+    }
+
+    var server = new KarmaServer(config, onDone);
+    server.start();
+
+    return deferred.promise;
+  };
+
+  targets.forEach(function(target) {
+    var tddTask = 'tdd:' + target;
+    var testTask = 'test:' + target;
 
     tddTasks.push(tddTask);
     testTasks.push(testTask);
 
     // Create tdd task for each target
     gulp.task(tddTask, ['test:build', 'bower:install'], function(done) {
-      var server = new KarmaServer({
-        configFile: karmaConf,
-        files: karmaFiles,
-        reporters: ['progress']
-      }, done);
-
-      server.start();
+      runKarma(target, false).then(done);
     });
 
     // Create test task for each target
     gulp.task(testTask, ['test:build', 'bower:install'], function(done) {
-      var server = new KarmaServer({
-        configFile: karmaConf,
-        files: karmaFiles,
-        singleRun: true,
-        browsers: ['PhantomJS']
-      }, function() {
-        done();
-      });
-
-      server.start();
+      runKarma(target, true).then(done);
     });
   });
 
+  // Run all tdd suite in parallel.
   gulp.task('tdd', ['test:build'].concat(tddTasks));
-  gulp.task('test', ['test:build'].concat(testTasks));
+
+  // Run all test suite in order.
+  gulp.task('test', ['test:build', 'bower:install'], function(done) {
+    var tasks = targets.slice();
+    var onIteration = function() {
+      if (tasks.length === 0) {
+        done();
+      } else {
+        var target = tasks.shift();
+        gutil.log('Starting \'' + gutil.colors.cyan(target) + '\' test suite');
+        runKarma(target, true).then(function() {
+          gutil.log('Finished \'' + gutil.colors.cyan(target) + '\' test suite');
+          onIteration();
+        });
+      }
+    };
+
+    onIteration();
+  });
 };

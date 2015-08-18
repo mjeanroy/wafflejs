@@ -26,6 +26,7 @@
 /* global Grid */
 /* global Waffle */
 /* global _ */
+/* global NgCompilator */
 
 waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', function($parse, $rootScope, $interpolate) {
   return {
@@ -50,6 +51,10 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
           return scope.$apply(func);
         }
       };
+
+      // Debounced apply
+      // Should be used to not trigger too many digest cycle
+      var $applyDebounced = _.debounce($apply, 200);
 
       var table = element;
       if (table[0].tagName.toLowerCase() !== 'table') {
@@ -94,9 +99,6 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
         }
       });
 
-      // Create setter for two ways binding
-      var setter = $parse(attrs.waffleGrid).assign || _.noop;
-
       // Map callbacks to dom attribute
       var events = options.events = options.events || {};
 
@@ -122,16 +124,49 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
         }
       });
 
+      // Check if we should compile each row
+      var ngCompile = attrs.ngCompile || attrs.waffleNgCompile;
+      var useCompile = ngCompile && !!scope.$eval(ngCompile);
+      if (useCompile) {
+        options.ng = {
+          $scope: scope
+        };
+      }
+
       // Create grid object
       var grid = Waffle.create(table, options);
 
+      // If grid use ng-compilation, then we should destroy scopes when rows
+      // are removed.
+      // Rows may be removed when:
+      // - Grid is fully re-rendered: rows are entirely replaced by new ones.
+      // - When data collection is spliced: some rows may have been removed.
+      // - When grid is filtered: rows are removed because data does not match
+      //   filter.
+      // - When column collection is spliced: if new cell are added, then scope
+      //   must be updated because dom representation has changed.
+      if (useCompile) {
+        _.forEach(['rendered', 'dataspliced', 'filterupdated'], function(evtName) {
+          grid.addEventListener(evtName, function(e) {
+            _.forEach(e.details.removedNodes, function(node) {
+              NgCompilator.destroy(node);
+            });
+          });
+        });
+
+        grid.addEventListener('columnsspliced', function() {
+          _.forEach(grid.$tbody[0].childNodes, function(node) {
+            NgCompilator.refresh(node);
+          });
+        });
+      }
+
       // Implement two-ways binding and set it to grid attribute
+      var setter = $parse(attrs.waffleGrid).assign || _.noop;
       setter(scope, grid);
 
-      // When data is spliced, we need to launch a new digest phase if needed
-      grid.addEventListener('updated', _.debounce(function() {
-        $apply();
-      }, 200));
+      // When something happen, we need to launch a new digest phase if needed.
+      grid.addEventListener('updated', $applyDebounced);
 
       // If ngModel is specified, then it should be binded to the
       // current selection. If grid is not selectable, then
@@ -167,7 +202,7 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
 
       if (filterAttr) {
         // Check if attribute must be interpolated.
-        // If attribute is not an interpolated attribute, then interpolate function will undefined,
+        // If attribute is not an interpolated attribute, then interpolate function will return undefined,
         // in this case, attribute will be read using $parse service.
         var evalFn = $interpolate(element.attr(attrs.$attr[filterAttr]), true) || $parse(attrs[filterAttr]);
 
@@ -184,11 +219,20 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
 
       // Destroy grid when scope is destroyed
       scope.$on('$destroy', function() {
+        // Unwatch everything
         _.forEach(unwatchers, function(unwatcher) {
           unwatcher();
         });
 
+        // Destroy child scopes
+        if (useCompile) {
+          NgCompilator.destroy(grid.rows());
+        }
+
+        // Destroy grid
         grid.destroy();
+
+        // Free memory
         grid = options = setter = table = unwatchers = null;
       });
     }

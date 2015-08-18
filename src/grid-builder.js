@@ -27,6 +27,7 @@
 /* global $ */
 /* global $doc */
 /* global $util */
+/* global DATA_WAFFLE_CID */
 /* global DATA_WAFFLE_ID */
 /* global DATA_WAFFLE_IDX */
 /* global CSS_SELECTABLE */
@@ -192,11 +193,15 @@ var GridBuilder = (function() {
     tbodyRow: function(grid, data, idx) {
       var $tr = $($doc.tr());
 
-      // Add index
+      // Add index.
       $tr.attr(DATA_WAFFLE_IDX, idx);
 
-      // Add id value
+      // Add id value.
       $tr.attr(DATA_WAFFLE_ID, grid.$data.$$key(data));
+
+      // Add cid.
+      // This cid should identify rows uniquely.
+      $tr.attr(DATA_WAFFLE_CID, _.uniqueId());
 
       // Add css for selected row
       if (grid.isSelectable()) {

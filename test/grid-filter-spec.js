@@ -69,6 +69,9 @@ describe('Grid Filter', function() {
   });
 
   it('should filter grid and remove data that does not pass predicate', function() {
+    var row0 = childNodes[0];
+    var row2 = childNodes[2];
+
     var result = grid.filter(oddPredicate);
 
     expect(result).toBe(grid);
@@ -99,11 +102,15 @@ describe('Grid Filter', function() {
     expect(grid.dispatchEvent).toHaveBeenCalledWith('filterupdated', {
       predicate: oddPredicate,
       countVisible: 1,
-      countFiltered: 2
+      countFiltered: 2,
+      removedNodes: [row0, row2]
     });
   });
 
   it('should filter grid and remove data that does not pass predicate, then display visible rows', function() {
+    var row0 = childNodes[0];
+    var row2 = childNodes[2];
+
     grid.filter(oddPredicate);
 
     expect(grid.$filter).toBe(oddPredicate);
@@ -133,7 +140,8 @@ describe('Grid Filter', function() {
     expect(grid.dispatchEvent).toHaveBeenCalledWith('filterupdated', {
       predicate: oddPredicate,
       countVisible: 1,
-      countFiltered: 2
+      countFiltered: 2,
+      removedNodes: [row0, row2]
     });
 
     grid.dispatchEvent.calls.reset();
@@ -172,7 +180,8 @@ describe('Grid Filter', function() {
     expect(grid.dispatchEvent).toHaveBeenCalledWith('filterupdated', {
       predicate: undefined,
       countVisible: 3,
-      countFiltered: 0
+      countFiltered: 0,
+      removedNodes: []
     });
   });
 
@@ -618,8 +627,7 @@ describe('Grid Filter', function() {
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
         index: 1,
         nodeIndex: 0,
-        oldNode: childNodes[0],
-        newNode: childNodes[0]
+        node: childNodes[0]
       });
     });
   });

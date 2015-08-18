@@ -32,6 +32,7 @@
 /* exported DATA_WAFFLE_SORTABLE */
 /* exported DATA_WAFFLE_ORDER */
 /* exported DATA_WAFFLE_IDX */
+/* exported DATA_WAFFLE_CID */
 /* exported CHAR_ORDER_ASC */
 /* exported CHAR_ORDER_DESC */
 /* exported CSS_SCROLLABLE */
@@ -59,6 +60,7 @@ var CSS_SELECTED = CSS_PREFIX + 'selected';
 var CSS_CHECKBOX_CELL = CSS_PREFIX + 'checkbox';
 
 var DATA_PREFIX = 'data-waffle-';
+var DATA_WAFFLE_CID = DATA_PREFIX + 'cid';
 var DATA_WAFFLE_ID = DATA_PREFIX + 'id';
 var DATA_WAFFLE_SORTABLE = DATA_PREFIX + 'sortable';
 var DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';

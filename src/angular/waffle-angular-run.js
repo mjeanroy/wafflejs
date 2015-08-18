@@ -34,11 +34,13 @@
 var $parse;
 var $sanitize;
 var $sniffer;
+var $compile;
 
 waffleModule.run(['$injector', '$log', '$filter', function($injector, $log, $filter) {
   // Service $parse is a mandatory module
   $parse = $injector.get('$parse');
   $sniffer = $injector.get('$sniffer');
+  $compile = $injector.get('$compile');
 
   try {
     $sanitize = $injector.get('$sanitize');

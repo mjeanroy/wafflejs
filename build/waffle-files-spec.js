@@ -338,6 +338,7 @@ describe('waffle-files', function() {
         'src/waffle.js',
         'src/angular/waffle-angular-service.js',
         'src/angular/grid-angular-template.js',
+        'src/angular/grid-compilation-angular.js',
         'src/angular/grid-angular.js'
       ]);
     });

@@ -1058,7 +1058,7 @@ describe('Grid', function() {
     expect(onCalls[2].args).toContain('click', Function);
 
     jq.on.calls.reset();
-    
+
     expect(jq.off).not.toHaveBeenCalled();
 
     $thead.on.calls.reset();
@@ -1107,6 +1107,19 @@ describe('Grid', function() {
         data: data,
         columns: columns
       });
+    });
+
+    it('should get rows', function() {
+      var rows = grid.rows();
+
+      var expectedRows = [];
+      var tbody = grid.$tbody[0];
+      var childNodes = tbody.childNodes;
+      for (var i = 0; i < childNodes.length; i++) {
+        expectedRows.push(childNodes[i]);
+      }
+
+      expect(rows).toEqual(rows);
     });
 
     it('should get data collection', function() {

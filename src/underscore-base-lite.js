@@ -417,9 +417,27 @@ var _ = (function() {
     };
   };
 
+  // Wrap the function inside of the wrapper function, passing it
+  // as the first argument.
+  _.wrap = function(fn, wrapper) {
+    return function() {
+      var args = _.toArray(arguments);
+      var newArgs = [fn].concat(args);
+      return wrapper.apply(this, newArgs);
+    };
+  };
+
   // Return current timestamp.
   _.now = Date.now || function() {
     return new Date().getTime();
+  };
+
+  var uid = 0;
+
+  // Generate a unique integer id (unique within the entire client session).
+  _.uniqueId = function(prefix) {
+    var id = ++uid + '';
+    return prefix ? prefix + id : id;
   };
 
   // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),

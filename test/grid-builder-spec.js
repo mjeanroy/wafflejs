@@ -467,6 +467,7 @@ describe('GridBuilder', function() {
     expect(tr.className).toContain('waffle-selectable');
     expect(tr.className).not.toContain('waffle-selected');
     expect(tr.getAttribute('data-waffle-idx')).toBe('0');
+    expect(tr.getAttribute('data-waffle-cid')).not.toBeNull();
 
     // 2 columns + 1 column for checkbox
     expect(tr.childNodes.length).toBe(3);
@@ -495,6 +496,7 @@ describe('GridBuilder', function() {
     expect(tr).toBeDefined();
     expect(tr.tagName).toEqual('TR');
     expect(tr.getAttribute('data-waffle-idx')).toBe('0');
+    expect(tr.getAttribute('data-waffle-cid')).not.toBeNull();
     expect(tr.className).toContain('waffle-selectable');
     expect(tr.className).not.toContain('waffle-selected');
     expect(tr.childNodes.length).toBe(2);

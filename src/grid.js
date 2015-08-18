@@ -279,6 +279,12 @@ var Grid = (function() {
   };
 
   Constructor.prototype = {
+    // Get all rows.
+    // An array is returned (not a NodeList).
+    rows: function() {
+      return _.toArray(this.$tbody[0].childNodes);
+    },
+
     // Get data collection
     data: function() {
       return this.$data;
@@ -420,6 +426,7 @@ var Grid = (function() {
     renderBody: function(async) {
       var asyncRender = async == null ? this.options.async : async;
       var grid = this;
+      var oldNodes = this.rows();
 
       var empty = _.once(function() {
         grid.$tbody.empty();
@@ -434,23 +441,18 @@ var Grid = (function() {
       var onEnded = function() {
         grid.$data.clearChanges();
 
-        grid.dispatchEvent('rendered', function() {
-          return {
-            data: this.$data,
-            nodes: _.toArray(this.$tbody[0].childNodes)
-          };
+        grid.dispatchEvent('rendered', {
+          data: grid.data(),
+          removedNodes: oldNodes,
+          addedNodes: grid.rows()
         });
 
         // Free memory
-        grid = empty = build = onEnded = null;
+        grid = empty = build = onEnded = oldNodes = null;
       };
 
       // If grid is filtered, then we must only render visible data.
-      var dataToRender = this.$data;
-      if (this.$filter != null) {
-        dataToRender = this.visibleData();
-      }
-
+      var dataToRender = this.$filter == null ? this.$data : this.visibleData();
       if (asyncRender) {
         $util.asyncTask($util.split(dataToRender, 200), 10, build, onEnded);
       } else {

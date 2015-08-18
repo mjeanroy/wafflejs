@@ -343,6 +343,18 @@ describe('Grid Render', function() {
       return tds[1].getAttribute('data-waffle-id') === columns[0].id &&
              tds[2].getAttribute('data-waffle-id') === columns[1].id;
     });
+
+    // Each row should have a unique cid
+    expect(trs).toVerify(function(node) {
+      return node.getAttribute('data-waffle-cid') !== null;
+    });
+
+    var cids = [];
+    for (var i = 0; i < trs.length; i++) {
+      cids.push(trs[i].getAttribute('data-waffle-cid'));
+    }
+
+    expect(cids).toContainsDistinctValues();
   });
 
   it('should render data asynchronously', function() {

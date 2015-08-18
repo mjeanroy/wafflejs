@@ -77,6 +77,7 @@ var $files = {
   $angularDirective: [
     SRC + 'angular/waffle-angular-service.js',
     SRC + 'angular/grid-angular-template.js',
+    SRC + 'angular/grid-compilation-angular.js',
     SRC + 'angular/grid-angular.js'
   ],
 
@@ -200,6 +201,7 @@ var $targets = {
     test: [
       // Add underscore-Lite spec to check compatibilty with underscore
       TEST + 'underscore-lite-spec.js',
+      TEST + 'underscore-base-lite-spec.js'
     ]
   },
 
@@ -224,6 +226,7 @@ var $targets = {
 
       // Add underscore-Lite spec to check compatibilty with underscore
       TEST + 'underscore-lite-spec.js',
+      TEST + 'underscore-base-lite-spec.js'
     ]
   },
 

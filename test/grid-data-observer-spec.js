@@ -417,7 +417,7 @@ describe('Grid Data Observer', function() {
     it('should update grid', function() {
       expect(grid.$data[0].id).toBe(2);
       expect(grid.$data[1].id).toBe(1);
-      expect(grid.$data[2].id).toBe(3); 
+      expect(grid.$data[2].id).toBe(3);
 
       grid.$data.reverse();
       jasmine.clock().tick();
@@ -427,15 +427,13 @@ describe('Grid Data Observer', function() {
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
         index: 0,
         nodeIndex: 0,
-        oldNode: grid.$tbody[0].childNodes[0],
-        newNode: grid.$tbody[0].childNodes[0]
+        node: grid.$tbody[0].childNodes[0]
       });
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {
         index: 2,
         nodeIndex: 2,
-        oldNode: grid.$tbody[0].childNodes[2],
-        newNode: grid.$tbody[0].childNodes[2]
+        node: grid.$tbody[0].childNodes[2]
       });
 
       expect(grid.$data[0].id).toBe(3);
@@ -452,6 +450,17 @@ describe('Grid Data Observer', function() {
       expect(tbody.childNodes).toVerify(function(node, idx) {
         return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
       });
+    });
+
+    it('should update grid and keep cid', function() {
+      var rows = grid.$tbody[0].childNodes;
+      var cid0 = rows[0].getAttribute('data-waffle-cid');
+
+      grid.$data.triggerUpdate(0);
+      jasmine.clock().tick();
+
+      var newRows = grid.$tbody[0].childNodes;
+      expect(newRows[0].getAttribute('data-waffle-cid')).toBe(cid0);
     });
   });
 });

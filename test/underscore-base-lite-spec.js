@@ -432,6 +432,32 @@ describe('_', function() {
     expect(callback).toHaveBeenCalledWith(5, 2, a2);
   });
 
+  it('should wrap function', function() {
+    var fn = jasmine.createSpy('fn').and.returnValue('hello world');
+    var wrapper = jasmine.createSpy('wrapper').and.callFake(function(wrapper, a1, a2) {
+      return wrapper.call(this, a1, a2);
+    });
+
+    var object = {};
+
+    var proxy = _.wrap(fn, wrapper);
+
+    expect(proxy).toBeAFunction();
+    expect(fn).not.toHaveBeenCalled();
+    expect(wrapper).not.toHaveBeenCalled();
+
+    var result = proxy.call(object, 'foo', 'bar');
+
+    expect(fn).toHaveBeenCalledWith('foo', 'bar');
+    expect(wrapper).toHaveBeenCalledWith(fn, 'foo', 'bar');
+
+    var callWrapper = wrapper.calls.mostRecent();
+    expect(callWrapper.object).toBe(object);
+
+    var callFn = fn.calls.mostRecent();
+    expect(callFn.object).toBe(object);
+  });
+
   it('should index element in array', function() {
     var callback = jasmine.createSpy('callback').and.callFake(function(value) {
       return value.id;
@@ -534,17 +560,46 @@ describe('_', function() {
   it('should debounce function', function() {
     var expensive = jasmine.createSpy('callback').and.returnValue('bar');
     var debounced = _.debounce(expensive, 500);
+    var now = new Date().getTime();
+
+    spyOn(_, 'now').and.returnValue(now);
 
     debounced('foo');
 
     expect(expensive).not.toHaveBeenCalled();
 
+    _.now.and.returnValue(now + 250);
     jasmine.clock().tick(250);
+
     expect(expensive).not.toHaveBeenCalled();
 
     debounced('foo');
 
+    _.now.and.returnValue(now + 750);
     jasmine.clock().tick(500);
+
     expect(expensive).toHaveBeenCalledWith('foo');
+  });
+
+  it('should generate unique id', function() {
+    var id1 = _.uniqueId();
+    var id2 = _.uniqueId();
+
+    expect(id1).toBeDefined();
+    expect(id2).toBeDefined();
+    expect(id1).not.toEqual(id2);
+  });
+
+  it('should generate unique id with prefix', function() {
+    var prefix = 'foo';
+    var id1 = _.uniqueId(prefix);
+    var id2 = _.uniqueId(prefix);
+
+    expect(id1).toBeDefined();
+    expect(id2).toBeDefined();
+    expect(id1).not.toEqual(id2);
+
+    expect(id1).toStartWith(prefix);
+    expect(id2).toStartWith(prefix);
   });
 });

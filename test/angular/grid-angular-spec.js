@@ -608,4 +608,41 @@ describe('Waffle Angular Directive', function() {
 
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
+
+  it('should not use ng compilation by default', function() {
+    spyOn(Grid.prototype, 'filter').and.callThrough();
+
+    var table = '' +
+      '<table waffle ' +
+      '       data-waffle-grid="grid" ' +
+      '       data-waffle-selection="{ enable: false }" ' +
+      '       data-waffle-filter="{ foo: \'foo\' }" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid).toBeDefined();
+    expect($scope.grid.options.ng).toBeUndefined();
+  });
+
+  it('should use ng compilation', function() {
+    spyOn(Grid.prototype, 'filter').and.callThrough();
+
+    var table = '' +
+      '<table waffle ' +
+      '       data-waffle-grid="grid" ' +
+      '       data-waffle-ng-compile="true" ' +
+      '       data-waffle-selection="{ enable: false }" ' +
+      '       data-waffle-filter="{ foo: \'foo\' }" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    expect($table).toBeDefined();
+    expect($scope.grid).toBeDefined();
+    expect($scope.grid.options.ng).toEqual({
+      $scope: $scope
+    });
+  });
 });

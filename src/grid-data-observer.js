@@ -29,6 +29,7 @@
 /* global $util */
 /* global GridUtil */
 /* global GridBuilder */
+/* global DATA_WAFFLE_CID */
 /* global DATA_WAFFLE_IDX */
 /* exported GridDataObserver */
 
@@ -165,16 +166,22 @@ var GridDataObserver = (function() {
       var childNodes = tbody.childNodes;
       var nodeIndex = findIndex(childNodes, index);
       if (nodeIndex >= 0) {
-        var oldNode = childNodes[nodeIndex];
-        var newNode = GridBuilder.tbodyRow(this, data, index);
-        var result = $vdom.mergeNodes(tbody, oldNode, newNode);
+        var node = childNodes[nodeIndex];
+        var tmpNode = GridBuilder.tbodyRow(this, data, index);
+        var cid = node.getAttribute(DATA_WAFFLE_CID);
+
+        // Merge new row into old row (this will update content).
+        $vdom.mergeNodes(tbody, node, tmpNode);
+
+        // Do not forget to reset cid, since it may have been updated (important
+        // since it may be used by angular module to get associated scope).
+        node.setAttribute(DATA_WAFFLE_CID, cid);
 
         // Trigger event
         this.dispatchEvent('dataupdated', {
           index: index,
           nodeIndex: nodeIndex,
-          oldNode: oldNode,
-          newNode: result
+          node: node
         });
       }
 

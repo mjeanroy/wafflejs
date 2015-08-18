@@ -35,40 +35,57 @@ var GridFilter = (function() {
       // argument is not defined.
       var filterFunction = predicate == null ? _.constant(true) : predicate;
 
-      var filterIteratee = function(removed, current, idx) {
+      var filterIteratee = function(accumulator, current, idx) {
         var tbody = this.$tbody[0];
         var rows = tbody.childNodes;
         var ctx = this.$data.ctx(current);
         var wasVisible = _.isUndefined(ctx.visible) ? true : !!ctx.visible;
         var isVisible = !!filterFunction(current);
+
         var inc = 0;
+        var removedRow = null;
 
         // Update flag
         ctx.visible = isVisible;
 
         if (wasVisible !== isVisible) {
-          var currentRow = rows[ctx.idx - removed];
+          var currentRow = rows[ctx.idx - accumulator.nbFiltered];
           if (isVisible) {
             var tr = GridBuilder.tbodyRow(this, current, idx);
             tbody.insertBefore(tr, currentRow);
           } else {
-            tbody.removeChild(currentRow);
+            removedRow = tbody.removeChild(currentRow);
             inc++;
           }
         } else if (!isVisible) {
           inc++;
         }
 
-        return removed + inc;
+        accumulator.nbFiltered += inc;
+
+        if (removedRow) {
+          accumulator.removed.push(removedRow);
+        }
+
+        return accumulator;
       };
 
-      var nbFiltered = this.$data.reduce(filterIteratee, 0, this);
+      var accumulator = {
+        nbFiltered: 0,
+        removed: []
+      };
+
+      var result = this.$data.reduce(filterIteratee, accumulator, this);
 
       // Trigger event !
+      var nbFiltered = result.nbFiltered;
+      var removedNodes = result.removed;
+
       this.dispatchEvent('filterupdated', {
         predicate: predicate,
         countVisible: this.$data.size() - nbFiltered,
-        countFiltered: nbFiltered
+        countFiltered: nbFiltered,
+        removedNodes: removedNodes
       });
     }
   };

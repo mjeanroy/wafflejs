@@ -75,7 +75,7 @@ describe('Grid Events', function() {
 
     var evt = onRendered.calls.mostRecent().args[0];
     expect(evt.details.data).toEqual(grid.$data);
-    expect(evt.details.nodes).toEqual([]);
+    expect(evt.details.removedNodes).toEqual([]);
   });
 
   it('should call onDataSpliced callback after data has been pushed', function() {

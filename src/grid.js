@@ -131,6 +131,7 @@ var Grid = (function() {
       if (_.isUndefined(opt)) {
         var attrName = $util.toSpinalCase(optName);
         var htmlAttr = tableEl.getAttribute('data-waffle-' + attrName) ||
+          tableEl.getAttribute('waffle-' + attrName) ||
           tableEl.getAttribute('data-' + attrName) ||
           tableEl.getAttribute(attrName);
 

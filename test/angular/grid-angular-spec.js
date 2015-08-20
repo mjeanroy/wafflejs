@@ -317,6 +317,31 @@ describe('Waffle Angular Directive', function() {
     expect($scope.selection[0]).toBe(d1);
   });
 
+  it('should disable selection', function() {
+    var columns = options.columns;
+
+    // Set options on scope
+    $scope.options = options;
+
+    var table = '' +
+      '<table waffle ' +
+      '       waffle-options="options" ' +
+      '       waffle-grid="grid" ' +
+      '       waffle-selection="false" ' +
+      '       on-initialized="onInitialized()" ' +
+      '       on-rendered="onRendered()" ' +
+      '></table>';
+
+    var $table = compileTable(table, $scope);
+
+    // Trigger a digest
+    $rootScope.$digest();
+
+    // Selection column should not be here
+    var thead = $scope.grid.$thead[0];
+    expect(thead.childNodes[0].childNodes.length).toBe(columns.length);
+  });
+
   it('should update selection with ngModel value', function() {
     $scope.grid = angular.extend(options, {
       selection: {

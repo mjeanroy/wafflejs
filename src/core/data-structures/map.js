@@ -45,10 +45,6 @@ var HashMap = (function() {
   };
 
   var HashMap = function() {
-    if (!(this instanceof HashMap)) {
-      return new HashMap();
-    }
-
     this.$o = {};
   };
 

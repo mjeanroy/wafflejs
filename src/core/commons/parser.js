@@ -176,10 +176,6 @@ var $parse = (function() {
       return {};
     }
 
-    if (!_.isObject(object)) {
-      throw new Error('Cannot assign to ready property "' + object + '"');
-    }
-
     return object;
   };
 
@@ -212,7 +208,7 @@ var $parse = (function() {
     return value;
   };
 
-  var instance = function(key) {
+  return function(key) {
     if (!cache.contains(key)) {
       var parts = $normalize(key);
 
@@ -229,11 +225,4 @@ var $parse = (function() {
 
     return cache.get(key);
   };
-
-  instance.$clear = function() {
-    cache.clear();
-    return instance;
-  };
-
-  return instance;
 })();

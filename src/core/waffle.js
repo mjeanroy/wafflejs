@@ -36,9 +36,7 @@ var Waffle = {
   options: Grid.options,
 
   // Create new grid
-  create: function(table, options) {
-    return Grid.create(table, options);
-  },
+  create: Grid.create,
 
   // Add new "global" renderer
   addRenderer: function(id, fn) {

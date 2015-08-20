@@ -185,6 +185,73 @@ describe('Grid Filter', function() {
     });
   });
 
+  it('should filter grid and keep filtered data removed', function() {
+    var row0 = childNodes[0];
+    var row2 = childNodes[2];
+
+    grid.filter(oddPredicate);
+
+    expect(grid.$filter).toBe(oddPredicate);
+    expect(GridFilter.applyFilter).toHaveBeenCalledWith(oddPredicate);
+
+    // Check flags
+    expect(grid.$data.$$map.get(1)).toEqual({
+      idx: 0,
+      visible: false
+    });
+
+    expect(grid.$data.$$map.get(2)).toEqual({
+      idx: 1,
+      visible: true
+    });
+
+    expect(grid.$data.$$map.get(3)).toEqual({
+      idx: 2,
+      visible: false
+    });
+
+    // Check removed data
+    expect(childNodes.length).toBe(1);
+    expect(childNodes[0].getAttribute('data-waffle-idx')).toBe('1');
+    expect(childNodes[0].childNodes[1].innerHTML).toBe('2');
+
+    expect(grid.dispatchEvent).toHaveBeenCalledWith('filterupdated', {
+      predicate: oddPredicate,
+      countVisible: 1,
+      countFiltered: 2,
+      removedNodes: [row0, row2]
+    });
+
+    grid.dispatchEvent.calls.reset();
+
+    var newOddPredicate = function(o) {
+      return oddPredicate(o);
+    };
+
+    grid.filter(oddPredicate);
+
+    // Check flags
+    expect(grid.$data.$$map.get(1)).toEqual({
+      idx: 0,
+      visible: false
+    });
+
+    expect(grid.$data.$$map.get(2)).toEqual({
+      idx: 1,
+      visible: true
+    });
+
+    expect(grid.$data.$$map.get(3)).toEqual({
+      idx: 2,
+      visible: false
+    });
+
+    // Check removed data
+    expect(childNodes.length).toBe(1);
+    expect(childNodes[0].getAttribute('data-waffle-idx')).toBe('1');
+    expect(childNodes[0].childNodes[1].innerHTML).toBe('2');
+  });
+
   it('should filter using a simple value', function() {
     var value = 'foo';
     var predicate = jasmine.createSpy('predicate').and.returnValue(false);

@@ -31,7 +31,6 @@
 
 var $sniffer = (function() {
   // This property is available only in IE
-  var msie = document.documentMode;
   var cacheEvents = new HashMap();
 
   // This is a map of events with tagName to use for feature
@@ -42,9 +41,9 @@ var $sniffer = (function() {
 
   return {
     hasEvent: function(event) {
-      // IE9 and IE10 support input event, but it is really
+      // IE <= 11 support input event, but it is really
       // buggy, so we disable this feature for these browsers
-      if (event === 'input' && msie < 11) {
+      if (event === 'input' && document.documentMode <= 11) {
         return false;
       }
 

@@ -131,6 +131,26 @@ describe('Grid Selection', function() {
     expect(grid.$selection.length).toBe(grid.$data.length);
   });
 
+  it('should deselect everything', function() {
+    grid = new Grid(table, {
+      data: data,
+      columns: columns
+    });
+
+    expect(grid.$selection.length).toBe(0);
+
+    spyOn(grid.$selection, 'clear').and.callThrough();
+    grid.deselect();
+    expect(grid.$selection.clear).not.toHaveBeenCalled();
+
+    grid.select();
+    expect(grid.$selection.length).toBe(grid.$data.length);
+
+    grid.deselect();
+    expect(grid.$selection.length).toBe(0);
+    expect(grid.$selection.clear).toHaveBeenCalled();
+  });
+
   it('should select all selectable data', function() {
     var isEven = function(data) {
       return data.id % 2 === 0;

@@ -853,4 +853,58 @@ describe('GridBuilder', function() {
     expect(control.childNodes[0].value).toBe('foo');
     expect(control.childNodes[0].innerHTML).toBe('foo');
   });
+
+  it('should create editable control for tbody cell with select element with label and value', function() {
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'select',
+      options: [
+        { label: 'foo', value: 'bar' }
+      ]
+    };
+
+    var control = GridBuilder.tbodyControl(column, data);
+
+    expect(control).toBeDefined();
+    expect(control.tagName).toEqual('SELECT');
+    expect(control.getAttribute('data-waffle-id')).toBe('foo');
+
+    expect(control.childNodes.length).toBe(1);
+    expect(control.childNodes[0].tagName).toBe('OPTION');
+    expect(control.childNodes[0].value).toBe('bar');
+    expect(control.childNodes[0].innerHTML).toBe('foo');
+  });
+
+  it('should create editable control for tbody cell with select element with empty label', function() {
+    var data = {
+      foo: 1,
+      bar: 'hello world'
+    };
+
+    var column = grid.$columns.at(0);
+
+    column.editable = {
+      type: 'select',
+      options: [
+        { value: 'bar' }
+      ]
+    };
+
+    var control = GridBuilder.tbodyControl(column, data);
+
+    expect(control).toBeDefined();
+    expect(control.tagName).toEqual('SELECT');
+    expect(control.getAttribute('data-waffle-id')).toBe('foo');
+
+    expect(control.childNodes.length).toBe(1);
+    expect(control.childNodes[0].tagName).toBe('OPTION');
+    expect(control.childNodes[0].value).toBe('bar');
+    expect(control.childNodes[0].innerHTML).toBe('');
+  });
 });

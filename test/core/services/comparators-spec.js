@@ -147,7 +147,38 @@ describe('comparators', function() {
     expect($comparators.$auto(null, undefined)).toBeZero();
   });
 
-  it('should compare two objects', function() {
+  it('should use automatic comparison even with non supported type', function() {
+    var o1 = { id: 1 };
+    var o2 = { id: 2 };
+    expect($comparators.$auto(o1, o2)).not.toBeZero();
+    expect($comparators.$auto(o2, o1)).not.toBeZero();
+  });
+
+  it('should compare two objects using single comparator', function() {
+    var comparator = {
+      parser: $parse('name'),
+      fn: $comparators.$string,
+      desc: false
+    };
+
+    var o1 = { id: 1, name: 'foo' };
+    var o2 = { id: 2, name: 'bar' };
+    var o3 = { id: 3, name: 'bar' };
+    var o4 = { id: 1, name: 'foo' };
+
+    var compareFn = $$createComparisonFunction(comparator);
+
+    // o1 === o1 => should return zero
+    expect(compareFn(o1, o1)).toBeZero();
+
+    // foo > bar => should return positive value
+    expect(compareFn(o1, o2)).toBePositive();
+
+    // bar < foo => should return negative value
+    expect(compareFn(o2, o1)).toBeNegative();
+  });
+
+  it('should compare two objects using array of comparators', function() {
     var comparators = [
       { parser: $parse('name'), fn: $comparators.$string, desc: false },
       { parser: $parse('id'), fn: $comparators.$number, desc: true }

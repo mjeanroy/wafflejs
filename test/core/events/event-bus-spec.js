@@ -96,6 +96,22 @@ describe('EventBus', function() {
     expect(eventBus.$events['foo']).not.toContain(listener2);
   });
 
+  it('should not try to remove listener if listener array is empty', function() {
+    spyOn(_, 'reject').and.callThrough();
+
+    eventBus.removeEventListener('foo', jasmine.createSpy('listener1'));
+
+    expect(_.reject).not.toHaveBeenCalled();
+  });
+
+  it('should not try to remove listener if second parameter is falsy', function() {
+    spyOn(_, 'reject').and.callThrough();
+
+    eventBus.removeEventListener('foo', null);
+
+    expect(_.reject).not.toHaveBeenCalled();
+  });
+
   it('should clear bus', function() {
     var listener1 = jasmine.createSpy('listener1');
     var listener2 = jasmine.createSpy('listener2');

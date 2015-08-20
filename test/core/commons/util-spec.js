@@ -83,6 +83,15 @@ describe('$util', function() {
     expect(t).toBe(true);
   });
 
+  it('should handle exception', function() {
+    spyOn($json, 'fromJson').and.throwError('Error');
+
+    expect($util.parse('false')).toBe(false);
+    expect($util.parse('true')).toBe(true);
+    expect($util.parse('10')).toBe(10);
+    expect($util.parse('foo')).toBe('foo');
+  });
+
   it('should parse number value', function() {
     var nb = $util.parse('25');
     expect(nb).toBe(25);

@@ -24,6 +24,16 @@
 
 describe('$json', function() {
 
+  var JSON;
+
+  beforeEach(function() {
+    JSON = window.JSON;
+  });
+
+  afterEach(function() {
+    window.JSON = JSON;
+  });
+
   it('toJson should turn a javascript to a json string', function() {
     var json = $json.toJson({
       foo: "bar"
@@ -37,5 +47,38 @@ describe('$json', function() {
     expect(o).toEqual({
       foo: 'bar'
     });
+  });
+
+  it('should throw error if JSON object is not available', function() {
+    window.JSON = null;
+    var toJson = function() {
+      return $json.toJson({
+        foo: 'bar'
+      });
+    };
+
+    var fromJson = function() {
+      return $json.fromJson('{"foo": "bar"}');
+    };
+
+    expect(toJson).toThrow(Error('JSON.stringify is not available in your browser'));
+    expect(fromJson).toThrow(Error('JSON.parse is not available in your browser'));
+  });
+
+  it('should throw error if JSON functions are not available', function() {
+    window.JSON = {};
+
+    var toJson = function() {
+      return $json.toJson({
+        foo: 'bar'
+      });
+    };
+
+    var fromJson = function() {
+      return $json.fromJson('{"foo": "bar"}');
+    };
+
+    expect(toJson).toThrow(Error('JSON.stringify is not available in your browser'));
+    expect(fromJson).toThrow(Error('JSON.parse is not available in your browser'));
   });
 });

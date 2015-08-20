@@ -82,6 +82,25 @@ describe('parse', function() {
   it('should return value of attribute of nested object using bracket notation', function() {
     expect($parse('nested["id"]')(nestedObj)).toBe(1);
     expect($parse('nested[\'id\']')(nestedObj)).toBe(1);
+
+    expect($parse('nested[ "id" ]')(nestedObj)).toBe(1);
+    expect($parse('nested[ \'id\' ]')(nestedObj)).toBe(1);
+  });
+
+  it('should keep key with spaces', function() {
+    obj['foo bar'] = 'foo';
+
+    if (typeof angular === 'undefined') {
+      // This syntax should be valid...
+      expect($parse('foo bar')(obj)).toBe('foo');
+    } else {
+      // But angular does not handle this
+      var exec = function() {
+        return $parse('foo bar')(obj);
+      };
+
+      expect(exec).toThrow();
+    }
   });
 
   it('should throw error if expression is malformed', function() {

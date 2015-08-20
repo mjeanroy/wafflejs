@@ -165,6 +165,18 @@ describe('Grid', function() {
     }));
   });
 
+  it('should create grid without "new" keyword', function() {
+    var table = document.createElement('table');
+    var grid = Grid(table);
+    expect(grid).toBeInstanceOf(Grid);
+  });
+
+  it('should create grid using factory', function() {
+    var table = document.createElement('table');
+    var grid = Grid.create(table);
+    expect(grid).toBeInstanceOf(Grid);
+  });
+
   it('should initialize grid and clear changes', function() {
     spyOn(Grid.prototype, 'clearChanges');
 

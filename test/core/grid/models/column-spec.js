@@ -112,6 +112,74 @@ describe('Column', function() {
     });
   });
 
+  it('should return column attributes for thead element and column in ascendant order', function() {
+    var column = new Column({
+      id: 'foo',
+      draggable: true,
+      sortable: true
+    });
+
+    column.asc = true;
+
+    var attributes = column.attributes(0, true);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo',
+      'draggable': true,
+      'data-waffle-sortable': true,
+      'data-waffle-order': '+'
+    });
+  });
+
+  it('should return column attributes for thead element and column in descendant order', function() {
+    var column = new Column({
+      id: 'foo',
+      draggable: true,
+      sortable: true
+    });
+
+    column.asc = false;
+
+    var attributes = column.attributes(0, true);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo',
+      'draggable': true,
+      'data-waffle-sortable': true,
+      'data-waffle-order': '-'
+    });
+  });
+
+  it('should return column attributes for tbody element and column in ascendant order', function() {
+    var column = new Column({
+      id: 'foo',
+      sortable: true
+    });
+
+    column.asc = true;
+
+    var attributes = column.attributes(0, false);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo'
+    });
+  });
+
+  it('should return column attributes for tbody element and column in descendant order', function() {
+    var column = new Column({
+      id: 'foo',
+      sortable: true
+    });
+
+    column.asc = false;
+
+    var attributes = column.attributes(0, false);
+
+    expect(attributes).toEqual({
+      'data-waffle-id': 'foo'
+    });
+  });
+
   it('should return column attributes for thead element and draggable column', function() {
     var column = new Column({
       id: 'foo',
@@ -293,6 +361,21 @@ describe('Column', function() {
 
     var sanitizedInput = $sanitize(input);
     expect(column.render(object)).toBe(sanitizedInput);
+  });
+
+  it('should render value of object and do not escape value', function() {
+    var column = new Column({
+      id: 'name',
+      escape: false
+    });
+
+    var input = '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>';
+    var object = {
+      id: 1,
+      name: input
+    };
+
+    expect(column.render(object)).toBe(input);
   });
 
   it('should render value of complex object', function() {

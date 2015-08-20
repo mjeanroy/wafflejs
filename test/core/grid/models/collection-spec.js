@@ -359,6 +359,26 @@ describe('collection', function() {
       expect(collection[2]).toBe(o5);
     });
 
+    it('should reset collection and push new elements', function() {
+      expect(collection.length).toBe(2);
+
+      var newElements = [];
+      for (var i = 0; i < 10; i++) {
+        newElements.push({
+          id: i,
+          name: 'foo' + i
+        });
+      }
+
+      collection.reset(newElements);
+
+      expect(collection.length).toBe(10);
+
+      for (var k = 0; k < 10; k++) {
+        expect(collection[k]).toBe(newElements[k]);
+      }
+    });
+
     it('should reset collection with order', function() {
       var Model = function(data) {
         this.id = data.id;
@@ -619,6 +639,18 @@ describe('collection', function() {
       var result = collection.findIndex(callback);
 
       expect(result).toBe(1);
+      expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
+      expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
+    });
+
+    it('should return -1 if element index in collection is not found', function() {
+      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
+        return false;
+      });
+
+      var result = collection.findIndex(callback);
+
+      expect(result).toBe(-1);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });

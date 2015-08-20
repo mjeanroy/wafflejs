@@ -28,6 +28,17 @@ describe('waffle', function() {
     expect(Waffle.Grid).toBe(Grid);
   });
 
+  it('should create Grid', function() {
+    var table = document.createElement('table');
+    var options = {
+    };
+
+    var grid = Waffle.create(table, options);
+
+    expect(grid).toBeDefined();
+    expect(grid).toBeInstanceOf(Grid);
+  });
+
   it('should add new global renderer', function() {
     expect($renderers.foo).toBeUndefined();
     var renderer = jasmine.createSpy('renderer').and.returnValue('foo');

@@ -24,6 +24,43 @@
 
 describe('Grid Events', function() {
 
+  it('should event listener', function() {
+    var table = document.createElement('table');
+    var event = 'initialized';
+    var listener = jasmine.createSpy('onInitialized');
+
+    var grid = new Grid(table, {
+    });
+
+    var result = grid.addEventListener(event, listener);
+
+    expect(result).toBe(grid);
+    expect(grid.$bus.$events).toEqual({
+      'initialized': [listener]
+    });
+  });
+
+  it('should remove event listener', function() {
+    var table = document.createElement('table');
+    var event = 'initialized';
+    var listener = jasmine.createSpy('onInitialized');
+
+    var grid = new Grid(table, {
+    });
+
+    grid.addEventListener(event, listener);
+    expect(grid.$bus.$events).toEqual({
+      'initialized': [listener]
+    });
+
+    var result = grid.removeEventListener(event, listener);
+
+    expect(result).toBe(grid);
+    expect(grid.$bus.$events).toEqual({
+      'initialized': []
+    });
+  });
+
   it('should call onInitialized after initialization', function() {
     var table = document.createElement('table');
     var onInitialized = jasmine.createSpy('onInitialized');

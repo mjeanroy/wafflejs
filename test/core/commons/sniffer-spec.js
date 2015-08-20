@@ -24,8 +24,38 @@
 
 describe('sniffer', function() {
 
+  var documentMode;
+
+  beforeEach(function() {
+    documentMode = document.documentMode;
+  });
+
+  afterEach(function() {
+    document.documentMode = documentMode;
+  });
+
   it('should check if event is available', function() {
     var result = $sniffer.hasEvent('input');
     expect(result).toBeDefined();
+  });
+
+  it('should force event to be false for IE 8', function() {
+    document.documentMode = 8;
+    expect($sniffer.hasEvent('input')).toBe(false);
+  });
+
+  it('should force event to be false for IE 9', function() {
+    document.documentMode = 9;
+    expect($sniffer.hasEvent('input')).toBe(false);
+  });
+
+  it('should force event to be false for IE 10', function() {
+    document.documentMode = 10;
+    expect($sniffer.hasEvent('input')).toBe(false);
+  });
+
+  it('should force event to be false for IE 11', function() {
+    document.documentMode = 11;
+    expect($sniffer.hasEvent('input')).toBe(false);
   });
 });

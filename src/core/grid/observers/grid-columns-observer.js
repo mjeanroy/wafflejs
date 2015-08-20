@@ -33,6 +33,13 @@
 /* global TBODY */
 /* exported GridColumnsObserver */
 
+/**
+ * Handle columns change events:
+ * - When columns are added, new dom node are built and appended to the grid.
+ * - When columns are removed, dom nodes are removed.
+ * - When column is updated, associated dom nodes are updated.
+ */
+
 var GridColumnsObserver = (function() {
 
   var tdIndexer = function(td) {
@@ -99,12 +106,12 @@ var GridColumnsObserver = (function() {
     }
   };
 
-  var o = {
+  var instance = {
     // Apply columns changes to grid.
     on: function(changes) {
       _.forEach(changes, function(change) {
         var fnName = 'on' + $util.capitalize(change.type);
-        o[fnName].call(this, change);
+        instance[fnName].call(this, change);
       }, this);
 
       return this;
@@ -309,5 +316,5 @@ var GridColumnsObserver = (function() {
     }
   };
 
-  return o;
+  return instance;
 })();

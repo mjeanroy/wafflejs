@@ -3,6 +3,8 @@
  * minification and tests.
  */
 
+var fs = require('fs');
+var path = require('path');
 var _ = require('underscore');
 var log = require('log4js').getLogger();
 
@@ -14,93 +16,93 @@ var VENDOR_SRC = 'vendors/';
 var $files = {
   // jQuery lite
   $jq: [
-    SRC + 'jq-lite.js'
+    SRC + 'core/jq-lite/jq-lite.js'
   ],
 
   // underscore lite
   $underscore: [
-    SRC + 'underscore-base-lite.js',
-    SRC + 'underscore-lite.js'
+    SRC + 'core/underscore-lite/underscore-base-lite.js',
+    SRC + 'core/underscore-lite/underscore-lite.js'
   ],
 
   $underscoreSanitize: [
-    SRC + 'underscore/sanitize.js'
+    SRC + 'extensions/underscore/sanitize.js'
   ],
 
   $coreJson: [
-    SRC + 'json.js'
+    SRC + 'core/commons/json.js'
   ],
 
   $coreParser: [
-    SRC + 'stack.js',
-    SRC + 'parser.js'
+    SRC + 'core/data-structures/stack.js',
+    SRC + 'core/commons/parser.js'
   ],
 
   $coreSanitize: [
-    SRC + 'sanitize.js'
+    SRC + 'core/commons/sanitize.js'
   ],
 
   $coreMap: [
-    SRC + 'map.js'
+    SRC + 'core/data-structures/map.js'
   ],
 
   $coreSniffer: [
-    SRC + 'sniffer.js'
+    SRC + 'core/commons/sniffer.js'
   ],
 
   // Core source, mandatory source files appended to each target
   $core: [
-    SRC + 'constants.js',
-    SRC + 'util.js',
-    SRC + 'dom.js',
-    SRC + 'vdom.js',
-    SRC + 'event-bus.js',
-    SRC + 'observable.js',
-    SRC + 'collection.js',
-    SRC + 'renderers.js',
-    SRC + 'comparators.js',
-    SRC + 'filters.js',
-    SRC + 'column.js',
-    SRC + 'grid-util.js',
-    SRC + 'grid-dom-handlers.js',
-    SRC + 'grid-dom-binders.js',
-    SRC + 'grid-builder.js',
-    SRC + 'grid-resizer.js',
-    SRC + 'grid-data-observer.js',
-    SRC + 'grid-columns-observer.js',
-    SRC + 'grid-selection-observer.js',
-    SRC + 'grid-filter.js',
-    SRC + 'grid.js',
-    SRC + 'waffle.js'
+    SRC + 'core/constants.js',
+    SRC + 'core/commons/util.js',
+    SRC + 'core/commons/dom.js',
+    SRC + 'core/commons/vdom.js',
+    SRC + 'core/events/event-bus.js',
+    SRC + 'core/observable/observable.js',
+    SRC + 'core/services/renderers.js',
+    SRC + 'core/services/comparators.js',
+    SRC + 'core/services/filters.js',
+    SRC + 'core/grid/models/collection.js',
+    SRC + 'core/grid/models/column.js',
+    SRC + 'core/grid/commons/grid-util.js',
+    SRC + 'core/grid/dom/grid-dom-handlers.js',
+    SRC + 'core/grid/dom/grid-dom-binders.js',
+    SRC + 'core/grid/builder/grid-builder.js',
+    SRC + 'core/grid/resize/grid-resizer.js',
+    SRC + 'core/grid/observers/grid-data-observer.js',
+    SRC + 'core/grid/observers/grid-columns-observer.js',
+    SRC + 'core/grid/observers/grid-selection-observer.js',
+    SRC + 'core/grid/filter/grid-filter.js',
+    SRC + 'core/grid/grid.js',
+    SRC + 'core/waffle.js'
   ],
 
   $angularDirective: [
-    SRC + 'angular/waffle-angular-service.js',
-    SRC + 'angular/grid-angular-template.js',
-    SRC + 'angular/grid-compilation-angular.js',
-    SRC + 'angular/grid-angular.js'
+    SRC + 'extensions/angular/waffle-angular-service.js',
+    SRC + 'extensions/angular/grid-angular-template.js',
+    SRC + 'extensions/angular/grid-compilation-angular.js',
+    SRC + 'extensions/angular/grid-angular.js'
   ],
 
   $angularPlugin: [
-    SRC + 'underscore-base-lite.js',
-    SRC + 'angular/underscore-angular.js',
-    SRC + 'angular/jq-angular.js',
-    SRC + 'angular/json-angular.js',
-    SRC + 'angular/waffle-angular-module.js',
-    SRC + 'angular/waffle-angular-run.js'
+    SRC + 'core/underscore-lite/underscore-base-lite.js',
+    SRC + 'extensions/angular/underscore-angular.js',
+    SRC + 'extensions/angular/jq-angular.js',
+    SRC + 'extensions/angular/json-angular.js',
+    SRC + 'extensions/angular/waffle-angular-module.js',
+    SRC + 'extensions/angular/waffle-angular-run.js'
   ],
 
   $jqueryPlugin: [
-    SRC + 'jquery/waffle-jquery.js'
+    SRC + 'extensions/jquery/waffle-jquery.js'
   ],
 
   $polymerPlugin: [
-    SRC + 'polymer/waffle-polymer.js'
+    SRC + 'extensions/polymer/waffle-polymer.js'
   ],
 
   $reactPlugin: [
-    SRC + 'react/waffle-react-mixin.js',
-    SRC + 'react/waffle-react.js'
+    SRC + 'extensions/react/waffle-react-mixin.js',
+    SRC + 'extensions/react/waffle-react.js'
   ]
 };
 
@@ -180,7 +182,7 @@ var $targets = {
     ],
     test: [
       // Add jq-Lite spec to check compatibilty with jquery
-      TEST + 'jq-lite-spec.js',
+      TEST + 'core/jq-lite/jq-lite-spec.js',
     ]
   },
 
@@ -200,8 +202,8 @@ var $targets = {
     ],
     test: [
       // Add underscore-Lite spec to check compatibilty with underscore
-      TEST + 'underscore-lite-spec.js',
-      TEST + 'underscore-base-lite-spec.js'
+      TEST + 'core/underscore-lite/underscore-lite-spec.js',
+      TEST + 'core/underscore-lite/underscore-base-lite-spec.js'
     ]
   },
 
@@ -222,11 +224,11 @@ var $targets = {
     ],
     test: [
       // Add jq-Lite spec to check compatibilty with jquery
-      TEST + 'jq-lite-spec.js',
+      TEST + 'core/jq-lite/jq-lite-spec.js',
 
       // Add underscore-Lite spec to check compatibilty with underscore
-      TEST + 'underscore-lite-spec.js',
-      TEST + 'underscore-base-lite-spec.js'
+      TEST + 'core/underscore-lite/underscore-lite-spec.js',
+      TEST + 'core/underscore-lite/underscore-base-lite-spec.js'
     ]
   },
 
@@ -243,13 +245,13 @@ var $targets = {
     ],
     test: [
       // Add jq-Lite spec to check compatibilty with angular
-      TEST + 'jq-lite-spec.js',
+      TEST + 'core/jq-lite/jq-lite-spec.js',
 
       // Add underscore-Lite spec to check compatibilty with angular
-      TEST + 'underscore-lite-spec.js',
+      TEST + 'core/underscore-lite/underscore-lite-spec.js',
 
       // Add parser spec to check compatibilty with angular
-      TEST + 'parser-spec.js'
+      TEST + 'core/commons/parser-spec.js'
     ]
   },
 
@@ -351,6 +353,17 @@ var targets = _.mapObject($targets, function(target, key) {
     .concat('test/base-spec.js')
     .concat(specs)
     .concat(target.test);
+
+  // Check that source file exists
+  _.forEach(src, function(relativePath) {
+    var fullPath = path.join(__dirname, '../', relativePath);
+
+    try {
+      fs.statSync(fullPath);
+    } catch (e) {
+      throw Error('File ' + relativePath + ' does not exist');
+    }
+  });
 
   return {
     template: template,

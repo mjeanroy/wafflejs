@@ -22,15 +22,27 @@
  * SOFTWARE.
  */
 
-/* exported $sanitize */
+/* exported $json */
 
 /**
- * Utility service that will sanitize input to
- * prevent XSS injection.
+ * Simple object used to turn a javascript object to a json string and a
+ * json string to a plain old javascript object.
+ * If JSON api is not available, an error will be thrown.
  */
 
-var $sanitize = function(input) {
-  var div = document.createElement('div');
-  div.appendChild(document.createTextNode(input));
-  return div.innerHTML;
-};
+var $json = (function() {
+  var createFn = function(fn) {
+    return function(value) {
+      if (!JSON || !JSON[fn]) {
+        throw Error('JSON.' + fn + ' is not available in your browser');
+      }
+
+      return JSON[fn](value);
+    };
+  };
+
+  return {
+    toJson: createFn('stringify'),
+    fromJson: createFn('parse')
+  };
+})();

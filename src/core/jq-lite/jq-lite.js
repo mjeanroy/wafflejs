@@ -27,6 +27,11 @@
 /* global _ */
 /* exported $ */
 
+/**
+ * Really simple implementation of some jQuery api.
+ * This implementation should never be published.
+ */
+
 var $ = (function() {
 
   var JqLite = function(nodes) {

@@ -27,7 +27,8 @@
 /* exported $util */
 
 /**
- * Set of utilities.
+ * Set of utilities functions.
+ * These functions should remain simple and waffle agnostic.
  */
 
 var $util = {

@@ -46,6 +46,10 @@
 /* exported TFOOT */
 /* exported TABLE */
 
+/**
+ * Set of constants used across all project components.
+ */
+
 var CSS_PREFIX = 'waffle-';
 var CSS_GRID = 'waffle-grid';
 var CSS_SORTABLE = CSS_PREFIX + 'sortable';

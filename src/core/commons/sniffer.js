@@ -22,24 +22,40 @@
  * SOFTWARE.
  */
 
-/* exported $json */
+/* global HashMap */
+/* exported $sniffer */
 
-var $json = {
-  // Turn a javascript object to a json string
-  toJson: function(value) {
-    if (!JSON || !JSON.stringify) {
-      throw new Error('JSON.stringify is not available in your browser');
+/**
+ * Simple object used for simple browser detection.
+ */
+
+var $sniffer = (function() {
+  // This property is available only in IE
+  var msie = document.documentMode;
+  var cacheEvents = new HashMap();
+
+  // This is a map of events with tagName to use for feature
+  // detection.
+  var events = {
+    'input': 'input'
+  };
+
+  return {
+    hasEvent: function(event) {
+      // IE9 and IE10 support input event, but it is really
+      // buggy, so we disable this feature for these browsers
+      if (event === 'input' && msie < 11) {
+        return false;
+      }
+
+      if (!cacheEvents.contains(event)) {
+        var node = document.createElement(events[event] || 'div');
+        var support = ('on' + event) in node;
+        cacheEvents.put(event, !!support);
+        node = null;
+      }
+
+      return cacheEvents.get(event);
     }
-
-    return JSON.stringify(value);
-  },
-
-  // Turn a json string to a javascript object
-  fromJson: function(value) {
-    if (!JSON || !JSON.parse) {
-      throw new Error('JSON.parse is not available in your browser');
-    }
-
-    return JSON.parse(value);
-  }
-};
+  };
+})();

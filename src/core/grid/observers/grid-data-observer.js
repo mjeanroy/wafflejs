@@ -33,17 +33,24 @@
 /* global DATA_WAFFLE_IDX */
 /* exported GridDataObserver */
 
+/**
+ * Handle data change events:
+ * - When data are added, new dom rows are built and appended to the grid.
+ * - When data are removed, dom rows are removed.
+ * - When data is updated, associated dom row are updated.
+ */
+
 var GridDataObserver = (function() {
   var readDataIndex = GridUtil.getDataIndex;
   var findPreviousIndex = GridUtil.getPreviousRowIndexForDataIndex;
   var findIndex = GridUtil.getRowIndexForDataIndex;
 
-  var o = {
+  var instance = {
     // Apply data changes to grid.
     on: function(changes) {
       _.forEach(changes, function(change) {
         var fnName = 'on' + $util.capitalize(change.type);
-        o[fnName].call(this, change);
+        instance[fnName].call(this, change);
       }, this);
 
       return this;
@@ -189,5 +196,5 @@ var GridDataObserver = (function() {
     }
   };
 
-  return o;
+  return instance;
 })();

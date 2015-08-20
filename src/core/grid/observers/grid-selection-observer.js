@@ -29,6 +29,12 @@
 /* global GridUtil */
 /* exported GridSelectionObserver */
 
+/**
+ * Handle selection change events:
+ * - When data are added, associated rows are flagged as "checked".
+ * - When data are removed, associated rows are flagged as "unchecked".
+ */
+
 var GridSelectionObserver = (function() {
   var findIndex = GridUtil.getRowIndexForDataIndex;
   var findCheckBox = GridUtil.getCheckbox;
@@ -36,12 +42,12 @@ var GridSelectionObserver = (function() {
     checkbox.checked = checked;
   };
 
-  var o = {
+  var instance = {
     // Apply data changes to grid.
     on: function(changes) {
       _.forEach(changes, function(change) {
         var fnName = 'on' + $util.capitalize(change.type);
-        var fn = GridSelectionObserver[fnName];
+        var fn = instance[fnName];
         if (fn) {
           fn.call(this, change);
         }
@@ -157,5 +163,5 @@ var GridSelectionObserver = (function() {
     }
   };
 
-  return o;
+  return instance;
 })();

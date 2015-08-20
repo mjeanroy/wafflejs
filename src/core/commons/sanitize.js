@@ -22,46 +22,15 @@
  * SOFTWARE.
  */
 
-/* exported Stack */
+/* exported $sanitize */
 
-var Stack = (function() {
-  var Node = function(value, next) {
-    this.value = value;
-    this.next = next || null;
-  };
+/**
+ * Utility service that will sanitize input to prevent XSS injection.
+ * This is a really simple implementation.
+ */
 
-  var Stack = function() {
-    this.root = null;
-  };
-
-  Stack.prototype = {
-    // Push new value onto the stack.
-    push: function(value) {
-      this.root = new Node(value, this.root);
-    },
-
-    // Peek value from the stack.
-    peek: function() {
-      return this.root ? this.root.value : undefined;
-    },
-
-    // Peek value from the stack and remove entry.
-    pop: function() {
-      var value;
-
-      if (this.root) {
-        value = this.root.value;
-        this.root = this.root.next;
-      }
-
-      return value;
-    },
-
-    // Check if stack is empty.
-    isEmpty: function() {
-      return !this.root;
-    }
-  };
-
-  return Stack;
-})();
+var $sanitize = function(input) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(input));
+  return div.innerHTML;
+};

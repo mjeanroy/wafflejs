@@ -28,6 +28,16 @@
 /* global Stack */
 /* exported $parse */
 
+/**
+ * Parser used to handle reflection operations:
+ * - Getter function.
+ * - Setter function.
+ *
+ * Complex and nested object are supported:
+ *     $parse('id')({ id: 1 }) === 1
+ *     $parse('nested.id')({ nested: { id: 1 } }) === 1
+ */
+
 var $parse = (function() {
   var cache = new HashMap();
 
@@ -202,7 +212,7 @@ var $parse = (function() {
     return value;
   };
 
-  var o = function(key) {
+  var instance = function(key) {
     if (!cache.contains(key)) {
       var parts = $normalize(key);
 
@@ -220,10 +230,10 @@ var $parse = (function() {
     return cache.get(key);
   };
 
-  o.$clear = function() {
+  instance.$clear = function() {
     cache.clear();
-    return o;
+    return instance;
   };
 
-  return o;
+  return instance;
 })();

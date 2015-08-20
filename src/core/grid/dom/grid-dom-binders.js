@@ -33,6 +33,10 @@
 /* global GridDomHandlers */
 /* exported GridDomBinders */
 
+/**
+ * Bind DOM events on the grid.
+ */
+
 var GridDomBinders = (function() {
 
   var bind = function(grid, target, events, handlerName) {

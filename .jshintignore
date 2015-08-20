@@ -1,2 +1,3 @@
 # Ignore test files
 test/**
+*-spec.js

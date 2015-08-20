@@ -35,6 +35,13 @@
 /* global CSS_CHECKBOX_CELL */
 /* exported GridBuilder */
 
+/**
+ * Build DOM elements:
+ * - Rows
+ * - Cells
+ * - Editable controls
+ */
+
 var GridBuilder = (function() {
 
   var PX = 'px';

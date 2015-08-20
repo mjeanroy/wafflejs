@@ -25,6 +25,10 @@
 /* global _ */
 /* exported $vdom */
 
+/**
+ * Provide functions to merge DOM nodes.
+ */
+
 var $vdom = (function() {
   var replaceNode = function(rootNode, oldNode, newNode) {
     return rootNode.replaceChild(newNode, oldNode);

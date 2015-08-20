@@ -29,6 +29,11 @@
 /* global $util */
 /* exported $doc */
 
+/**
+ * Provide simple dom operations (such as element creation, selection by id
+ * or by tag name, etc.).
+ */
+
 var $doc = (function() {
 
   var scrollbarWidth = function() {

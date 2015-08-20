@@ -36,6 +36,14 @@
 /* global CSS_DRAGGABLE_OVER */
 /* exported GridDomHandlers */
 
+/**
+ * Handle DOM events:
+ * - Sort
+ * - Selection
+ * - Edition
+ * - Drag & Drop
+ */
+
 var GridDomHandlers = (function() {
 
   var THEAD = 'THEAD';

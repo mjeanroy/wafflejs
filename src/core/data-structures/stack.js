@@ -22,51 +22,62 @@
  * SOFTWARE.
  */
 
-/* global _ */
-/* exported HashMap */
+/* exported Stack */
 
-var HashMap = (function() {
-  var prefix = 'key_';
-  var keyFactory = function(k) {
-    return prefix + k;
+/**
+ * Data structure that implements FIFO pattern (first-in-first-out).
+ *
+ * Operations allowed are:
+ *     push(value)
+ *     peek()
+ *     pop()
+ *     isEmpty()
+ *
+ * Each operation should run in O(1).
+ */
+
+var Stack = (function() {
+  var Node = function(value, next) {
+    this.value = value;
+    this.next = next || null;
   };
 
-  var Constructor = function() {
-    if (!(this instanceof Constructor)) {
-      return new Constructor();
+  var Stack = function() {
+    this.root = null;
+  };
+
+  Stack.prototype = {
+    // Push new value onto the stack.
+    // Running time: O(1)
+    push: function(value) {
+      this.root = new Node(value, this.root);
+    },
+
+    // Peek value from the stack.
+    // Running time: O(1)
+    peek: function() {
+      return this.root ? this.root.value : undefined;
+    },
+
+    // Peek value from the stack and remove entry.
+    // Running time: O(1)
+    pop: function() {
+      var value;
+
+      if (this.root) {
+        value = this.root.value;
+        this.root = this.root.next;
+      }
+
+      return value;
+    },
+
+    // Check if stack is empty.
+    // Running time: O(1)
+    isEmpty: function() {
+      return !this.root;
     }
-
-    this.$o = {};
   };
 
-  Constructor.prototype = {
-    // Clear map
-    clear: function() {
-      this.$o = {};
-    },
-
-    // Put value into map using given key
-    put: function(key, value) {
-      this.$o[keyFactory(key)] = value;
-      return this;
-    },
-
-    // Get value associated to given key
-    get: function(key) {
-      return this.$o[keyFactory(key)];
-    },
-
-    // Remove value associated to given key
-    remove: function(key) {
-      delete this.$o[keyFactory(key)];
-      return this;
-    },
-
-    // Check if given key is inside the map
-    contains: function(key) {
-      return _.has(this.$o, keyFactory(key));
-    }
-  };
-
-  return Constructor;
+  return Stack;
 })();

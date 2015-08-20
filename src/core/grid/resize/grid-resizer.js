@@ -28,6 +28,10 @@
 /* global HashMap */
 /* exported GridResizer */
 
+/**
+ * Resize grid: compute new columns width and apply change events.
+ */
+
 var GridResizer = (function() {
 
   var PX = 'px';

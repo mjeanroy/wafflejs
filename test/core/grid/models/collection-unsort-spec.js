@@ -465,6 +465,52 @@ describe('Unsorted collection', function() {
     ]);
   });
 
+  it('should remove array of elements', function() {
+    collection = new Collection([o1, o2, o3, o4]);
+    expect(collection.length).toBe(4);
+
+    var removed = collection.remove([o1, o3]);
+
+    expect(removed).toEqual([o1, o3]);
+    expect(collection.length).toBe(2);
+    expect(collection[0]).toBe(o2);
+    expect(collection[1]).toBe(o4);
+    expect(collection[2]).toBeUndefined();
+    expect(collection[3]).toBeUndefined();
+    expect(collection.$$map).toEqual(createMap({
+      2: { idx: 0 },
+      4: { idx: 1 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 0, index: 0, removed: [o1], object: collection },
+      { type: 'splice', addedCount: 0, index: 2, removed: [o3], object: collection }
+    ]);
+  });
+
+  it('should remove single element', function() {
+    collection = new Collection([o1, o2, o3, o4]);
+    expect(collection.length).toBe(4);
+
+    var removed = collection.remove([o1]);
+
+    expect(removed).toEqual([o1]);
+    expect(collection.length).toBe(3);
+    expect(collection[0]).toBe(o2);
+    expect(collection[1]).toBe(o3);
+    expect(collection[2]).toBe(o4);
+    expect(collection[3]).toBeUndefined();
+    expect(collection.$$map).toEqual(createMap({
+      2: { idx: 0 },
+      3: { idx: 1 },
+      4: { idx: 2 }
+    }));
+
+    expect(collection.trigger).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 0, index: 0, removed: [o1], object: collection },
+    ]);
+  });
+
   it('should reverse collection with odd length', function() {
     collection = new Collection([o1, o2]);
 

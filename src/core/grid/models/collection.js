@@ -362,22 +362,35 @@ var Collection = (function() {
     },
 
     // Remove elements of collection
-    // If first argument is a number, then this is a shortcut for splice(start, deleteCount).
-    // Otherwise, first argument should be a predicate. This predicate will be called for
-    // each element, and must return a truthy value to remove that element.
+    // If first argument is:
+    // - A number, then this is a shortcut for splice(start, deleteCount).
+    // - An array, then all items in array are removed.
+    // - An object, then this item is removed.
+    // - Otherwise, this should be a predicate. This predicate will be called for
+    //   each element, and must return a truthy value to remove that element.
     remove: function(start, deleteCount) {
-      // If first argument is a number, then this is a shortcut for splice method
+      // If first argument is a number, then this is a shortcut for splice method.
       if (_.isNumber(start)) {
         return this.splice.call(this, start, deleteCount || this.length);
       }
 
-      // If it is an array, then remove everything
+      // If it is an array, then remove everything in array.
       if (_.isArray(start)) {
         var $key = this.$$key;
-        var map = _.indexBy(start, $key);
+        var map = _.indexBy(start, function(o) {
+          return $key(o);
+        });
+
         return this.remove(function(current) {
           return !!map[$key(current)];
         });
+      }
+
+      // If it is an object, then remove single item.
+      if (_.isObject(start) && !_.isFunction(start)) {
+        var model = parseModel(this, start);
+        var index = this.indexOf(model);
+        return index >= 0 ? this.remove(index, 1) : [];
       }
 
       var predicate = start;

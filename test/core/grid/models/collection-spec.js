@@ -414,14 +414,19 @@ describe('collection', function() {
       expect(collection[1]).toEqual(jasmine.objectContaining(m4));
     });
 
-    it('should remove data', function() {
+    it('should remove array data', function() {
+      spyOn(collection, 'splice').and.callThrough();
       spyOn(collection, 'trigger').and.callThrough();
 
       var old1 = collection[0];
       var old2 = collection[1];
 
       collection.trigger.calls.reset();
+      collection.splice.calls.reset();
+
       collection.remove([old1]);
+
+      expect(collection.splice).not.toHaveBeenCalled();
 
       expect(collection.$$map).toEqual(createMap({
         2: { idx: 0 }
@@ -438,6 +443,86 @@ describe('collection', function() {
         addedCount: 0,
         object: collection
       }]);
+    });
+
+    it('should remove single data', function() {
+      spyOn(collection, 'splice').and.callThrough();
+      spyOn(collection, 'trigger').and.callThrough();
+
+      var old1 = collection[0];
+      var old2 = collection[1];
+
+      collection.splice.calls.reset();
+      collection.trigger.calls.reset();
+
+      collection.remove(old1);
+
+      expect(collection.splice).toHaveBeenCalledWith(0, 1);
+
+      expect(collection.$$map).toEqual(createMap({
+        2: { idx: 0 }
+      }));
+
+      expect(collection.length).toBe(1);
+      expect(collection[0]).toBe(old2);
+      expect(collection[1]).toBeUndefined();
+
+      expect(collection.trigger).toHaveBeenCalledWith([{
+        type: 'splice',
+        removed: [old1],
+        index: 0,
+        addedCount: 0,
+        object: collection
+      }]);
+    });
+
+    it('should remove data with a predicate', function() {
+      spyOn(collection, 'splice').and.callThrough();
+      spyOn(collection, 'trigger').and.callThrough();
+
+      var old1 = collection[0];
+      var old2 = collection[1];
+
+      collection.splice.calls.reset();
+      collection.trigger.calls.reset();
+
+      collection.remove(function(current) {
+        return current.id === old1.id;
+      });
+
+      expect(collection.splice).not.toHaveBeenCalled();
+
+      expect(collection.$$map).toEqual(createMap({
+        2: { idx: 0 }
+      }));
+
+      expect(collection.length).toBe(1);
+      expect(collection[0]).toBe(old2);
+      expect(collection[1]).toBeUndefined();
+
+      expect(collection.trigger).toHaveBeenCalledWith([{
+        type: 'splice',
+        removed: [old1],
+        index: 0,
+        addedCount: 0,
+        object: collection
+      }]);
+    });
+
+    it('should not remove unknown data', function() {
+      spyOn(collection, 'splice').and.callThrough();
+      spyOn(collection, 'trigger').and.callThrough();
+
+      collection.splice.calls.reset();
+      collection.trigger.calls.reset();
+
+      var removed = collection.remove({
+        id: 5
+      });
+
+      expect(removed).toEqual([]);
+      expect(collection.splice).not.toHaveBeenCalled();
+      expect(collection.trigger).not.toHaveBeenCalled();
     });
 
     it('should slice part of collection', function() {

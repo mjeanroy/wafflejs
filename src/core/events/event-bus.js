@@ -23,39 +23,22 @@
  */
 
 /* global _ */
+/* global WaffleEvent */
 /* exported EventBus */
 
 var EventBus = (function() {
-
-  var noop = _.noop;
-
-  var WaffleEvent = function(event, target, params) {
-    this.type = event;
-    this.bubbles = false;
-    this.cancelable = false;
-    this.details = params;
-    this.timeStamp = _.now();
-
-    this.target = target;
-    this.currentTarget = target;
-    this.srcElement = target;
-  };
-
-  WaffleEvent.prototype = {
-    preventDefault: noop,
-    stopPropagation: noop,
-    stopImmediatePropagation: noop
-  };
 
   var formatEventName = function(type) {
     return type.toLowerCase();
   };
 
-  var Constructor = function() {
+  var EventBus = function() {
     this.$events = {};
   };
 
-  Constructor.prototype = {
+  EventBus.prototype = {
+    // Add new event listener.
+    // Event type is case insensitive.
     addEventListener: function(type, listener) {
       var name = formatEventName(type);
       var events = this.$events;
@@ -63,6 +46,8 @@ var EventBus = (function() {
       listeners.push(listener);
     },
 
+    // Remove event listener.
+    // Event type is case insensitive.
     removeEventListener: function(type, listener) {
       var name = formatEventName(type);
       var listeners = this.$events[name];
@@ -76,6 +61,9 @@ var EventBus = (function() {
       });
     },
 
+    // Dispatch new event.
+    // Event type is case insensitive.
+    // Last parameter will be set to the event details attribute.
     dispatchEvent: function(grid, type, params) {
       // Format event name
       // Event name should be case insensitive
@@ -104,6 +92,6 @@ var EventBus = (function() {
     }
   };
 
-  return Constructor;
+  return EventBus;
 
 })();

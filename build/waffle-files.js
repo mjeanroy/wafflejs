@@ -56,6 +56,7 @@ var $files = {
     SRC + 'core/commons/util.js',
     SRC + 'core/commons/dom.js',
     SRC + 'core/commons/vdom.js',
+    SRC + 'core/events/event.js',
     SRC + 'core/events/event-bus.js',
     SRC + 'core/observable/observable.js',
     SRC + 'core/services/renderers.js',

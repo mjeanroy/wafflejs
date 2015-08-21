@@ -23,65 +23,30 @@
  */
 
 (function(window) {
-  'use strict';
 
-  // ==
-  // Column Factory.
+  window.ajax = function(method, url, success) {
+    var xhr = new XMLHttpRequest();
 
-  var newColumn = function(id, title, renderer, width, editable) {
-    var column = {
-      id: id,
-      title: title,
-      escape: false,
-      comparator: '$string'
+    xhr.onreadystatechange = function() {
+      if (this.readyState === 4) {
+        if (this.status >= 200) {
+          // Parse response as json or text as fallback
+          var rsp = (function(xhr) {
+            try {
+              return JSON.parse(xhr.responseText);
+            } catch (e) {
+              return xhr.responseText;
+            }
+          })(this);
+
+          // Trigger success callback
+          success(rsp);
+        }
+      }
     };
 
-    if (renderer) {
-      column.renderer = renderer;
-    }
-
-    if (editable) {
-      column.editable = editable;
-    }
-
-    if (width) {
-      column.width = width;
-    }
-
-    return column;
-  };
-
-  // ==
-
-  // ==
-  // Model Object.
-
-  var Person = function(data) {
-    this.id = data.id;
-    this.firstName = data.firstName;
-    this.lastName = data.lastName;
-    this.userName = data.userName;
-    this.email = data.email;
-  };
-
-  Person.prototype.name = function() {
-    return this.firstName + ' ' + this.lastName.toUpperCase();
-  };
-
-  //==
-
-  // Expose some global variables.
-  // Do not do this in real code.
-  window.waffleOptions = {
-    model: Person,
-    columns: [
-      newColumn('name()', 'Name', ['$capitalize'], '20%'),
-      newColumn('userName', 'Login'),
-      newColumn('email', 'Email', ['$lowercase', 'email'], '60%', {
-        type: 'email',
-        css: 'form-control'
-      })
-    ]
+    xhr.open(method, url, true);
+    xhr.send(null);
   };
 
 })(window);

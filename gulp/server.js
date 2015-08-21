@@ -30,7 +30,7 @@ module.exports = function(options) {
   var dist = options.dist;
 
   gulp.task('server', ['bower:install', 'ie8', 'concat', 'less', 'vulcanize'], function () {
-    server.run([basePath + '/sample-server.js']);
+    server.run([basePath + '/sample/server.js']);
 
     gulp.watch([basePath + '/src/**/*.js'], ['ie8', 'concat']);
     gulp.watch([basePath + '/src/less/*.less'], ['less']);

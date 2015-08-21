@@ -22,7 +22,11 @@
  * SOFTWARE.
  */
 
-(function(Waffle, document) {
+/* global waffleOptions */
+/* global Waffle */
+/* global ajax */
+
+(function(Waffle, ajax, document) {
 
   'use strict';
 
@@ -30,42 +34,29 @@
     return '<a href="mailto:' + value + '">' + value + '</a>';
   });
 
-  options.events = {
-    onInitialized: function() {
-      console.log('Grid is initialized');
-    },
-    onRendered: function() {
-     console.log('Grid has been rendered');
-    },
-    onDataSpliced: function(event) {
-      var index = event.index;
-      var details = event.details;
-
-      if (details.added.length > 0) {
-        console.log('New row appended (line ' + index + ' => ' + JSON.stringify(details.added) + ')');
-      }
-
-      if (details.removed.length > 0) {
-        console.log('Rows removed (line ' + index + ' => ' + JSON.stringify(details.removed) + ')');
-      }
-    },
-    onSorted: function() {
-      console.log('Sort has been updated');
-    }
-  };
-
-  var grid = Waffle.create(document.getElementById('waffle'), options);
+  var url = '/people';
+  var grid = Waffle.create(document.getElementById('waffle'), waffleOptions);
+  var data = grid.data();
 
   document.getElementById('add').addEventListener('click', function() {
-    grid.data().push(createFakePerson());
+    ajax('POST', url, function(response) {
+      data.push(response);
+    });
   });
 
   document.getElementById('remove').addEventListener('click', function() {
-    grid.data().pop();
+    var last = data.last();
+    if (last) {
+      ajax('DELETE', url + '/' + last.id, function() {
+        data.remove(last);
+      });
+    }
   });
 
   document.getElementById('clear').addEventListener('click', function() {
-    grid.data().clear();
+    ajax('DELETE', url, function() {
+      data.clear();
+    });
   });
 
   document.getElementById('input-filter').addEventListener('keyup', function() {
@@ -79,4 +70,12 @@
     grid.removeFilter();
   });
 
-})(Waffle, document);
+  var init = function() {
+    ajax('GET', url, function(response) {
+      data.reset(response);
+    });
+  };
+
+  init();
+
+})(Waffle, ajax, document);

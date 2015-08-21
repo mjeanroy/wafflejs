@@ -22,28 +22,37 @@
  * SOFTWARE.
  */
 
-(function() {
+/* global waffleOptions */
+/* global ajax */
+/* global React */
+/* global Waffle */
+
+// TODO Use Flux architecture.
+
+(function(ajax, React) {
 
   // Update options
 
   // Enable scrolling on tbody.
-  options.scrollable = true;
+  waffleOptions.scrollable = true;
 
   // Enable drag&drop
-  options.dnd = true;
+  waffleOptions.dnd = true;
 
   // Enable automatic column sizing.
-  options.size = {
+  waffleOptions.size = {
     width: 'auto'
   };
 
   // Enable multi selection.
-  options.selection = {
+  waffleOptions.selection = {
     multi: true
   };
 
   // Initial sort.
-  options.sortBy = 'name()';
+  waffleOptions.sortBy = 'name()';
+
+  var url = '/people';
 
   var App = React.createClass({
     getInitialState: function() {
@@ -53,7 +62,13 @@
     },
 
     getInitialGridOptions: function() {
-      return options;
+      return waffleOptions;
+    },
+
+    componentDidMount: function() {
+      ajax('GET', url, function(response) {
+        this.grid().data().reset(response);
+      }.bind(this));
     },
 
     render: function() {
@@ -116,17 +131,26 @@
     },
 
     addPerson: function() {
-      this.grid().data().push(createFakePerson());
+      ajax('POST', url, function(response) {
+        this.grid().data().push(response);
+      }.bind(this));
     },
 
     removePerson: function() {
-      this.grid().data().pop();
+      var last = this.grid().data().last();
+      if (last) {
+        ajax('DELETE', url + '/' + last.id, function() {
+          this.grid().data().remove(last);
+        }.bind(this));
+      }
     },
 
     clearAll: function() {
-      this.grid().data().clear();
+      ajax('DELETE', url, function() {
+        this.grid().data().clear();
+      }.bind(this));
     }
   });
 
   React.render(<App />, document.getElementById('container'));
-})();
+})(ajax, React);

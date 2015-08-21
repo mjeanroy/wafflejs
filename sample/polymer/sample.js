@@ -22,22 +22,35 @@
  * SOFTWARE.
  */
 
-(function(document) {
+/* global ajax */
+
+(function(ajax, document) {
 
   'use strict';
 
-  var grid = document.getElementById('grid').grid;
+  var url = '/people';
+  var grid = document.getElementById('grid').grid();
+  var data = grid.data();
 
   document.getElementById('add').addEventListener('click', function() {
-    grid.data().push(createFakePerson());
+    ajax('POST', url, function(response) {
+      data.push(response);
+    });
   });
 
   document.getElementById('remove').addEventListener('click', function() {
-    grid.data().pop();
+    var last = data.last();
+    if (last) {
+      ajax('DELETE', url + '/' + last.id, function() {
+        data.remove(last);
+      });
+    }
   });
 
   document.getElementById('clear').addEventListener('click', function() {
-    grid.data().clear();
+    ajax('DELETE', url, function() {
+      data.clear();
+    });
   });
 
   document.getElementById('input-filter').addEventListener('keyup', function() {
@@ -51,4 +64,4 @@
     grid.removeFilter();
   });
 
-})(document);
+})(ajax, document);

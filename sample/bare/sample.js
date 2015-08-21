@@ -22,7 +22,11 @@
  * SOFTWARE.
  */
 
-(function($) {
+/* global waffleOptions */
+/* global _ */
+/* global jQuery */
+
+(function($, _) {
 
   'use strict';
 
@@ -30,18 +34,29 @@
     return '<a href="mailto:' + value + '">' + value + '</a>';
   });
 
-  var grid = $('#waffle').waffle(options).data('wafflejs');
+  var url = '/people';
+  var grid = $('#waffle').waffle(waffleOptions).data('wafflejs');
+  var data = grid.data();
 
   $('#add').on('click', function() {
-    grid.data().push(createFakePerson());
+    $.post(url).done(function(response) {
+      data.push(response);
+    });
   });
 
   $('#remove').on('click', function() {
-    grid.data().pop();
+    var last = data.last();
+    if (last) {
+      $.ajax({ method: 'DELETE', url: url + '/' + last.id }).done(function() {
+        data.remove(last);
+      });
+    }
   });
 
   $('#clear').on('click', function() {
-    grid.data().clear();
+    $.ajax({ method: 'DELETE', url: url }).done(function() {
+      data.clear();
+    });
   });
 
   var onFilterUpdate = function() {
@@ -57,5 +72,12 @@
     grid.removeFilter();
   });
 
-})(jQuery);
+  var init = function() {
+    $.get(url).done(function(response) {
+      data.reset(response);
+    });
+  };
 
+  init();
+
+})(jQuery, _);

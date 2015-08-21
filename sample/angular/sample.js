@@ -22,7 +22,9 @@
  * SOFTWARE.
  */
 
-(function(angular) {
+/* global angular */
+
+(function(window, angular) {
 
   'use strict';
 
@@ -34,32 +36,54 @@
       });
     }])
 
-    .controller('SampleController', ['$scope', '$log', function($scope, $log) {
-      $scope.columns = angular.copy(options.columns);
-      $scope.options = options;
+    .factory('waffleOptions', function() {
+      return angular.copy(window.waffleOptions);
+    })
 
+    .controller('SampleController', function($scope, $log, $http, waffleOptions) {
       $scope.nbSort = 0;
+      $scope.columns = angular.copy(waffleOptions.columns);
+      $scope.options = waffleOptions;
+
+      // Will be set by directive.
       $scope.grid = null;
 
+      var data = function() {
+        return $scope.grid.data();
+      };
+
+      var columns = function() {
+        return $scope.grid.columns();
+      };
+
       $scope.toggleColumn = function(column, index) {
-        var columns = $scope.grid.columns();
-        if (columns.contains(column)) {
-          columns.splice(index, 1);
+        var cols = columns();
+        if (cols.contains(column)) {
+          cols.splice(index, 1);
         } else {
-          columns.splice(index, 0, column);
+          cols.splice(index, 0, column);
         }
       };
 
       $scope.add = function() {
-        $scope.grid.data().push(createFakePerson());
+        $http.post('/people').then(function(response) {
+          data().push(response.data);
+        });
       };
 
       $scope.pop = function() {
-        $scope.grid.data().pop();
+        var last = data().last();
+        if (last) {
+          $http.delete('/people/' + last.id).then(function() {
+            data().remove(last);
+          });
+        }
       };
 
       $scope.clear = function() {
-        $scope.grid.data().clear();
+        $http.delete('/people').then(function() {
+          data().clear();
+        });
       };
 
       $scope.onInitialized = function() {
@@ -82,5 +106,14 @@
         $log.debug('Sort updated');
         $scope.nbSort++;
       };
-    }]);
-})(angular);
+
+      var init = function() {
+        $http.get('/people').then(function(response) {
+          data().reset(response.data);
+        });
+      };
+
+      init();
+    });
+
+})(window, angular);

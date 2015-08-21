@@ -39,16 +39,21 @@
       properties: {
         options: {
           type: Object,
-          value: window.options
+          value: window.waffleOptions
         }
       },
 
       ready: function() {
-        this.grid = this.$.grid.grid();
+        this.$grid = this.$.grid.grid();
+
+        // TODO Use iron-ajax polymer element for this, or use a store.
+        ajax('GET', '/people', function(response) {
+          this.grid().data().reset(response);
+        }.bind(this));
       },
 
       grid: function() {
-        return this.grid;
+        return this.$grid;
       }
     });
   </script>

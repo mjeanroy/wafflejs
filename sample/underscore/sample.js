@@ -22,7 +22,12 @@
  * SOFTWARE.
  */
 
-(function(Waffle, document) {
+/* global waffleOptions */
+/* global Waffle */
+/* global ajax */
+/* global _ */
+
+(function(Waffle, ajax, _, document) {
 
   'use strict';
 
@@ -30,18 +35,29 @@
     return '<a href="mailto:' + value + '">' + value + '</a>';
   });
 
-  var grid = Waffle.create(document.getElementById('waffle'), options);
+  var url = '/people';
+  var grid = Waffle.create(document.getElementById('waffle'), waffleOptions);
+  var data = grid.data();
 
   document.getElementById('add').addEventListener('click', function() {
-    grid.data().push(createFakePerson());
+    ajax('POST', url, function(response) {
+      data.push(response);
+    });
   });
 
   document.getElementById('remove').addEventListener('click', function() {
-    grid.data().pop();
+    var last = data.last();
+    if (last) {
+      ajax('DELETE', url + '/' + last.id, function() {
+        data.remove(last);
+      });
+    }
   });
 
   document.getElementById('clear').addEventListener('click', function() {
-    grid.data().clear();
+    ajax('DELETE', url, function() {
+      data.clear();
+    });
   });
 
   var onFilterUpdate = function() {
@@ -57,4 +73,12 @@
     grid.removeFilter();
   });
 
-})(Waffle, document);
+  var init = function() {
+    ajax('GET', url, function(response) {
+      data.reset(response);
+    });
+  };
+
+  init();
+
+})(Waffle, ajax, _, document);

@@ -33,9 +33,9 @@ module.exports = function(options) {
   // Test files builder
   gulp.task('test:build', function() {
     return gulp.src([
-      'waffle-files.js',
+      'waffle.js',
       'node_modules/jasmine-utils/src/jasmine-utils.js',
-      'build/waffle-files-spec.js'
+      'build/test/*-spec.js'
     ])
     .pipe(jasmine());
   });

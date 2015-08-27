@@ -145,7 +145,7 @@ describe('GridResizer', function() {
   });
 
   it('should trigger update for each diff', function() {
-    spyOn(grid.$columns, 'triggerUpdate');
+    spyOn(grid.$columns, 'notifyUpdate');
     spyOn(GridResizer, 'computeWidth').and.returnValue([
       grid.$columns.at(0)
     ]);
@@ -159,7 +159,7 @@ describe('GridResizer', function() {
 
     GridResizer.applySize(grid);
 
-    expect(grid.$columns.triggerUpdate).toHaveBeenCalledWith(0);
+    expect(grid.$columns.notifyUpdate).toHaveBeenCalledWith(0);
   });
 
   it('should not trigger update if there is a pending change', function() {
@@ -173,7 +173,7 @@ describe('GridResizer', function() {
 
     grid.$columns.$$changes = [change];
 
-    spyOn(grid.$columns, 'triggerUpdate');
+    spyOn(grid.$columns, 'notifyUpdate');
     spyOn(GridResizer, 'computeWidth').and.returnValue([
       grid.$columns.at(0)
     ]);
@@ -187,7 +187,7 @@ describe('GridResizer', function() {
 
     GridResizer.applySize(grid);
 
-    expect(grid.$columns.triggerUpdate).not.toHaveBeenCalled();
+    expect(grid.$columns.notifyUpdate).not.toHaveBeenCalled();
   });
 
   it('should compute columns width', function() {

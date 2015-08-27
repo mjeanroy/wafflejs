@@ -82,7 +82,7 @@ var Observable = (function() {
 
     // Trigger changes
     // Note that callbacks will be called asynchronously
-    trigger: function(changes) {
+    notify: function(changes) {
       if (!_.isArray(changes)) {
         changes = [changes];
       }

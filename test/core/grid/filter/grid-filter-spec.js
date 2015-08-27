@@ -678,7 +678,7 @@ describe('Grid Filter', function() {
       grid.filter(oddPredicate);
 
       grid.dispatchEvent.calls.reset();
-      data.triggerUpdate(0);
+      data.notifyUpdate(0);
       jasmine.clock().tick();
 
       expect(grid.dispatchEvent).not.toHaveBeenCalled();
@@ -688,7 +688,7 @@ describe('Grid Filter', function() {
       grid.filter(oddPredicate);
 
       grid.dispatchEvent.calls.reset();
-      data.triggerUpdate(1);
+      data.notifyUpdate(1);
       jasmine.clock().tick();
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('dataupdated', {

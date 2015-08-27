@@ -47,7 +47,7 @@ describe('Sorted collection', function() {
 
     jasmine.clock().tick(1);
 
-    spyOn(Collection.prototype, 'trigger').and.callThrough();
+    spyOn(Collection.prototype, 'notify').and.callThrough();
   });
 
   it('should sort collection', function() {
@@ -97,7 +97,7 @@ describe('Sorted collection', function() {
       10: { idx: 5 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 2, added: [o6, o7], index: 3, removed: [], object: collection }
     ]);
   });
@@ -127,7 +127,7 @@ describe('Sorted collection', function() {
       10: { idx: 5 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 2, added: [o6, o7], index: 3, removed: [], object: collection }
     ]);
   });
@@ -155,7 +155,7 @@ describe('Sorted collection', function() {
       10: { idx: 4 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection }
     ]);
   });
@@ -182,12 +182,12 @@ describe('Sorted collection', function() {
       10: { idx: 4 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection }
     ]);
   });
 
-  it('should push elements, keep order and trigger changes by index', function() {
+  it('should push elements, keep order and notify changes by index', function() {
     var o6 = { id: 6, name: 'foobar' };
     var o11 = { id: 11, name: 'foobar' };
 
@@ -212,7 +212,7 @@ describe('Sorted collection', function() {
       11: { idx: 5 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection },
       { type: 'splice', addedCount: 1, added: [o11], index: 5, removed: [], object: collection }
     ]);
@@ -243,7 +243,7 @@ describe('Sorted collection', function() {
       11: { idx: 5 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection },
       { type: 'splice', addedCount: 1, added: [o11], index: 5, removed: [], object: collection }
     ]);
@@ -251,7 +251,7 @@ describe('Sorted collection', function() {
 
   it('should not changed collection using splice with no args', function() {
     collection = new Collection([o1, o2, o5]);
-    collection.trigger.calls.reset();
+    collection.notify.calls.reset();
 
     var removed = collection.splice();
 
@@ -266,12 +266,12 @@ describe('Sorted collection', function() {
       5: { idx: 2 }
     }));
 
-    expect(collection.trigger).not.toHaveBeenCalled();
+    expect(collection.notify).not.toHaveBeenCalled();
   });
 
   it('should remove element using splice with two argument', function() {
     collection = new Collection([o1, o2, o5]);
-    collection.trigger.calls.reset();
+    collection.notify.calls.reset();
 
     var removed = collection.splice(1, 1);
 
@@ -284,7 +284,7 @@ describe('Sorted collection', function() {
       5: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 1, removed: [o2], object: collection }
     ]);
   });
@@ -303,7 +303,7 @@ describe('Sorted collection', function() {
       2: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5], object: collection }
     ]);
   });
@@ -325,7 +325,7 @@ describe('Sorted collection', function() {
       10: { idx: 2 }
   }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 1, removed: [o2], object: collection },
       { type: 'splice', addedCount: 1, added: [o10], index: 2, removed: [], object: collection }
     ]);
@@ -348,7 +348,7 @@ describe('Sorted collection', function() {
       10: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o2], index: 0, removed: [o1], object: collection },
       { type: 'splice', addedCount: 1, added: [o10], index: 2, removed: [], object: collection }
     ]);
@@ -369,7 +369,7 @@ describe('Sorted collection', function() {
       5: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
@@ -391,7 +391,7 @@ describe('Sorted collection', function() {
       5: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
@@ -414,13 +414,13 @@ describe('Sorted collection', function() {
       5: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);
   });
 
-  it('should replace existing data and add new data using splice and trigger update changes in order', function() {
+  it('should replace existing data and add new data using splice and notify update changes in order', function() {
     collection = new Collection([o1, o5]);
     collection.sort(sortFn);
 
@@ -437,7 +437,7 @@ describe('Sorted collection', function() {
       5: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
@@ -460,7 +460,7 @@ describe('Sorted collection', function() {
       2: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5, o10], object: collection }
     ]);
   });
@@ -481,7 +481,7 @@ describe('Sorted collection', function() {
       10: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5], object: collection }
     ]);
   });
@@ -504,7 +504,7 @@ describe('Sorted collection', function() {
       10: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5], object: collection }
     ]);
@@ -528,7 +528,7 @@ describe('Sorted collection', function() {
       10: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1, o2], object: collection }
     ]);
   });
@@ -537,7 +537,7 @@ describe('Sorted collection', function() {
     collection = new Collection([o1, o2]);
     collection.sort(sortFn);
 
-    collection.trigger.calls.reset();
+    collection.notify.calls.reset();
 
     var result = collection.reverse();
 
@@ -545,6 +545,6 @@ describe('Sorted collection', function() {
     expect(collection.length).toBe(2);
     expect(collection[0]).toBe(o1);
     expect(collection[1]).toBe(o2);
-    expect(collection.trigger).not.toHaveBeenCalled();
+    expect(collection.notify).not.toHaveBeenCalled();
   });
 });

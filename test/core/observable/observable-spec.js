@@ -128,7 +128,7 @@ describe('Observable', function() {
     ]);
   });
 
-  it('should trigger changes asynchronously', function() {
+  it('should notify changes asynchronously', function() {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
@@ -136,7 +136,7 @@ describe('Observable', function() {
 
     var changes = [change1, change2];
 
-    instance.trigger(changes);
+    instance.notify(changes);
 
     expect(instance.$$changes).toEqual(changes);
     expect(callback1).not.toHaveBeenCalled();
@@ -149,13 +149,13 @@ describe('Observable', function() {
     expect(instance.$$changes).toEqual([]);
   });
 
-  it('should trigger single change', function() {
+  it('should notify single change', function() {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    instance.trigger(change1);
+    instance.notify(change1);
 
     expect(instance.$$changes).toEqual([change1]);
     expect(callback1).not.toHaveBeenCalled();
@@ -170,7 +170,7 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should trigger changes and keep new changes', function() {
+  it('should notify changes and keep new changes', function() {
     var asyncCallback = jasmine.createSpy('asyncCallback').and.callFake(function() {
       instance.$$changes.push(change2);
     });
@@ -180,7 +180,7 @@ describe('Observable', function() {
       callback: asyncCallback
     }];
 
-    instance.trigger(change1);
+    instance.notify(change1);
 
     expect(instance.$$changes).toEqual([change1]);
     expect(asyncCallback).not.toHaveBeenCalled();
@@ -196,9 +196,9 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should trigger changes and remove old ones', function() {
+  it('should notify changes and remove old ones', function() {
     var asyncCallback = jasmine.createSpy('asyncCallback').and.callFake(function() {
-      return instance.trigger(change2);
+      return instance.notify(change2);
     });
 
     instance.$$observers = [{
@@ -206,7 +206,7 @@ describe('Observable', function() {
       callback: asyncCallback
     }];
 
-    instance.trigger(change1);
+    instance.notify(change1);
 
     expect(instance.$$changes).toEqual([change1]);
     expect(asyncCallback).not.toHaveBeenCalled();
@@ -222,17 +222,17 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should trigger all changes once asynchronously', function() {
+  it('should notify all changes once asynchronously', function() {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
     var changes1 = [change1];
-    instance.trigger(changes1);
+    instance.notify(changes1);
 
     var changes2 = [change2];
-    instance.trigger(changes2);
+    instance.notify(changes2);
 
     expect(instance.$$changes).toEqual(changes1.concat(changes2));
     expect(callback1).not.toHaveBeenCalled();
@@ -247,7 +247,7 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should trigger all changes once and trigger callback once', function() {
+  it('should notify all changes once and notify callback once', function() {
     var asyncFn = jasmine.createSpy('asyncFn');
     spyOn(_, 'bind').and.returnValue(asyncFn);
 
@@ -256,13 +256,13 @@ describe('Observable', function() {
       callback: callback1
     }];
 
-    // Trigger first change
+    // notify first change
     var changes1 = [change1];
-    instance.trigger(changes1);
+    instance.notify(changes1);
 
-    // Trigger second change
+    // notify second change
     var changes2 = [change2];
-    instance.trigger(changes2);
+    instance.notify(changes2);
 
     expect(asyncFn).not.toHaveBeenCalled();
 
@@ -292,8 +292,8 @@ describe('Observable', function() {
     var changes1 = [change1];
     var changes2 = [change2];
 
-    instance.trigger(changes1);
-    instance.trigger(changes2);
+    instance.notify(changes1);
+    instance.notify(changes2);
 
     expect(instance.$asyncTask).not.toBeNull();
     expect(instance.$asyncTask).toBeDefined();
@@ -314,7 +314,7 @@ describe('Observable', function() {
     }];
 
     expect(instance.pendingChanges()).toEqual([]);
-    instance.trigger([change1]);
+    instance.notify([change1]);
     expect(instance.pendingChanges()).toEqual([change1]);
   });
 });

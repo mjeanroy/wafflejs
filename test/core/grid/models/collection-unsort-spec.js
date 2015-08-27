@@ -43,7 +43,7 @@ describe('Unsorted collection', function() {
 
     jasmine.clock().tick(1);
 
-    spyOn(Collection.prototype, 'trigger').and.callThrough();
+    spyOn(Collection.prototype, 'notify').and.callThrough();
   });
 
   it('should remove last element', function() {
@@ -57,7 +57,7 @@ describe('Unsorted collection', function() {
       1: { idx: 0 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([{
+    expect(collection.notify).toHaveBeenCalledWith([{
       addedCount: 0,
       added: [],
       index: 1,
@@ -78,7 +78,7 @@ describe('Unsorted collection', function() {
       2: { idx: 0 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([{
+    expect(collection.notify).toHaveBeenCalledWith([{
       addedCount: 0,
       added: [],
       index: 0,
@@ -105,7 +105,7 @@ describe('Unsorted collection', function() {
       3: { idx: 3 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 2, added: [o0, o3], index: 2, removed: [], object: collection }
     ]);
   });
@@ -127,7 +127,7 @@ describe('Unsorted collection', function() {
       4: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 2, added: [o3, o4], index: 0, removed: [], object: collection }
     ]);
   });
@@ -154,7 +154,7 @@ describe('Unsorted collection', function() {
       3: { idx: 4 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o4], index: 2, removed: [], object: collection }
     ]);
   });
@@ -181,7 +181,7 @@ describe('Unsorted collection', function() {
       4: { idx: 4 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o4], index: 4, removed: [], object: collection }
     ]);
   });
@@ -208,14 +208,14 @@ describe('Unsorted collection', function() {
       3: { idx: 4 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o4], index: 0, removed: [], object: collection }
     ]);
   });
 
   it('should not changed collection using splice with no args', function() {
     collection = new Collection([o1, o2, o3]);
-    collection.trigger.calls.reset();
+    collection.notify.calls.reset();
 
     var removed = collection.splice();
 
@@ -230,12 +230,12 @@ describe('Unsorted collection', function() {
       3: { idx: 2 }
     }));
 
-    expect(collection.trigger).not.toHaveBeenCalled();
+    expect(collection.notify).not.toHaveBeenCalled();
   });
 
   it('should remove element using splice with two argument', function() {
     collection = new Collection([o1, o2, o3]);
-    collection.trigger.calls.reset();
+    collection.notify.calls.reset();
 
     var removed = collection.splice(1, 1);
 
@@ -248,7 +248,7 @@ describe('Unsorted collection', function() {
       3: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 1, removed: [o2], object: collection }
     ]);
   });
@@ -267,7 +267,7 @@ describe('Unsorted collection', function() {
       2: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
   });
@@ -288,7 +288,7 @@ describe('Unsorted collection', function() {
       3: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o4], index: 1, removed: [o2], object: collection }
     ]);
   });
@@ -309,7 +309,7 @@ describe('Unsorted collection', function() {
       4: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 2, added: [o3, o4], index: 1, removed: [o2], object: collection }
     ]);
   });
@@ -327,7 +327,7 @@ describe('Unsorted collection', function() {
       2: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
@@ -347,7 +347,7 @@ describe('Unsorted collection', function() {
       3: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o3], index: 2, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
@@ -368,7 +368,7 @@ describe('Unsorted collection', function() {
       2: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 1, added: [o3], index: 0, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 1, removed: [], object: collection }
     ]);
@@ -391,7 +391,7 @@ describe('Unsorted collection', function() {
       2: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3, o4], object: collection }
     ]);
   });
@@ -413,7 +413,7 @@ describe('Unsorted collection', function() {
       4: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
   });
@@ -437,7 +437,7 @@ describe('Unsorted collection', function() {
       4: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
@@ -462,7 +462,7 @@ describe('Unsorted collection', function() {
       4: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1, o2], object: collection }
     ]);
   });
@@ -484,7 +484,7 @@ describe('Unsorted collection', function() {
       4: { idx: 1 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
       { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
@@ -508,7 +508,7 @@ describe('Unsorted collection', function() {
       4: { idx: 2 }
     }));
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
     ]);
   });
@@ -523,7 +523,7 @@ describe('Unsorted collection', function() {
     expect(collection[0]).toBe(o2);
     expect(collection[1]).toBe(o1);
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 1, removed: [], object: collection }
     ]);
@@ -540,7 +540,7 @@ describe('Unsorted collection', function() {
     expect(collection[1]).toBe(o2);
     expect(collection[2]).toBe(o1);
 
-    expect(collection.trigger).toHaveBeenCalledWith([
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);

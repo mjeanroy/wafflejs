@@ -482,7 +482,7 @@ describe('Grid Data Observer', function() {
       var rows = grid.$tbody[0].childNodes;
       var cid0 = rows[0].getAttribute('data-waffle-cid');
 
-      grid.$data.triggerUpdate(0);
+      grid.$data.notifyUpdate(0);
       jasmine.clock().tick();
 
       var newRows = grid.$tbody[0].childNodes;

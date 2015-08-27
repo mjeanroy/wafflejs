@@ -112,7 +112,7 @@ describe('Collection observers', function() {
     ]);
   });
 
-  it('should trigger changes asynchronously', function() {
+  it('should notify changes asynchronously', function() {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
@@ -120,7 +120,7 @@ describe('Collection observers', function() {
 
     var changes = [change1, change2];
 
-    collection.trigger(changes);
+    collection.notify(changes);
 
     expect(collection.$$changes).toEqual(changes);
     expect(callback1).not.toHaveBeenCalled();
@@ -133,13 +133,13 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual([]);
   });
 
-  it('should trigger single change', function() {
+  it('should notify single change', function() {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    collection.trigger(change1);
+    collection.notify(change1);
 
     expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([change1]);
@@ -153,20 +153,20 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual([]);
   });
 
-  it('should trigger all changes once asynchronously', function() {
+  it('should notify all changes once asynchronously', function() {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
     var changes1 = [change1];
-    collection.trigger(changes1);
+    collection.notify(changes1);
 
     expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([change1]);
 
     var changes2 = [change2];
-    collection.trigger(changes2);
+    collection.notify(changes2);
 
     expect(collection.$$changes.length).toBe(2);
     expect(collection.$$changes).toEqual([change1, change2]);
@@ -181,13 +181,13 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual([]);
   });
 
-  it('should trigger an update change', function() {
+  it('should notify an update change', function() {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    collection.triggerUpdate(0);
+    collection.notifyUpdate(0);
 
     expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([

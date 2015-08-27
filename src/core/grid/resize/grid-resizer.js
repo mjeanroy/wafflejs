@@ -122,7 +122,7 @@ var GridResizer = (function() {
           var index = columns.indexOf(diff[i]);
           if (!_.has(pendingChanges, 'update_' + index)) {
             // We can trigger the update
-            columns.triggerUpdate(index);
+            columns.notifyUpdate(index);
           }
         }
       }

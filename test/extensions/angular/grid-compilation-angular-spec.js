@@ -377,7 +377,7 @@ describe('Waffle NgCompilator', function() {
         return mergeNodes.apply(this, arguments);
       });
 
-      $scope.grid.$data.triggerUpdate(0);
+      $scope.grid.$data.notifyUpdate(0);
       jasmine.clock().tick();
 
       expect($vdom.mergeNodes).toHaveBeenCalled();

@@ -439,7 +439,7 @@ var Collection = (function() {
       this.length -= removed.length;
 
       if (changes.length > 0) {
-        this.trigger(changes);
+        this.notify(changes);
       }
 
       return removed;
@@ -447,8 +447,8 @@ var Collection = (function() {
 
     // Force an update change.
     // This will force a row update.
-    triggerUpdate: function(idx) {
-      this.trigger([
+    notifyUpdate: function(idx) {
+      this.notify([
         createChange(TYPE_UPDATE, [], idx, [], this)
       ]);
 
@@ -505,7 +505,7 @@ var Collection = (function() {
 
         this.$$map.clear();
         this.length = 0;
-        this.trigger(createChange(TYPE_SPLICE, array, 0, [], this));
+        this.notify(createChange(TYPE_SPLICE, array, 0, [], this));
       }
 
       return this;
@@ -543,7 +543,7 @@ var Collection = (function() {
 
       this.length = newSize;
 
-      this.trigger([
+      this.notify([
         createChange(TYPE_SPLICE, removed, 0, array, this)
       ]);
 
@@ -674,7 +674,7 @@ var Collection = (function() {
       // Trigger update and splice changes
       var allChanges = changes.concat(updateChanges);
       if (allChanges.length > 0) {
-        this.trigger(allChanges);
+        this.notify(allChanges);
       }
 
       // An array containing the deleted elements.
@@ -707,7 +707,7 @@ var Collection = (function() {
       // Trigger changes in order
       var changes = changesStart.concat(changesEnd);
       if (changes.length) {
-        this.trigger(changes);
+        this.notify(changes);
       }
 
       return this;

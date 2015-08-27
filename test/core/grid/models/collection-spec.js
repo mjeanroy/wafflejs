@@ -312,7 +312,7 @@ describe('collection', function() {
     });
 
     it('should clear collection', function() {
-      spyOn(collection, 'trigger').and.callThrough();
+      spyOn(collection, 'notify').and.callThrough();
 
       var old1 = collection[0];
       var old2 = collection[1];
@@ -324,7 +324,7 @@ describe('collection', function() {
       expect(collection[0]).toBeUndefined();
       expect(collection[1]).toBeUndefined();
 
-      expect(collection.trigger).toHaveBeenCalledWith({
+      expect(collection.notify).toHaveBeenCalledWith({
         type: 'splice',
         removed: [old1, old2],
         index: 0,
@@ -417,12 +417,12 @@ describe('collection', function() {
 
     it('should remove array data', function() {
       spyOn(collection, 'splice').and.callThrough();
-      spyOn(collection, 'trigger').and.callThrough();
+      spyOn(collection, 'notify').and.callThrough();
 
       var old1 = collection[0];
       var old2 = collection[1];
 
-      collection.trigger.calls.reset();
+      collection.notify.calls.reset();
       collection.splice.calls.reset();
 
       collection.remove([old1]);
@@ -437,7 +437,7 @@ describe('collection', function() {
       expect(collection[0]).toBe(old2);
       expect(collection[1]).toBeUndefined();
 
-      expect(collection.trigger).toHaveBeenCalledWith([{
+      expect(collection.notify).toHaveBeenCalledWith([{
         type: 'splice',
         removed: [old1],
         index: 0,
@@ -449,13 +449,13 @@ describe('collection', function() {
 
     it('should remove single data', function() {
       spyOn(collection, 'splice').and.callThrough();
-      spyOn(collection, 'trigger').and.callThrough();
+      spyOn(collection, 'notify').and.callThrough();
 
       var old1 = collection[0];
       var old2 = collection[1];
 
       collection.splice.calls.reset();
-      collection.trigger.calls.reset();
+      collection.notify.calls.reset();
 
       collection.remove(old1);
 
@@ -469,7 +469,7 @@ describe('collection', function() {
       expect(collection[0]).toBe(old2);
       expect(collection[1]).toBeUndefined();
 
-      expect(collection.trigger).toHaveBeenCalledWith([{
+      expect(collection.notify).toHaveBeenCalledWith([{
         type: 'splice',
         removed: [old1],
         index: 0,
@@ -481,13 +481,13 @@ describe('collection', function() {
 
     it('should remove data with a predicate', function() {
       spyOn(collection, 'splice').and.callThrough();
-      spyOn(collection, 'trigger').and.callThrough();
+      spyOn(collection, 'notify').and.callThrough();
 
       var old1 = collection[0];
       var old2 = collection[1];
 
       collection.splice.calls.reset();
-      collection.trigger.calls.reset();
+      collection.notify.calls.reset();
 
       collection.remove(function(current) {
         return current.id === old1.id;
@@ -503,7 +503,7 @@ describe('collection', function() {
       expect(collection[0]).toBe(old2);
       expect(collection[1]).toBeUndefined();
 
-      expect(collection.trigger).toHaveBeenCalledWith([{
+      expect(collection.notify).toHaveBeenCalledWith([{
         type: 'splice',
         removed: [old1],
         index: 0,
@@ -515,10 +515,10 @@ describe('collection', function() {
 
     it('should not remove unknown data', function() {
       spyOn(collection, 'splice').and.callThrough();
-      spyOn(collection, 'trigger').and.callThrough();
+      spyOn(collection, 'notify').and.callThrough();
 
       collection.splice.calls.reset();
-      collection.trigger.calls.reset();
+      collection.notify.calls.reset();
 
       var removed = collection.remove({
         id: 5
@@ -526,7 +526,7 @@ describe('collection', function() {
 
       expect(removed).toEqual([]);
       expect(collection.splice).not.toHaveBeenCalled();
-      expect(collection.trigger).not.toHaveBeenCalled();
+      expect(collection.notify).not.toHaveBeenCalled();
     });
 
     it('should slice part of collection', function() {

@@ -863,7 +863,7 @@ describe('Grid Dom Handlers', function() {
         return tr;
       });
 
-      spyOn(grid.$data, 'triggerUpdate').and.callThrough();
+      spyOn(grid.$data, 'notifyUpdate').and.callThrough();
       spyOn(grid, 'dispatchEvent').and.callThrough();
     });
 
@@ -884,7 +884,7 @@ describe('Grid Dom Handlers', function() {
         newValue: 100
       });
 
-      expect(grid.$data.triggerUpdate).toHaveBeenCalledWith(0);
+      expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
     it('should update object value using checked checkbox', function() {
@@ -914,7 +914,7 @@ describe('Grid Dom Handlers', function() {
         newValue: true
       });
 
-      expect(grid.$data.triggerUpdate).toHaveBeenCalledWith(0);
+      expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
     it('should update object value using unchecked checkbox', function() {
@@ -944,7 +944,7 @@ describe('Grid Dom Handlers', function() {
         newValue: false
       });
 
-      expect(grid.$data.triggerUpdate).toHaveBeenCalledWith(0);
+      expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
     it('should not update object value for input event not related to grid column', function() {

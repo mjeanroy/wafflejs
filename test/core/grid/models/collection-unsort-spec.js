@@ -59,6 +59,7 @@ describe('Unsorted collection', function() {
 
     expect(collection.trigger).toHaveBeenCalledWith([{
       addedCount: 0,
+      added: [],
       index: 1,
       removed: [o2],
       type: 'splice',
@@ -79,6 +80,7 @@ describe('Unsorted collection', function() {
 
     expect(collection.trigger).toHaveBeenCalledWith([{
       addedCount: 0,
+      added: [],
       index: 0,
       removed: [o1],
       type: 'splice',
@@ -104,7 +106,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 2, index: 2, removed: [], object: collection }
+      { type: 'splice', addedCount: 2, added: [o0, o3], index: 2, removed: [], object: collection }
     ]);
   });
 
@@ -126,7 +128,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 2, index: 0, removed: [], object: collection }
+      { type: 'splice', addedCount: 2, added: [o3, o4], index: 0, removed: [], object: collection }
     ]);
   });
 
@@ -153,7 +155,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 2, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o4], index: 2, removed: [], object: collection }
     ]);
   });
 
@@ -180,7 +182,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 4, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o4], index: 4, removed: [], object: collection }
     ]);
   });
 
@@ -207,7 +209,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 0, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o4], index: 0, removed: [], object: collection }
     ]);
   });
 
@@ -247,7 +249,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 1, removed: [o2], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 1, removed: [o2], object: collection }
     ]);
   });
 
@@ -266,7 +268,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 2, removed: [o3], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
   });
 
@@ -287,7 +289,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 1, removed: [o2], object: collection }
+      { type: 'splice', addedCount: 1, added: [o4], index: 1, removed: [o2], object: collection }
     ]);
   });
 
@@ -308,7 +310,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 2, index: 1, removed: [o2], object: collection }
+      { type: 'splice', addedCount: 2, added: [o3, o4], index: 1, removed: [o2], object: collection }
     ]);
   });
 
@@ -326,7 +328,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
 
@@ -346,8 +348,8 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 2, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o3], index: 2, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
 
@@ -367,8 +369,8 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 0, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 1, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o3], index: 0, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 1, removed: [], object: collection }
     ]);
   });
 
@@ -390,7 +392,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 2, removed: [o3, o4], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3, o4], object: collection }
     ]);
   });
 
@@ -412,7 +414,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 2, removed: [o3], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
   });
 
@@ -436,8 +438,8 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 0, removed: [o1], object: collection },
-      { type: 'splice', addedCount: 0, index: 2, removed: [o3], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
   });
 
@@ -461,7 +463,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 0, removed: [o1, o2], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1, o2], object: collection }
     ]);
   });
 
@@ -483,8 +485,8 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 0, removed: [o1], object: collection },
-      { type: 'splice', addedCount: 0, index: 2, removed: [o3], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o3], object: collection }
     ]);
   });
 
@@ -507,7 +509,7 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 0, removed: [o1], object: collection },
+      { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
     ]);
   });
 
@@ -522,8 +524,8 @@ describe('Unsorted collection', function() {
     expect(collection[1]).toBe(o1);
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 1, removed: [], object: collection }
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 1, removed: [], object: collection }
     ]);
   });
 
@@ -539,8 +541,8 @@ describe('Unsorted collection', function() {
     expect(collection[2]).toBe(o1);
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 2, removed: [], object: collection }
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);
   });
 });

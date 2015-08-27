@@ -98,7 +98,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 2, index: 3, removed: [], object: collection }
+      { type: 'splice', addedCount: 2, added: [o6, o7], index: 3, removed: [], object: collection }
     ]);
   });
 
@@ -128,7 +128,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 2, index: 3, removed: [], object: collection }
+      { type: 'splice', addedCount: 2, added: [o6, o7], index: 3, removed: [], object: collection }
     ]);
   });
 
@@ -156,7 +156,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection }
     ]);
   });
 
@@ -183,7 +183,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection }
     ]);
   });
 
@@ -213,8 +213,8 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection },
-      { type: 'splice', addedCount: 1, index: 5, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection },
+      { type: 'splice', addedCount: 1, added: [o11], index: 5, removed: [], object: collection }
     ]);
   });
 
@@ -244,8 +244,8 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 3, removed: [], object: collection },
-      { type: 'splice', addedCount: 1, index: 5, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o6], index: 3, removed: [], object: collection },
+      { type: 'splice', addedCount: 1, added: [o11], index: 5, removed: [], object: collection }
     ]);
   });
 
@@ -285,7 +285,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 1, removed: [o2], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 1, removed: [o2], object: collection }
     ]);
   });
 
@@ -304,7 +304,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 2, removed: [o5], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5], object: collection }
     ]);
   });
 
@@ -326,8 +326,8 @@ describe('Sorted collection', function() {
   }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 1, removed: [o2], object: collection },
-      { type: 'splice', addedCount: 1, index: 2, removed: [], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 1, removed: [o2], object: collection },
+      { type: 'splice', addedCount: 1, added: [o10], index: 2, removed: [], object: collection }
     ]);
   });
 
@@ -349,8 +349,8 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 0, removed: [o1], object: collection },
-      { type: 'splice', addedCount: 1, index: 2, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o2], index: 0, removed: [o1], object: collection },
+      { type: 'splice', addedCount: 1, added: [o10], index: 2, removed: [], object: collection }
     ]);
   });
 
@@ -370,7 +370,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
 
@@ -392,8 +392,8 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 1, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
 
@@ -415,8 +415,8 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 1, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 2, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);
   });
 
@@ -438,9 +438,9 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, index: 1, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 0, removed: [], object: collection },
-      { type: 'update', addedCount: 0, index: 2, removed: [], object: collection }
+      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
+      { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);
   });
 
@@ -461,7 +461,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 2, removed: [o5, o10], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5, o10], object: collection }
     ]);
   });
 
@@ -482,7 +482,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 2, removed: [o5], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5], object: collection }
     ]);
   });
 
@@ -505,8 +505,8 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 0, removed: [o1], object: collection },
-      { type: 'splice', addedCount: 0, index: 2, removed: [o5], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1], object: collection },
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5], object: collection }
     ]);
   });
 
@@ -529,7 +529,7 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.trigger).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 0, index: 0, removed: [o1, o2], object: collection }
+      { type: 'splice', addedCount: 0, added: [], index: 0, removed: [o1, o2], object: collection }
     ]);
   });
 

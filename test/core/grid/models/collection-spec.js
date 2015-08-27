@@ -329,6 +329,7 @@ describe('collection', function() {
         removed: [old1, old2],
         index: 0,
         addedCount: 0,
+        added: [],
         object: collection
       });
     });
@@ -441,6 +442,7 @@ describe('collection', function() {
         removed: [old1],
         index: 0,
         addedCount: 0,
+        added: [],
         object: collection
       }]);
     });
@@ -472,6 +474,7 @@ describe('collection', function() {
         removed: [old1],
         index: 0,
         addedCount: 0,
+        added: [],
         object: collection
       }]);
     });
@@ -505,6 +508,7 @@ describe('collection', function() {
         removed: [old1],
         index: 0,
         addedCount: 0,
+        added: [],
         object: collection
       }]);
     });

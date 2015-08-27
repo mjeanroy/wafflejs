@@ -112,12 +112,13 @@ var Collection = (function() {
   // Create a change object according to Object.observe API
   var TYPE_SPLICE = 'splice';
   var TYPE_UPDATE = 'update';
-  var createChange = function(type, removed, index, addedCount, collection) {
+  var createChange = function(type, removed, index, added, collection) {
     return {
       type: type,
       removed: removed,
       index: index,
-      addedCount: addedCount,
+      added: added,
+      addedCount: added.length,
       object: collection
     };
   };
@@ -179,6 +180,7 @@ var Collection = (function() {
   // Internal map is updated to keep track of indexes.
   var put = function(collection, o, i, id) {
     collection[i] = o;
+
     if (o != null) {
       var ngArgs = arguments.length;
       var dataId = ngArgs === 3 ? collection.$$key(o) : id;
@@ -186,13 +188,15 @@ var Collection = (function() {
       dataCtx.idx = i;
       collection.$$map.put(dataId, dataCtx);
     }
+
+    return o;
   };
 
   // Replace data in collection and return appropriate change.
   var replace = function(collection, current) {
     var idx =  collection.indexOf(current);
     collection[idx] = current;
-    return createChange(TYPE_UPDATE, [], idx, 0, collection);
+    return createChange(TYPE_UPDATE, [], idx, [], collection);
   };
 
   // Swap elements at given index
@@ -270,16 +274,17 @@ var Collection = (function() {
     var k = sizeArray - 1;
     for (var i = newSize - 1; i >= 0; --i) {
       if (j < 0 || sortFn(collection[j], array[k]) < 0) {
-        put(collection, array[k--], i);
+        var addedElement = put(collection, array[k--], i);
 
         // New change occurs
         change = _.first(changes);
         if (!change || change.index !== (i + 1)) {
-          change = createChange(TYPE_SPLICE, [], i, 1, collection);
+          change = createChange(TYPE_SPLICE, [], i, [addedElement], collection);
           changes.unshift(change);
         } else {
           change.index = i;
           change.addedCount++;
+          change.added.unshift(addedElement);
         }
 
         if (k < 0) {
@@ -413,7 +418,7 @@ var Collection = (function() {
           if (lastChangeIdx === (i - 1)) {
             _.last(changes).removed.push(o);
           } else {
-            changes.push(createChange(TYPE_SPLICE, [o], i, 0, this));
+            changes.push(createChange(TYPE_SPLICE, [o], i, [], this));
           }
 
           removed.push(o);
@@ -444,7 +449,7 @@ var Collection = (function() {
     // This will force a row update.
     triggerUpdate: function(idx) {
       this.trigger([
-        createChange(TYPE_UPDATE, [], idx, 0, this)
+        createChange(TYPE_UPDATE, [], idx, [], this)
       ]);
 
       return this;
@@ -500,7 +505,7 @@ var Collection = (function() {
 
         this.$$map.clear();
         this.length = 0;
-        this.trigger(createChange(TYPE_SPLICE, array, 0, 0, this));
+        this.trigger(createChange(TYPE_SPLICE, array, 0, [], this));
       }
 
       return this;
@@ -522,7 +527,6 @@ var Collection = (function() {
       this.$$map.clear();
 
       var removed = [];
-      var addedCount = array.length;
 
       for (var i = 0; i < newSize; ++i) {
         if (i < oldSize) {
@@ -540,7 +544,7 @@ var Collection = (function() {
       this.length = newSize;
 
       this.trigger([
-        createChange(TYPE_SPLICE, removed, 0, addedCount, this)
+        createChange(TYPE_SPLICE, removed, 0, array, this)
       ]);
 
       return this;
@@ -634,7 +638,7 @@ var Collection = (function() {
             put(this, added[k], actualStart + k);
           }
 
-          changes = [createChange(TYPE_SPLICE, removed, actualStart, addedCount, this)];
+          changes = [createChange(TYPE_SPLICE, removed, actualStart, added, this)];
         }
       } else {
         changes = [];
@@ -651,7 +655,7 @@ var Collection = (function() {
           change.removed = removed;
         } else {
           // Prepend changes with change for removed elements
-          changes.unshift(createChange(TYPE_SPLICE, removed, actualStart, 0, this));
+          changes.unshift(createChange(TYPE_SPLICE, removed, actualStart, [], this));
         }
       }
 
@@ -696,8 +700,8 @@ var Collection = (function() {
 
       for (var i = 0, j = size - 1; i < mid; ++i, --j) {
         swap(this, i, j);
-        changesStart.push(createChange(TYPE_UPDATE, [], i, 0, this));
-        changesEnd.unshift(createChange(TYPE_UPDATE, [], j, 0, this));
+        changesStart.push(createChange(TYPE_UPDATE, [], i, [], this));
+        changesEnd.unshift(createChange(TYPE_UPDATE, [], j, [], this));
       }
 
       // Trigger changes in order

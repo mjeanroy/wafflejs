@@ -411,6 +411,32 @@ describe('Grid Data Observer', function() {
 
       expect(grid.$selection.toArray()).toEqual([]);
     });
+
+    it('should add new node at the same index', function() {
+      var d1 = {
+        id: 4,
+        firstName: 'foo4',
+        lastName: 'bar4'
+      };
+
+      var d2 = {
+        id: 5,
+        firstName: 'foo5',
+        lastName: 'bar5'
+      };
+
+      // Push will trigger both changes asynchronously
+      grid.$data.unshift(d1);
+      grid.$data.unshift(d2);
+      jasmine.clock().tick();
+
+      var tbody = grid.$tbody[0];
+      var childNodes = tbody.childNodes;
+
+      expect(childNodes.length).toBe(5);
+      expect(childNodes[0].getAttribute('data-waffle-id')).toBe('5');
+      expect(childNodes[1].getAttribute('data-waffle-id')).toBe('4');
+    });
   });
 
   describe('with an update change', function() {

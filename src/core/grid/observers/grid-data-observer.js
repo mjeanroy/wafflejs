@@ -67,7 +67,7 @@ var GridDataObserver = (function() {
 
       var removedNodes;
       var addedNodes;
-      var addedData;
+      var addedData = change.added;
       var removedData = change.removed;
       var startIndex = findPreviousIndex(childNodes, index) + 1;
 
@@ -103,18 +103,14 @@ var GridDataObserver = (function() {
       // Append new added data
       if (addedCount > 0) {
         addedNodes = [];
-        addedData = [];
 
         var fragment = $doc.createFragment();
         var predicate = this.$filter || _.constant(true);
 
         for (var i = 0; i < addedCount; ++i) {
           var rowIdx = i + index;
-          var data = collection.at(rowIdx);
+          var data = addedData[i];
           var ctx = collection.ctx(data);
-
-          // Add
-          addedData.push(data);
 
           // Update flag
           ctx.visible = predicate(data);

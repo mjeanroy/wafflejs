@@ -191,7 +191,7 @@ describe('Collection observers', function() {
 
     expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([
-      { type: 'update', index: 0, removed: [], addedCount: 0, object: collection }
+      { type: 'update', index: 0, removed: [], addedCount: 0, added: [], object: collection }
     ]);
 
     expect(callback1).not.toHaveBeenCalled();

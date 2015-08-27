@@ -46,6 +46,9 @@ var Observable = (function() {
         o.callback.call(o.ctx, removed);
       });
     }
+
+    // Remove last task
+    this.$asyncTask = null;
   };
 
   var o = {
@@ -88,8 +91,12 @@ var Observable = (function() {
       this.$$changes = this.$$changes || [];
       this.$$changes.push.apply(this.$$changes, changes);
 
+      if (this.$asyncTask) {
+        clearTimeout(this.$asyncTask);
+      }
+
       // Trigger asynchronous task
-      setTimeout(_.bind(asyncFn, this));
+      this.$asyncTask = setTimeout(_.bind(asyncFn, this));
 
       return this;
     },
@@ -102,7 +109,9 @@ var Observable = (function() {
     // Clear pending changes
     clearChanges: function() {
       if (this.$$changes) {
+        clearTimeout(this.$asyncTask);
         this.$$changes.splice(0, this.$$changes.length);
+        this.$asyncTask = null;
       }
 
       return this;

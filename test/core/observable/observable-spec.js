@@ -159,6 +159,7 @@ describe('Observable', function() {
 
     expect(instance.$$changes).toEqual([change1]);
     expect(callback1).not.toHaveBeenCalled();
+    expect(instance.$asyncTask).toBeTruthy();
 
     var $$changes = instance.$$changes.slice();
 
@@ -166,6 +167,7 @@ describe('Observable', function() {
 
     expect(callback1).toHaveBeenCalledWith($$changes);
     expect(instance.$$changes).toEqual([]);
+    expect(instance.$asyncTask).toBeNull();
   });
 
   it('should trigger changes and keep new changes', function() {
@@ -182,6 +184,7 @@ describe('Observable', function() {
 
     expect(instance.$$changes).toEqual([change1]);
     expect(asyncCallback).not.toHaveBeenCalled();
+    expect(instance.$asyncTask).toBeTruthy();
 
     var $$changes = instance.$$changes.slice();
 
@@ -190,6 +193,7 @@ describe('Observable', function() {
     expect(asyncCallback).toHaveBeenCalledWith($$changes);
     expect(instance.$$changes).not.toEqual([]);
     expect(instance.$$changes).toEqual([change2]);
+    expect(instance.$asyncTask).toBeNull();
   });
 
   it('should trigger changes and remove old ones', function() {
@@ -206,6 +210,7 @@ describe('Observable', function() {
 
     expect(instance.$$changes).toEqual([change1]);
     expect(asyncCallback).not.toHaveBeenCalled();
+    expect(instance.$asyncTask).toBeTruthy();
 
     var $$changes = instance.$$changes.slice();
 
@@ -214,6 +219,7 @@ describe('Observable', function() {
     expect(asyncCallback).toHaveBeenCalledWith($$changes);
     expect(instance.$$changes.length).toBe(1);
     expect(instance.$$changes).toEqual([change2]);
+    expect(instance.$asyncTask).toBeNull();
   });
 
   it('should trigger all changes once asynchronously', function() {
@@ -230,6 +236,7 @@ describe('Observable', function() {
 
     expect(instance.$$changes).toEqual(changes1.concat(changes2));
     expect(callback1).not.toHaveBeenCalled();
+    expect(instance.$asyncTask).toBeTruthy();
 
     var $$changes = instance.$$changes.slice();
 
@@ -237,6 +244,32 @@ describe('Observable', function() {
 
     expect(callback1).toHaveBeenCalledWith($$changes);
     expect(instance.$$changes).toEqual([]);
+    expect(instance.$asyncTask).toBeNull();
+  });
+
+  it('should trigger all changes once and trigger callback once', function() {
+    var asyncFn = jasmine.createSpy('asyncFn');
+    spyOn(_, 'bind').and.returnValue(asyncFn);
+
+    instance.$$observers = [{
+      ctx: null,
+      callback: callback1
+    }];
+
+    // Trigger first change
+    var changes1 = [change1];
+    instance.trigger(changes1);
+
+    // Trigger second change
+    var changes2 = [change2];
+    instance.trigger(changes2);
+
+    expect(asyncFn).not.toHaveBeenCalled();
+
+    jasmine.clock().tick(1);
+
+    expect(asyncFn).toHaveBeenCalled();
+    expect(asyncFn.calls.count()).toBe(1);
   });
 
   it('should clear changes', function() {
@@ -246,6 +279,7 @@ describe('Observable', function() {
     }];
 
     instance.clearChanges();
+
     expect(instance.$$changes).not.toBeDefined();
   });
 
@@ -261,11 +295,16 @@ describe('Observable', function() {
     instance.trigger(changes1);
     instance.trigger(changes2);
 
+    expect(instance.$asyncTask).not.toBeNull();
+    expect(instance.$asyncTask).toBeDefined();
     expect(instance.$$changes.length).toBe(2);
+
+    var $asyncTask = instance.$asyncTask;
 
     instance.clearChanges();
 
     expect(instance.$$changes.length).toBe(0);
+    expect(instance.$asyncTask).toBeNull();
   });
 
   it('should get pending changes', function() {

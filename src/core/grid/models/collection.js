@@ -572,7 +572,7 @@ var Collection = (function() {
       this.length = newSize;
 
       this.notify([
-        createSplice(removed, array, 0, this)
+        createSplice(removed, models, 0, this)
       ]);
 
       return this;

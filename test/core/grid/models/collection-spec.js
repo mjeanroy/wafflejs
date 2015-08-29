@@ -335,6 +335,8 @@ describe('collection', function() {
     });
 
     it('should reset collection', function() {
+      spyOn(collection, 'notify').and.callThrough();
+
       expect(collection.length).toBe(2);
 
       var o3 = {
@@ -358,9 +360,15 @@ describe('collection', function() {
       expect(collection[0]).toBe(o3);
       expect(collection[1]).toBe(o4);
       expect(collection[2]).toBe(o5);
+
+      expect(collection.notify).toHaveBeenCalledWith([
+        { type: 'splice', removed: [o1, o2], addedCount: 3, added: [o3, o4, o5], index: 0, object: collection }
+      ]);
     });
 
     it('should reset collection and push new elements', function() {
+      spyOn(collection, 'notify').and.callThrough();
+
       expect(collection.length).toBe(2);
 
       var newElements = [];
@@ -378,6 +386,51 @@ describe('collection', function() {
       for (var k = 0; k < 10; k++) {
         expect(collection[k]).toBe(newElements[k]);
       }
+
+      expect(collection.notify).toHaveBeenCalledWith([
+        { type: 'splice', removed: [o1, o2], addedCount: 10, added: newElements, index: 0, object: collection }
+      ]);
+    });
+
+    it('should reset collection and notify with models', function() {
+      var Model = function(o) {
+        this.id = o.id;
+        this.name = o.name;
+        this.toString = o.toString;
+      };
+
+      collection = new Collection([o1, o2], {
+        model: Model
+      });
+
+      expect(collection.length).toBe(2);
+
+      var o3 = {
+        id: 3,
+        name: 'foo3'
+      };
+
+      jasmine.clock().tick();
+      spyOn(collection, 'notify').and.callThrough();
+
+      collection.reset([o3]);
+
+      expect(collection.length).toBe(1);
+      expect(collection[0]).toEqual(jasmine.objectContaining(o3));
+
+      expect(collection.notify).toHaveBeenCalledWith([
+        {
+          type: 'splice',
+          removed: [jasmine.objectContaining(o1), jasmine.objectContaining(o2)],
+          addedCount: 1,
+          added: [jasmine.objectContaining(o3)],
+          index: 0,
+          object: collection
+        }
+      ]);
+
+      var added = collection.notify.calls.mostRecent().args[0][0].added;
+      expect(added[0]).toBeInstanceOf(Model);
     });
 
     it('should reset collection with order', function() {

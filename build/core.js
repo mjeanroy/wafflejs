@@ -71,6 +71,7 @@ var $files = {
     'core/events/event.js',
     'core/events/event-bus.js',
     'core/observable/observable.js',
+    'core/observable/change.js',
     'core/services/renderers.js',
     'core/services/comparators.js',
     'core/services/filters.js',

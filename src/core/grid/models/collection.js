@@ -30,6 +30,7 @@
 /* global $json */
 /* global HashMap */
 /* global Observable */
+/* global Change */
 /* exported Collection */
 
 /**
@@ -109,19 +110,9 @@ var Collection = (function() {
     return parseInt(Number(nb) || 0, 10);
   };
 
-  // Create a change object according to Object.observe API
-  var TYPE_SPLICE = 'splice';
-  var TYPE_UPDATE = 'update';
-  var createChange = function(type, removed, index, added, collection) {
-    return {
-      type: type,
-      removed: removed,
-      index: index,
-      added: added,
-      addedCount: added.length,
-      object: collection
-    };
-  };
+  // Save bytes
+  var createSplice = Change.createSplice;
+  var createUpdate = Change.createUpdate;
 
   // Unset data at given index.
   var unsetAt = function(collection, idx) {
@@ -276,7 +267,7 @@ var Collection = (function() {
         // New change occurs
         change = _.first(changes);
         if (!change || change.index !== (i + 1)) {
-          change = createChange(TYPE_SPLICE, [], i, [addedElement], collection);
+          change = createSplice([], [addedElement], i, collection);
           changes.unshift(change);
         } else {
           change.index = i;
@@ -459,7 +450,7 @@ var Collection = (function() {
           if (lastChangeIdx === (i - 1)) {
             _.last(changes).removed.push(o);
           } else {
-            changes.push(createChange(TYPE_SPLICE, [o], i, [], this));
+            changes.push(createSplice([o], [], i, this));
           }
 
           removed.push(o);
@@ -490,7 +481,7 @@ var Collection = (function() {
     // This will force a row update.
     notifyUpdate: function(idx) {
       this.notify([
-        createChange(TYPE_UPDATE, [], idx, [], this)
+        createUpdate(idx, this)
       ]);
 
       return this;
@@ -546,7 +537,7 @@ var Collection = (function() {
 
         this.$$map.clear();
         this.length = 0;
-        this.notify(createChange(TYPE_SPLICE, array, 0, [], this));
+        this.notify(createSplice(array, [], 0, this));
       }
 
       return this;
@@ -585,7 +576,7 @@ var Collection = (function() {
       this.length = newSize;
 
       this.notify([
-        createChange(TYPE_SPLICE, removed, 0, array, this)
+        createSplice(removed, array, 0, this)
       ]);
 
       return this;
@@ -679,7 +670,7 @@ var Collection = (function() {
             put(this, added[k], actualStart + k);
           }
 
-          changes = [createChange(TYPE_SPLICE, removed, actualStart, added, this)];
+          changes = [createSplice(removed, added, actualStart, this)];
         }
       } else {
         changes = [];
@@ -696,7 +687,7 @@ var Collection = (function() {
           change.removed = removed;
         } else {
           // Prepend changes with change for removed elements
-          changes.unshift(createChange(TYPE_SPLICE, removed, actualStart, [], this));
+          changes.unshift(createSplice(removed, [], actualStart, this));
         }
       }
 
@@ -739,8 +730,8 @@ var Collection = (function() {
 
       for (var i = 0, j = size - 1; i < mid; ++i, --j) {
         swap(this, i, j);
-        changesStart.push(createChange(TYPE_UPDATE, [], i, [], this));
-        changesEnd.unshift(createChange(TYPE_UPDATE, [], j, [], this));
+        changesStart.push(createUpdate(i, this));
+        changesEnd.unshift(createUpdate(j, this));
       }
 
       // Trigger changes in order

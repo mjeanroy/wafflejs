@@ -231,9 +231,10 @@ var GridDomHandlers = (function() {
             });
 
             // Another field may have been updated, so
-            // we should force an update to refresh the
-            // entire row.
-            data.notifyUpdate(idx);
+            // we should force an update to refresh the entire row.
+            // Replacing data may change the index if collection
+            // is sorted.
+            data.replace(object);
           }
         }
       }

@@ -32,13 +32,13 @@ describe('Sorted collection', function() {
   var collection;
 
   beforeEach(function() {
-    o1 = { id: 1, name: 'foo' };
-    o2 = { id: 2, name: 'bar' };
-    o5 = { id: 5, name: 'foobar' };
-    o10 = { id: 10, name: 'foobar' };
+    o1 = { id: 1, name: 'foo01' };
+    o2 = { id: 2, name: 'foo02' };
+    o5 = { id: 5, name: 'foo05' };
+    o10 = { id: 10, name: 'foo10' };
 
     sortFn = jasmine.createSpy('sortFn').and.callFake(function(o1, o2) {
-      return o1.id - o2.id;
+      return o1.name.localeCompare(o2.name);
     });
 
     collection = new Collection([o1, o10, o5, o2]);
@@ -73,8 +73,8 @@ describe('Sorted collection', function() {
   });
 
   it('should push elements in order', function() {
-    var o6 = { id: 6, name: 'foobar' };
-    var o7 = { id: 7, name: 'foobar' };
+    var o6 = { id: 6, name: 'foo06' };
+    var o7 = { id: 7, name: 'foo07' };
 
     var newLength = collection.push(o6, o7);
 
@@ -103,8 +103,8 @@ describe('Sorted collection', function() {
   });
 
   it('should unshift elements in order', function() {
-    var o6 = { id: 6, name: 'foobar' };
-    var o7 = { id: 7, name: 'foobar' };
+    var o6 = { id: 6, name: 'foo06' };
+    var o7 = { id: 7, name: 'foo07' };
 
     var newLength = collection.unshift(o6, o7);
 
@@ -133,7 +133,7 @@ describe('Sorted collection', function() {
   });
 
   it('should add elements in order', function() {
-    var o6 = { id: 6 };
+    var o6 = { id: 6, name: 'foo06' };
 
     expect(collection.length).toBe(4);
 
@@ -161,7 +161,7 @@ describe('Sorted collection', function() {
   });
 
   it('should add elements in order even with an index', function() {
-    var o6 = { id: 6 };
+    var o6 = { id: 6, name: 'foo06' };
     expect(collection.length).toBe(4);
 
     var newLength = collection.add([o6], 0);
@@ -188,8 +188,8 @@ describe('Sorted collection', function() {
   });
 
   it('should push elements, keep order and notify changes by index', function() {
-    var o6 = { id: 6, name: 'foobar' };
-    var o11 = { id: 11, name: 'foobar' };
+    var o6 = { id: 6, name: 'foo06' };
+    var o11 = { id: 11, name: 'foo11' };
 
     var newLength = collection.push(o6, o11);
 
@@ -219,8 +219,8 @@ describe('Sorted collection', function() {
   });
 
   it('should unshift elements in order and group changes', function() {
-    var o6 = { id: 6, name: 'foobar' };
-    var o11 = { id: 11, name: 'foobar' };
+    var o6 = { id: 6, name: 'foo06' };
+    var o11 = { id: 11, name: 'foo11' };
 
     var newLength = collection.unshift(o6, o11);
 
@@ -323,7 +323,7 @@ describe('Sorted collection', function() {
       1: { idx: 0 },
       5: { idx: 1 },
       10: { idx: 2 }
-  }));
+    }));
 
     expect(collection.notify).toHaveBeenCalledWith([
       { type: 'splice', addedCount: 0, added: [], index: 1, removed: [o2], object: collection },
@@ -392,7 +392,10 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.notify).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
+      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection }
+    ]);
+
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
@@ -415,7 +418,10 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.notify).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
+      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection }
+    ]);
+
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);
   });
@@ -424,10 +430,17 @@ describe('Sorted collection', function() {
     collection = new Collection([o1, o5]);
     collection.sort(sortFn);
 
+    spyOn(collection, 'replace').and.callThrough();
+
     var removed = collection.splice(0, 0, o5, o1, o2);
 
     expect(removed).toEqual([]);
     expect(collection.length).toBe(3);
+
+    expect(collection.replace).toHaveBeenCalledWith(o5);
+    expect(collection.replace).toHaveBeenCalledWith(o1);
+
+    expect(collection.replace).not.toHaveBeenCalledWith(o2);
     expect(collection[0]).toBe(o1);
     expect(collection[1]).toBe(o2);
     expect(collection[2]).toBe(o5);
@@ -438,8 +451,14 @@ describe('Sorted collection', function() {
     }));
 
     expect(collection.notify).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection },
-      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
+      { type: 'splice', addedCount: 1, added: [o2], index: 1, removed: [], object: collection }
+    ]);
+
+    expect(collection.notify).toHaveBeenCalledWith([
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
+    ]);
+
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);
   });
@@ -546,5 +565,95 @@ describe('Sorted collection', function() {
     expect(collection[0]).toBe(o1);
     expect(collection[1]).toBe(o2);
     expect(collection.notify).not.toHaveBeenCalled();
+  });
+
+  it('should replace data at the same exact if data is still the first', function() {
+    spyOn(collection, 'splice').and.callThrough();
+
+    var clone = {
+      id: 1,
+      name: 'foo bar'
+    };
+
+    collection.replace(clone);
+
+    expect(collection[0]).not.toBe(o1);
+    expect(collection[0]).toBe(clone);
+    expect(collection.splice).not.toHaveBeenCalled();
+    expect(collection.notify).toHaveBeenCalledWith([
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace data at the same exact if data is still the last', function() {
+    spyOn(collection, 'splice').and.callThrough();
+
+    var clone = {
+      id: 10,
+      name: 'foobar'
+    };
+
+    collection.replace(clone);
+
+    expect(collection[3]).not.toBe(o10);
+    expect(collection[3]).toBe(clone);
+    expect(collection.splice).not.toHaveBeenCalled();
+    expect(collection.notify).toHaveBeenCalledWith([
+      { type: 'update', addedCount: 0, added: [], index: 3, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace data at the same exact if data is still sorted', function() {
+    spyOn(collection, 'splice').and.callThrough();
+
+    var clone = {
+      id: 5,
+      name: 'foo05'
+    };
+
+    collection.replace(clone);
+
+    expect(collection[2]).not.toBe(o10);
+    expect(collection[2]).toBe(clone);
+    expect(collection.splice).not.toHaveBeenCalled();
+    expect(collection.notify).toHaveBeenCalledWith([
+      { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
+    ]);
+  });
+
+  it('should replace data and keep sort', function() {
+    spyOn(collection, 'splice').and.callThrough();
+
+    var clone = {
+      id: 5,
+      name: 'foo20'
+    };
+
+    collection.replace(clone);
+
+    expect(collection[2]).not.toBe(o5);
+    expect(collection[2]).toBe(o10);
+    expect(collection[3]).toBe(clone);
+
+    expect(collection.notify).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 0, added: [], index: 2, removed: [o5], object: collection }
+    ]);
+
+    expect(collection.notify).toHaveBeenCalledWith([
+      { type: 'splice', addedCount: 1, added: [clone], index: 3, removed: [], object: collection }
+    ]);
+  });
+
+  it('should not replace unknown data', function() {
+    var data = {
+      id: 50,
+      name: 'foo bar'
+    };
+
+    var replace = function() {
+      collection.replace(data);
+    };
+
+    expect(replace).toThrow(Error('Data to replace is not in collection !'));
   });
 });

@@ -144,11 +144,15 @@ var Collection = (function() {
     }
   };
 
+  var throwError = function(message) {
+    throw Error(message);
+  };
+
   // Convert parameter to a model instance.
   var parseModel = function(collection, o) {
     if (!_.isObject(o)) {
       // Only object are allowed inside collection
-      throw new Error('Waffle collections are not array, only object are allowed');
+      throwError('Waffle collections are not array, only object are allowed');
     }
 
     var result;
@@ -164,7 +168,7 @@ var Collection = (function() {
     // Try to get model identitifer
     var id = collection.$$key(result);
     if (id == null) {
-      throw new Error('Collection elements must have an id, you probably missed to specify the id key on initialization ?');
+      throwError('Collection elements must have an id, you probably missed to specify the id key on initialization ?');
     }
 
     return result;
@@ -190,13 +194,6 @@ var Collection = (function() {
     }
 
     return o;
-  };
-
-  // Replace data in collection and return appropriate change.
-  var replace = function(collection, current) {
-    var idx =  collection.indexOf(current);
-    collection[idx] = current;
-    return createChange(TYPE_UPDATE, [], idx, [], collection);
   };
 
   // Swap elements at given index
@@ -302,6 +299,23 @@ var Collection = (function() {
     return changes;
   };
 
+  var isSorted = function(collection, model, idx) {
+    var length = collection.length;
+    var sortFn = collection.$$sortFn;
+
+    var previous = idx > 0 ? collection[idx - 1] : null;
+    if (previous != null && sortFn(previous, model) > 0) {
+      return false;
+    }
+
+    var next = idx < length ? collection[idx + 1] : null;
+    if (next != null && sortFn(model, next) > 0) {
+      return false;
+    }
+
+    return true;
+  };
+
   // == Public prototype
 
   Constructor.prototype = {
@@ -355,6 +369,33 @@ var Collection = (function() {
         }
       }
       return -1;
+    },
+
+    // Replace data in collection.
+    // Data with same id will be replaced by data in parameter.
+    replace: function(data) {
+      var model = parseModel(this, data);
+      var idx = this.indexOf(model);
+
+      // If data does not exist, then it should fail as soon as possible.
+      if (idx < 0) {
+        throwError('Data to replace is not in collection !');
+      }
+
+      // If collection is sorted, data may have to be put at
+      // a different index.
+      var length = this.length;
+      var sortFn = this.$$sortFn;
+
+      if (sortFn && length > 1 && !isSorted(this, model, idx)) {
+        this.remove(model);
+        this.push(model);
+      } else {
+        this[idx] = model;
+        this.notifyUpdate(idx);
+      }
+
+      return this;
     },
 
     // Add new elements at given index
@@ -659,22 +700,20 @@ var Collection = (function() {
         }
       }
 
+      // Trigger splice changes
+      if (changes.length > 0) {
+        this.notify(changes);
+      }
+
       // Replace existing data and trigger changes
-      var updateChanges = [];
       if (existingCount > 0) {
         if (sortFn) {
           existing.sort(sortFn);
         }
 
         for (var x = 0; x < existingCount; ++x) {
-          updateChanges.push(replace(this, existing[x]));
+          this.replace(existing[x]);
         }
-      }
-
-      // Trigger update and splice changes
-      var allChanges = changes.concat(updateChanges);
-      if (allChanges.length > 0) {
-        this.notify(allChanges);
       }
 
       // An array containing the deleted elements.

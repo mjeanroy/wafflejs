@@ -348,7 +348,10 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.notify).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, added: [o3], index: 2, removed: [], object: collection },
+      { type: 'splice', addedCount: 1, added: [o3], index: 2, removed: [], object: collection }
+    ]);
+
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
     ]);
   });
@@ -369,7 +372,10 @@ describe('Unsorted collection', function() {
     }));
 
     expect(collection.notify).toHaveBeenCalledWith([
-      { type: 'splice', addedCount: 1, added: [o3], index: 0, removed: [], object: collection },
+      { type: 'splice', addedCount: 1, added: [o3], index: 0, removed: [], object: collection }
+    ]);
+
+    expect(collection.notify).toHaveBeenCalledWith([
       { type: 'update', addedCount: 0, added: [], index: 1, removed: [], object: collection }
     ]);
   });
@@ -544,5 +550,38 @@ describe('Unsorted collection', function() {
       { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection },
       { type: 'update', addedCount: 0, added: [], index: 2, removed: [], object: collection }
     ]);
+  });
+
+  it('should replace data', function() {
+    collection = new Collection([o1, o2, o3]);
+
+    spyOn(collection, 'splice').and.callThrough();
+
+    var clone = {
+      id: 1,
+      name: 'foo bar'
+    };
+
+    collection.replace(clone);
+
+    expect(collection[0]).not.toBe(o1);
+    expect(collection[0]).toBe(clone);
+    expect(collection.splice).not.toHaveBeenCalled();
+    expect(collection.notify).toHaveBeenCalledWith([
+      { type: 'update', addedCount: 0, added: [], index: 0, removed: [], object: collection }
+    ]);
+  });
+
+  it('should not replace unknown data', function() {
+    var data = {
+      id: 50,
+      name: 'foo bar'
+    };
+
+    var replace = function() {
+      collection.replace(data);
+    };
+
+    expect(replace).toThrow(Error('Data to replace is not in collection !'));
   });
 });

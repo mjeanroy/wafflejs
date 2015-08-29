@@ -480,11 +480,7 @@ var Collection = (function() {
     // Force an update change.
     // This will force a row update.
     notifyUpdate: function(idx) {
-      this.notify([
-        createUpdate(idx, this)
-      ]);
-
-      return this;
+      return this.notify([createUpdate(idx, this)]);
     },
 
     // Adds one or more elements to the end of the collection

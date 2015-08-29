@@ -187,8 +187,9 @@ describe('Collection observers', function() {
       callback: callback1
     }];
 
-    collection.notifyUpdate(0);
+    var result = collection.notifyUpdate(0);
 
+    expect(result).toBe(collection);
     expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([
       { type: 'update', index: 0, removed: [], addedCount: 0, added: [], object: collection }

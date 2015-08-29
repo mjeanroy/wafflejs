@@ -125,6 +125,7 @@ var GridColumnsObserver = (function() {
 
       var hasCheckbox = this.hasCheckbox();
       var index = change.index;
+      var added = change.added;
       var addedCount = change.addedCount;
       var removedData = change.removed;
 
@@ -171,7 +172,7 @@ var GridColumnsObserver = (function() {
         for (i = 0; i < addedCount; ++i) {
           idx = index + i;
 
-          var column = $columns.at(idx);
+          var column = added[i];
 
           // Update column flags
           updateColumn(this, column);
@@ -211,7 +212,7 @@ var GridColumnsObserver = (function() {
           for (i = 0; i < addedCount; ++i) {
             idx = index + i;
 
-            var currentColumn = $columns.at(idx);
+            var currentColumn = added[i];
             var columnId = currentColumn.id;
             if (map[columnId]) {
               // Remove, it will be added right after at the right position

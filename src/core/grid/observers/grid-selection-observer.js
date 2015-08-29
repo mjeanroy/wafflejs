@@ -69,7 +69,7 @@ var GridSelectionObserver = (function() {
 
       var tbody = $tbody[0];
       var childNodes = tbody.childNodes;
-      var index = change.index;
+      var added = change.added;
       var removed = change.removed;
       var addedCount = change.addedCount;
 
@@ -102,7 +102,7 @@ var GridSelectionObserver = (function() {
       // Selection
       if (addedCount > 0) {
         for (var i = 0; i < addedCount; ++i) {
-          idx = $data.indexOf($selection.at(index + i));
+          idx = $data.indexOf(added[i]);
           rowIndex = findIndex(childNodes, idx);
           row = childNodes[rowIndex];
 

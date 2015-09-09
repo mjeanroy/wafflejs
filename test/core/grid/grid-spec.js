@@ -39,8 +39,7 @@ describe('Grid', function() {
   });
 
   it('should define custom options', function() {
-    expect(Grid.options).toEqual({
-      key: 'id',
+    expect(Grid.options).toEqual(jasmine.objectContaining({
       columns: null,
       data: null,
       sortBy: null,
@@ -75,7 +74,17 @@ describe('Grid', function() {
         onFilterUpdated: null,
         onSorted: null
       }
-    });
+    }));
+
+    var key = Grid.options.key;
+    expect(key).toBeDefined();
+
+    // Key is not the same for angular wrapper or others
+    if (typeof angular !== 'undefined') {
+      expect(key).toBeAFunction();
+    } else {
+      expect(key).toBe('id');
+    }
   });
 
   it('should create grid using default options', function() {

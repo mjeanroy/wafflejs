@@ -148,7 +148,8 @@ var $core = {
     'extensions/angular/waffle-angular-service.js',
     'extensions/angular/grid-angular-template.js',
     'extensions/angular/grid-compilation-angular.js',
-    'extensions/angular/grid-angular.js'
+    'extensions/angular/grid-angular.js',
+    'extensions/angular/waffle-angular.js'
   ],
 
   $react: [

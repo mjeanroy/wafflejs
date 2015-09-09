@@ -48,7 +48,10 @@ describe('Grid Filter', function() {
 
     grid = new Grid(table, {
       data: data,
-      columns: columns
+      columns: columns,
+      key: function(o) {
+        return o.id;
+      }
     });
 
     tbody = grid.$tbody[0];

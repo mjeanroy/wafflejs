@@ -44,7 +44,10 @@ describe('Grid Data Observer', function() {
 
     grid = new Grid(table, {
       data: data,
-      columns: columns
+      columns: columns,
+      key: function(o) {
+        return o.id;
+      }
     });
 
     $data = grid.$data;

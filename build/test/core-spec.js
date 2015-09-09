@@ -215,7 +215,8 @@ describe('core', function() {
       'src/extensions/angular/waffle-angular-service.js',
       'src/extensions/angular/grid-angular-template.js',
       'src/extensions/angular/grid-compilation-angular.js',
-      'src/extensions/angular/grid-angular.js'
+      'src/extensions/angular/grid-angular.js',
+      'src/extensions/angular/waffle-angular.js'
     ]);
   });
 

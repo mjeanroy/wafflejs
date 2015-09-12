@@ -45,6 +45,85 @@ describe('$doc', function() {
     fixtures.parentNode.removeChild(fixtures);
   });
 
+  it('should create element', function() {
+    var element = $doc.create('div');
+    expect(element).toBeDefined();
+    expect(element.tagName).toBe('DIV');
+  });
+
+  it('should create element with attributes', function() {
+    var element = $doc.create('div', {
+      'id': 'foo',
+      'data-waffle-order': '+'
+    });
+
+    expect(element).toBeDefined();
+    expect(element.tagName).toBe('DIV');
+    expect(element.getAttribute('id')).toBe('foo');
+    expect(element.getAttribute('data-waffle-order')).toBe('+');
+  });
+
+  it('should create element with attributes and className', function() {
+    var element = $doc.create('div', {
+      'id': 'foo',
+      'data-waffle-order': '+',
+      'className': 'foo bar'
+    });
+
+    expect(element).toBeDefined();
+    expect(element.tagName).toBe('DIV');
+    expect(element.getAttribute('id')).toBe('foo');
+    expect(element.getAttribute('data-waffle-order')).toBe('+');
+    expect(element.className).toBe('foo bar');
+  });
+
+  it('should create element with attributes and styles', function() {
+    var element = $doc.create('div', {
+      'id': 'foo',
+      'data-waffle-order': '+',
+      'style': {
+        'fontSize': '10px'
+      }
+    });
+
+    expect(element).toBeDefined();
+    expect(element.tagName).toBe('DIV');
+    expect(element.getAttribute('id')).toBe('foo');
+    expect(element.getAttribute('data-waffle-order')).toBe('+');
+    expect(element.style.fontSize).toBe('10px');
+  });
+
+  it('should create element with children', function() {
+    var span1 = document.createElement('span');
+    var span2 = document.createElement('span');
+    var element = $doc.create('div', null, [span1, span2]);
+
+    expect(element).toBeDefined();
+    expect(element.tagName).toBe('DIV');
+
+    expect(element.childNodes.length).toBe(2);
+    expect(element.childNodes[0]).toBe(span1);
+    expect(element.childNodes[1]).toBe(span2);
+  });
+
+  it('should create element with text node', function() {
+    var element = $doc.create('div', null, 'Hello World');
+
+    expect(element).toBeDefined();
+    expect(element.tagName).toBe('DIV');
+
+    expect(element.childNodes.length).toBe(1);
+    expect(element.childNodes[0].nodeValue).toBe('Hello World');
+  });
+
+  it('should create element with html', function() {
+    var element = $doc.create('div', null, '<b>Hello World</b>');
+
+    expect(element).toBeDefined();
+    expect(element.tagName).toBe('DIV');
+    expect(element.innerHTML).toBe('<b>Hello World</b>');
+  });
+
   it('should find element by id', function() {
     var node = $doc.byId('span1');
     var unknownNode = $doc.byId('foo');

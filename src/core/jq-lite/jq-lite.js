@@ -230,13 +230,6 @@ var $ = (function() {
       });
     },
 
-    // Replace html content
-    html: function(html) {
-      return iterate(this, function(node) {
-        node.innerHTML = html;
-      });
-    },
-
     // Set attribute to value
     attr: function(name, value) {
       var values = name;
@@ -261,13 +254,6 @@ var $ = (function() {
     removeAttr: function(name) {
       return iterate(this, function(node) {
         node.removeAttribute(name);
-      });
-    },
-
-    // Set property of matched element
-    prop: function(property, value) {
-      return iterate(this, function(node) {
-        node[property] = value;
       });
     }
   };

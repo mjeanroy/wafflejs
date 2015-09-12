@@ -24,7 +24,6 @@
 
 /* jshint eqnull: true */
 /* global _ */
-/* global $ */
 /* global $doc */
 /* global $util */
 /* global DATA_WAFFLE_CID */
@@ -66,6 +65,25 @@ var GridBuilder = (function() {
     checkbox: function(value) {
       return !!value;
     }
+  };
+
+  var createCheckboxCell = function(grid, thead) {
+    var selectionLength = grid.$selection.size();
+
+    var span = $doc.span({title: selectionLength}, '' + selectionLength);
+
+    var isSelected = grid.isSelected();
+    var input = $doc.inputCheckbox({
+      checked: isSelected,
+      indeterminate: !isSelected && selectionLength > 0
+    });
+
+    var children = thead ? [span, input] : [input, span];
+    var attributes = {
+      className: CSS_CHECKBOX_CELL
+    };
+
+    return $doc.th(attributes, children);
   };
 
   var o = {
@@ -115,60 +133,45 @@ var GridBuilder = (function() {
 
     // Create row to append to thead node.
     theadRow: function(grid) {
-      var tr = $doc.tr();
+      var children = [];
 
       if (grid.hasCheckbox()) {
-        tr.appendChild(o.theadCheckboxCell(grid));
+        children.push(o.theadCheckboxCell(grid));
       }
 
       grid.$columns.forEach(function(column, idx) {
-        tr.appendChild(o.theadCell(grid, column, idx));
+        children.push(o.theadCell(grid, column, idx));
       });
 
-      return tr;
+      return $doc.tr(null, children);
     },
 
     // Create cell for grid thead node.
     theadCell: function(grid, column, idx) {
-      return $($doc.th())
-        .addClass(column.cssClasses(idx, true))
-        .css(column.styles(idx, true))
-        .attr(column.attributes(idx, true))
-        .html(column.title)[0];
+      var attributes = column.attributes(idx, true);
+      attributes.className = column.cssClasses(idx, true);
+      attributes.style = column.styles(idx, true);
+      return $doc.th(attributes, column.title);
     },
 
     // Create cell for grid thead node.
     theadCheckboxCell: function(grid) {
-      var selectionLength = grid.$selection.size();
-
-      var $span = $($doc.span())
-        .attr('title', selectionLength)
-        .html(selectionLength);
-
-      var isSelected = grid.isSelected();
-      var $input = $($doc.inputCheckbox())
-        .prop('checked', isSelected)
-        .prop('indeterminate', !isSelected && selectionLength > 0);
-
-      return $($doc.th())
-        .addClass(CSS_CHECKBOX_CELL)
-        .append($span[0])
-        .append($input[0])[0];
+      return createCheckboxCell(grid, true);
     },
 
     // Create row to append to thead node.
     tfootRow: function(grid) {
-      var tr = $doc.tr();
+      var children = [];
 
       if (grid.hasCheckbox()) {
-        tr.appendChild(o.tfootCheckboxCell(grid));
+        children.push(o.tfootCheckboxCell(grid));
       }
 
       grid.$columns.forEach(function(column, idx) {
-        tr.appendChild(o.tfootCell(grid, column, idx));
+        children.push(o.tfootCell(grid, column, idx));
       });
 
-      return tr;
+      return $doc.tr(null, children);
     },
 
     // For now, tfoot cell is the same as the thead cell
@@ -178,12 +181,7 @@ var GridBuilder = (function() {
 
     // Create cell for grid thead node.
     tfootCheckboxCell: function(grid) {
-      var cell = o.theadCheckboxCell(grid);
-
-      // Put the span value at the the bottom...
-      cell.appendChild(cell.childNodes[0]);
-
-      return cell;
+      return createCheckboxCell(grid, false);
     },
 
     // Create fragment of rows.
@@ -198,74 +196,64 @@ var GridBuilder = (function() {
 
     // Create a row for grid tbody node.
     tbodyRow: function(grid, data, idx) {
-      var $tr = $($doc.tr());
+      var attributes = {};
+      attributes[DATA_WAFFLE_IDX] = idx;
+      attributes[DATA_WAFFLE_ID] = grid.$data.$$key(data);
+      attributes[DATA_WAFFLE_CID] = _.uniqueId();
 
-      // Add index.
-      $tr.attr(DATA_WAFFLE_IDX, idx);
+      var children = [];
+      var className = '';
 
-      // Add id value.
-      $tr.attr(DATA_WAFFLE_ID, grid.$data.$$key(data));
-
-      // Add cid.
-      // This cid should identify rows uniquely.
-      $tr.attr(DATA_WAFFLE_CID, _.uniqueId());
-
-      // Add css for selected row
       if (grid.isSelectable()) {
         // Add css to show that row is selectable
         if (grid.isSelectable(data)) {
-          $tr.addClass(CSS_SELECTABLE);
+          className += CSS_SELECTABLE;
         }
 
         // Data may be selected programmatically, but not selectable
         if (grid.$selection.contains(data)) {
-          $tr.addClass(CSS_SELECTED);
+          className += ' ' + CSS_SELECTED;
         }
 
         // Append cell if grid is defined with checkbox
         if (grid.hasCheckbox()) {
-          $tr[0].appendChild(o.tbodyCheckboxCell(grid, data));
+          children.push(o.tbodyCheckboxCell(grid, data));
         }
       }
 
+      if (className) {
+        attributes.className = className;
+      }
+
       grid.$columns.forEach(function(column, idx) {
-        $tr[0].appendChild(o.tbodyCell(grid, data, column, idx));
+        children.push(o.tbodyCell(grid, data, column, idx));
       });
 
-      return $tr[0];
+      return $doc.tr(attributes, children);
     },
 
     // Create a cell for grid tbody node
     tbodyCell: function(grid, data, column, idx) {
-      var $td = $($doc.td())
-        .addClass(column.cssClasses(idx, false, data))
-        .css(column.styles(idx, false))
-        .attr(column.attributes(idx, false));
+      var attributes = column.attributes(idx, false);
+      attributes.className = column.cssClasses(idx, false, data);
+      attributes.style = column.styles(idx, false);
 
-      // Check for editable cell
-      var editable = column.isEditable(data);
-      if (editable) {
-        $td.append(o.tbodyControl(column, data));
-      } else {
-        $td.html(column.render(data));
-      }
+      var children = column.isEditable(data) ?
+        o.tbodyControl(column, data) : column.render(data);
 
-      return $td[0];
+      return $doc.td(attributes, children);
     },
 
     // Create a cell for grid tbody node
     tbodyCheckboxCell: function(grid, data) {
-      var $td = $($doc.td())
-        .addClass(CSS_CHECKBOX_CELL);
+      var attributes = {
+        className: CSS_CHECKBOX_CELL
+      };
 
-      if (grid.isSelectable(data)) {
-        var $checkbox = $($doc.inputCheckbox())
-          .prop('checked', grid.isSelected(data));
+      var children = grid.isSelectable(data) ?
+        $doc.inputCheckbox({checked: grid.isSelected(data)}) : null;
 
-        $td.append($checkbox[0]);
-      }
-
-      return $td[0];
+      return $doc.td(attributes, children);
     },
 
     // Create control for editable cell
@@ -273,43 +261,41 @@ var GridBuilder = (function() {
       var editable = column.editable;
 
       var control;
+      var children = null;
+      var attributes = {};
 
       if (editable.type === 'select') {
-        control = $doc.select();
+        control = 'select';
 
         // Append custom options
         if (editable.options) {
-          _.forEach(editable.options, function(option) {
-            var opt = $doc.option();
+          children = _.map(editable.options, function(option) {
+            var attributes = option.value != null ?
+              {value: option.value} : null;
 
-            opt.innerHTML = option.label != null ? option.label : '';
-
-            if (option.value != null) {
-              opt.value = option.value;
-            }
-
-            control.appendChild(opt);
+            var text = option.label != null ? option.label : '';
+            return $doc.option(attributes, text);
           });
         }
       } else {
-        control = $doc.input();
-        control.setAttribute('type', editable.type);
+        control = 'input';
+        attributes.type = editable.type;
       }
 
       // Add column id to control to simplify parsing
-      control.setAttribute(DATA_WAFFLE_ID, column.id);
+      attributes[DATA_WAFFLE_ID] = column.id;
 
       // For checkbox inputs, we must set the 'checked' property...
       var prop = editable.type === 'checkbox' ? 'checked' : 'value';
       var formatter = formatters[editable.type] || _.identity;
-      control[prop] = formatter(column.value(data));
+      attributes[prop] = formatter(column.value(data));
 
       // Append custom css
       if (editable.css) {
-        control.className = editable.css;
+        attributes.className = editable.css;
       }
 
-      return control;
+      return $doc[control](attributes, children);
     }
   };
 

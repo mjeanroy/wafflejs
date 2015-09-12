@@ -55,10 +55,62 @@ var $doc = (function() {
     return 'body';
   };
 
+  var setAttributes = function(node, attributes) {
+    // This should always be set first.
+    // Since key order is not guaranteed, force it.
+    var type = attributes.type;
+    if (type) {
+      node.type = type;
+    }
+
+    _.forEach(_.keys(attributes), function(attribute) {
+      var value = attributes[attribute];
+      switch (attribute) {
+        case 'className':
+        case 'checked':
+        case 'indeterminate':
+        case 'value':
+          node[attribute] = value;
+          break;
+        case 'style':
+          _.extend(node.style, value);
+          break;
+        default:
+          node.setAttribute(attribute, value);
+          break;
+      }
+    });
+  };
+
+  var setChildren = function(node, children) {
+    if (_.isString(children)) {
+      // Do not worry about xss injection, since this api should be called with:
+      // - Escaped values.
+      // - Non escaped values, but this option must be explicitely enabled.
+      node.innerHTML = children;
+    } else if (_.isArray(children)) {
+      _.forEach(children, function(child) {
+        node.appendChild(child);
+      });
+    } else {
+      node.appendChild(children);
+    }
+  };
+
   var o = {
     // Create dom element
-    create: function(tagName) {
-      return document.createElement(tagName);
+    create: function(tagName, attributes, children) {
+      var element = document.createElement(tagName);
+
+      if (attributes) {
+        setAttributes(element, attributes);
+      }
+
+      if (children) {
+        setChildren(element, children);
+      }
+
+      return element;
     },
 
     // Find element by its id
@@ -94,17 +146,15 @@ var $doc = (function() {
   };
 
   _.forEach(['tr', 'td', 'th', TBODY, THEAD, TFOOT, 'input', 'select', 'option', 'span'], function(tagName) {
-    o[tagName] = function() {
-      return this.create(tagName);
+    o[tagName] = function(attributes, children) {
+      return this.create.call(this, tagName, attributes, children);
     };
   });
 
   _.forEach(['text', 'checkbox', 'number', 'email', 'url', 'date', 'time', 'datetime'], function(type) {
-    var fnName = 'input' + $util.capitalize(type);
-    o[fnName] = function() {
-      var input = this.input();
-      input.setAttribute('type', type);
-      return input;
+    o['input' + $util.capitalize(type)] = function(attributes, children) {
+      var attrs = _.extend({type: type}, attributes || {});
+      return this.input.call(this, attrs, children);
     };
   });
 

@@ -63,7 +63,18 @@ var GridDomBinders = (function() {
   // Save bytes
   var CLICK = 'click';
 
-  var o = {
+  // Create binder/unbinder for events.
+  var createDomBinding = function(o, name, fn) {
+    o['bind' + name] = function(grid) {
+      fn(grid, bind);
+    };
+
+    o['unbind' + name] = function(grid) {
+      fn(grid, unbind);
+    };
+  };
+
+  var instance = {
     bindResize: function(grid) {
       if (!grid.$$events.onResize) {
         var resizeFn = _.bind(grid.resize, grid);
@@ -73,45 +84,47 @@ var GridDomBinders = (function() {
       }
     },
 
-    // Bind input events on tbody element
-    bindEdition: function(grid) {
-      bind(grid, TBODY, inputEvents(), 'onInputTbody');
-    },
-
-    // Unbind input events on tbody element
-    unbindEdition: function(grid) {
-      unbind(grid, TBODY, inputEvents(), 'onInputTbody');
-    },
-
-    // Bind selection events (click) on thead, tfoot and tbody elements
-    bindSelection: function(grid) {
-      bind(grid, THEAD, CLICK, 'onClickThead');
-      bind(grid, TFOOT, CLICK, 'onClickTfoot');
-      bind(grid, TBODY, CLICK, 'onClickTbody');
-    },
-
-    // Bind sort events (click) on thead and tfoot elements.
-    bindSort: function(grid) {
-      bind(grid, THEAD, CLICK, 'onClickThead');
-      bind(grid, TFOOT, CLICK, 'onClickTfoot');
-    },
-
-    // Bind drag&drop events on table element.
-    bindDragDrop: function(grid) {
-      bind(grid, TABLE, 'dragstart', 'onDragStart');
-      bind(grid, TABLE, 'dragover', 'onDragOver');
-      bind(grid, TABLE, 'dragend', 'onDragEnd');
-      bind(grid, TABLE, 'dragleave', 'onDragLeave');
-      bind(grid, TABLE, 'dragenter', 'onDragEnter');
-      bind(grid, TABLE, 'drop', 'onDragDrop');
-
-      // IE <= 9 need this workaround to handle drag&drop
-      if ($util.msie() <= 9) {
-        bind(grid, TABLE, 'selectstart', 'onSelectStart');
+    unbindResize: function(grid) {
+      if (grid.$$events.onResize) {
+        grid.$window.off('resize', grid.$$events.onResize);
+        grid.$window = null;
       }
     }
   };
 
-  return o;
+  // Create bind/unbind functions for edition events.
+  createDomBinding(instance, 'Edition', function(grid, factory) {
+    factory(grid, TBODY, inputEvents(), 'onInputTbody');
+  });
+
+  // Create bind/unbind functions for selection events.
+  createDomBinding(instance, 'Selection', function(grid, factory) {
+    factory(grid, THEAD, CLICK, 'onClickThead');
+    factory(grid, TFOOT, CLICK, 'onClickTfoot');
+    factory(grid, TBODY, CLICK, 'onClickTbody');
+  });
+
+  // Create bind/unbind functions for sort events.
+  createDomBinding(instance, 'Sort', function(grid, factory) {
+    factory(grid, THEAD, CLICK, 'onClickThead');
+    factory(grid, TFOOT, CLICK, 'onClickTfoot');
+  });
+
+  // Create bind/unbind functions for drag&drop events.
+  createDomBinding(instance, 'DragDrop', function(grid, factory) {
+    factory(grid, TABLE, 'dragstart', 'onDragStart');
+    factory(grid, TABLE, 'dragover', 'onDragOver');
+    factory(grid, TABLE, 'dragend', 'onDragEnd');
+    factory(grid, TABLE, 'dragleave', 'onDragLeave');
+    factory(grid, TABLE, 'dragenter', 'onDragEnter');
+    factory(grid, TABLE, 'drop', 'onDragDrop');
+
+    // IE <= 9 need this workaround to handle drag&drop
+    if ($util.msie() <= 9) {
+      factory(grid, TABLE, 'selectstart', 'onSelectStart');
+    }
+  });
+
+  return instance;
 
 })();

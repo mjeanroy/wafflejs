@@ -51,7 +51,7 @@
  */
 
 var CSS_PREFIX = 'waffle-';
-var CSS_GRID = 'waffle-grid';
+var CSS_GRID = CSS_PREFIX + 'grid';
 var CSS_SORTABLE = CSS_PREFIX + 'sortable';
 var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
 var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';

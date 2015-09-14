@@ -91,7 +91,7 @@ describe('Grid Selection', function() {
     expect(grid.$selection.options()).toEqual(grid.$data.options());
   });
 
-  it('should not initialize selection collection if grid is not selectable', function() {
+  it('should initialize selection collection even if grid is not selectable', function() {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -100,7 +100,9 @@ describe('Grid Selection', function() {
       }
     });
 
-    expect(grid.$selection).toBeUndefined();
+    expect(grid.$selection).toBeDefined();
+    expect(grid.$selection).toBeEmpty();
+    expect(grid.$selection.options()).toEqual(grid.$data.options());
   });
 
   it('should not check if data is selected if grid is not selectable', function() {

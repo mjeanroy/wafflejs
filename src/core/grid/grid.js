@@ -225,6 +225,9 @@ var Grid = (function() {
     this.$data.observe(GridDataObserver.on, this);
     this.$columns.observe(GridColumnsObserver.on, this);
 
+    this.$selection = new Collection([], this.$data.options());
+    this.$selection.observe(GridSelectionObserver.on, this);
+
     this.$$events = {};
 
     // Bind dom handlers only if needed
@@ -237,11 +240,8 @@ var Grid = (function() {
       GridDomBinders.bindEdition(this);
     }
 
+    // Bind selection events
     if (isSelectable) {
-      this.$selection = new Collection([], this.$data.options());
-      this.$selection.observe(GridSelectionObserver.on, this);
-
-      // Bind selection events
       GridDomBinders.bindSelection(this);
     }
 
@@ -280,6 +280,46 @@ var Grid = (function() {
   };
 
   Constructor.prototype = {
+    // Detach table:
+    // - Unbind dom events.
+    // - Remove observers.
+    // - Dispatch detach event.
+    detach: function() {
+      var $table = this.$table;
+      if ($table) {
+        // Remove waffle classes.
+        var css = [
+          CSS_GRID,
+          CSS_SELECTABLE,
+          CSS_SCROLLABLE
+        ];
+
+        $table.removeClass(css.join(' '));
+
+        // Unbind dom events.
+        GridDomBinders.unbindSort(this);
+        GridDomBinders.unbindEdition(this);
+        GridDomBinders.unbindSelection(this);
+        GridDomBinders.unbindResize(this);
+        GridDomBinders.unbindDragDrop(this);
+
+        // Unobserve collections (since observers are only used to update
+        // dom nodes).
+        this.clearChanges();
+        this.$data.unobserve(GridDataObserver.on, this);
+        this.$columns.unobserve(GridColumnsObserver.on, this);
+        this.$selection.unobserve(GridSelectionObserver.on, this);
+
+        // Dispatch event.
+        this.dispatchEvent('detached');
+
+        // Dereference dom nodes.
+        this.$table = this.$tbody = this.$thead = this.$tfoot = null;
+      }
+
+      return this;
+    },
+
     // Get all rows.
     // An array is returned (not a NodeList).
     rows: function() {
@@ -652,37 +692,9 @@ var Grid = (function() {
 
     // Destroy datagrid
     destroy: function() {
-      // Unbind dom events
-      this.$table.off();
-      this.$tbody.off();
-
-      if (this.hasHeader()) {
-        this.$thead.off();
-      }
-
-      if (this.hasFooter()) {
-        this.$tfoot.off();
-      }
-
-      // Unbind resize event
-      if (this.$$events.onResize && this.$window) {
-        this.$window.off('resize', this.$$events.onResize);
-        this.$window = null;
-      }
-
-      // Unobserve collection
-      this.clearChanges();
-      this.$data.unobserve();
-      this.$columns.unobserve();
-      this.$selection.unobserve();
-
-      // Clear event bus
+      this.detach();
       this.$bus.clear();
-
-      // Clear event listeners
       this.$$events = null;
-
-      // Destroy internal property
       $util.destroy(this);
     }
   };
@@ -762,7 +774,8 @@ var Grid = (function() {
     'onColumnsUpdated',
     'onSelectionChanged',
     'onFilterUpdated',
-    'onSorted'
+    'onSorted',
+    'onDetached'
   ];
 
   _.forEach(events, function(name) {

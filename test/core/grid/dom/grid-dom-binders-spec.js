@@ -114,6 +114,22 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
+    it('should unbind input events', function() {
+      spyOn($sniffer, 'hasEvent').and.returnValue(true);
+
+      GridDomBinders.bindEdition(grid);
+
+      var onInputTbody = grid.$$events.onInputTbody;
+
+      GridDomBinders.unbindEdition(grid);
+
+      expect(grid.$table.off).not.toHaveBeenCalled();
+      expect(grid.$thead.off).not.toHaveBeenCalled();
+      expect(grid.$tfoot.off).not.toHaveBeenCalled();
+      expect(grid.$tbody.off).toHaveBeenCalledWith('input change', onInputTbody);
+      expect(grid.$$events.onInputTbody).toBeNull();
+    });
+
     it('should bind input events using fallback events', function() {
       spyOn($sniffer, 'hasEvent').and.returnValue(false);
 
@@ -137,6 +153,22 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindEdition(grid);
 
       expect(grid.$tbody.on).not.toHaveBeenCalled();
+    });
+
+    it('should unbind input events using fallback events', function() {
+      spyOn($sniffer, 'hasEvent').and.returnValue(false);
+
+      GridDomBinders.bindEdition(grid);
+
+      var onInputTbody = grid.$$events.onInputTbody;
+
+      GridDomBinders.unbindEdition(grid);
+
+      expect(grid.$table.off).not.toHaveBeenCalled();
+      expect(grid.$thead.off).not.toHaveBeenCalled();
+      expect(grid.$tfoot.off).not.toHaveBeenCalled();
+      expect(grid.$tbody.off).toHaveBeenCalledWith('keyup change', onInputTbody);
+      expect(grid.$$events.onInputTbody).toBeNull();
     });
 
     it('should bind selection events', function() {
@@ -166,60 +198,23 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
-    it('should unbind input events', function() {
-      spyOn($sniffer, 'hasEvent').and.returnValue(true);
+    it('should unbind selection events', function() {
+      GridDomBinders.bindSelection(grid);
 
-      GridDomBinders.unbindEdition(grid);
+      var onClickThead = grid.$$events.onClickThead;
+      var onClickTfoot = grid.$$events.onClickTfoot;
+      var onClickTbody = grid.$$events.onClickTbody;
 
-      expect(grid.$$events).toEqual({
-      });
+      GridDomBinders.unbindSelection(grid);
 
+      expect(grid.$thead.off).toHaveBeenCalledWith('click', onClickThead);
+      expect(grid.$tfoot.off).toHaveBeenCalledWith('click', onClickTfoot);
+      expect(grid.$tbody.off).toHaveBeenCalledWith('click', onClickTbody);
       expect(grid.$table.off).not.toHaveBeenCalled();
-      expect(grid.$thead.off).not.toHaveBeenCalled();
-      expect(grid.$tfoot.off).not.toHaveBeenCalled();
-      expect(grid.$tbody.off).not.toHaveBeenCalled();
 
-      // Add event programmatically
-      var onInputTbody = jasmine.createSpy('onInputTbody');
-      grid.$$events.onInputTbody = onInputTbody;
-
-      GridDomBinders.unbindEdition(grid);
-
-      expect(grid.$table.off).not.toHaveBeenCalled();
-      expect(grid.$thead.off).not.toHaveBeenCalled();
-      expect(grid.$tfoot.off).not.toHaveBeenCalled();
-      expect(grid.$tbody.off).toHaveBeenCalledWith('input change', onInputTbody);
-      expect(grid.$$events).toEqual({
-        onInputTbody: null
-      });
-    });
-
-    it('should unbind input events using fallback events', function() {
-      spyOn($sniffer, 'hasEvent').and.returnValue(false);
-
-      GridDomBinders.unbindEdition(grid);
-
-      expect(grid.$$events).toEqual({
-      });
-
-      expect(grid.$table.off).not.toHaveBeenCalled();
-      expect(grid.$thead.off).not.toHaveBeenCalled();
-      expect(grid.$tfoot.off).not.toHaveBeenCalled();
-      expect(grid.$tbody.off).not.toHaveBeenCalled();
-
-      // Add event programmatically
-      var onInputTbody = jasmine.createSpy('onInputTbody');
-      grid.$$events.onInputTbody = onInputTbody;
-
-      GridDomBinders.unbindEdition(grid);
-
-      expect(grid.$table.off).not.toHaveBeenCalled();
-      expect(grid.$thead.off).not.toHaveBeenCalled();
-      expect(grid.$tfoot.off).not.toHaveBeenCalled();
-      expect(grid.$tbody.off).toHaveBeenCalledWith('keyup change', onInputTbody);
-      expect(grid.$$events).toEqual({
-        onInputTbody: null
-      });
+      expect(grid.$$events.onClickThead).toBeNull();
+      expect(grid.$$events.onClickTfoot).toBeNull();
+      expect(grid.$$events.onClickTbody).toBeNull();
     });
 
     it('should bind sort events', function() {
@@ -247,6 +242,22 @@ describe('Grid Dom Binders', function() {
       expect(grid.$thead.on).not.toHaveBeenCalled();
       expect(grid.$tfoot.on).not.toHaveBeenCalled();
       expect(grid.$tbody.on).not.toHaveBeenCalled();
+    });
+
+    it('should unbind sort events', function() {
+      GridDomBinders.bindSort(grid);
+
+      var onClickThead = grid.$$events.onClickThead;
+      var onClickTfoot = grid.$$events.onClickTfoot;
+
+      GridDomBinders.unbindSort(grid);
+
+      expect(grid.$thead.off).toHaveBeenCalledWith('click', onClickThead);
+      expect(grid.$tfoot.off).toHaveBeenCalledWith('click', onClickTfoot);
+      expect(grid.$tbody.off).not.toHaveBeenCalled();
+      expect(grid.$table.off).not.toHaveBeenCalled();
+      expect(grid.$$events.onClickThead).toBeNull();
+      expect(grid.$$events.onClickTfoot).toBeNull();
     });
 
     it('should bind drag & drop events', function() {
@@ -284,6 +295,26 @@ describe('Grid Dom Binders', function() {
       expect(grid.$thead.on).not.toHaveBeenCalled();
       expect(grid.$tfoot.on).not.toHaveBeenCalled();
       expect(grid.$tbody.on).not.toHaveBeenCalled();
+    });
+
+    it('should unbind drag & drop events', function() {
+      GridDomBinders.bindDragDrop(grid);
+
+      var onDragStart = grid.$$events.onDragStart;
+      var onDragOver = grid.$$events.onDragOver;
+      var onDragEnd = grid.$$events.onDragEnd;
+      var onDragLeave = grid.$$events.onDragLeave;
+      var onDragEnter = grid.$$events.onDragEnter;
+      var onDragDrop = grid.$$events.onDragDrop;
+
+      GridDomBinders.unbindDragDrop(grid);
+
+      expect(grid.$table.off).toHaveBeenCalledWith('dragstart', onDragStart);
+      expect(grid.$table.off).toHaveBeenCalledWith('dragover', onDragOver);
+      expect(grid.$table.off).toHaveBeenCalledWith('dragend', onDragEnd);
+      expect(grid.$table.off).toHaveBeenCalledWith('dragleave', onDragLeave);
+      expect(grid.$table.off).toHaveBeenCalledWith('dragenter', onDragEnter);
+      expect(grid.$table.off).toHaveBeenCalledWith('drop', onDragDrop);
     });
   });
 

@@ -72,7 +72,8 @@ describe('Grid', function() {
         onColumnsUpdated: null,
         onSelectionChanged: null,
         onFilterUpdated: null,
-        onSorted: null
+        onSorted: null,
+        onDetached: null
       }
     }));
 
@@ -169,21 +170,150 @@ describe('Grid', function() {
         onColumnsUpdated: null,
         onSelectionChanged: null,
         onFilterUpdated: null,
-        onSorted: null
+        onSorted: null,
+        onDetached: null
       }
     }));
   });
 
-  it('should create grid without "new" keyword', function() {
+  it('should create grid with custom options', function() {
+    var Model = function(o) {
+      this.id = o.id;
+    };
+
     var table = document.createElement('table');
-    var grid = Grid(table);
-    expect(grid).toBeInstanceOf(Grid);
+    var onInitialized = jasmine.createSpy('onInitialized');
+    var onDataSpliced = jasmine.createSpy('onDataSpliced');
+
+    var grid = new Grid(table, {
+      key: 'title',
+      model: Model,
+      async: true,
+      scrollable: true,
+      selection: {
+        multi: false
+      },
+      size: {
+        width: 100,
+        height: 200
+      },
+      events: {
+        onInitialized: onInitialized,
+        onDataSpliced: onDataSpliced
+      },
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(grid.options).toBeDefined();
+    expect(grid.options).not.toBe(Grid.options);
+    expect(grid.options).not.toEqual(jasmine.objectContaining(Grid.options));
+    expect(grid.options).toEqual(jasmine.objectContaining({
+      key: 'title',
+      model: Model,
+      scrollable: true,
+      selection: {
+        enable: true,
+        checkbox: true,
+        multi: false
+      },
+      async: true,
+      size: {
+        width: 100,
+        height: 200
+      },
+      events: {
+        onInitialized: onInitialized,
+        onUpdated: null,
+        onRendered: null,
+        onDataSpliced: onDataSpliced,
+        onDataUpdated: null,
+        onDataChanged: null,
+        onColumnsSpliced: null,
+        onColumnsUpdated: null,
+        onSelectionChanged: null,
+        onFilterUpdated: null,
+        onSorted: null,
+        onDetached: null
+      }
+    }));
   });
 
   it('should create grid using factory', function() {
     var table = document.createElement('table');
     var grid = Grid.create(table);
     expect(grid).toBeInstanceOf(Grid);
+  });
+
+  it('should detach grid', function() {
+    var table = document.createElement('table');
+
+    var grid = new Grid(table, {
+      scrollable: true,
+      sortable: true,
+      selection: {
+        multi: false
+      },
+      columns: [
+        { id: 'bar' },
+        { id: 'foo' }
+      ]
+    });
+
+    expect(grid).toBeDefined();
+    expect(grid.$table).toBeDefined();
+    expect(grid.$tbody).toBeDefined();
+    expect(table.className).toContain('waffle-grid');
+    expect(table.className).toContain('waffle-fixedheader');
+    expect(table.className).toContain('waffle-selectable');
+
+    spyOn(grid, 'dispatchEvent').and.callThrough();
+    spyOn(grid, 'clearChanges').and.callThrough();
+
+    spyOn(grid.$data, 'unobserve').and.callThrough();
+    spyOn(grid.$columns, 'unobserve').and.callThrough();
+    spyOn(grid.$selection, 'unobserve').and.callThrough();
+
+    spyOn(GridDomBinders, 'unbindSort').and.callThrough();
+    spyOn(GridDomBinders, 'unbindSelection').and.callThrough();
+    spyOn(GridDomBinders, 'unbindEdition').and.callThrough();
+    spyOn(GridDomBinders, 'unbindDragDrop').and.callThrough();
+    spyOn(GridDomBinders, 'unbindResize').and.callThrough();
+
+    expect(grid.$data.$$observers).not.toBeEmpty();
+    expect(grid.$columns.$$observers).not.toBeEmpty();
+    expect(grid.$selection.$$observers).not.toBeEmpty();
+
+    var result = grid.detach();
+
+    expect(result).toBe(grid);
+    expect(grid.$table).toBeNull();
+    expect(grid.$tbody).toBeNull();
+    expect(grid.$thead).toBeNull();
+    expect(grid.$tfoot).toBeNull();
+
+    expect(table.className).not.toContain('waffle-grid');
+    expect(table.className).not.toContain('waffle-fixedheader');
+    expect(table.className).not.toContain('waffle-selectable');
+
+    expect(grid.clearChanges).toHaveBeenCalled();
+    expect(grid.dispatchEvent).toHaveBeenCalledWith('detached');
+
+    expect(grid.$data.unobserve).toHaveBeenCalledWith(GridDataObserver.on, grid);
+    expect(grid.$columns.unobserve).toHaveBeenCalledWith(GridColumnsObserver.on, grid);
+    expect(grid.$selection.unobserve).toHaveBeenCalledWith(GridSelectionObserver.on, grid);
+
+    expect(grid.$data.$$observers).toEqual([]);
+    expect(grid.$columns.$$observers).toEqual([]);
+    expect(grid.$selection.$$observers).toEqual([]);
+
+    expect(GridDomBinders.unbindSort).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindSelection).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindEdition).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindDragDrop).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindResize).toHaveBeenCalledWith(grid);
   });
 
   it('should initialize grid and clear changes', function() {
@@ -660,7 +790,7 @@ describe('Grid', function() {
     expect(height).toHaveBeenCalled();
   });
 
-  it('should create resizable grid', function() {
+  it('should create and destroy resizable grid', function() {
     spyOn(jq, 'on').and.callThrough();
     spyOn(jq, 'off').and.callThrough();
 
@@ -676,20 +806,17 @@ describe('Grid', function() {
       }
     });
 
-    expect(grid.$window).toBeDefined();
-    expect(jq.on).toHaveBeenCalledWith('resize', grid.$$events.onResize);
-    expect(jq.on.calls.all()[3].object[0]).toBe(window);
+    spyOn(GridDomBinders, 'unbindResize').and.callThrough();
 
-    var onResize = grid.$$events.onResize;
+    expect(grid.$window).toBeDefined();
+
     var $window = grid.$window;
 
     grid.destroy();
 
+    expect(GridDomBinders.unbindResize).toHaveBeenCalledWith(grid);
     expect($window.off).toHaveBeenCalledWith('resize', jasmine.any(Function));
     expect(grid.$window).toBeNull();
-
-    expect(jq.off).toHaveBeenCalledWith('resize', onResize);
-    expect(jq.off.calls.all()[4].object[0]).toBe(window);
   });
 
   it('should bind click on header and body when grid is initialized', function() {
@@ -998,7 +1125,7 @@ describe('Grid', function() {
 
     grid.destroy();
 
-    expect(grid.$tfoot).not.toBeDefined();
+    expect(grid.$tfoot).toBeNull();
   });
 
   it('should destroy without header', function() {
@@ -1020,7 +1147,7 @@ describe('Grid', function() {
 
     grid.destroy();
 
-    expect(grid.$thead).not.toBeDefined();
+    expect(grid.$thead).toBeNull();
   });
 
   it('should unobserve collections when grid is destroyed', function() {
@@ -1096,19 +1223,11 @@ describe('Grid', function() {
     var $tbody = grid.$tbody;
     var $tfoot = grid.$tfoot;
 
-    var onCalls = jq.on.calls.all();
-    expect(onCalls).toHaveLength(3);
-    expect(onCalls[0].args).toContain('click', Function);
-    expect(onCalls[1].args).toContain('click', Function);
-    expect(onCalls[2].args).toContain('click', Function);
-
-    jq.on.calls.reset();
-
-    expect(jq.off).not.toHaveBeenCalled();
-
-    $thead.on.calls.reset();
-    $tbody.on.calls.reset();
-    $tfoot.on.calls.reset();
+    spyOn(GridDomBinders, 'unbindSort');
+    spyOn(GridDomBinders, 'unbindEdition');
+    spyOn(GridDomBinders, 'unbindSelection');
+    spyOn(GridDomBinders, 'unbindResize');
+    spyOn(GridDomBinders, 'unbindDragDrop');
 
     grid.destroy();
 
@@ -1119,14 +1238,11 @@ describe('Grid', function() {
     expect(grid.$selection).toBeNull();
     expect(grid.$columns).toBeNull();
 
-    expect(jq.on).not.toHaveBeenCalled();
-
-    var offCalls = jq.off.calls.all();
-    expect(offCalls).toHaveLength(4);
-    expect(offCalls[0].object).toEqual($table);
-    expect(offCalls[1].object).toEqual($tbody);
-    expect(offCalls[2].object).toEqual($thead);
-    expect(offCalls[3].object).toEqual($tfoot);
+    expect(GridDomBinders.unbindSort).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindEdition).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindSelection).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindResize).toHaveBeenCalledWith(grid);
+    expect(GridDomBinders.unbindDragDrop).toHaveBeenCalledWith(grid);
   });
 
   describe('once initialized', function() {

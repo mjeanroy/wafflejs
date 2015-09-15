@@ -105,16 +105,19 @@ var Grid = (function() {
     }
   };
 
-  var Constructor = function(table, options) {
+  var Constructor = function(node, options) {
     if (!(this instanceof Constructor)) {
-      return new Constructor(table, options);
+      return new Constructor(node, options);
     }
 
-    // Initialize main table
-    var $table = this.$table = $(table);
-    var tableEl = $table[0];
+    // Grid may be attached to a dom node later.
+    if (!_.isElement(node)) {
+      options = node;
+      node = null;
+    }
 
-    // Initialize options
+    // Initialize main table and default options
+    var table = node ? $(node)[0] : null;
     var opts = this.options = options = options || {};
     var defaultOptions = Constructor.options;
 
@@ -128,12 +131,12 @@ var Grid = (function() {
 
       // Try to initialize from html
       // If options is already defined, do not try to parse html
-      if (_.isUndefined(opt)) {
+      if (_.isUndefined(opt) && table) {
         var attrName = $util.toSpinalCase(optName);
-        var htmlAttr = tableEl.getAttribute('data-waffle-' + attrName) ||
-          tableEl.getAttribute('waffle-' + attrName) ||
-          tableEl.getAttribute('data-' + attrName) ||
-          tableEl.getAttribute(attrName);
+        var htmlAttr = table.getAttribute('data-waffle-' + attrName) ||
+          table.getAttribute('waffle-' + attrName) ||
+          table.getAttribute('data-' + attrName) ||
+          table.getAttribute(attrName);
 
         if (htmlAttr) {
           opt = opts[optName] = $util.parse(htmlAttr);
@@ -160,12 +163,6 @@ var Grid = (function() {
     // Force scroll if height is specified.
     opts.scrollable = opts.scrollable || !!opts.size.height;
 
-    // Initialize data
-    this.$data = new Collection(opts.data, {
-      key: opts.key,
-      model: opts.model
-    });
-
     var isSortable = this.isSortable();
     var isDraggable = this.isDraggable();
 
@@ -183,92 +180,31 @@ var Grid = (function() {
       });
     }
 
+    // Initialize data
+    this.$data = new Collection(opts.data, {
+      key: opts.key,
+      model: opts.model
+    });
+
+    // Initialize columns
     this.$columns = new Collection(opts.columns, {
       key: 'id',
       model: Column
     });
 
-    // Options flags
-    var isScrollable = opts.scrollable;
-    var isSelectable = this.isSelectable();
-    var isEditable = this.isEditable();
-
-    this.$sortBy = [];
-
-    // Add appropriate css to table
-    $table.addClass(CSS_GRID);
-
-    if (isSelectable) {
-      $table.addClass(CSS_SELECTABLE);
-    }
-
-    if (isScrollable) {
-      $table.addClass(CSS_SCROLLABLE);
-    }
-
-    // Create main nodes
-    var view = [TBODY];
-
-    // Check if we should append table header
-    if (opts.view.thead) {
-      view.unshift(THEAD);
-    }
-
-    // Check if we should append table footer
-    if (opts.view.tfoot) {
-      view.push(TFOOT);
-    }
-
-    _.forEach(view, createNode, this);
-
-    // Observe collection to update grid accordingly
-    this.$data.observe(GridDataObserver.on, this);
-    this.$columns.observe(GridColumnsObserver.on, this);
-
+    // Initialize selection
     this.$selection = new Collection([], this.$data.options());
-    this.$selection.observe(GridSelectionObserver.on, this);
 
-    this.$$events = {};
-
-    // Bind dom handlers only if needed
-    if (isSortable) {
-      GridDomBinders.bindSort(this);
-    }
-
-    // Bind input event if editable columns are updated
-    if (isEditable) {
-      GridDomBinders.bindEdition(this);
-    }
-
-    // Bind selection events
-    if (isSelectable) {
-      GridDomBinders.bindSelection(this);
-    }
-
-    // Create event bus...
+    // Create event bus and wrap callbacks to events
     this.$bus = new EventBus();
-
-    // ... and wrap callbacks to events
     _.forEach(_.keys(opts.events), callbackWrapper, this);
 
-    // If height is specified, we need to set column size.
-    if (this.isResizable()) {
-      this.resize();
+    this.$sortBy = [];
+    this.sortBy(options.sortBy, false);
 
-      // Bind resize event to resize grid automatically when window view is resized
-      GridDomBinders.bindResize(this);
-    }
-
-    this.renderHeader()
-        .renderFooter()
-        .sortBy(options.sortBy, false)
-        .renderBody();
-
-    // Grid is up to date !
-    this.clearChanges();
-
-    if (isDraggable) {
-      GridDomBinders.bindDragDrop(this);
+    // Attach dom node if it was specified.
+    if (table) {
+      this.attach(table);
     }
 
     this.dispatchEvent('initialized');
@@ -280,6 +216,88 @@ var Grid = (function() {
   };
 
   Constructor.prototype = {
+    // Attach table.
+    // Note that once initialized, grid options should not be updated, so
+    // updating attached table will not use html attributes.
+    attach: function(table) {
+      // First detach current dom node if it is already attached.
+      if (this.$table) {
+        this.detach();
+      }
+
+      var $table = this.$table = $(table);
+      var isSortable = this.isSortable();
+      var isDraggable = this.isDraggable();
+      var isScrollable = this.isScrollable();
+      var isSelectable = this.isSelectable();
+      var isEditable = this.isEditable();
+
+      // Add appropriate css to table
+      $table.addClass(CSS_GRID);
+
+      if (isSelectable) {
+        $table.addClass(CSS_SELECTABLE);
+      }
+
+      if (isScrollable) {
+        $table.addClass(CSS_SCROLLABLE);
+      }
+
+      // Create main nodes
+      var view = [TBODY];
+
+      // Check if we should append table header
+      if (this.hasHeader()) {
+        view.unshift(THEAD);
+      }
+
+      // Check if we should append table footer
+      if (this.hasFooter()) {
+        view.push(TFOOT);
+      }
+
+      _.forEach(view, createNode, this);
+
+      // Observe collection to update grid accordingly
+      this.$data.observe(GridDataObserver.on, this);
+      this.$columns.observe(GridColumnsObserver.on, this);
+      this.$selection.observe(GridSelectionObserver.on, this);
+
+      // Initialize events dictionary.
+      this.$$events = {};
+
+      // Bind dom handlers only if needed.
+      if (isSortable) {
+        GridDomBinders.bindSort(this);
+      }
+
+      if (isEditable) {
+        GridDomBinders.bindEdition(this);
+      }
+
+      if (isSelectable) {
+        GridDomBinders.bindSelection(this);
+      }
+
+      // If height is specified, we need to set column size.
+      // Bind resize event to resize grid automatically when window view is resized
+      if (this.isResizable()) {
+        this.resize();
+        GridDomBinders.bindResize(this);
+      }
+
+      this.render();
+      this.clearChanges();
+
+      if (isDraggable) {
+        GridDomBinders.bindDragDrop(this);
+      }
+
+      this.dispatchEvent('attached');
+
+      return this;
+    },
+
     // Detach table:
     // - Unbind dom events.
     // - Remove observers.
@@ -371,6 +389,11 @@ var Grid = (function() {
       return !!size.height || !!size.width;
     },
 
+    // Check if grid is scrollable.
+    isScrollable: function() {
+      return this.options.scrollable;
+    },
+
     // Check if grid render checkbox as first column
     hasCheckbox: function() {
       return this.isSelectable() && this.options.selection.checkbox;
@@ -378,12 +401,12 @@ var Grid = (function() {
 
     // Check if grid has a table header
     hasHeader: function() {
-      return !!this.$thead;
+      return this.options.view.thead;
     },
 
     // Check if grid has a table footer
     hasFooter: function() {
-      return !!this.$tfoot;
+      return this.options.view.tfoot;
     },
 
     // Without parameter, check if grid is selected.
@@ -542,64 +565,24 @@ var Grid = (function() {
 
       this.$sortBy = normalizedSortBy;
 
-      var hasHeader = this.hasHeader();
-      var hasFooter = this.hasFooter();
-
-      var $headers = hasHeader ? this.$thead.children().eq(0).children() : null;
-      var $footers = hasFooter ? this.$tfoot.children().eq(0).children() : null;
-
-      var clearSort = function($items) {
-        $items.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC)
-              .removeAttr(DATA_WAFFLE_ORDER);
-      };
-
-      var addSort = function($items, index, asc, flag) {
-        $items.eq(index)
-              .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
-              .attr(DATA_WAFFLE_ORDER, flag);
-      };
-
-      // Remove order flag
-
-      if ($headers) {
-        clearSort($headers);
-      }
-
-      if ($footers) {
-        clearSort($footers);
-      }
-
-      // Create comparators object that will be used to create comparison function
       var $columns = this.$columns;
-      var hasCheckbox = this.hasCheckbox();
-
       var comparators = _.map(this.$sortBy, function(id) {
         var flag = id.charAt(0);
-        var columnId = id.substr(1);
+        var columnId = id.slice(1);
         var asc = flag === CHAR_ORDER_ASC;
-
         var index = $columns.indexOf(columnId);
-        var thIndex = hasCheckbox ? index + 1 : index;
 
         var column;
 
         if (index >= 0) {
           column = $columns.at(index);
           column.asc = asc;
-
-          // Update order flag
-          if ($headers) {
-            addSort($headers, thIndex, asc, flag);
-          }
-
-          if ($footers) {
-            addSort($footers, thIndex, asc, flag);
-          }
         } else {
           column = {};
         }
 
         return {
+          id: id,
           parser: column.$parser || $parse(id),
           fn: column.$comparator || $comparators.$auto,
           desc: !asc
@@ -607,6 +590,58 @@ var Grid = (function() {
       });
 
       this.$data.sort($$createComparisonFunction(comparators));
+
+      if (this.$table) {
+        var hasHeader = this.hasHeader();
+        var hasFooter = this.hasFooter();
+
+        var $headers = hasHeader ? this.$thead.children().eq(0).children() : null;
+        var $footers = hasFooter ? this.$tfoot.children().eq(0).children() : null;
+
+        var clearSort = function($items) {
+          $items.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC)
+                .removeAttr(DATA_WAFFLE_ORDER);
+        };
+
+        var addSort = function($items, index, asc, flag) {
+          $items.eq(index)
+                .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
+                .attr(DATA_WAFFLE_ORDER, flag);
+        };
+
+        // Remove order flag
+
+        if ($headers) {
+          clearSort($headers);
+        }
+
+        if ($footers) {
+          clearSort($footers);
+        }
+
+        var hasCheckbox = this.hasCheckbox();
+
+        // Update DOM
+        _.forEach(comparators, function(comparator) {
+          var id = comparator.id;
+          var columnId = id.slice(1);
+          var flag = id.charAt(0);
+          var asc = flag === CHAR_ORDER_ASC;
+
+          var index = $columns.indexOf(columnId);
+          var thIndex = hasCheckbox ? index + 1 : index;
+
+          if (index >= 0) {
+            // Update order flag
+            if ($headers) {
+              addSort($headers, thIndex, asc, flag);
+            }
+            if ($footers) {
+              addSort($footers, thIndex, asc, flag);
+            }
+          }
+        });
+      }
 
       if ($$render !== false) {
         // Body need to be rendered since data is now sorted
@@ -775,6 +810,7 @@ var Grid = (function() {
     'onSelectionChanged',
     'onFilterUpdated',
     'onSorted',
+    'onAttached',
     'onDetached'
   ];
 

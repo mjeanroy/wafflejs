@@ -51,6 +51,20 @@ describe('waffle-jquery', function() {
     expect($.data(table, 'wafflejs')).toBeInstanceOf(Grid);
   });
 
+  it('should create grid with jquery element', function() {
+    var $table = $('#waffle-table');
+
+    var grid = Waffle.create($table, {
+      key: 'id',
+      columns: [
+        { id: 'name' }
+      ]
+    });
+
+    expect(grid).toBeDefined();
+    expect(grid.$table[0]).toBe($table[0]);
+  });
+
   it('should have default options', function() {
     expect($.fn.waffle.options).toBe(Grid.options);
   });

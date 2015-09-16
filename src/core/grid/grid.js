@@ -111,7 +111,7 @@ var Grid = (function() {
     }
 
     // Grid may be attached to a dom node later.
-    if (!_.isElement(node)) {
+    if (arguments.length === 0 || (!_.isElement(node) && !(node instanceof $))) {
       options = node;
       node = null;
     }

@@ -46,13 +46,17 @@ describe('WaffleReactMixin', function() {
     expect(props.className).toBe('table table-striped table-hover table-bordered');
   });
 
-  it('should initialize grid when component is mounted', function() {
-    mixin.componentDidMount();
+  it('should attach grid when component will be mounted', function() {
+    mixin.componentWillMount();
 
-    expect(Waffle.create).toHaveBeenCalledWith(table, mixin.props);
-    expect(mixin.getDOMNode).toHaveBeenCalled();
+    expect(Waffle.create).toHaveBeenCalledWith(mixin.props);
     expect(mixin.grid).toBeDefined();
-    expect(mixin.grid.$table).toBeDefined();
+  });
+
+  it('should attach grid when component is mounted', function() {
+    mixin.grid = jasmine.createSpyObj('grid', ['attach']);
+    mixin.componentDidMount();
+    expect(mixin.grid.attach).toHaveBeenCalled();
   });
 
   it('should destroy grid when component is unmount', function() {

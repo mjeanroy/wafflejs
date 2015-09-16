@@ -38,10 +38,15 @@ var WaffleReactMixin = {
     return defaultOptions;
   },
 
+  // Initialize grid when component will be mounted.
+  componentWillMount: function() {
+    this.grid = Waffle.create(this.props);
+  },
+
   // Call just after component has been mount into dom.
   // This step is used to initialized grid.
   componentDidMount: function() {
-    this.grid = Waffle.create(this.getDOMNode(), this.props);
+    this.grid.attach(this.getDOMNode());
   },
 
   // Call just before component is destroyed.

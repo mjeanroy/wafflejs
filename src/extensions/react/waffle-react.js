@@ -38,6 +38,7 @@ var WaffleComponent = React.createClass({
   // Everything else will be rendered using Waffle.
   // TODO we should handle sever side rendering.
   render: function() {
+    
     return React.DOM.table(_.extend({}, this.props));
   },
 });

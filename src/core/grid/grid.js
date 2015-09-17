@@ -228,20 +228,11 @@ var Grid = (function() {
       var $table = this.$table = $(table);
       var isSortable = this.isSortable();
       var isDraggable = this.isDraggable();
-      var isScrollable = this.isScrollable();
       var isSelectable = this.isSelectable();
       var isEditable = this.isEditable();
 
       // Add appropriate css to table
-      $table.addClass(CSS_GRID);
-
-      if (isSelectable) {
-        $table.addClass(CSS_SELECTABLE);
-      }
-
-      if (isScrollable) {
-        $table.addClass(CSS_SCROLLABLE);
-      }
+      $table.addClass(this.cssClasses().join(' '));
 
       // Create main nodes
       var view = [TBODY];
@@ -306,13 +297,7 @@ var Grid = (function() {
       var $table = this.$table;
       if ($table) {
         // Remove waffle classes.
-        var css = [
-          CSS_GRID,
-          CSS_SELECTABLE,
-          CSS_SCROLLABLE
-        ];
-
-        $table.removeClass(css.join(' '));
+        $table.removeClass(this.cssClasses().join(' '));
 
         // Unbind dom events.
         GridDomBinders.unbindSort(this);
@@ -336,6 +321,20 @@ var Grid = (function() {
       }
 
       return this;
+    },
+
+    cssClasses: function() {
+      var classes = [CSS_GRID];
+
+      if (this.isSelectable()) {
+        classes.push(CSS_SELECTABLE);
+      }
+
+      if (this.isScrollable()) {
+        classes.push(CSS_SCROLLABLE);
+      }
+
+      return classes;
     },
 
     // Get all rows.

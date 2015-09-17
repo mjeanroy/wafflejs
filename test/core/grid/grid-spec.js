@@ -1436,6 +1436,18 @@ describe('Grid', function() {
       expect(grid.columns()).toBe(grid.$columns);
     });
 
+    it('should get css classes', function() {
+      spyOn(grid, 'isSelectable').and.returnValue(false);
+      spyOn(grid, 'isScrollable').and.returnValue(false);
+      expect(grid.cssClasses()).toEqual(['waffle-grid']);
+
+      grid.isSelectable.and.returnValue(true);
+      expect(grid.cssClasses()).toEqual(['waffle-grid', 'waffle-selectable']);
+
+      grid.isScrollable.and.returnValue(true);
+      expect(grid.cssClasses()).toEqual(['waffle-grid', 'waffle-selectable', 'waffle-fixedheader']);
+    });
+
     it('should resize grid', function() {
       spyOn(GridResizer, 'resize');
       grid.resize();

@@ -23,6 +23,8 @@
  */
 
 /* global _ */
+/* global $doc */
+/* global GridBuilder */
 /* global WaffleReactMixin */
 /* global React */
 /* exported WaffleComponent */
@@ -31,14 +33,60 @@ var WaffleComponent = React.createClass({
   // React display name.
   displayName: 'Waffle',
 
-  // Define mixin to handle component lifecycle
+  // Define mixin to handle component lifecycle.
   mixins: [WaffleReactMixin],
 
   // Render a simple table.
   // Everything else will be rendered using Waffle.
-  // TODO we should handle sever side rendering.
   render: function() {
-    
-    return React.DOM.table(_.extend({}, this.props));
+    var $docCreate = $doc.create;
+
+    // React will create element.
+    $doc.create = React.createElement;
+
+    // Get a local reference.
+    var grid = this.grid;
+
+    // Initialize main dom nodes.
+    var children = [];
+
+    // Append rows.
+    children.push(React.DOM.tbody(null, _.map(this.grid.visibleData(), function(current, idx) {
+      return GridBuilder.tbodyRow(grid, current, idx);
+    })));
+
+    // Unshift header.
+    if (grid.hasHeader()) {
+      children.unshift(React.DOM.thead(null, GridBuilder.theadRow(grid)));
+    }
+
+    // Append footer..
+    if (grid.hasFooter()) {
+      children.push(React.DOM.tfoot(null, GridBuilder.tfootRow(grid)));
+    }
+
+    // Initialize props.
+    var props = _.extend({}, this.props);
+
+    // Get css classes.
+    // Do not forget to keep original classes.
+    var className = props.className || '';
+    if (_.isArray(className)) {
+      className = className.join(' ');
+    }
+
+    // Append waffle classes
+    className += ' ' + this.grid.cssClasses().join(' ');
+
+    // Set css classes
+    props.className = className;
+
+    // Create react element.
+    var table = React.DOM.table(props, children);
+
+    // Restore original function.
+    $doc.create = $docCreate;
+
+    return table;
   },
 });

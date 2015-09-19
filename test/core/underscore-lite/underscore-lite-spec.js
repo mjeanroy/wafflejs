@@ -133,6 +133,18 @@ describe('_', function() {
     expect(newArray).not.toBe(array);
   });
 
+  it('should clone to new object', function() {
+    var o1 = {
+      id: 1,
+      name: 'foo'
+    };
+
+    var o2 = _.clone(o1);
+
+    expect(o2).not.toBe(o1);
+    expect(o2).toEqual(o1);
+  });
+
   it('should apply callback for each array element', function() {
     var callback = jasmine.createSpy('callback');
     var array = [1, 2, 3];

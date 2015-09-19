@@ -29,18 +29,14 @@
 var WaffleReactMixin = {
   // Get component default props.
   getDefaultProps: function() {
-    var defaultOptions = _.extend({}, Waffle.options);
-
-    // Add default css.
-    // These css are bootstrap styles.
-    defaultOptions.className = 'table table-striped table-hover table-bordered';
-
-    return defaultOptions;
+    return {
+      waffle: _.clone(Waffle.options)
+    };
   },
 
   // Initialize grid when component will be mounted.
   componentWillMount: function() {
-    this.grid = Waffle.create(this.props);
+    this.grid = Waffle.create(this.props.waffle);
   },
 
   // Call just after component has been mount into dom.

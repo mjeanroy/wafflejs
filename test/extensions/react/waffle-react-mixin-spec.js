@@ -42,14 +42,15 @@ describe('WaffleReactMixin', function() {
   it('should have default props', function() {
     var props = mixin.getDefaultProps();
     expect(props).toBeDefined();
-    expect(props).toEqual(jasmine.objectContaining(Grid.options));
-    expect(props.className).toBe('table table-striped table-hover table-bordered');
+    expect(props).toEqual({
+      waffle: jasmine.objectContaining(Grid.options)
+    });
   });
 
   it('should attach grid when component will be mounted', function() {
     mixin.componentWillMount();
 
-    expect(Waffle.create).toHaveBeenCalledWith(mixin.props);
+    expect(Waffle.create).toHaveBeenCalledWith(mixin.props.waffle);
     expect(mixin.grid).toBeDefined();
   });
 

@@ -101,7 +101,7 @@
               </i>
             </div>
           </div>
-          <Waffle ref="waffle" {...this.getInitialGridOptions()}></Waffle>
+          <Waffle ref="waffle" waffle={this.getInitialGridOptions()} className="table table-striped table-hover table-bordered"></Waffle>
         </div>
       );
     },

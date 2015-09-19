@@ -60,13 +60,9 @@
     return !!(obj && obj.nodeType === 1);
   };
 
-  // Clone array
-  _.clone = function(array) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
-      newArray[i] = array[i];
-    }
-    return newArray;
+  // Clone array or object.
+  _.clone = function(o) {
+    return _.isArray(o) ? _.map(o, _.identity) : _.extend({}, o);
   };
 
   // Apply callback for each item of array

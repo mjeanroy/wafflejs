@@ -66,7 +66,7 @@ var WaffleComponent = React.createClass({
     }
 
     // Initialize props.
-    var props = _.extend({}, this.props);
+    var props = _.clone(this.props);
 
     // Get css classes.
     // Do not forget to keep original classes.

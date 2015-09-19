@@ -65,7 +65,7 @@ module.exports = function(options) {
       }
     };
 
-    gulp.task(concatTask, ['test:build'], function(done) {
+    gulp.task(concatTask, ['test:build'], function() {
       return gulp.src(files[target].src)
         .pipe(concat('waffle-' + target + '.js'))
         .pipe(strip({ block: true }))
@@ -74,7 +74,7 @@ module.exports = function(options) {
         .pipe(gulp.dest(options.dist));
     });
 
-    gulp.task(minifyTask, [concatTask], function(done) {
+    gulp.task(minifyTask, [concatTask], function() {
       return gulp.src(options.dist + '/waffle-' + target + '.js')
         .pipe(uglify(uglifyOptions))
         .pipe(rename('waffle-' + target + '.min.js'))

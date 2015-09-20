@@ -71,7 +71,14 @@ describe('Grid Sort', function() {
       }
     });
 
-    expect(grid.$sortBy).toEqual(['+firstName']);
+    expect(grid.$comparators).toBeDefined();
+    expect(grid.$comparators.length).toBe(1);
+    expect(grid.$comparators).toEqual([
+      jasmine.objectContaining({
+        id: 'firstName',
+        asc: true
+      })
+    ]);
 
     var headers = grid.$thead[0].childNodes[0].childNodes;
     expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
@@ -127,7 +134,18 @@ describe('Grid Sort', function() {
       }
     });
 
-    expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
+    expect(grid.$comparators).toBeDefined();
+    expect(grid.$comparators.length).toBe(2);
+    expect(grid.$comparators).toEqual([
+      jasmine.objectContaining({
+        id: 'firstName',
+        asc: true
+      }),
+      jasmine.objectContaining({
+        id: 'lastName',
+        asc: false
+      })
+    ]);
 
     var headers = grid.$thead[0].childNodes[0].childNodes;
     expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
@@ -192,7 +210,7 @@ describe('Grid Sort', function() {
     });
 
     it('should not sort grid by default', function() {
-      expect(grid.$sortBy).toEqual([]);
+      expect(grid.$comparators).toEqual([]);
 
       expect(headers).toVerify(function(th) {
         return th.getAttribute('data-waffle-order') === null;
@@ -241,7 +259,12 @@ describe('Grid Sort', function() {
     it('should sort grid in ascendant order using one field', function() {
       grid.sortBy('id');
 
-      expect(grid.$sortBy).toEqual(['+id']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'id',
+          asc: true
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBe('+');
       expect(headers[2].getAttribute('data-waffle-order')).toBeNull();
@@ -287,7 +310,12 @@ describe('Grid Sort', function() {
     it('should sort grid in descendant order using one field', function() {
       grid.sortBy('-id');
 
-      expect(grid.$sortBy).toEqual(['-id']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'id',
+          asc: false
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBe('-');
       expect(headers[2].getAttribute('data-waffle-order')).toBeNull();
@@ -323,7 +351,16 @@ describe('Grid Sort', function() {
     it('should sort grid in ascendant using two fields', function() {
       grid.sortBy(['firstName', '-lastName']);
 
-      expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: false
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
@@ -366,7 +403,12 @@ describe('Grid Sort', function() {
       triggerClick(headers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
@@ -399,7 +441,12 @@ describe('Grid Sort', function() {
 
       // Th should have flag
       expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
-      expect(grid.$sortBy).toEqual(['-firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('-');
@@ -433,7 +480,12 @@ describe('Grid Sort', function() {
       triggerClick(footers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
@@ -466,7 +518,12 @@ describe('Grid Sort', function() {
 
       // Th should have flag
       expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
-      expect(grid.$sortBy).toEqual(['-firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('-');
@@ -500,7 +557,7 @@ describe('Grid Sort', function() {
       triggerClick(headers[1]);
 
       expect(grid.sortBy).not.toHaveBeenCalled();
-      expect(grid.$sortBy).toEqual([]);
+      expect(grid.$comparators).toEqual([]);
     });
 
     it('should not sort data when column footer is clicked and column is not sortable', function() {
@@ -510,7 +567,7 @@ describe('Grid Sort', function() {
       triggerClick(footers[1]);
 
       expect(grid.sortBy).not.toHaveBeenCalled();
-      expect(grid.$sortBy).toEqual([]);
+      expect(grid.$comparators).toEqual([]);
     });
 
     it('should sort data when column header is clicked using two field if shift key is pressed', function() {
@@ -520,21 +577,57 @@ describe('Grid Sort', function() {
       triggerClick(headers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
-      // New click should reverse order
       triggerClick(headers[3], true, false);
-      expect(grid.sortBy).toHaveBeenCalledWith(['+firstName', '+lastName']);
-      expect(grid.$sortBy).toEqual(['+firstName', '+lastName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        '+lastName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
       // New click on id should reverse order of id column
       triggerClick(headers[2], true, false);
-      expect(grid.sortBy).toHaveBeenCalledWith(['+lastName', '-firstName']);
-      expect(grid.$sortBy).toEqual(['+lastName', '-firstName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        '-firstName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
     });
 
     it('should sort data when column footer is clicked using two field if shift key is pressed', function() {
@@ -544,22 +637,59 @@ describe('Grid Sort', function() {
       triggerClick(footers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
       // New click should reverse order
       triggerClick(footers[3], true, false);
-      expect(grid.sortBy).toHaveBeenCalledWith(['+firstName', '+lastName']);
-      expect(grid.$sortBy).toEqual(['+firstName', '+lastName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        '+lastName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
       // New click on id should reverse order of id column
       triggerClick(footers[2], true, false);
 
-      expect(grid.sortBy).toHaveBeenCalledWith(['+lastName', '-firstName']);
-      expect(grid.$sortBy).toEqual(['+lastName', '-firstName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        '-firstName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
     });
   });
 
@@ -580,7 +710,7 @@ describe('Grid Sort', function() {
     });
 
     it('should not sort grid by default', function() {
-      expect(grid.$sortBy).toEqual([]);
+      expect(grid.$comparators).toEqual([]);
 
       expect(headers).toVerify(function(th) {
         return th.getAttribute('data-waffle-order') === null;
@@ -613,7 +743,12 @@ describe('Grid Sort', function() {
     it('should sort grid in ascendant order using one field', function() {
       grid.sortBy('id');
 
-      expect(grid.$sortBy).toEqual(['+id']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'id',
+          asc: true
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBe('+');
       expect(headers[2].getAttribute('data-waffle-order')).toBeNull();
@@ -643,7 +778,12 @@ describe('Grid Sort', function() {
     it('should sort grid in descendant order using one field', function() {
       grid.sortBy('-id');
 
-      expect(grid.$sortBy).toEqual(['-id']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'id',
+          asc: false
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBe('-');
       expect(headers[2].getAttribute('data-waffle-order')).toBeNull();
@@ -668,7 +808,16 @@ describe('Grid Sort', function() {
     it('should sort grid in ascendant using two fields', function() {
       grid.sortBy(['firstName', '-lastName']);
 
-      expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: false
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
@@ -699,7 +848,12 @@ describe('Grid Sort', function() {
       triggerClick(headers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
@@ -720,7 +874,12 @@ describe('Grid Sort', function() {
 
       // Th should have flag
       expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
-      expect(grid.$sortBy).toEqual(['-firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
 
       expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(headers[2].getAttribute('data-waffle-order')).toBe('-');
@@ -742,7 +901,7 @@ describe('Grid Sort', function() {
       triggerClick(headers[1]);
 
       expect(grid.sortBy).not.toHaveBeenCalled();
-      expect(grid.$sortBy).toEqual([]);
+      expect(grid.$comparators).toEqual([]);
     });
 
     it('should sort data when column header is clicked using two field if shift key is pressed', function() {
@@ -752,21 +911,58 @@ describe('Grid Sort', function() {
       triggerClick(headers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
       // New click should reverse order
       triggerClick(headers[3], true, false);
-      expect(grid.sortBy).toHaveBeenCalledWith(['+firstName', '+lastName']);
-      expect(grid.$sortBy).toEqual(['+firstName', '+lastName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        '+lastName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
       // New click on id should reverse order of id column
       triggerClick(headers[2], true, false);
-      expect(grid.sortBy).toHaveBeenCalledWith(['+lastName', '-firstName']);
-      expect(grid.$sortBy).toEqual(['+lastName', '-firstName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        '-firstName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
     });
   });
 
@@ -787,7 +983,7 @@ describe('Grid Sort', function() {
     });
 
     it('should not sort grid by default', function() {
-      expect(grid.$sortBy).toEqual([]);
+      expect(grid.$comparators).toEqual([]);
 
       expect(footers).toVerify(function(th) {
         return th.getAttribute('data-waffle-order') === null;
@@ -820,7 +1016,12 @@ describe('Grid Sort', function() {
     it('should sort grid in ascendant order using one field', function() {
       grid.sortBy('id');
 
-      expect(grid.$sortBy).toEqual(['+id']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'id',
+          asc: true
+        })
+      ]);
 
       expect(footers[1].getAttribute('data-waffle-order')).toBe('+');
       expect(footers[2].getAttribute('data-waffle-order')).toBeNull();
@@ -850,7 +1051,12 @@ describe('Grid Sort', function() {
     it('should sort grid in descendant order using one field', function() {
       grid.sortBy('-id');
 
-      expect(grid.$sortBy).toEqual(['-id']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'id',
+          asc: false
+        })
+      ]);
 
       expect(footers[1].getAttribute('data-waffle-order')).toBe('-');
       expect(footers[2].getAttribute('data-waffle-order')).toBeNull();
@@ -875,7 +1081,16 @@ describe('Grid Sort', function() {
     it('should sort grid in ascendant using two fields', function() {
       grid.sortBy(['firstName', '-lastName']);
 
-      expect(grid.$sortBy).toEqual(['+firstName', '-lastName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: false
+        })
+      ]);
 
       expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
@@ -906,7 +1121,12 @@ describe('Grid Sort', function() {
       triggerClick(footers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
@@ -927,7 +1147,12 @@ describe('Grid Sort', function() {
 
       // Th should have flag
       expect(grid.sortBy).toHaveBeenCalledWith(['-firstName']);
-      expect(grid.$sortBy).toEqual(['-firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
 
       expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
       expect(footers[2].getAttribute('data-waffle-order')).toBe('-');
@@ -949,7 +1174,7 @@ describe('Grid Sort', function() {
       triggerClick(footers[1]);
 
       expect(grid.sortBy).not.toHaveBeenCalled();
-      expect(grid.$sortBy).toEqual([]);
+      expect(grid.$comparators).toEqual([]);
     });
 
     it('should sort data when column footer is clicked using two field if shift key is pressed', function() {
@@ -959,22 +1184,58 @@ describe('Grid Sort', function() {
       triggerClick(footers[2]);
 
       expect(grid.sortBy).toHaveBeenCalledWith(['+firstName']);
-      expect(grid.$sortBy).toEqual(['+firstName']);
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
-      // New click should reverse order
       triggerClick(footers[3], true, false);
-      expect(grid.sortBy).toHaveBeenCalledWith(['+firstName', '+lastName']);
-      expect(grid.$sortBy).toEqual(['+firstName', '+lastName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        '+lastName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        })
+      ]);
 
       grid.sortBy.calls.reset();
 
       // New click on id should reverse order of id column
       triggerClick(footers[2], true, false);
 
-      expect(grid.sortBy).toHaveBeenCalledWith(['+lastName', '-firstName']);
-      expect(grid.$sortBy).toEqual(['+lastName', '-firstName']);
+      expect(grid.sortBy).toHaveBeenCalledWith([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        '-firstName'
+      ]);
+
+      expect(grid.$comparators).toEqual([
+        jasmine.objectContaining({
+          id: 'lastName',
+          asc: true
+        }),
+        jasmine.objectContaining({
+          id: 'firstName',
+          asc: false
+        })
+      ]);
     });
   });
 });

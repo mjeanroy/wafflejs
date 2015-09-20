@@ -203,7 +203,8 @@ describe('Grid Dom Handlers', function() {
     });
 
     it('should add column to current sort', function() {
-      grid.$sortBy = ['+foo'];
+      var currentComparator = FieldComparator.of(grid, '+foo');
+      grid.$comparators = [currentComparator];
 
       event.shiftKey = true;
       event.target = document.createElement('TH');
@@ -213,7 +214,7 @@ describe('Grid Dom Handlers', function() {
 
       onClickThead(event);
 
-      expect(grid.sortBy).toHaveBeenCalledWith(['+foo', '+id']);
+      expect(grid.sortBy).toHaveBeenCalledWith([currentComparator, '+id']);
       expect(grid.select).not.toHaveBeenCalled();
       expect(grid.deselect).not.toHaveBeenCalled();
 
@@ -223,7 +224,12 @@ describe('Grid Dom Handlers', function() {
     });
 
     it('should replace column to current sort in descendant order', function() {
-      grid.$sortBy = ['+id', '+foo'];
+      var idComparator = FieldComparator.of(grid, '+id');
+      var fooComparator = FieldComparator.of(grid, '+foo');
+      grid.$comparators = [
+        idComparator,
+        fooComparator
+      ];
 
       event.shiftKey = true;
       event.target = document.createElement('TH');
@@ -233,7 +239,7 @@ describe('Grid Dom Handlers', function() {
 
       onClickThead(event);
 
-      expect(grid.sortBy).toHaveBeenCalledWith(['+foo', '-id']);
+      expect(grid.sortBy).toHaveBeenCalledWith([fooComparator, '-id']);
       expect(grid.select).not.toHaveBeenCalled();
       expect(grid.deselect).not.toHaveBeenCalled();
 
@@ -411,7 +417,8 @@ describe('Grid Dom Handlers', function() {
     });
 
     it('should add column to current sort', function() {
-      grid.$sortBy = ['+foo'];
+      var fooComparator = FieldComparator.of(grid, '+foo');
+      grid.$comparators = [fooComparator];
 
       event.shiftKey = true;
       event.target = document.createElement('TH');
@@ -421,7 +428,7 @@ describe('Grid Dom Handlers', function() {
 
       onClickTfoot(event);
 
-      expect(grid.sortBy).toHaveBeenCalledWith(['+foo', '+id']);
+      expect(grid.sortBy).toHaveBeenCalledWith([fooComparator, '+id']);
       expect(grid.select).not.toHaveBeenCalled();
       expect(grid.deselect).not.toHaveBeenCalled();
 
@@ -431,7 +438,12 @@ describe('Grid Dom Handlers', function() {
     });
 
     it('should replace column to current sort in descendant order', function() {
-      grid.$sortBy = ['+id', '+foo'];
+      var idComparator = FieldComparator.of(grid, '+id');
+      var fooComparator = FieldComparator.of(grid, '+foo');
+      grid.$comparators = [
+        idComparator,
+        fooComparator
+      ];
 
       event.shiftKey = true;
       event.target = document.createElement('TH');
@@ -441,7 +453,7 @@ describe('Grid Dom Handlers', function() {
 
       onClickTfoot(event);
 
-      expect(grid.sortBy).toHaveBeenCalledWith(['+foo', '-id']);
+      expect(grid.sortBy).toHaveBeenCalledWith([fooComparator, '-id']);
       expect(grid.select).not.toHaveBeenCalled();
       expect(grid.deselect).not.toHaveBeenCalled();
 

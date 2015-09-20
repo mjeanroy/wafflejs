@@ -117,8 +117,8 @@ var GridDomHandlers = (function() {
 
       if (e.shiftKey) {
         var oldPredicate = currentOrder + id;
-        newSortBy = _.reject(this.$sortBy, function(predicate) {
-          return predicate === oldPredicate;
+        newSortBy = _.reject(this.$comparators, function(comparator) {
+          return comparator.predicate() === oldPredicate;
         });
       } else {
         newSortBy = [];

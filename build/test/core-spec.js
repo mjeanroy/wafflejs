@@ -60,6 +60,8 @@ describe('core', function() {
       'src/core/grid/observers/grid-columns-observer.js',
       'src/core/grid/observers/grid-selection-observer.js',
       'src/core/grid/filter/grid-filter.js',
+      'src/core/grid/comparator/field-comparator.js',
+      'src/core/grid/comparator/grid-comparator.js',
       'src/core/grid/grid.js',
       'src/core/waffle.js'
     ]);
@@ -98,6 +100,8 @@ describe('core', function() {
       'src/core/grid/observers/grid-columns-observer.js',
       'src/core/grid/observers/grid-selection-observer.js',
       'src/core/grid/filter/grid-filter.js',
+      'src/core/grid/comparator/field-comparator.js',
+      'src/core/grid/comparator/grid-comparator.js',
       'src/core/grid/grid.js',
       'src/core/waffle.js',
       'src/extensions/jquery/waffle-jquery.js'
@@ -136,6 +140,8 @@ describe('core', function() {
       'src/core/grid/observers/grid-columns-observer.js',
       'src/core/grid/observers/grid-selection-observer.js',
       'src/core/grid/filter/grid-filter.js',
+      'src/core/grid/comparator/field-comparator.js',
+      'src/core/grid/comparator/grid-comparator.js',
       'src/core/grid/grid.js',
       'src/core/waffle.js'
     ]);
@@ -172,6 +178,8 @@ describe('core', function() {
       'src/core/grid/observers/grid-columns-observer.js',
       'src/core/grid/observers/grid-selection-observer.js',
       'src/core/grid/filter/grid-filter.js',
+      'src/core/grid/comparator/field-comparator.js',
+      'src/core/grid/comparator/grid-comparator.js',
       'src/core/grid/grid.js',
       'src/core/waffle.js',
       'src/extensions/jquery/waffle-jquery.js'
@@ -210,6 +218,8 @@ describe('core', function() {
       'src/core/grid/observers/grid-columns-observer.js',
       'src/core/grid/observers/grid-selection-observer.js',
       'src/core/grid/filter/grid-filter.js',
+      'src/core/grid/comparator/field-comparator.js',
+      'src/core/grid/comparator/grid-comparator.js',
       'src/core/grid/grid.js',
       'src/core/waffle.js',
       'src/extensions/angular/waffle-angular-service.js',
@@ -254,6 +264,8 @@ describe('core', function() {
       'src/core/grid/observers/grid-columns-observer.js',
       'src/core/grid/observers/grid-selection-observer.js',
       'src/core/grid/filter/grid-filter.js',
+      'src/core/grid/comparator/field-comparator.js',
+      'src/core/grid/comparator/grid-comparator.js',
       'src/core/grid/grid.js',
       'src/core/waffle.js',
       'src/extensions/react/waffle-react-mixin.js',
@@ -295,6 +307,8 @@ describe('core', function() {
       'src/core/grid/observers/grid-columns-observer.js',
       'src/core/grid/observers/grid-selection-observer.js',
       'src/core/grid/filter/grid-filter.js',
+      'src/core/grid/comparator/field-comparator.js',
+      'src/core/grid/comparator/grid-comparator.js',
       'src/core/grid/grid.js',
       'src/core/waffle.js',
       'src/extensions/polymer/waffle-polymer.js'

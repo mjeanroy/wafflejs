@@ -28,11 +28,10 @@
 /* global Column */
 /* global $ */
 /* global _ */
-/* global $parse */
-/* global $comparators */
 /* global $filters */
 /* global $util */
 /* global EventBus */
+/* global GridComparator */
 /* global GridBuilder */
 /* global GridResizer */
 /* global GridDomBinders */
@@ -40,7 +39,6 @@
 /* global GridColumnsObserver */
 /* global GridSelectionObserver */
 /* global GridFilter */
-/* global $$createComparisonFunction */
 /* global CSS_GRID */
 /* global CSS_SORTABLE_ASC */
 /* global CSS_SORTABLE_DESC */
@@ -58,25 +56,6 @@ var Grid = (function() {
 
   // Save bytes
   var resultWith = $util.resultWith;
-
-  // Normalize sort predicate
-  // This function will return an array of id preprended with sort order
-  // For exemple:
-  //   parseSort('foo') => ['+foo']
-  //   parseSort(['foo', 'bar']) => ['+foo', '+bar']
-  //   parseSort(['-foo', 'bar']) => ['-foo', '+bar']
-  //   parseSort(['-foo', '+bar']) => ['-foo', '+bar']
-  var parseSort = function(ids) {
-    var array = ids || [];
-    if (!_.isArray(array)) {
-      array = [array];
-    }
-
-    return _.map(array, function(current) {
-      var firstChar = current.charAt(0);
-      return firstChar !== CHAR_ORDER_ASC && firstChar !== CHAR_ORDER_DESC ? CHAR_ORDER_ASC + current : current;
-    });
-  };
 
   // == Private utilities
 
@@ -199,7 +178,7 @@ var Grid = (function() {
     this.$bus = new EventBus();
     _.forEach(_.keys(opts.events), callbackWrapper, this);
 
-    this.$sortBy = [];
+    this.$comparators = [];
     this.sortBy(options.sortBy, false);
 
     // Attach dom node if it was specified.
@@ -554,41 +533,16 @@ var Grid = (function() {
     // Second parameter is a parameter used internally to disable automatic rendering after sort
     sortBy: function(sortBy, $$render) {
       // Store new sort
-      var normalizedSortBy = parseSort(sortBy);
+      var comparators = sortBy != null ? GridComparator.of(this, sortBy) : [];
 
       // Check if sort predicate has changed
       // Compare array instance, or serialized array to string and compare string values (faster than array comparison)
-      if (this.$sortBy === normalizedSortBy || this.$sortBy.join() === normalizedSortBy.join()) {
+      if (GridComparator.equals(this.$comparators, comparators)) {
         return this;
       }
 
-      this.$sortBy = normalizedSortBy;
-
-      var $columns = this.$columns;
-      var comparators = _.map(this.$sortBy, function(id) {
-        var flag = id.charAt(0);
-        var columnId = id.slice(1);
-        var asc = flag === CHAR_ORDER_ASC;
-        var index = $columns.indexOf(columnId);
-
-        var column;
-
-        if (index >= 0) {
-          column = $columns.at(index);
-          column.asc = asc;
-        } else {
-          column = {};
-        }
-
-        return {
-          id: id,
-          parser: column.$parser || $parse(id),
-          fn: column.$comparator || $comparators.$auto,
-          desc: !asc
-        };
-      });
-
-      this.$data.sort($$createComparisonFunction(comparators));
+      this.$comparators = comparators;
+      this.$data.sort(GridComparator.createComparator(this));
 
       if (this.$table) {
         var hasHeader = this.hasHeader();
@@ -602,7 +556,8 @@ var Grid = (function() {
                 .removeAttr(DATA_WAFFLE_ORDER);
         };
 
-        var addSort = function($items, index, asc, flag) {
+        var addSort = function($items, index, asc) {
+          var flag = asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
           $items.eq(index)
                 .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
                 .attr(DATA_WAFFLE_ORDER, flag);
@@ -618,14 +573,13 @@ var Grid = (function() {
           clearSort($footers);
         }
 
+        var $columns = this.$columns;
         var hasCheckbox = this.hasCheckbox();
 
         // Update DOM
-        _.forEach(comparators, function(comparator) {
-          var id = comparator.id;
-          var columnId = id.slice(1);
-          var flag = id.charAt(0);
-          var asc = flag === CHAR_ORDER_ASC;
+        _.forEach(this.$comparators, function(comparator) {
+          var columnId = comparator.id;
+          var asc = comparator.asc;
 
           var index = $columns.indexOf(columnId);
           var thIndex = hasCheckbox ? index + 1 : index;
@@ -633,10 +587,10 @@ var Grid = (function() {
           if (index >= 0) {
             // Update order flag
             if ($headers) {
-              addSort($headers, thIndex, asc, flag);
+              addSort($headers, thIndex, asc);
             }
             if ($footers) {
-              addSort($footers, thIndex, asc, flag);
+              addSort($footers, thIndex, asc);
             }
           }
         });

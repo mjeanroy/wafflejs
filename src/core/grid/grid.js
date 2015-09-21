@@ -171,14 +171,23 @@ var Grid = (function() {
       model: Column
     });
 
-    // Initialize selection
+    // Initialize selection.
     this.$selection = new Collection([], this.$data.options());
 
-    // Create event bus and wrap callbacks to events
+    // Initialize comparators.
+    this.$comparators = new Collection([], {
+      key: function(o) {
+        return o.id;
+      }
+    });
+
+    // Create event bus.
     this.$bus = new EventBus();
+
+    // Wrap callbacks to events
     _.forEach(_.keys(opts.events), callbackWrapper, this);
 
-    this.$comparators = [];
+    // Parse sortBy option.
     this.sortBy(options.sortBy, false);
 
     // Attach dom node if it was specified.
@@ -541,7 +550,7 @@ var Grid = (function() {
         return this;
       }
 
-      this.$comparators = comparators;
+      this.$comparators.reset(comparators);
       this.$data.sort(GridComparator.createComparator(this));
 
       if (this.$table) {

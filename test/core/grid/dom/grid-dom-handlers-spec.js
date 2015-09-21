@@ -204,7 +204,7 @@ describe('Grid Dom Handlers', function() {
 
     it('should add column to current sort', function() {
       var currentComparator = FieldComparator.of(grid, '+foo');
-      grid.$comparators = [currentComparator];
+      grid.$comparators.reset([currentComparator]);
 
       event.shiftKey = true;
       event.target = document.createElement('TH');
@@ -226,10 +226,10 @@ describe('Grid Dom Handlers', function() {
     it('should replace column to current sort in descendant order', function() {
       var idComparator = FieldComparator.of(grid, '+id');
       var fooComparator = FieldComparator.of(grid, '+foo');
-      grid.$comparators = [
+      grid.$comparators.reset([
         idComparator,
         fooComparator
-      ];
+      ]);
 
       event.shiftKey = true;
       event.target = document.createElement('TH');
@@ -418,7 +418,7 @@ describe('Grid Dom Handlers', function() {
 
     it('should add column to current sort', function() {
       var fooComparator = FieldComparator.of(grid, '+foo');
-      grid.$comparators = [fooComparator];
+      grid.$comparators.reset([fooComparator]);
 
       event.shiftKey = true;
       event.target = document.createElement('TH');
@@ -440,10 +440,10 @@ describe('Grid Dom Handlers', function() {
     it('should replace column to current sort in descendant order', function() {
       var idComparator = FieldComparator.of(grid, '+id');
       var fooComparator = FieldComparator.of(grid, '+foo');
-      grid.$comparators = [
+      grid.$comparators.reset([
         idComparator,
         fooComparator
-      ];
+      ]);
 
       event.shiftKey = true;
       event.target = document.createElement('TH');

@@ -68,6 +68,14 @@ var vendors = {
       'es5-shim/es5-shim.js',
       'react/react-with-addons.js'
     ]
+  },
+
+  $backbone: {
+    src: [
+      'jquery/dist/jquery.js',
+      'underscore/underscore.js',
+      'backbone/backbone.js'
+    ]
   }
 };
 

@@ -68,6 +68,12 @@ var add = {
     'core/jq-lite/jq-lite-spec.js',
     'core/underscore-lite/underscore-lite-spec.js',
     'core/commons/parser-spec.js'
+  ],
+
+  $backbone: [
+    'core/jq-lite/jq-lite-spec.js',
+    'core/underscore-lite/underscore-lite-spec.js',
+    'core/underscore-lite/underscore-base-lite-spec.js'
   ]
 };
 

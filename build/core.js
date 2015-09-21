@@ -163,7 +163,18 @@ var $core = {
   $polymer: [
     '$standalone',
     'extensions/polymer/waffle-polymer.js'
-  ]
+  ],
+
+  $backbone: [
+    'extensions/backbone/backbone-jq.js',
+    'extensions/underscore/sanitize.js',
+    '$json',
+    '$map',
+    '$sniffer',
+    '$parser',
+    '$core',
+    'extensions/backbone/backbone-view.js'
+  ],
 };
 
 // Replace placeholders

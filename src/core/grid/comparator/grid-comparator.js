@@ -24,7 +24,10 @@
 
 /* jshint eqnull: true */
 /* global _ */
+/* global BasicComparator */
 /* global FieldComparator */
+/* global SorterComparator */
+/* global SortByComparator */
 /* exported GridComparator */
 
 var GridComparator = (function() {
@@ -51,6 +54,25 @@ var GridComparator = (function() {
     return $data.indexOf(o1) - $data.indexOf(o2);
   };
 
+  var createComparator = function(grid, comparator) {
+    if (comparator instanceof BasicComparator) {
+      return comparator;
+    }
+
+    if (_.isString(comparator)) {
+      return FieldComparator.of(grid, comparator);
+    }
+
+    if (_.isFunction(comparator)) {
+      var nbArgs = comparator.length;
+      return nbArgs <= 1 ?
+        SortByComparator.of(grid, comparator) :
+        SorterComparator.of(grid, comparator);
+    }
+
+    throw 'Cannot create comparator from object: ' + comparator;
+  };
+
   return {
     // Create comparators.
     // Return value will always be an array.
@@ -60,7 +82,7 @@ var GridComparator = (function() {
       }
 
       return _.map(comparators, function(id) {
-        var comparator = FieldComparator.of(grid, id);
+        var comparator = createComparator(grid, id);
 
         // Update column.
         // TODO find another way, it should not have side effect.

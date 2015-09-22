@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-describe('GridComparator', function() {
+describe('FieldComparator', function() {
 
   var grid;
 
@@ -58,6 +58,11 @@ describe('GridComparator', function() {
     expect(comparator.comparator).toBeDefined();
     expect(comparator.parser).toBe(column.$parser);
     expect(comparator.comparator).toBe(column.$comparator);
+  });
+
+  it('should be an instance of BasicComparator', function() {
+    var comparator = FieldComparator.of(grid, '+firstName');
+    expect(comparator).toBeInstanceOf(BasicComparator);
   });
 
   it('should create comparator in descendant order', function() {

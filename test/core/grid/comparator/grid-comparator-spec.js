@@ -83,6 +83,44 @@ describe('GridComparator', function() {
       expect(comparator.asc).toBeFalse();
     });
 
+    it('create sorter comparator in descendant order', function() {
+      var sorter = function(o1, o2) {
+        return o1.id - o2.id;
+      };
+
+      var comparators = GridComparator.of(grid, sorter);
+
+      expect(comparators).toBeDefined();
+      expect(comparators.length).toBe(1);
+
+      var comparator = comparators[0];
+      expect(comparator).toBeInstanceOf(SorterComparator);
+    });
+
+    it('create sortBy comparator in descendant order', function() {
+      var sortByFunction = function(o) {
+        return o.id;
+      };
+
+      var comparators = GridComparator.of(grid, sortByFunction);
+
+      expect(comparators).toBeDefined();
+      expect(comparators.length).toBe(1);
+
+      var comparator = comparators[0];
+      expect(comparator).toBeInstanceOf(SortByComparator);
+    });
+
+    it('create fail if comparator cannot be created', function() {
+      var comp = true;
+
+      var create = function() {
+        GridComparator.of(grid, comp);
+      };
+
+      expect(create).toThrow('Cannot create comparator from object: true');
+    });
+
     it('create array of comparators', function() {
       var f1 = 'firstName';
       var f2 = 'lastName';

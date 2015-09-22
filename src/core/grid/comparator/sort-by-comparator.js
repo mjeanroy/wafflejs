@@ -22,34 +22,18 @@
  * SOFTWARE.
  */
 
-/* global $parse */
+/* global _ */
 /* global $comparators */
-/* global CHAR_ORDER_ASC */
-/* global CHAR_ORDER_DESC */
 /* global BasicComparator */
-/* exported FieldComparator */
+/* exported SortByComparator */
 
-var FieldComparator = (function() {
-  var FieldComparator = function(grid, predicate) {
-    var flag = predicate.charAt(0);
-    var id = flag === CHAR_ORDER_ASC || flag === CHAR_ORDER_DESC ? predicate.slice(1) : predicate;
-    var column = grid.$columns.byKey(id);
-
-    this.id = id;
-    this.asc = flag !== CHAR_ORDER_DESC;
-
-    var parser;
-    var comparator;
-    if (column) {
-      parser = column.$parser;
-      comparator = column.$comparator;
-    }
-
-    this.parser = parser || $parse(id);
-    this.comparator = comparator || $comparators.$auto;
+var SortByComparator = (function() {
+  var SortByComparator = function(grid, predicate) {
+    this.id = _.uniqueId();
+    this.parser = predicate;
   };
 
-  var proto = FieldComparator.prototype = new BasicComparator();
+  var proto = SortByComparator.prototype = new BasicComparator();
 
   // Compare object.
   proto.compare = function(o1, o2) {
@@ -59,27 +43,13 @@ var FieldComparator = (function() {
 
     var f1 = this.parser(o1);
     var f2 = this.parser(o2);
-    var result = this.comparator(f1, f2);
-    return this.asc ? result : result * -1;
-  };
-
-  // Get predicate representation.
-  proto.predicate = function() {
-    var prefix = this.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
-    return prefix + this.id;
-  };
-
-  // Check if both comparator are equals.
-  proto.equals = function(comparator) {
-    return this.id === comparator.id &&
-      this.asc === comparator.asc &&
-      this.comparator === comparator.comparator;
+    return $comparators.$auto(f1, f2);
   };
 
   // Create comparator.
-  FieldComparator.of = function(grid, sortBy) {
-    return sortBy instanceof FieldComparator ? sortBy : new FieldComparator(grid, sortBy);
+  SortByComparator.of = function(grid, sortBy) {
+    return sortBy instanceof SortByComparator ? sortBy : new SortByComparator(grid, sortBy);
   };
 
-  return FieldComparator;
+  return SortByComparator;
 })();

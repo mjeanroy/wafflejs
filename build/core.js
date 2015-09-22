@@ -86,7 +86,10 @@ var $files = {
     'core/grid/observers/grid-columns-observer.js',
     'core/grid/observers/grid-selection-observer.js',
     'core/grid/filter/grid-filter.js',
+    'core/grid/comparator/basic-comparator.js',
     'core/grid/comparator/field-comparator.js',
+    'core/grid/comparator/sorter-comparator.js',
+    'core/grid/comparator/sort-by-comparator.js',
     'core/grid/comparator/grid-comparator.js',
     'core/grid/grid.js',
     'core/waffle.js'

@@ -176,7 +176,8 @@ var $core = {
     '$sniffer',
     '$parser',
     '$core',
-    'extensions/backbone/backbone-view.js'
+    'extensions/backbone/backbone-view.js',
+    'extensions/backbone/backbone-waffle.js'
   ],
 };
 

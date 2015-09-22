@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +22,7 @@
  * SOFTWARE.
  */
 
-(function(window, document, undefined) {
+/* global Backbone */
+/* global Waffle */
 
-  (function (factory) {
-
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(['underscore', 'backbone'], factory);
-    } else if (typeof exports === 'object') {
-        // Node/CommonJS
-        module.exports = factory(require('underscore'), require('backbone'));
-    } else {
-        // Browser globals
-        factory(_, Backbone);
-    }
-
-  }(function (_, Backbone) {
-
-'use strict';
-
-<%= contents %>
-
-return Backbone;
-
-  }));
-
-})(window, document, void 0);
+Backbone.Waffle = Waffle;

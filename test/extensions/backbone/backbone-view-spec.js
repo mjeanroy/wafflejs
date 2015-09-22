@@ -47,10 +47,16 @@ describe('Backbone WaffleView', function() {
   it('should create default view', function() {
     spyOn(Waffle, 'create').and.callThrough();
 
-    var collection = new Collection([
+    var data = [
       {id: 1, name: 'foo'},
       {id: 2, name: 'bar'}
-    ]);
+    ];
+
+    var options = {
+      comparator: 'name'
+    };
+
+    var collection = new Collection(data, options);
 
     var view = new Backbone.WaffleView({
       collection: collection
@@ -58,12 +64,19 @@ describe('Backbone WaffleView', function() {
 
     expect(Waffle.create).toHaveBeenCalledWith(view.el, jasmine.objectContaining({
       data: collection.models,
+      sortBy: 'name',
       model: jasmine.any(Function),
       key: '_cid'
     }));
 
     expect(view).toBeDefined();
     expect(view.grid).toBeDefined();
+    expect(view.grid.$comparators).toBeDefined();
+    expect(view.grid.$comparators.length).toBe(1);
+    expect(view.grid.$comparators[0]).toEqual(jasmine.objectContaining({
+      id: 'name',
+      asc: true
+    }));
 
     expect(view.grid.$table).toBeDefined();
     expect(view.grid.$table[0]).toBe(view.el);
@@ -78,13 +91,22 @@ describe('Backbone WaffleView', function() {
     var view;
 
     beforeEach(function() {
-      collection = new Collection([
+      var data = [
         {id: 1, name: 'foo'},
         {id: 2, name: 'bar'}
-      ]);
+      ];
+
+      collection = new Collection(data);
+
+      spyOn(Backbone.WaffleView.prototype, 'onChange').and.callThrough();
 
       view = new Backbone.WaffleView({
-        collection: collection
+        collection: collection,
+        waffle: {
+          columns: [
+            {id: 'name', editable: true}
+          ]
+        }
       });
     });
 
@@ -151,6 +173,84 @@ describe('Backbone WaffleView', function() {
 
       var o = data[1];
       expect(o.name).toBe('qux');
+    });
+
+    it('should update grid when collection is sorted', function() {
+      spyOn(view.grid, 'sortBy').and.callThrough();
+
+      collection.comparator = 'name';
+      collection.sort();
+
+      expect(view.grid.sortBy).toHaveBeenCalledWith('name');
+
+      var data = view.grid.$data;
+      expect(data[0]).toEqual(jasmine.objectContaining(collection.at(0).toJSON()));
+      expect(data[1]).toEqual(jasmine.objectContaining(collection.at(1).toJSON()));
+    });
+
+    it('should trigger update on model if data is edited', function() {
+      var spy = jasmine.createSpy('spy');
+      collection.on('change', spy);
+
+      var tr = document.createElement('tr');
+      tr.setAttribute('data-waffle-idx', '0');
+
+      var input = document.createElement('input');
+      input.setAttribute('data-waffle-id', 'name');
+      input.value = 'qux';
+
+      spyOn($doc, 'findParent').and.returnValue(tr);
+      spyOn(view.grid, 'dispatchEvent').and.callThrough();
+
+      var event = {
+        target: input
+      };
+
+      // Reset calls to be sure nothing happen.
+      view.onChange.calls.reset();
+
+      // Trigger input event.
+      GridDomHandlers.onInputTbody.call(view.grid, event);
+
+      expect(view.grid.dispatchEvent).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
+      expect(collection.at(0).get('name')).toBe('qux');
+      expect(view.onChange).not.toHaveBeenCalled();
+    });
+
+    it('should trigger sort on collection when grid is sorted', function() {
+      var spy = jasmine.createSpy('spy');
+      collection.on('sort', spy);
+
+      var th = document.createElement('th');
+      th.setAttribute('data-waffle-id', 'name');
+      th.setAttribute('data-waffle-order', '-');
+      th.setAttribute('data-waffle-sortable', 'true');
+
+      var event = {
+        target: th
+      };
+
+      spyOn($doc, 'findParent').and.returnValue(th);
+      spyOn(view.grid, 'dispatchEvent').and.callThrough();
+      spyOn(view.grid, 'sortBy').and.callThrough();
+
+      expect(collection.comparator).toBeFalsy();
+      expect(collection.at(0).get('name')).toBe('foo');
+      expect(collection.at(1).get('name')).toBe('bar');
+
+      // Trigger input event.
+      GridDomHandlers.onClickThead.call(view.grid, event);
+
+      expect(view.grid.sortBy).toHaveBeenCalled();
+      expect(view.grid.dispatchEvent).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
+
+      expect(collection.comparator).toBeDefined();
+      expect(collection.comparator).toBeAFunction();
+      expect(collection.comparator.length).toBe(2);
+      expect(collection.at(0).get('name')).toBe('bar');
+      expect(collection.at(1).get('name')).toBe('foo');
     });
 
     it('should destroy grid when view is removed', function() {

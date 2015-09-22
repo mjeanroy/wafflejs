@@ -67,7 +67,7 @@
       this.collection = new People();
 
       // Create grid.
-      this.waffleView = new Backbone.WaffleView({
+      this.waffle = new Backbone.WaffleView({
         el: this.$('table'),
         collection: this.collection,
         waffle: waffleOptions
@@ -87,17 +87,13 @@
 
     onFilter: function(e) {
       var val = Backbone.$(e.currentTarget).val();
-      this.applyFilter(val);
+      this.waffle.filter({
+        'name()': val || undefined
+      });
     },
 
     clearFilter: function() {
-      this.applyFilter();
-    },
-
-    applyFilter: function(val) {
-      this.waffleView.grid.filter({
-        'name()': val || undefined
-      });
+      this.waffle.removeFilter();
     },
 
     onAdd: function() {

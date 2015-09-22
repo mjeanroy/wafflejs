@@ -26,7 +26,7 @@
 
 <html>
 <head>
-  <title>WaffleJS sample - Standalone</title>
+  <title>WaffleJS sample - Bare</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -38,11 +38,13 @@
 
   <!-- Vendors -->
   <link rel="stylesheet" href="/vendors/bootstrap/dist/css/bootstrap.css">
+  <script type="text/javascript" src="/vendors/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="/vendors/underscore/underscore.js"></script>
+  <script type="text/javascript" src="/vendors/backbone/backbone.js"></script>
 
   <!-- Waffle -->
   <link rel="stylesheet" href="/dist/waffle.css">
-  <script type="text/javascript" src="/dist/ie8/waffle-ie8.js"></script>
-  <script type="text/javascript" src="/dist/waffle-standalone.js"></script>
+  <script type="text/javascript" src="/dist/waffle-backbone.js"></script>
 
   <!-- Sample -->
   <link rel="stylesheet" href="/sample.css">
@@ -55,19 +57,19 @@
       </div>
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li><a href="/bare">Bare</a></li>
-          <li class="active"><a href="/standalone">Standalone</a></li>
+          <li class="active"><a href="/bare">Bare</a></li>
+          <li><a href="/standalone">Standalone</a></li>
           <li><a href="/jquery">jQuery</a></li>
           <li><a href="/underscore">Underscore.js</a></li>
           <li><a href="/angular">AngularJS</a></li>
           <li><a href="/polymer">Polymer</a></li>
           <li><a href="/react">React</a></li>
-          <li><a href="/backbone">Backbone</a></li>
+          <li class="active"><a href="/backbone">Backbone</a></li>
         </ul>
       </div>
     </div>
   </nav>
-  <div class="container">
+  <div class="container" id="container">
     <div class="panel panel-default">
       <div class="panel-heading">Actions</div>
       <div class="panel-body">
@@ -93,15 +95,14 @@
     <table id="waffle"
            class="table table-striped table-hover table-bordered"
            data-waffle-scrollable="true"
-           data-waffle-selection='{"multi": true}'
            data-waffle-dnd="true"
            data-waffle-size='{"width": "auto"}'
+           data-waffle-selection='{"multi": true}'
            data-waffle-sort-by="name()"></table>
   </div>
 </body>
 
-<script type="text/javascript" src="/ajax.js"></script>
 <script type="text/javascript" src="/sample.js"></script>
-<script type="text/javascript" src="/standalone/sample.js"></script>
+<script type="text/javascript" src="/backbone/sample.js"></script>
 
 </html>

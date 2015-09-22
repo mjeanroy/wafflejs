@@ -39,9 +39,8 @@ Backbone.WaffleView = (function() {
   };
 
   var Model = function(o) {
-    var json = o.toJSON();
-    json[KEY] = o.cid;
-    return json;
+    _.extend(this, o.toJSON());
+    this[KEY] = o.cid;
   };
 
   return Backbone.View.extend({

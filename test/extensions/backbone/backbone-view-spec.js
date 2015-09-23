@@ -268,5 +268,77 @@ describe('Backbone WaffleView', function() {
 
       expect(view.grid.attach).toHaveBeenCalledWith(newTable);
     });
+
+    it('should proxify filter method', function() {
+      spyOn(view.grid, 'filter').and.callThrough();
+
+      var result = view.filter('foo');
+
+      expect(view.grid.filter).toHaveBeenCalledWith('foo');
+      expect(result).toBe(view);
+    });
+
+    it('should proxify removeFilter method', function() {
+      spyOn(view.grid, 'removeFilter').and.callThrough();
+
+      var result = view.removeFilter();
+
+      expect(view.grid.removeFilter).toHaveBeenCalled();
+      expect(result).toBe(view);
+    });
+
+    it('should proxify select method', function() {
+      spyOn(view.grid, 'select').and.callThrough();
+
+      var result = view.select();
+
+      expect(view.grid.select).toHaveBeenCalled();
+      expect(result).toBe(view);
+    });
+
+    it('should proxify deselect method', function() {
+      spyOn(view.grid, 'deselect').and.callThrough();
+
+      var result = view.deselect();
+
+      expect(view.grid.deselect).toHaveBeenCalled();
+      expect(result).toBe(view);
+    });
+
+    it('should proxify resize method', function() {
+      spyOn(view.grid, 'resize').and.callThrough();
+
+      var result = view.resize();
+
+      expect(view.grid.resize).toHaveBeenCalled();
+      expect(result).toBe(view);
+    });
+
+    it('should proxify renderBody method', function() {
+      spyOn(view.grid, 'renderBody').and.callThrough();
+
+      var result = view.renderBody();
+
+      expect(view.grid.renderBody).toHaveBeenCalled();
+      expect(result).toBe(view);
+    });
+
+    it('should proxify renderFooter method', function() {
+      spyOn(view.grid, 'renderFooter').and.callThrough();
+
+      var result = view.renderFooter();
+
+      expect(view.grid.renderFooter).toHaveBeenCalled();
+      expect(result).toBe(view);
+    });
+
+    it('should proxify renderHeader method', function() {
+      spyOn(view.grid, 'renderHeader').and.callThrough();
+
+      var result = view.renderHeader();
+
+      expect(view.grid.renderHeader).toHaveBeenCalled();
+      expect(result).toBe(view);
+    });
   });
 });

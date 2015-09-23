@@ -122,12 +122,6 @@ Backbone.WaffleView = (function() {
       return this;
     },
 
-    // Default render implementation.
-    render: function() {
-      this.grid.render();
-      return this;
-    },
-
     // Remove view.
     // Grid must be destroyed.
     remove: function() {
@@ -225,7 +219,19 @@ Backbone.WaffleView = (function() {
   });
 
   // Bind some waffle function.
-  _.forEach(['filter', 'removeFilter', 'select', 'deselect', 'resize'], function(fn) {
+  var proxyMethods = [
+    'filter',
+    'removeFilter',
+    'select',
+    'deselect',
+    'resize',
+    'render',
+    'renderBody',
+    'renderFooter',
+    'renderHeader'
+  ];
+
+  _.forEach(proxyMethods, function(fn) {
     WaffleView.prototype[fn] = function() {
       var retValue = this.grid[fn].apply(this.grid, arguments);
       return retValue === this.grid ? this : retValue;

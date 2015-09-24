@@ -43,7 +43,7 @@
     "gulp-git": "1.2.4",
     "gulp-tag-version": "1.3.0",
     "gulp-filter": "3.0.1",
-    "gulp-jasmine": "2.0.1",
+    "gulp-jasmine": "2.1.0",
     "gulp-vulcanize": "6.0.1",
     "log4js": "0.6.26",
     "wrench": "1.5.8",

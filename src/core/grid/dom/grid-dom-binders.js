@@ -28,7 +28,7 @@
 /* global THEAD */
 /* global TFOOT */
 /* global TBODY */
-/* global $sniffer */
+/* global $events */
 /* global $util */
 /* global GridDomHandlers */
 /* exported GridDomBinders */
@@ -42,22 +42,22 @@ var GridDomBinders = (function() {
   var bind = function(grid, target, events, handlerName) {
     var el = grid['$' + target];
     if (el && !grid.$$events[handlerName]) {
-      grid.$$events[handlerName] = _.bind(GridDomHandlers[handlerName], grid);
-      el.on(events, grid.$$events[handlerName]);
+      grid.$$events[handlerName] = {
+        events: events,
+        handler: _.bind(GridDomHandlers[handlerName], grid)
+      };
+
+      el.on(events, grid.$$events[handlerName].handler);
     }
   };
 
   var unbind = function(grid, target, events, handlerName) {
     var el = grid['$' + target];
     if (el && grid.$$events[handlerName]) {
-      el.off(events, grid.$$events[handlerName]);
+      var handler = grid.$$events[handlerName];
+      el.off(handler.events, handler.handler);
       grid.$$events[handlerName] = null;
     }
-  };
-
-  var inputEvents = function() {
-    var mainEvent = $sniffer.hasEvent('input') ? 'input' : 'keyup';
-    return mainEvent += ' change';
   };
 
   // Save bytes
@@ -92,9 +92,18 @@ var GridDomBinders = (function() {
     }
   };
 
+  var reducer = function(acc, column) {
+    return column.isEditable() ? acc + ' ' + column.editable.updateOn : acc;
+  };
+
+  var parseEvents = function(columns) {
+    return columns.reduce(reducer, '');
+  };
+
   // Create bind/unbind functions for edition events.
   createDomBinding(instance, 'Edition', function(grid, factory) {
-    factory(grid, TBODY, inputEvents(), 'onInputTbody');
+    var events = $events.$parse(parseEvents(grid.$columns));
+    factory(grid, TBODY, events, 'onInputTbody');
   });
 
   // Create bind/unbind functions for selection events.

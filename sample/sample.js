@@ -79,7 +79,8 @@
       newColumn('userName', 'Login'),
       newColumn('email', 'Email', ['$lowercase', 'email'], '60%', {
         type: 'email',
-        css: 'form-control'
+        css: 'form-control',
+        updateOn: 'focusout'
       })
     ]
   };

@@ -1020,7 +1020,7 @@ describe('Grid', function() {
       data: [],
       editable: true,
       columns: [
-        { id: 'foo', title: 'Foo' },
+        { id: 'foo', title: 'Foo', editable: true },
         { id: 'bar', title: 'Boo' }
       ],
       view: {
@@ -1056,10 +1056,22 @@ describe('Grid', function() {
     });
 
     expect(grid.$$events).toEqual({
-      onClickThead: jasmine.any(Function),
-      onClickTfoot: jasmine.any(Function),
-      onClickTbody: jasmine.any(Function),
-      onInputTbody: jasmine.any(Function)
+      onClickThead: {
+        events: 'click',
+        handler: jasmine.any(Function)
+      },
+      onClickTfoot: {
+        events: 'click',
+        handler: jasmine.any(Function)
+      },
+      onClickTbody: {
+        events: 'click',
+        handler: jasmine.any(Function)
+      },
+      onInputTbody: {
+        events: 'keyup change',
+        handler: jasmine.any(Function)
+      }
     });
 
     var onCalls = jq.on.calls.all();
@@ -1111,8 +1123,14 @@ describe('Grid', function() {
     });
 
     expect(grid.$$events).toEqual({
-      onClickThead: jasmine.any(Function),
-      onClickTfoot: jasmine.any(Function)
+      onClickThead: {
+        events: 'click',
+        handler: jasmine.any(Function)
+      },
+      onClickTfoot: {
+        events: 'click',
+        handler: jasmine.any(Function)
+      }
     });
 
     var onCalls = jq.on.calls.all();
@@ -1142,12 +1160,30 @@ describe('Grid', function() {
     });
 
     expect(grid.$$events).toEqual({
-      onDragStart: jasmine.any(Function),
-      onDragOver: jasmine.any(Function),
-      onDragEnd: jasmine.any(Function),
-      onDragLeave: jasmine.any(Function),
-      onDragEnter: jasmine.any(Function),
-      onDragDrop: jasmine.any(Function)
+      onDragStart: {
+        events: 'dragstart',
+        handler: jasmine.any(Function)
+      },
+      onDragOver: {
+        events: 'dragover',
+        handler: jasmine.any(Function)
+      },
+      onDragEnd: {
+        events: 'dragend',
+        handler: jasmine.any(Function)
+      },
+      onDragLeave: {
+        events: 'dragleave',
+        handler: jasmine.any(Function)
+      },
+      onDragEnter: {
+        events: 'dragenter',
+        handler: jasmine.any(Function)
+      },
+      onDragDrop: {
+        events: 'drop',
+        handler: jasmine.any(Function)
+      }
     });
 
     var onCalls = jq.on.calls.all();
@@ -1185,13 +1221,34 @@ describe('Grid', function() {
     });
 
     expect(grid.$$events).toEqual({
-      onDragStart: jasmine.any(Function),
-      onDragOver: jasmine.any(Function),
-      onDragEnd: jasmine.any(Function),
-      onDragLeave: jasmine.any(Function),
-      onDragEnter: jasmine.any(Function),
-      onDragDrop: jasmine.any(Function),
-      onSelectStart: jasmine.any(Function)
+      onDragStart: {
+        events: 'dragstart',
+        handler: jasmine.any(Function)
+      },
+      onDragOver: {
+        events: 'dragover',
+        handler: jasmine.any(Function)
+      },
+      onDragEnd: {
+        events: 'dragend',
+        handler: jasmine.any(Function)
+      },
+      onDragLeave: {
+        events: 'dragleave',
+        handler: jasmine.any(Function)
+      },
+      onDragEnter: {
+        events: 'dragenter',
+        handler: jasmine.any(Function)
+      },
+      onDragDrop: {
+        events: 'drop',
+        handler: jasmine.any(Function)
+      },
+      onSelectStart: {
+        events: 'selectstart',
+        handler: jasmine.any(Function)
+      }
     });
 
     var onCalls = jq.on.calls.all();

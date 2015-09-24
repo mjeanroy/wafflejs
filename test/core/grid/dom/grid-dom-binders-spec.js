@@ -31,7 +31,7 @@ describe('Grid Dom Binders', function() {
 
     columns = [
       { id: 'id', sortable: false },
-      { id: 'firstName' },
+      { id: 'firstName', editable: true },
       { id: 'lastName' }
     ];
 
@@ -95,13 +95,16 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindEdition(grid);
 
       expect(grid.$$events).toEqual({
-        onInputTbody: jasmine.any(Function)
+        onInputTbody: {
+          events: 'input change',
+          handler: jasmine.any(Function)
+        }
       });
 
       expect(grid.$table.on).not.toHaveBeenCalled();
       expect(grid.$thead.on).not.toHaveBeenCalled();
       expect(grid.$tfoot.on).not.toHaveBeenCalled();
-      expect(grid.$tbody.on).toHaveBeenCalledWith('input change', grid.$$events.onInputTbody);
+      expect(grid.$tbody.on).toHaveBeenCalledWith('input change', grid.$$events.onInputTbody.handler);
 
       // It should not bind twice
       grid.$table.on.calls.reset();
@@ -119,7 +122,7 @@ describe('Grid Dom Binders', function() {
 
       GridDomBinders.bindEdition(grid);
 
-      var onInputTbody = grid.$$events.onInputTbody;
+      var onInputTbody = grid.$$events.onInputTbody.handler;
 
       GridDomBinders.unbindEdition(grid);
 
@@ -130,59 +133,27 @@ describe('Grid Dom Binders', function() {
       expect(grid.$$events.onInputTbody).toBeNull();
     });
 
-    it('should bind input events using fallback events', function() {
-      spyOn($sniffer, 'hasEvent').and.returnValue(false);
-
-      GridDomBinders.bindEdition(grid);
-
-      expect(grid.$$events).toEqual({
-        onInputTbody: jasmine.any(Function)
-      });
-
-      expect(grid.$table.on).not.toHaveBeenCalled();
-      expect(grid.$thead.on).not.toHaveBeenCalled();
-      expect(grid.$tfoot.on).not.toHaveBeenCalled();
-      expect(grid.$tbody.on).toHaveBeenCalledWith('keyup change', grid.$$events.onInputTbody);
-
-      // It should not bind twice
-      grid.$table.on.calls.reset();
-      grid.$thead.on.calls.reset();
-      grid.$tfoot.on.calls.reset();
-      grid.$tbody.on.calls.reset();
-
-      GridDomBinders.bindEdition(grid);
-
-      expect(grid.$tbody.on).not.toHaveBeenCalled();
-    });
-
-    it('should unbind input events using fallback events', function() {
-      spyOn($sniffer, 'hasEvent').and.returnValue(false);
-
-      GridDomBinders.bindEdition(grid);
-
-      var onInputTbody = grid.$$events.onInputTbody;
-
-      GridDomBinders.unbindEdition(grid);
-
-      expect(grid.$table.off).not.toHaveBeenCalled();
-      expect(grid.$thead.off).not.toHaveBeenCalled();
-      expect(grid.$tfoot.off).not.toHaveBeenCalled();
-      expect(grid.$tbody.off).toHaveBeenCalledWith('keyup change', onInputTbody);
-      expect(grid.$$events.onInputTbody).toBeNull();
-    });
-
     it('should bind selection events', function() {
       GridDomBinders.bindSelection(grid);
 
       expect(grid.$$events).toEqual({
-        onClickThead: jasmine.any(Function),
-        onClickTfoot: jasmine.any(Function),
-        onClickTbody: jasmine.any(Function)
+        onClickThead: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        },
+        onClickTfoot: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        },
+        onClickTbody: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        }
       });
 
-      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead);
-      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot);
-      expect(grid.$tbody.on).toHaveBeenCalledWith('click', grid.$$events.onClickTbody);
+      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead.handler);
+      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot.handler);
+      expect(grid.$tbody.on).toHaveBeenCalledWith('click', grid.$$events.onClickTbody.handler);
       expect(grid.$table.on).not.toHaveBeenCalled();
 
       // It should not bind twice
@@ -201,9 +172,9 @@ describe('Grid Dom Binders', function() {
     it('should unbind selection events', function() {
       GridDomBinders.bindSelection(grid);
 
-      var onClickThead = grid.$$events.onClickThead;
-      var onClickTfoot = grid.$$events.onClickTfoot;
-      var onClickTbody = grid.$$events.onClickTbody;
+      var onClickThead = grid.$$events.onClickThead.handler;
+      var onClickTfoot = grid.$$events.onClickTfoot.handler;
+      var onClickTbody = grid.$$events.onClickTbody.handler;
 
       GridDomBinders.unbindSelection(grid);
 
@@ -221,12 +192,18 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindSort(grid);
 
       expect(grid.$$events).toEqual({
-        onClickThead: jasmine.any(Function),
-        onClickTfoot: jasmine.any(Function)
+        onClickThead: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        },
+        onClickTfoot: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        }
       });
 
-      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead);
-      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot);
+      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead.handler);
+      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot.handler);
       expect(grid.$tbody.on).not.toHaveBeenCalled();
       expect(grid.$table.on).not.toHaveBeenCalled();
 
@@ -247,8 +224,8 @@ describe('Grid Dom Binders', function() {
     it('should unbind sort events', function() {
       GridDomBinders.bindSort(grid);
 
-      var onClickThead = grid.$$events.onClickThead;
-      var onClickTfoot = grid.$$events.onClickTfoot;
+      var onClickThead = grid.$$events.onClickThead.handler;
+      var onClickTfoot = grid.$$events.onClickTfoot.handler;
 
       GridDomBinders.unbindSort(grid);
 
@@ -264,24 +241,42 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindDragDrop(grid);
 
       expect(grid.$$events).toEqual({
-        onDragStart: jasmine.any(Function),
-        onDragOver: jasmine.any(Function),
-        onDragEnd: jasmine.any(Function),
-        onDragLeave: jasmine.any(Function),
-        onDragEnter: jasmine.any(Function),
-        onDragDrop: jasmine.any(Function)
+        onDragStart: {
+          events: 'dragstart',
+          handler: jasmine.any(Function)
+        },
+        onDragOver: {
+          events: 'dragover',
+          handler: jasmine.any(Function)
+        },
+        onDragEnd: {
+          events: 'dragend',
+          handler: jasmine.any(Function)
+        },
+        onDragLeave: {
+          events: 'dragleave',
+          handler: jasmine.any(Function)
+        },
+        onDragEnter: {
+          events: 'dragenter',
+          handler: jasmine.any(Function)
+        },
+        onDragDrop: {
+          events: 'drop',
+          handler: jasmine.any(Function)
+        }
       });
 
       expect(grid.$thead.on).not.toHaveBeenCalled();
       expect(grid.$tfoot.on).not.toHaveBeenCalled();
       expect(grid.$tbody.on).not.toHaveBeenCalled();
 
-      expect(grid.$table.on).toHaveBeenCalledWith('dragstart', grid.$$events.onDragStart);
-      expect(grid.$table.on).toHaveBeenCalledWith('dragover', grid.$$events.onDragOver);
-      expect(grid.$table.on).toHaveBeenCalledWith('dragend', grid.$$events.onDragEnd);
-      expect(grid.$table.on).toHaveBeenCalledWith('dragleave', grid.$$events.onDragLeave);
-      expect(grid.$table.on).toHaveBeenCalledWith('dragenter', grid.$$events.onDragEnter);
-      expect(grid.$table.on).toHaveBeenCalledWith('drop', grid.$$events.onDragDrop);
+      expect(grid.$table.on).toHaveBeenCalledWith('dragstart', grid.$$events.onDragStart.handler);
+      expect(grid.$table.on).toHaveBeenCalledWith('dragover', grid.$$events.onDragOver.handler);
+      expect(grid.$table.on).toHaveBeenCalledWith('dragend', grid.$$events.onDragEnd.handler);
+      expect(grid.$table.on).toHaveBeenCalledWith('dragleave', grid.$$events.onDragLeave.handler);
+      expect(grid.$table.on).toHaveBeenCalledWith('dragenter', grid.$$events.onDragEnter.handler);
+      expect(grid.$table.on).toHaveBeenCalledWith('drop', grid.$$events.onDragDrop.handler);
 
       // It should not bind twice
       grid.$table.on.calls.reset();
@@ -300,12 +295,12 @@ describe('Grid Dom Binders', function() {
     it('should unbind drag & drop events', function() {
       GridDomBinders.bindDragDrop(grid);
 
-      var onDragStart = grid.$$events.onDragStart;
-      var onDragOver = grid.$$events.onDragOver;
-      var onDragEnd = grid.$$events.onDragEnd;
-      var onDragLeave = grid.$$events.onDragLeave;
-      var onDragEnter = grid.$$events.onDragEnter;
-      var onDragDrop = grid.$$events.onDragDrop;
+      var onDragStart = grid.$$events.onDragStart.handler;
+      var onDragOver = grid.$$events.onDragOver.handler;
+      var onDragEnd = grid.$$events.onDragEnd.handler;
+      var onDragLeave = grid.$$events.onDragLeave.handler;
+      var onDragEnter = grid.$$events.onDragEnter.handler;
+      var onDragDrop = grid.$$events.onDragDrop.handler;
 
       GridDomBinders.unbindDragDrop(grid);
 
@@ -345,12 +340,18 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindSelection(grid);
 
       expect(grid.$$events).toEqual({
-        onClickThead: jasmine.any(Function),
-        onClickTbody: jasmine.any(Function)
+        onClickThead: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        },
+        onClickTbody: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        }
       });
 
-      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead);
-      expect(grid.$tbody.on).toHaveBeenCalledWith('click', grid.$$events.onClickTbody);
+      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead.handler);
+      expect(grid.$tbody.on).toHaveBeenCalledWith('click', grid.$$events.onClickTbody.handler);
 
       // It should not bind twice
       grid.$thead.on.calls.reset();
@@ -366,10 +367,13 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindSort(grid);
 
       expect(grid.$$events).toEqual({
-        onClickThead: jasmine.any(Function)
+        onClickThead: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        }
       });
 
-      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead);
+      expect(grid.$thead.on).toHaveBeenCalledWith('click', grid.$$events.onClickThead.handler);
 
       // It should not bind twice
       grid.$thead.on.calls.reset();
@@ -408,12 +412,18 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindSelection(grid);
 
       expect(grid.$$events).toEqual({
-        onClickTfoot: jasmine.any(Function),
-        onClickTbody: jasmine.any(Function)
+        onClickTfoot: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        },
+        onClickTbody: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        }
       });
 
-      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot);
-      expect(grid.$tbody.on).toHaveBeenCalledWith('click', grid.$$events.onClickTbody);
+      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot.handler);
+      expect(grid.$tbody.on).toHaveBeenCalledWith('click', grid.$$events.onClickTbody.handler);
 
       // It should not bind twice
       grid.$tfoot.on.calls.reset();
@@ -429,10 +439,13 @@ describe('Grid Dom Binders', function() {
       GridDomBinders.bindSort(grid);
 
       expect(grid.$$events).toEqual({
-        onClickTfoot: jasmine.any(Function)
+        onClickTfoot: {
+          events: 'click',
+          handler: jasmine.any(Function)
+        }
       });
 
-      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot);
+      expect(grid.$tfoot.on).toHaveBeenCalledWith('click', grid.$$events.onClickTfoot.handler);
 
       // It should not bind twice
       grid.$tfoot.on.calls.reset();

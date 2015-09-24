@@ -862,20 +862,23 @@ describe('Grid Dom Handlers', function() {
       columnFirstName.editable = {
         enable: true,
         type: 'text',
-        css: null
+        css: null,
+        updateOn: 'input change'
       };
 
       columnAdmin = grid.$columns.at(3);
       columnAdmin.editable = {
         enable: true,
         type: 'checkbox',
-        css: null
+        css: null,
+        updateOn: 'change'
       };
 
       columnAge = grid.$columns.at(4);
       columnAge.editable = {
         enable: true,
-        type: 'number'
+        type: 'number',
+        updateOn: 'input change'
       };
 
       var columns = grid.$columns;
@@ -898,6 +901,7 @@ describe('Grid Dom Handlers', function() {
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
+      event.type = 'change';
       event.target = input;
 
       onInputTbody(event);
@@ -923,6 +927,7 @@ describe('Grid Dom Handlers', function() {
       input.setAttribute('data-waffle-id', 'age');
       input.value = '50';
 
+      event.type = 'change';
       event.target = input;
 
       onInputTbody(event);
@@ -949,6 +954,7 @@ describe('Grid Dom Handlers', function() {
       checkbox.setAttribute('data-waffle-id', 'admin');
       checkbox.checked = true;
 
+      event.type = 'change';
       event.target = checkbox;
 
       onInputTbody(event);
@@ -977,6 +983,7 @@ describe('Grid Dom Handlers', function() {
       checkbox.setAttribute('data-waffle-id', 'admin');
       checkbox.checked = false;
 
+      event.type = 'change';
       event.target = checkbox;
 
       onInputTbody(event);
@@ -997,6 +1004,25 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
+    it('should not update object if event type is not handled', function() {
+      var input = document.createElement('INPUT');
+      input.setAttribute('data-waffle-id', 'age');
+      input.value = '50';
+
+      event.type = 'keyup';
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect($doc.findParent).toHaveBeenCalledWith(input, 'TR');
+      expect(columnAge.value).not.toHaveBeenCalled();
+      expect(data0.age).not.toBe(50);
+
+      expect(grid.dispatchEvent).not.toHaveBeenCalled();
+      expect(grid.$data.replace).not.toHaveBeenCalled();
+      expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
+    });
+
     it('should not update object value for input event not related to grid column', function() {
       var input = document.createElement('INPUT');
       input.value = 'foo bar';
@@ -1004,8 +1030,6 @@ describe('Grid Dom Handlers', function() {
       event.target = input;
 
       onInputTbody(event);
-
-      expect($doc.findParent).not.toHaveBeenCalled();
     });
 
     it('should not update object value for input event not related to editable column', function() {
@@ -1019,7 +1043,6 @@ describe('Grid Dom Handlers', function() {
 
       onInputTbody(event);
 
-      expect($doc.findParent).not.toHaveBeenCalled();
       expect(columnFirstName.value).not.toHaveBeenCalled();
       expect(data0.firstName).toBe('foo1');
 
@@ -1042,7 +1065,6 @@ describe('Grid Dom Handlers', function() {
 
       onInputTbody(event);
 
-      expect($doc.findParent).not.toHaveBeenCalled();
       expect(columnFirstName.value).not.toHaveBeenCalled();
       expect(data0.firstName).toBe('foo1');
 

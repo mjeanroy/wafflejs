@@ -203,6 +203,7 @@ describe('Backbone WaffleView', function() {
       spyOn(view.grid, 'dispatchEvent').and.callThrough();
 
       var event = {
+        type: 'change',
         target: input
       };
 

@@ -30,6 +30,7 @@
 /* global $renderers */
 /* global $comparators */
 /* global $util */
+/* global $events */
 /* global CSS_SORTABLE */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SORTABLE_ASC */
@@ -111,6 +112,7 @@ var Column = (function() {
     var editable = column.editable === true ? {} : column.editable;
     if (editable) {
       editable = _.defaults(editable, DEFAULT_EDITABLE);
+      editable.updateOn = editable.updateOn || $events.$defaults(editable.type);
     }
 
     this.editable = editable;
@@ -240,6 +242,12 @@ var Column = (function() {
       // If call with an argument, this will be used to check if data
       // is editable or not.
       return resultWith(this.editable.enable, this, [data]);
+    },
+
+    // Check if column handle this particular event.
+    handleEvent: function(event) {
+      return this.isEditable() &&
+        this.editable.updateOn.match(new RegExp('(\\s|^)' + event + '(\\s|$)')) !== null;
     },
 
     // Render object using column settings

@@ -24,6 +24,11 @@
 
 describe('Column', function() {
 
+  beforeEach(function() {
+    spyOn($sniffer, 'hasEvent');
+    spyOn($events, '$defaults').and.callThrough();
+  });
+
   it('should initialize with default values', function() {
     var column = new Column({
       id: 'foo'
@@ -210,6 +215,8 @@ describe('Column', function() {
   });
 
   it('should create an editable column', function() {
+    $sniffer.hasEvent.and.returnValue(true);
+
     var column = new Column({
       id: 'foo',
       editable: {
@@ -221,11 +228,53 @@ describe('Column', function() {
     expect(column.editable).toEqual({
       enable: true,
       type: 'number',
-      css: 'form-control'
+      css: 'form-control',
+      updateOn: 'input change'
+    });
+  });
+
+  it('should create an editable column with updateOn property', function() {
+    $sniffer.hasEvent.and.returnValue(true);
+
+    var column = new Column({
+      id: 'foo',
+      editable: {
+        type: 'number',
+        css: 'form-control',
+        updateOn: 'focusout'
+      }
+    });
+
+    expect(column.editable).toEqual({
+      enable: true,
+      type: 'number',
+      css: 'form-control',
+      updateOn: 'focusout'
+    });
+  });
+
+  it('should create an editable checkbox column', function() {
+    $sniffer.hasEvent.and.returnValue(true);
+
+    var column = new Column({
+      id: 'foo',
+      editable: {
+        type: 'checkbox',
+        css: 'form-control'
+      }
+    });
+
+    expect(column.editable).toEqual({
+      enable: true,
+      type: 'checkbox',
+      css: 'form-control',
+      updateOn: 'change'
     });
   });
 
   it('should create an editable column with default value', function() {
+    $sniffer.hasEvent.and.returnValue(true);
+
     var column = new Column({
       id: 'foo',
       editable: true
@@ -234,7 +283,8 @@ describe('Column', function() {
     expect(column.editable).toEqual({
       enable: true,
       type: 'text',
-      css: null
+      css: null,
+      updateOn: 'input change'
     });
   });
 
@@ -269,6 +319,40 @@ describe('Column', function() {
     expect(column.isEditable()).toBe(true);
     expect(column.isEditable({ id: 1 })).toBe(true);
     expect(column.isEditable({ id: 2 })).toBe(false);
+  });
+
+  it('should check if event is handled', function() {
+    $sniffer.hasEvent.and.returnValue(true);
+
+    var column = new Column({
+      id: 'foo',
+      editable: {
+        type: 'number',
+        css: 'form-control',
+        updateOn: 'input change'
+      }
+    });
+
+    expect(column.handleEvent('input')).toBeTrue();
+    expect(column.handleEvent('change')).toBeTrue();
+    expect(column.handleEvent('click')).toBeFalse();
+  });
+
+  it('should check if event is handled and handle exact event', function() {
+    $sniffer.hasEvent.and.returnValue(true);
+
+    var column = new Column({
+      id: 'foo',
+      editable: {
+        type: 'number',
+        css: 'form-control',
+        updateOn: 'input dblclick'
+      }
+    });
+
+    expect(column.handleEvent('input')).toBeTrue();
+    expect(column.handleEvent('click')).toBeFalse();
+    expect(column.handleEvent('dblclick')).toBeTrue();
   });
 
   it('should normalize default css', function() {

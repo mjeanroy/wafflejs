@@ -192,41 +192,46 @@ var GridDomHandlers = (function() {
     // Update grid data when editable column has been updated
     onInputTbody: function(e) {
       var target = e.target;
+
+      var tr = $doc.findParent(target, 'TR');
+      if (!tr) {
+        return;
+      }
+
       var columnId = target.getAttribute(DATA_WAFFLE_ID);
       var column = columnId ? this.$columns.byKey(columnId) : null;
 
-      if (column && column.isEditable()) {
-        var tr = $doc.findParent(target, 'TR');
-        if (tr) {
-          var type = column.editable.type;
-          var inputProp = inputValue[type] || 'value';
+      if (!column || !column.handleEvent(e.type)) {
+        return;
+      }
 
-          var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
-          var data = this.$data;
-          var object = data.at(idx);
+      var type = column.editable.type;
+      var inputProp = inputValue[type] || 'value';
 
-          var oldValue = column.value(object);
-          var newValue = $parsers.$format(type, target[inputProp]);
+      var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
+      var data = this.$data;
+      var object = data.at(idx);
 
-          if (oldValue !== newValue) {
-            column.value(object, newValue);
+      var oldValue = column.value(object);
+      var newValue = $parsers.$format(type, target[inputProp]);
 
-            // Dispatch events
-            this.dispatchEvent('datachanged', {
-              index: idx,
-              object: object,
-              field: columnId,
-              oldValue: oldValue,
-              newValue: newValue
-            });
+      if (oldValue !== newValue) {
+        column.value(object, newValue);
 
-            // Another field may have been updated, so
-            // we should force an update to refresh the entire row.
-            // Replacing data may change the index if collection
-            // is sorted.
-            data.replace(object);
-          }
-        }
+        // Dispatch events
+        this.dispatchEvent('datachanged', {
+          index: idx,
+          object: object,
+          field: columnId,
+          oldValue: oldValue,
+          newValue: newValue
+        });
+
+        // Another field may have been updated, so
+        // we should force an update to refresh the entire row.
+        // Replacing data may change the index if collection
+        // is sorted.
+        data.replace(object);
       }
     },
 

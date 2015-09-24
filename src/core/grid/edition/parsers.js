@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy, Cedric Nisio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,37 +22,43 @@
  * SOFTWARE.
  */
 
-/* global Grid */
-/* global $renderers */
-/* global $comparators */
-/* global $parsers */
+/* global _ */
+/* exported $parsers */
 
-var Waffle = {
-  // Make Grid constructor available.
-  // This is deprecated, create function should be used instead.
-  // @deprecated
-  Grid: Grid,
+var $parsers = (function() {
 
-  // Get default options
-  options: Grid.options,
+  var toNumber = function(value) {
+    return Number(value);
+  };
 
-  // Create new grid
-  create: Grid.create,
+  var toBoolean = function(value) {
+    return !!value;
+  };
 
-  // Add new "global" renderer
-  addRenderer: function(id, fn) {
-    $renderers[id] = fn;
-    return Waffle;
-  },
+  var reducerFn = function(acc, fn) {
+    return fn(acc);
+  };
 
-  // Add new "global" comparator
-  addComparator: function(id, fn) {
-    $comparators[id] = fn;
-    return Waffle;
-  },
+  var reduce = function(array, acc) {
+    return _.reduce(array, reducerFn, acc);
+  };
 
-  addParser: function(type, fn) {
-    $parsers.$add(type, fn);
-    return Waffle;
-  }
-};
+  var parsers = {
+    number: [toNumber],
+    checkbox: [toBoolean]
+  };
+
+  return {
+    $add: function(type, fn) {
+      parsers[type] = (parsers[type] || []).concat(fn);
+      return this;
+    },
+
+    // Apply formatting.
+    $format: function(type, value) {
+      var array = parsers[type];
+      return array ? reduce(array, value) : value;
+    }
+  };
+
+})();

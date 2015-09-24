@@ -26,6 +26,7 @@
 /* global $ */
 /* global _ */
 /* global $doc */
+/* global $parsers */
 /* global CHAR_ORDER_ASC */
 /* global CHAR_ORDER_DESC */
 /* global DATA_WAFFLE_ID */
@@ -71,16 +72,6 @@ var GridDomHandlers = (function() {
   var hasParent = function(node, expectedParent) {
     var parent = $doc.findParent(node, expectedParent.tagName);
     return parent === expectedParent;
-  };
-
-  // Data formatter used when editable column cell is updated
-  var dataFormatters = {
-    number: function(value) {
-      return Number(value);
-    },
-    checkbox: function(value) {
-      return !!value;
-    }
   };
 
   var inputValue = {
@@ -208,7 +199,6 @@ var GridDomHandlers = (function() {
         var tr = $doc.findParent(target, 'TR');
         if (tr) {
           var type = column.editable.type;
-          var formatter = dataFormatters[type] || _.identity;
           var inputProp = inputValue[type] || 'value';
 
           var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
@@ -216,7 +206,7 @@ var GridDomHandlers = (function() {
           var object = data.at(idx);
 
           var oldValue = column.value(object);
-          var newValue = formatter(target[inputProp]);
+          var newValue = $parsers.$format(type, target[inputProp]);
 
           if (oldValue !== newValue) {
             column.value(object, newValue);

@@ -77,6 +77,7 @@ var $files = {
     'core/services/filters.js',
     'core/grid/models/collection.js',
     'core/grid/models/column.js',
+    'core/grid/edition/parsers.js',
     'core/grid/commons/grid-util.js',
     'core/grid/dom/grid-dom-handlers.js',
     'core/grid/dom/grid-dom-binders.js',

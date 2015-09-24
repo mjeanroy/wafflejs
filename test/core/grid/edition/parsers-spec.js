@@ -22,37 +22,35 @@
  * SOFTWARE.
  */
 
-/* global Grid */
-/* global $renderers */
-/* global $comparators */
-/* global $parsers */
+describe('$parsers', function() {
+  it('should return a number value', function() {
+    expect($parsers.$format('number', '1')).toBe(1);
+    expect($parsers.$format('number', '1.1')).toBe(1.1);
+    expect($parsers.$format('number', 1)).toBe(1);
+  });
 
-var Waffle = {
-  // Make Grid constructor available.
-  // This is deprecated, create function should be used instead.
-  // @deprecated
-  Grid: Grid,
+  it('should return a boolean value', function() {
+    expect($parsers.$format('checkbox', true)).toBe(true);
+    expect($parsers.$format('checkbox', false)).toBe(false);
+    expect($parsers.$format('checkbox', null)).toBe(false);
+  });
 
-  // Get default options
-  options: Grid.options,
+  it('should return a text value', function() {
+    expect($parsers.$format('boolean', 'foo')).toBe('foo');
+    expect($parsers.$format('boolean', 'true')).toBe('true');
+    expect($parsers.$format('boolean', 'false')).toBe('false');
+  });
 
-  // Create new grid
-  create: Grid.create,
+  it('should add a parser', function() {
+    expect($parsers.$format('text', 'foo')).toBe('foo');
 
-  // Add new "global" renderer
-  addRenderer: function(id, fn) {
-    $renderers[id] = fn;
-    return Waffle;
-  },
+    var spy = jasmine.createSpy('parser').and.callFake(function(val) {
+      return val;
+    });
 
-  // Add new "global" comparator
-  addComparator: function(id, fn) {
-    $comparators[id] = fn;
-    return Waffle;
-  },
+    $parsers.$add('text', spy);
+    $parsers.$format('text', 'foo');
 
-  addParser: function(type, fn) {
-    $parsers.$add(type, fn);
-    return Waffle;
-  }
-};
+    expect(spy).toHaveBeenCalledWith('foo');
+  });
+});

@@ -58,4 +58,15 @@ describe('waffle', function() {
     expect($comparators.foo).toBe(comparator);
     delete $comparators.foo;
   });
+
+  it('should add new global parser', function() {
+    spyOn($parsers, '$add');
+    var spy = jasmine.createSpy('spy').and.callFake(function(value) {
+      return value;
+    });
+
+    Waffle.addParser('text', spy);
+
+    expect($parsers.$add).toHaveBeenCalled();
+  });
 });

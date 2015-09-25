@@ -194,6 +194,7 @@ describe('Backbone WaffleView', function() {
 
       var tr = document.createElement('tr');
       tr.setAttribute('data-waffle-idx', '0');
+      tr.setAttribute('data-waffle-id', collection.at(0).cid);
 
       var input = document.createElement('input');
       input.setAttribute('data-waffle-id', 'name');

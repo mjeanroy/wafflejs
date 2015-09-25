@@ -51,7 +51,10 @@ describe('Grid Dom Handlers', function() {
 
     grid = new Grid(table, {
       data: data,
-      columns: columns
+      columns: columns,
+      key: function(o) {
+        return o.id;
+      }
     });
 
     onClickThead = _.bind(GridDomHandlers.onClickThead, grid);
@@ -863,7 +866,8 @@ describe('Grid Dom Handlers', function() {
         enable: true,
         type: 'text',
         css: null,
-        updateOn: 'input change'
+        updateOn: 'input change',
+        debounce: 0
       };
 
       columnAdmin = grid.$columns.at(3);
@@ -871,14 +875,16 @@ describe('Grid Dom Handlers', function() {
         enable: true,
         type: 'checkbox',
         css: null,
-        updateOn: 'change'
+        updateOn: 'change',
+        debounce: 0
       };
 
       columnAge = grid.$columns.at(4);
       columnAge.editable = {
         enable: true,
         type: 'number',
-        updateOn: 'input change'
+        updateOn: 'input change',
+        debounce: 0
       };
 
       var columns = grid.$columns;
@@ -888,6 +894,7 @@ describe('Grid Dom Handlers', function() {
 
       tr = document.createElement('TR');
       tr.setAttribute('data-waffle-idx', 0);
+      tr.setAttribute('data-waffle-id', data0.id);
 
       spyOn($doc, 'findParent').and.returnValue(tr);
 
@@ -1089,6 +1096,99 @@ describe('Grid Dom Handlers', function() {
 
       expect(grid.$data.replace).not.toHaveBeenCalled();
       expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
+    });
+
+    it('should debounce update', function() {
+      columnFirstName.editable.debounce = 100;
+
+      var input = document.createElement('INPUT');
+      input.setAttribute('data-waffle-id', 'firstName');
+      input.value = 'foo bar';
+
+      event.type = 'change';
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect(columnFirstName.value).not.toHaveBeenCalled();
+      expect(data0.firstName).not.toBe('foo bar');
+      expect(grid.dispatchEvent).not.toHaveBeenCalled();
+      expect(grid.$data.replace).not.toHaveBeenCalled();
+      expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
+
+      expect(columnFirstName.$debouncers.get(data0.id)).toBeDefined();
+      expect(columnFirstName.$debouncers.get(data0.id)).not.toBeNull();
+
+      jasmine.clock().tick(100);
+
+      expect(columnFirstName.$debouncers.get(data0.id)).toBeUndefined();
+      expect(columnFirstName.value).toHaveBeenCalledWith(data0, 'foo bar');
+      expect(data0.firstName).toBe('foo bar');
+
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
+        index: 0,
+        object: data0,
+        field: 'firstName',
+        oldValue: 'foo1',
+        newValue: 'foo bar'
+      });
+
+      expect(grid.$data.replace).toHaveBeenCalledWith(data0);
+      expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
+    });
+
+    it('should debounce update and cancel previous update', function() {
+      columnFirstName.editable.debounce = 100;
+
+      var input = document.createElement('INPUT');
+      input.setAttribute('data-waffle-id', 'firstName');
+      input.value = 'foo bar';
+
+      event.type = 'change';
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect(columnFirstName.value).not.toHaveBeenCalled();
+      expect(data0.firstName).not.toBe('foo bar');
+      expect(grid.dispatchEvent).not.toHaveBeenCalled();
+      expect(grid.$data.replace).not.toHaveBeenCalled();
+      expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
+
+      expect(columnFirstName.$debouncers.get(data0.id)).toBeDefined();
+      expect(columnFirstName.$debouncers.get(data0.id)).not.toBeNull();
+
+      // Launch new event after 50ms.
+      jasmine.clock().tick(50);
+      onInputTbody(event);
+
+      // Check nothing has happened.
+      expect(columnFirstName.value).not.toHaveBeenCalled();
+      expect(data0.firstName).not.toBe('foo bar');
+
+      // Check that after 100ms after initial event, nothing has happened (ie
+      // previous event has been canceled).
+      jasmine.clock().tick(50);
+
+      expect(columnFirstName.value).not.toHaveBeenCalled();
+      expect(data0.firstName).not.toBe('foo bar');
+
+      // Check that after 50ms, second event is triggered.
+      jasmine.clock().tick(50);
+
+      expect(columnFirstName.$debouncers.get(data0.id)).toBeUndefined();
+      expect(columnFirstName.value).toHaveBeenCalledWith(data0, 'foo bar');
+      expect(data0.firstName).toBe('foo bar');
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
+        index: 0,
+        object: data0,
+        field: 'firstName',
+        oldValue: 'foo1',
+        newValue: 'foo bar'
+      });
+
+      expect(grid.$data.replace).toHaveBeenCalledWith(data0);
+      expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
   });
 

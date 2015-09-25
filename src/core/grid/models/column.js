@@ -31,6 +31,7 @@
 /* global $comparators */
 /* global $util */
 /* global $events */
+/* global HashMap */
 /* global CSS_SORTABLE */
 /* global CSS_SORTABLE_DESC */
 /* global CSS_SORTABLE_ASC */
@@ -47,7 +48,8 @@ var Column = (function() {
   var DEFAULT_EDITABLE = {
     enable: true,
     type: 'text',
-    css: null
+    css: null,
+    debounce: 0
   };
 
   var CSS_PLACHOLDERS = {
@@ -149,6 +151,9 @@ var Column = (function() {
 
     // Parse that will be used to extract data value from plain old javascript object
     this.$parser = $parse(this.field);
+
+    // Create debouncers map
+    this.$debouncers = new HashMap();
   };
 
   Constructor.prototype = {

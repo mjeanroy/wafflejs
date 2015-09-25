@@ -229,7 +229,8 @@ describe('Column', function() {
       enable: true,
       type: 'number',
       css: 'form-control',
-      updateOn: 'input change'
+      updateOn: 'input change',
+      debounce: 0
     });
   });
 
@@ -249,7 +250,8 @@ describe('Column', function() {
       enable: true,
       type: 'number',
       css: 'form-control',
-      updateOn: 'focusout'
+      updateOn: 'focusout',
+      debounce: 0
     });
   });
 
@@ -268,7 +270,8 @@ describe('Column', function() {
       enable: true,
       type: 'checkbox',
       css: 'form-control',
-      updateOn: 'change'
+      updateOn: 'change',
+      debounce: 0
     });
   });
 
@@ -284,7 +287,27 @@ describe('Column', function() {
       enable: true,
       type: 'text',
       css: null,
-      updateOn: 'input change'
+      updateOn: 'input change',
+      debounce: 0
+    });
+  });
+
+  it('should create an editable column with debounce', function() {
+    $sniffer.hasEvent.and.returnValue(true);
+
+    var column = new Column({
+      id: 'foo',
+      editable: {
+        debounce: 100
+      }
+    });
+
+    expect(column.editable).toEqual({
+      enable: true,
+      type: 'text',
+      css: null,
+      updateOn: 'input change',
+      debounce: 100
     });
   });
 

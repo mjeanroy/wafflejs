@@ -120,6 +120,59 @@ var GridDomHandlers = (function() {
     }
   };
 
+  var stopDebouncer = function(column, id) {
+    var debouncers = column.$debouncers;
+    if (debouncers.contains(id)) {
+      clearTimeout(debouncers.get(id));
+      debouncers.remove(id);
+    }
+  };
+
+  var createDebouncer = function(column, id, fn, debounce) {
+    stopDebouncer(column, id);
+    column.$debouncers.put(id, setTimeout(fn, debounce));
+  };
+
+  var editFn = function(grid, column, tr, target) {
+    return function() {
+      var type = column.editable.type;
+      var inputProp = inputValue[type] || 'value';
+
+      var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
+      var dataId = tr.getAttribute(DATA_WAFFLE_ID);
+      var data = grid.$data;
+      var object = data.byKey(dataId);
+
+      var oldValue = column.value(object);
+      var newValue = $parsers.$format(type, target[inputProp]);
+
+      if (oldValue !== newValue) {
+        column.value(object, newValue);
+
+        // Dispatch events
+        grid.dispatchEvent('datachanged', {
+          index: idx,
+          object: object,
+          field: column.id,
+          oldValue: oldValue,
+          newValue: newValue
+        });
+
+        // Another field may have been updated, so
+        // we should force an update to refresh the entire row.
+        // Replacing data may change the index if collection
+        // is sorted.
+        data.replace(object);
+      }
+
+      // Stop debouncer if it exists.
+      stopDebouncer(column, dataId);
+
+      // Free memory.
+      grid = column = tr = target = null;
+    };
+  };
+
   var o = {
     onClickThead: function(e) {
       return onClickTitle.call(this, e, THEAD);
@@ -205,33 +258,18 @@ var GridDomHandlers = (function() {
         return;
       }
 
-      var type = column.editable.type;
-      var inputProp = inputValue[type] || 'value';
+      // Create update function.
+      var fn = editFn(this, column, tr, target);
 
-      var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
-      var data = this.$data;
-      var object = data.at(idx);
+      // Cancel previous timer.
+      stopDebouncer(column);
 
-      var oldValue = column.value(object);
-      var newValue = $parsers.$format(type, target[inputProp]);
-
-      if (oldValue !== newValue) {
-        column.value(object, newValue);
-
-        // Dispatch events
-        this.dispatchEvent('datachanged', {
-          index: idx,
-          object: object,
-          field: columnId,
-          oldValue: oldValue,
-          newValue: newValue
-        });
-
-        // Another field may have been updated, so
-        // we should force an update to refresh the entire row.
-        // Replacing data may change the index if collection
-        // is sorted.
-        data.replace(object);
+      var debounce = column.editable.debounce;
+      if (debounce) {
+        var id = tr.getAttribute(DATA_WAFFLE_ID);
+        createDebouncer(column, id, fn, debounce);
+      } else {
+        fn();
       }
     },
 
@@ -277,7 +315,6 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element enter inside other element.
     onDragEnter: function(e) {
-
       var target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
         $(target).addClass(CSS_DRAGGABLE_OVER);

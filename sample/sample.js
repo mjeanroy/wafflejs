@@ -80,7 +80,7 @@
       newColumn('email', 'Email', ['$lowercase', 'email'], '60%', {
         type: 'email',
         css: 'form-control',
-        updateOn: 'focusout'
+        debounce: 300
       })
     ]
   };

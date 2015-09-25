@@ -1190,6 +1190,61 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.replace).toHaveBeenCalledWith(data0);
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
+
+    it('should debounce update and cancel previous update using different debounce value by event', function() {
+      columnFirstName.editable.updateOn = 'input change';
+      columnFirstName.editable.debounce = {
+        change: 10,
+        input: 100
+      };
+
+      var input = document.createElement('INPUT');
+      input.setAttribute('data-waffle-id', 'firstName');
+      input.value = 'foo bar';
+
+      event.type = 'input';
+      event.target = input;
+
+      onInputTbody(event);
+
+      expect(columnFirstName.value).not.toHaveBeenCalled();
+      expect(data0.firstName).not.toBe('foo bar');
+      expect(grid.dispatchEvent).not.toHaveBeenCalled();
+      expect(grid.$data.replace).not.toHaveBeenCalled();
+      expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
+
+      expect(columnFirstName.$debouncers.get(data0.id)).toBeDefined();
+      expect(columnFirstName.$debouncers.get(data0.id)).not.toBeNull();
+
+      // Launch new event after 50ms.
+      jasmine.clock().tick(50);
+
+      // Update event type.
+      event.type = 'change';
+
+      onInputTbody(event);
+
+      // Check nothing has happened.
+      expect(columnFirstName.value).not.toHaveBeenCalled();
+      expect(data0.firstName).not.toBe('foo bar');
+
+      // Check that after 10ms second event is triggered.
+      jasmine.clock().tick(10);
+
+      expect(columnFirstName.$debouncers.get(data0.id)).toBeUndefined();
+      expect(columnFirstName.value).toHaveBeenCalledWith(data0, 'foo bar');
+      expect(data0.firstName).toBe('foo bar');
+      expect(grid.dispatchEvent).toHaveBeenCalledWith('datachanged', {
+        index: 0,
+        object: data0,
+        field: 'firstName',
+        oldValue: 'foo1',
+        newValue: 'foo bar'
+      });
+
+      expect(grid.$data.replace).toHaveBeenCalledWith(data0);
+      expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
+    });
   });
 
   describe('Drag & Drop', function() {

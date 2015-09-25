@@ -244,6 +244,7 @@ var GridDomHandlers = (function() {
 
     // Update grid data when editable column has been updated
     onInputTbody: function(e) {
+      var eventType = e.type;
       var target = e.target;
 
       var tr = $doc.findParent(target, 'TR');
@@ -254,7 +255,7 @@ var GridDomHandlers = (function() {
       var columnId = target.getAttribute(DATA_WAFFLE_ID);
       var column = columnId ? this.$columns.byKey(columnId) : null;
 
-      if (!column || !column.handleEvent(e.type)) {
+      if (!column || !column.handleEvent(eventType)) {
         return;
       }
 
@@ -264,7 +265,11 @@ var GridDomHandlers = (function() {
       // Cancel previous timer.
       stopDebouncer(column);
 
-      var debounce = column.editable.debounce;
+      var debounceValue = column.editable.debounce;
+      var debounce = _.isNumber(debounceValue) ?
+        debounceValue :
+        debounceValue[eventType] || 0;
+
       if (debounce) {
         var id = tr.getAttribute(DATA_WAFFLE_ID);
         createDebouncer(column, id, fn, debounce);

@@ -347,6 +347,45 @@ describe('Grid Columns Observer', function() {
       expect(GridDomBinders.unbindEdition).toHaveBeenCalledWith(grid);
     });
 
+    it('should add columns and rebind if needed', function() {
+      spyOn(grid, 'isEditable').and.returnValue(true);
+      spyOn(GridDomBinders, 'bindEdition').and.callThrough();
+
+      $columns.push({
+        id: 'lastName',
+        editable: {
+          type: 'text',
+          updateOn: 'keydown'
+        }
+      });
+
+      jasmine.clock().tick();
+
+      expect(grid.$$events).toEqual(jasmine.objectContaining({
+        onInputTbody: {
+          events: 'keydown',
+          handler: jasmine.any(Function)
+        }
+      }));
+
+      $columns.push({
+        id: 'fullName',
+        editable: {
+          type: 'text',
+          updateOn: 'focusout'
+        }
+      });
+
+      jasmine.clock().tick();
+
+      expect(grid.$$events).toEqual(jasmine.objectContaining({
+        onInputTbody: {
+          events: 'keydown focusout',
+          handler: jasmine.any(Function)
+        }
+      }));
+    });
+
     it('should add new column and trigger new resize', function() {
       spyOn(grid, 'isResizable').and.returnValue(true);
       spyOn(grid, 'resize');

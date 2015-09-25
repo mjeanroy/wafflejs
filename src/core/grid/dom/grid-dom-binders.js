@@ -39,24 +39,37 @@
 
 var GridDomBinders = (function() {
 
-  var bind = function(grid, target, events, handlerName) {
-    var el = grid['$' + target];
-    if (el && !grid.$$events[handlerName]) {
-      grid.$$events[handlerName] = {
-        events: events,
-        handler: _.bind(GridDomHandlers[handlerName], grid)
-      };
-
-      el.on(events, grid.$$events[handlerName].handler);
-    }
-  };
-
   var unbind = function(grid, target, events, handlerName) {
     var el = grid['$' + target];
     if (el && grid.$$events[handlerName]) {
       var handler = grid.$$events[handlerName];
       el.off(handler.events, handler.handler);
       grid.$$events[handlerName] = null;
+    }
+  };
+
+  var bind = function(grid, target, events, handlerName) {
+    var el = grid['$' + target];
+    if (!el) {
+      return;
+    }
+
+    var handler = grid.$$events[handlerName];
+
+    // If events is not the same value as previous handler, we need
+    // to rebind everything.
+    if (handler && handler.events !== events) {
+      unbind(grid, target, handler.events, handlerName);
+      handler = null;
+    }
+
+    if (!handler) {
+      grid.$$events[handlerName] = {
+        events: events,
+        handler: _.bind(GridDomHandlers[handlerName], grid)
+      };
+
+      el.on(events, grid.$$events[handlerName].handler);
     }
   };
 

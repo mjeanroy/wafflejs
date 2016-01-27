@@ -2,25 +2,24 @@
 
 ## Why another datagrid ?
 
-Few years ago, I wrote my first datagrid as a jQuery plugin: it worked great but suffers from several limitations:
+Few years ago, I wrote my first datagrid as a jQuery plugin: it worked great but suffered from several limitations:
 - Hard to use without jQuery (especially true when I started to use `angular`).
-- Performant, but not optimal: each modifications triggered a full render.
+- Performant, but not optimal: each modification triggered a full render.
 
-When I started to use `angular`, I decided to rewrote a new datagrid with angular API:
+When I started to use `angular`, I decided to rewrite a new datagrid with angular API:
 - Use only API provided by JqLite.
 - Use databinding to avoid full render.
 
 It was great, but not performant at all: each digest cycle was really slow: it makes
-sense since a lot of bindings were introduced. I decided to improve the grid, and skip angular
+sense since a lot of bindings were implied. I decided to improve the grid, and skip angular
 bindings (sort of hybrid component with JavaScript rendering, and bridges to angular digest cycle).
 
-When I rewrote the same datagrid to use with React, I decided to write a datagrid easy to use whatever
-the frameworks.
+When I rewrote the same datagrid to use with React, I decided to write a datagrid easy to use regardless of the framework.
 
 Here are the main goals of this implementation:
-- Framework agnostic: easy to use whatever the frameworks, but use the framework API if it is appropriate.
+- Framework agnostic: easy to use regardless of the framework, but use the framework API if it is appropriate.
 - Do not trigger a full rendering when a data is added or removed.
-- Performant: it must remains performant, whatever the number of rows to display.
+- Performant: it must remain performant, whatever the number of rows to display.
 
 I am happy to say today that these goals are achieved (see the architecture overview to have deep explanation).
 

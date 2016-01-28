@@ -27,6 +27,9 @@
 
 var GridUtil = (function() {
 
+  // Create initial empty object.
+  var instance = {};
+
   var findRow = function(rows, index, def, stopOn) {
     var max = rows.length - 1;
     if (max < 0 || index < 0 || index <= def) {
@@ -48,26 +51,24 @@ var GridUtil = (function() {
     return def;
   };
 
-  var instance = {
-    getDataIndex: function(row) {
-      return Number(row.getAttribute(DATA_WAFFLE_IDX));
-    },
+  instance.getDataIndex = function(row) {
+    return Number(row.getAttribute(DATA_WAFFLE_IDX));
+  };
 
-    getRowIndexForDataIndex: function(rows, index) {
-      return findRow(rows, index, -1, function(dataIndex, index) {
-        return dataIndex === index;
-      });
-    },
+  instance.getRowIndexForDataIndex = function(rows, index) {
+    return findRow(rows, index, -1, function(dataIndex, index) {
+      return dataIndex === index;
+    });
+  };
 
-    getPreviousRowIndexForDataIndex: function(rows, index) {
-      return findRow(rows, index - 1, -1, function(dataIndex, index) {
-        return dataIndex <= index;
-      });
-    },
+  instance.getPreviousRowIndexForDataIndex = function(rows, index) {
+    return findRow(rows, index - 1, -1, function(dataIndex, index) {
+      return dataIndex <= index;
+    });
+  };
 
-    getCheckbox: function(row) {
-      return row.childNodes[0].childNodes[0];
-    }
+  instance.getCheckbox = function(row) {
+    return row.childNodes[0].childNodes[0];
   };
 
   return instance;

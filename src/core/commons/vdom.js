@@ -30,6 +30,8 @@
  */
 
 var $vdom = (function() {
+  var instance = {};
+
   var replaceNode = function(rootNode, oldNode, newNode) {
     return rootNode.replaceChild(newNode, oldNode);
   };
@@ -51,7 +53,7 @@ var $vdom = (function() {
   };
 
   var mergeNodes = function(oldNode, newNode) {
-    o.mergeAttributes(oldNode, newNode);
+    instance.mergeAttributes(oldNode, newNode);
 
     var oldChildNodes = oldNode.childNodes;
     var newChildNodes = newNode.childNodes;
@@ -61,69 +63,67 @@ var $vdom = (function() {
       replaceContent(oldNode, newNode);
     } else {
       for (var i = 0, size = oldChildNodes.length; i < size; ++i) {
-        o.mergeNodes(oldNode, oldChildNodes[i], newChildNodes[i]);
+        instance.mergeNodes(oldNode, oldChildNodes[i], newChildNodes[i]);
       }
     }
   };
 
-  var o = {
-    // Merge two nodes.
-    // If nodes are text node, html content is replaced
-    // Otherwise, for node elements:
-    // - Update attributes
-    // - Update className
-    // - Update childs recursively
-    mergeNodes: function(rootNode, oldNode, newNode) {
-      var oldType = oldNode.nodeType;
-      var newType = newNode.nodeType;
+  // Merge two nodes.
+  // If nodes are text node, html content is replaced
+  // Otherwise, for node elements:
+  // - Update attributes
+  // - Update className
+  // - Update childs recursively
+  instance.mergeNodes = function(rootNode, oldNode, newNode) {
+    var oldType = oldNode.nodeType;
+    var newType = newNode.nodeType;
 
-      var oldTagName = oldNode.tagName;
-      var newTagName = newNode.tagName;
+    var oldTagName = oldNode.tagName;
+    var newTagName = newNode.tagName;
 
-      var result = oldNode;
+    var result = oldNode;
 
-      if (oldType !== newType || oldTagName !== newTagName) {
-        // We can't easily merge two different node, just replace
-        // the old one with the new one
-        replaceNode(rootNode, oldNode, newNode);
-        result = newNode;
-      } else if (oldType === 3) {
-        // Both are text nodes, we can just update the node value
-        updateTextNode(oldNode, newNode);
-      } else {
-        // Both are same types and same tags, merge both
-        mergeNodes(oldNode, newNode);
-      }
-
-      return result;
-    },
-
-    // Update attributes of old node with attributes of new node
-    mergeAttributes: function(oldNode, newNode) {
-      var oldAttributes = _.indexBy(oldNode.attributes, 'name');
-      var newAttributes = _.indexBy(newNode.attributes, 'name');
-
-      // Update and add new attributes
-      _.forEach(_.keys(newAttributes), function(name) {
-        var oldAttr = oldAttributes[name] || null;
-        var oldValue = oldAttr ? oldAttr.value : null;
-        var newValue = newAttributes[name].value;
-
-        if (oldValue !== newValue) {
-          oldNode.setAttribute(name, newValue);
-        }
-
-        if (oldAttr) {
-          delete oldAttributes[name];
-        }
-      });
-
-      // Remove missing
-      _.forEach(_.keys(oldAttributes), function(name) {
-        oldNode.removeAttribute(name);
-      });
+    if (oldType !== newType || oldTagName !== newTagName) {
+      // We can't easily merge two different node, just replace
+      // the old one with the new one
+      replaceNode(rootNode, oldNode, newNode);
+      result = newNode;
+    } else if (oldType === 3) {
+      // Both are text nodes, we can just update the node value
+      updateTextNode(oldNode, newNode);
+    } else {
+      // Both are same types and same tags, merge both
+      mergeNodes(oldNode, newNode);
     }
+
+    return result;
   };
 
-  return o;
+  // Update attributes of old node with attributes of new node
+  instance.mergeAttributes = function(oldNode, newNode) {
+    var oldAttributes = _.indexBy(oldNode.attributes, 'name');
+    var newAttributes = _.indexBy(newNode.attributes, 'name');
+
+    // Update and add new attributes
+    _.forEach(_.keys(newAttributes), function(name) {
+      var oldAttr = oldAttributes[name] || null;
+      var oldValue = oldAttr ? oldAttr.value : null;
+      var newValue = newAttributes[name].value;
+
+      if (oldValue !== newValue) {
+        oldNode.setAttribute(name, newValue);
+      }
+
+      if (oldAttr) {
+        delete oldAttributes[name];
+      }
+    });
+
+    // Remove missing
+    _.forEach(_.keys(oldAttributes), function(name) {
+      oldNode.removeAttribute(name);
+    });
+  };
+
+  return instance;
 })();

@@ -43,8 +43,7 @@ describe('WaffleComponent', function() {
     });
 
     var component = TestUtils.renderIntoDocument(waffle);
-    var domComponent = TestUtils.findRenderedDOMComponentWithTag(component, 'table');
-    var el = domComponent.getDOMNode();
+    var el = component.getDOMNode();
 
     expect(el).toBeDefined();
     expect(el.tagName).toBe('TABLE');

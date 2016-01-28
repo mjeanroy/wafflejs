@@ -44,6 +44,9 @@ var _ = (function() {
   var toString = ObjectProto.toString;
   var nativeBind = Function.prototype.bind;
 
+  // Create initial empty object.
+  var _ = {};
+
   var callbackWrapper = function(callback) {
     if (_.isString(callback)) {
       return function(value) {
@@ -68,8 +71,6 @@ var _ = (function() {
       return result;
     };
   };
-
-  var _ = {};
 
   // Check if given object is null
   _.isNull = function(obj) {

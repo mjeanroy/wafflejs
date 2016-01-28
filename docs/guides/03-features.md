@@ -20,8 +20,7 @@ Sorting the `version` column is not easy: if you try to compare `"2.0.0"` with `
 Here is the solution using a custom comparator:
 
 ```javascript
-const table = document.getElementById('waffle');
-Waffle.create(table, {
+Waffle.create(document.getElementById('waffle'), {
   data: [
     { id: 'jquery', label: 'jQuery', version: '2.2.0' },
     { id: 'angular', label: 'Angular.JS', version: '1.4.9' },
@@ -74,9 +73,7 @@ Waffle.addComparator('version', (v1, v2) => {
   return 0;
 });
 
-const table = document.getElementById('waffle');
-
-Waffle.create(table, {
+Waffle.create(document.getElementById('waffle'), {
   data: [
     { id: 'jquery', label: 'jQuery', version: '2.2.0' },
     { id: 'angular', label: 'Angular.JS', version: '1.4.9' },
@@ -93,8 +90,7 @@ Waffle.create(table, {
 You can also trigger a sort programmatically: just call the `sortBy` function with the field(s) you want to sort:
 
 ```javascript
-const table = document.getElementById('waffle');
-const grid Waffle.create(table, {
+Waffle.create(document.getElementById('waffle'), {
   data: [
     { id: 'jquery', label: 'jQuery', version: '2.2.0' },
     { id: 'angular', label: 'Angular.JS', version: '1.4.9' },
@@ -118,7 +114,111 @@ Two important things:
 
 ## Renderer
 
-TODO
+By default, Waffle will render each cell using the value of the current object attribute (current object is the object rendered in a row).
+This should be enough, say 70% of time, but you can customize the way a cell is rendered.
+
+Suppose you want to want to display uppercased or capitalized values in a cell:
+
+```javascript
+Waffle.create(document.getElementById('waffle'), {
+  data: [
+    { id: 1, firstName: 'john', lastName: 'doe' },
+    { id: 2, firstName: 'jane', lastName: 'doe' },
+  ],
+
+  columns: [
+    { id: 'firstName', renderer: capitalize },
+    { id: 'lastName', renderer: uppercase }
+  ]
+});
+
+function uppercase(v) {
+  return v.toUpperCase();
+}
+
+function capitalize(v) {
+  return v.charAt(0).toUpperCase() + v.slice(1);
+}
+```
+
+You can also chain renderers (the result of the previous renderer will given as the parameter of the next renderer).
+Here is an example if you want to be sure `null` or `undefined` values are rendered as an empty string:
+
+```javascript
+Waffle.create(document.getElementById('waffle'), {
+  data: [
+    { id: 1, firstName: 'john', lastName: 'doe' },
+    { id: 2, firstName: 'jane', lastName: 'doe' },
+  ],
+
+  columns: [
+    { id: 'firstName', renderer: [nullSafe, capitalize] },
+    { id: 'lastName', renderer: [nullSafe, uppercase] }
+  ]
+});
+
+function nullSafe(v) {
+  return v == null ? '' : v;
+}
+
+function uppercase(v) {
+  return v.toUpperCase();
+}
+
+function capitalize(v) {
+  return v.charAt(0).toUpperCase() + v.slice(1);
+}
+```
+
+As with comparators, you can define global renderers to share accross grids:
+
+```javascript
+Waffle.addRenderer('capitalize', function (v) {
+  return v.charAt(0).toUpperCase() + v.slice(1);
+});
+
+Waffle.addRenderer('uppercase', function (v) {
+  return v.toUpperCase();
+});
+
+Waffle.create(document.getElementById('waffle'), {
+  data: [
+    { id: 1, firstName: 'john', lastName: 'doe' },
+    { id: 2, firstName: 'jane', lastName: 'doe' },
+  ],
+
+  columns: [
+    { id: 'firstName', renderer: [nullSafe, 'capitalize'] },
+    { id: 'lastName', renderer: [nullSafe, 'uppercase'] }
+  ]
+});
+
+function nullSafe(v) {
+  return v == null ? '' : v;
+}
+```
+
+A renderer can be:
+- A `function`: the first parameter will be the value to render.
+- A `string`: the renderer will be find in the global renderers dictionary.
+
+By default, Waffle comes with renderers available out of the box:
+- `$uppercase`: turn a string into a lowercase string (value will be converted to a string if needed).
+- `$lowercase`: turn a string into an uppercase string (value will be converted to a string if needed).
+- `$capitalize`: capitalize a string (value will be converted to a string if needed).
+- `$identity`: return the parameter (mainly used internally).
+- `$empty`: return an empty string (mainly used internally).
+
+Note that these renderers can be overrided:
+
+```javascript
+// Override default capitalizer to capitalize each word in a string.
+Waffle.addRenderer('$capitalize', function (v) {
+  return v.split(' ').map(x => x.charAt(0).toUpperCase() + x.slice(1)).join(' ');
+});
+```
+
+**Important:** A renderer should be a very simple function (basically, returns a formatted value). Be careful to not define complex function to avoid performance issues.
 
 ## Selection
 

@@ -222,7 +222,64 @@ Waffle.addRenderer('$capitalize', function (v) {
 
 ## Selection
 
-TODO
+Selection in a grid seems a basic feature:
+- Display checkbox for each rows.
+- Display the number of selected rows.
+
+Waffle offer selection for free:
+- Enable the selection option.
+- Set some custom parameters if you need (single, multiple selection).
+
+Here is an example:
+
+```javascript
+const grid = Waffle.create(document.getElementById('waffle'), {
+  data: [
+    { id: 1, firstName: 'john', lastName: 'doe', gender: 'M' },
+    { id: 2, firstName: 'jane', lastName: 'doe', gender: 'S' },
+  ],
+
+  columns: [
+    { id: 'firstName', renderer: [nullSafe, 'capitalize'] },
+    { id: 'lastName', renderer: [nullSafe, 'uppercase'] }
+  ],
+
+  selection: {
+    checkbox: true, // Display a checkbox as the first column.
+    multi: true     // Enable multi-selection.
+  }
+});
+```
+
+**Important:** selection is enabled by default, set the `selection` property to `false` to disable it (or set the `selection.enabled` property to `false`).
+
+With these options:
+- A click on a row will toggle the selection of the entire row (the checkbox will be checked or unchecked).
+- The number of selected row will be updated in the grid header.
+
+When multi-selection is enabled, you can select rows and:
+- Press the `ctrl` key to add the row to the current selection.
+- Press the `shift` key to add a set of rows to the current selection.
+
+The selection can be used programmatically (get / set the selection) using the `selection` method:
+
+```javascript
+// Display the current selection in the console:
+grid.selection().forEach(x => console.log(x));
+
+// Remove the entire selection
+grid.selection().clear();
+
+// Add to the selection people where gender === 'M':
+grid.selection().add(grid.data().filter(x => x.gender === 'M'));
+```
+
+All you need to do is to manipulate the selection (as you would do with a classic `array`):
+- no need to manipulate the DOM,
+- no need to trigger a `render`,
+- etc.
+
+*Note:* The `grid#selection` method returns an instance of `Collection` (see the API of `Collection` to get the list of available methods).
 
 ## Edition
 

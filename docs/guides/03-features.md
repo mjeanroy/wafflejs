@@ -4,7 +4,7 @@
 
 By default, each columns will be sortable: it means that a click on the column header (or footer) will
 sort data and re-render the grid in the appropriate order. Multiple ordering is supported: just click on the
-column header with the `ctrl` key activated and you're done.
+column header while pressing the `ctrl` key and you're good to go.
 
 By default, each column will be automatically sorted according to the type of values to render:
 - Number values will be sorted in numerical order.
@@ -12,7 +12,7 @@ By default, each column will be automatically sorted according to the type of va
 - Boolean values will be sorted in boolean order (`true` will be less than `false`).
 - Date values will be sorted using the result of `getTime` function.
 
-*Note:*: `null` or `undefined` values will be always be less than other values.
+*Note:*: `null` or `undefined` values will always be less than other values.
 
 If this is not enough, you will be able to defined custom comparator.
 Suppose you want to display a list of awesome frameworks with the current stable version.
@@ -113,7 +113,7 @@ function sort() {
 ```
 
 Two important things:
-- This function accept a string (if you want to sort on one field) or an array (if you want to sort on multiple field).
+- This function accepts a string (if you want to sort on one field) or an array (if you want to sort on multiple field).
 - Sort order is specified using `+` for ascending order or `-` for descending order (if not specified, default is `+`).
 
 ## Renderer

@@ -45,7 +45,7 @@
     "gulp-filter": "3.0.1",
     "gulp-jasmine": "2.1.0",
     "gulp-vulcanize": "6.0.1",
-    "log4js": "0.6.27",
+    "log4js": "0.6.30",
     "wrench": "1.5.8",
     "pretty-bytes": "2.0.1",
     "gzip-size": "3.0.0",

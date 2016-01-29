@@ -30,11 +30,11 @@
  * If JSON api is not available, an error will be thrown.
  */
 
-var $json = (function() {
-  var createFn = function(fn) {
-    return function(value) {
+const $json = (function() {
+  const createFn = fn => {
+    return value => {
       if (!JSON || !JSON[fn]) {
-        throw Error('JSON.' + fn + ' is not available in your browser');
+        throw Error(`JSON.${fn} is not available in your browser`);
       }
 
       return JSON[fn](value);

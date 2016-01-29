@@ -34,10 +34,10 @@
  * or by tag name, etc.).
  */
 
-var $doc = (function() {
+const $doc = (function() {
 
-  var scrollbarWidth = function() {
-    var scrollDiv = document.createElement('div');
+  const scrollbarWidth = () => {
+    const scrollDiv = document.createElement('div');
     scrollDiv.style.width = '100px';
     scrollDiv.style.height = '100px';
     scrollDiv.style.overflow = 'scroll';
@@ -45,26 +45,25 @@ var $doc = (function() {
     scrollDiv.style.top = '-9999px';
 
     document.body.appendChild(scrollDiv);
-    var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+    const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
     document.body.removeChild(scrollDiv);
 
     return scrollbarWidth;
   };
 
-  var hasher = function() {
-    return 'body';
-  };
+  const hasher = () => 'body';
 
-  var setAttributes = function(node, attributes) {
+  const setAttributes = (node, attributes) => {
     // This should always be set first.
     // Since key order is not guaranteed, force it.
-    var type = attributes.type;
+    const type = attributes.type;
     if (type) {
       node.type = type;
     }
 
-    _.forEach(_.keys(attributes), function(attribute) {
-      var value = attributes[attribute];
+    _.forEach(_.keys(attributes), attribute => {
+      const value = attributes[attribute];
+
       switch (attribute) {
         case 'className':
         case 'checked':
@@ -82,25 +81,23 @@ var $doc = (function() {
     });
   };
 
-  var setChildren = function(node, children) {
+  const setChildren = (node, children) => {
     if (_.isString(children)) {
       // Do not worry about xss injection, since this api should be called with:
       // - Escaped values.
       // - Non escaped values, but this option must be explicitely enabled.
       node.innerHTML = children;
     } else if (_.isArray(children)) {
-      _.forEach(children, function(child) {
-        node.appendChild(child);
-      });
+      _.forEach(children, child => node.appendChild(child));
     } else {
       node.appendChild(children);
     }
   };
 
-  var o = {
+  const $doc = {
     // Create dom element
-    create: function(tagName, attributes, children) {
-      var element = document.createElement(tagName);
+    create: (tagName, attributes, children) => {
+      const element = document.createElement(tagName);
 
       if (attributes) {
         setAttributes(element, attributes);
@@ -116,48 +113,47 @@ var $doc = (function() {
     // Find element by its id
     // To have a consistent api, this function will return an array of element.
     // If id does not exist, it will return an empty array.
-    byId: function(id) {
-      var node = document.getElementById(id);
+    byId: id => {
+      const node = document.getElementById(id);
       return !!node ? [node] : [];
     },
 
     // Find element by tags.
     // This function will return an "array like" of dom elements.
-    byTagName: function(tagName, parentNode) {
-      return (parentNode || document).getElementsByTagName(tagName);
-    },
+    byTagName: (tagName, parentNode)  => (parentNode || document).getElementsByTagName(tagName),
 
     // Create new empty document fragment
-    createFragment: function() {
-      return document.createDocumentFragment();
-    },
+    createFragment: () => document.createDocumentFragment(),
 
     // Find parent by its tag name.
     // If parent does not exist, null will be returned.
-    findParent: function(node, parentTagName) {
-      while (node && node.tagName !== parentTagName) {
-        node = node.parentNode;
+    findParent: (node, parentTagName) => {
+      let current = node;
+
+      while (current && current.tagName !== parentTagName) {
+        current = current.parentNode;
       }
-      return node;
+
+      return current;
     },
 
     // Compute scrollbar width
     scrollbarWidth: _.memoize(scrollbarWidth, hasher)
   };
 
-  _.forEach(['tr', 'td', 'th', TBODY, THEAD, TFOOT, 'input', 'select', 'option', 'span'], function(tagName) {
-    o[tagName] = function(attributes, children) {
-      return this.create.call(this, tagName, attributes, children);
+  // Add basic factory for most common tags.
+  _.forEach(['tr', 'td', 'th', TBODY, THEAD, TFOOT, 'input', 'select', 'option', 'span'], tagName => {
+    $doc[tagName] = (attributes, children) => $doc.create.call(this, tagName, attributes, children);
+  });
+
+  // Add basic factory for input types.
+  _.forEach(['text', 'checkbox', 'number', 'email', 'url', 'date', 'time', 'datetime'], type => {
+    $doc['input' + $util.capitalize(type)] = (attributes, children) => {
+      const attrs = _.extend({type: type}, attributes || {});
+      return $doc.input(attrs, children);
     };
   });
 
-  _.forEach(['text', 'checkbox', 'number', 'email', 'url', 'date', 'time', 'datetime'], function(type) {
-    o['input' + $util.capitalize(type)] = function(attributes, children) {
-      var attrs = _.extend({type: type}, attributes || {});
-      return this.input.call(this, attrs, children);
-    };
-  });
-
-  return o;
+  return $doc;
 
 })();

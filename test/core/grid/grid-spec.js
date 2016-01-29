@@ -24,7 +24,7 @@
 
 describe('Grid', function() {
 
-  var oldDocumentMode;
+  var jq, oldDocumentMode;
 
   beforeEach(function() {
     jq = $.fn || $.prototype;

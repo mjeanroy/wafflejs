@@ -25,7 +25,7 @@
 describe('Grid Dom Handlers', function() {
 
   var table, grid, data, columns;
-  var onClickTbody, onClickThead, onClickTfoot;
+  var onClickTbody, onClickThead, onClickTfoot, onInputTbody;
 
   // Drag & Drop events
   var onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDragDrop, onSelectStart;

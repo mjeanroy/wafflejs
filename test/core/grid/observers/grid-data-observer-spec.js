@@ -206,7 +206,7 @@ describe('Grid Data Observer', function() {
         grid.$tbody[0].childNodes[2]
       ];
 
-      expectedRemovedData = [
+      var expectedRemovedData = [
         grid.$data[1],
         grid.$data[2]
       ];
@@ -240,7 +240,7 @@ describe('Grid Data Observer', function() {
         grid.$tbody[0].childNodes[0]
       ];
 
-      expectedRemovedData = [
+      var expectedRemovedData = [
         grid.$data[0]
       ];
 
@@ -294,7 +294,7 @@ describe('Grid Data Observer', function() {
         grid.$tbody[0].childNodes[2]
       ];
 
-      expectedRemovedData = [
+      var expectedRemovedData = [
         grid.$data[1],
         grid.$data[2]
       ];
@@ -349,7 +349,7 @@ describe('Grid Data Observer', function() {
         grid.$tbody[0].childNodes[2]
       ];
 
-      expectedRemovedData = [
+      var expectedRemovedData = [
         grid.$data[0],
         grid.$data[1],
         grid.$data[2]
@@ -383,7 +383,7 @@ describe('Grid Data Observer', function() {
         grid.$tbody[0].childNodes[0]
       ];
 
-      expectedRemovedData = [
+      var expectedRemovedData = [
         grid.$data[0]
       ];
 

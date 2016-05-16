@@ -29,18 +29,17 @@
  * Simple object used for simple browser detection.
  */
 
-var $sniffer = (function() {
-  // This property is available only in IE
-  var cacheEvents = new HashMap();
+const $sniffer = (() => {
+  const cacheEvents = new HashMap();
 
   // This is a map of events with tagName to use for feature
   // detection.
-  var events = {
+  const events = {
     'input': 'input'
   };
 
   return {
-    hasEvent: function(event) {
+    hasEvent: event => {
       // IE <= 11 support input event, but it is really
       // buggy, so we disable this feature for these browsers
       if (event === 'input' && document.documentMode <= 11) {
@@ -48,9 +47,11 @@ var $sniffer = (function() {
       }
 
       if (!cacheEvents.contains(event)) {
-        var node = document.createElement(events[event] || 'div');
-        var support = ('on' + event) in node;
+        let node = document.createElement(events[event] || 'div');
+
+        const support = ('on' + event) in node;
         cacheEvents.put(event, !!support);
+
         node = null;
       }
 

@@ -22,12 +22,11 @@
  * SOFTWARE.
  */
 
-/* global _ */
 /* global Polymer */
 /* global Waffle */
 /* exported PolymerBehavior */
 
-var PolymerBehavior = {
+const PolymerBehavior = {
   // Bindable properties
   properties: {
     options: {
@@ -39,8 +38,8 @@ var PolymerBehavior = {
   // Ready callback
   ready: function() {
     // Get table element
-    var $this = Polymer.dom(this);
-    var table = $this.firstElementChild;
+    const $this = Polymer.dom(this);
+    let table = $this.firstElementChild;
 
     // Create table if there is no content
     if (!table) {
@@ -52,15 +51,15 @@ var PolymerBehavior = {
     this.$grid = Waffle.create(table, this.options);
 
     // Bind Waffle events and trigger polymer events
-    var eventListener = function(e) {
+    const eventListener = e => {
       this.fire(e.type, e.details);
     };
 
-    var bindEvent = function(evtName) {
-      this.$grid.addEventListener(evtName.slice(2).toLowerCase(), _.bind(eventListener, this));
+    const bindEvent = evtName => {
+      this.$grid.addEventListener(evtName.slice(2).toLowerCase(), eventListener);
     };
 
-    Object.keys(Waffle.options.events).forEach(_.bind(bindEvent, this));
+    Object.keys(Waffle.options.events).forEach(bindEvent);
 
     // Then flush dom modification
     Polymer.dom.flush();
@@ -68,7 +67,7 @@ var PolymerBehavior = {
 
   // Detached callback
   detached: function() {
-    var grid = this.grid();
+    const grid = this.grid();
     if (grid) {
       grid.destroy();
     }

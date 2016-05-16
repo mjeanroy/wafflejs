@@ -48,12 +48,12 @@
  *    boolean).
  */
 
-var Collection = (function() {
+const Collection = (() => {
 
-  var ArrayProto = Array.prototype;
-  var keepNativeArray = (function() {
+  const ArrayProto = Array.prototype;
+  const keepNativeArray = (() => {
     try {
-      var obj = {};
+      const obj = {};
       obj[0] = 1;
       return !!ArrayProto.toLocaleString.call(obj);
     } catch (error) {
@@ -61,92 +61,58 @@ var Collection = (function() {
     }
   })();
 
-  var callNativeArrayWrapper = function(fn) {
+  const callNativeArrayWrapper = fn => {
     return function() {
       // Some browsers, including phantomjs 1.x need a real array
       // to be called as the context of Array prototype function (array like
       // object are not permitted)
       // Newer browsers does not need this, so keep it fast for them !
-      var array = keepNativeArray ? this : _.toArray(this);
+      const array = keepNativeArray ? this : _.toArray(this);
       return ArrayProto[fn].apply(array, arguments);
     };
   };
 
-  var callNativeArrayFn = function(fn, ctx, args) {
-    return callNativeArrayWrapper(fn).apply(ctx, args);
-  };
-
-  var Constructor = function(data, options) {
-    var opts = options || {};
-
-    // We keep an internal map that will store, for each data, an additionnal context
-    // object that can be used to keep various information (index in collection,
-    // internal state of data etc.).
-    // Each entry is indexed by data identifier (value retrieved from $$key).
-    this.$$map = new HashMap();
-
-    // Internal data model object.
-    // Use Object as a fallback since every object is already an instance of Object !
-    this.$$model = opts.model || Object;
-
-    // Key may be an attribute name or an explicit function
-    this.$$key = opts.key || 'id';
-    if (!_.isFunction(this.$$key)) {
-      this.$$key = $parse(this.$$key);
-    }
-
-    // Initialize collection
-    this.length = 0;
-    if (data && data.length) {
-      this.push.apply(this, data);
-    }
-  };
+  const callNativeArrayFn = (fn, ctx, args) => callNativeArrayWrapper(fn).apply(ctx, args);
 
   // == Private functions
 
   // To Int function
   // See: http://es5.github.io/#x9.4
-  var toInt = function(nb) {
-    return parseInt(Number(nb) || 0, 10);
-  };
+  const toInt = nb => parseInt(Number(nb) || 0, 10);
 
   // Save bytes
-  var createSplice = Change.createSplice;
-  var createUpdate = Change.createUpdate;
+  const createSplice = Change.createSplice;
+  const createUpdate = Change.createUpdate;
 
   // Unset data at given index.
-  var unsetAt = function(collection, idx) {
-    delete collection[idx];
-  };
+  const unsetAt = (collection, idx) => delete collection[idx];
 
   // Unset id entry in internal map of object index.
-  var unsetId = function(collection, id) {
-    collection.$$map.remove(id);
-  };
+  const unsetId = (collection, id) => collection.$$map.remove(id);
 
   // Unset data from collection
-  var unset = function(collection, obj) {
-    var id = collection.$$key(obj);
-    var ctx = collection.$$map.get(id);
-    var idx = ctx ? ctx.idx : null;
+  const unset = (collection, obj) => {
+    const id = collection.$$key(obj);
+    const ctx = collection.$$map.get(id);
+    const idx = ctx ? ctx.idx : null;
     if (idx != null) {
       unsetAt(collection, idx);
       unsetId(collection, id);
     }
   };
 
-  var throwError = function(message) {
+  const throwError = message => {
     throw Error(message);
   };
 
   // Convert parameter to a model instance.
-  var parseModel = function(collection, o) {
+  const parseModel = (collection, o) => {
     if (!_.isObject(o)) {
       // Only object are allowed inside collection
       throwError('Waffle collections are not array, only object are allowed');
     }
 
-    var result;
+    let result;
 
     if (o instanceof collection.$$model) {
       // It is already an instance of model object !
@@ -157,7 +123,7 @@ var Collection = (function() {
     }
 
     // Try to get model identitifer
-    var id = collection.$$key(result);
+    const id = collection.$$key(result);
     if (id == null) {
       throwError('Collection elements must have an id, you probably missed to specify the id key on initialization ?');
     }
@@ -167,19 +133,19 @@ var Collection = (function() {
 
   // Iteratee to use to transform object to models
   // Should be used with _.map iteration
-  var parseModelIteratee = function(o) {
+  const parseModelIteratee = function(o) {
     return parseModel(this, o);
   };
 
   // Add entry at given index.
   // Internal map is updated to keep track of indexes.
-  var put = function(collection, o, i, id) {
+  const put = function(collection, o, i, id) {
     collection[i] = o;
 
     if (o != null) {
-      var ngArgs = arguments.length;
-      var dataId = ngArgs === 3 ? collection.$$key(o) : id;
-      var dataCtx = collection.$$map.get(dataId) || {};
+      const ngArgs = arguments.length;
+      const dataId = ngArgs === 3 ? collection.$$key(o) : id;
+      const dataCtx = collection.$$map.get(dataId) || {};
       dataCtx.idx = i;
       collection.$$map.put(dataId, dataCtx);
     }
@@ -189,9 +155,9 @@ var Collection = (function() {
 
   // Swap elements at given index
   // Internal map is updated to keep track of indexes.
-  var swap = function(collection, i, j) {
-    var oj = collection.at(j);
-    var oi = collection.at(i);
+  const swap = (collection, i, j) => {
+    const oj = collection.at(j);
+    const oi = collection.at(i);
     put(collection, oi, j);
     put(collection, oj, i);
   };
@@ -204,11 +170,11 @@ var Collection = (function() {
   //   [0, 1, 2] => shiftRight(0, 2) => [undefined, undefined, 0, 1, 2]
   //   [0, 1, 2] => shiftRight(1, 2) => [0, undefined, undefined, 1, 2]
   //   [0, 1, 2] => shiftRight(2, 2) => [0, 1, undefined, undefined, 2]
-  var shiftRight = function(collection, start, size) {
-    var absSize = Math.abs(size);
+  const shiftRight = (collection, start, size) => {
+    const absSize = Math.abs(size);
 
     // Swap elements index by index
-    for (var i = collection.length - 1; i >= start; --i) {
+    for (let i = collection.length - 1; i >= start; --i) {
       swap(collection, i, i + absSize);
     }
 
@@ -224,22 +190,22 @@ var Collection = (function() {
   //   shiftLeft([0, 1, 2], 0, 2) => [2]
   //   shiftLeft([0, 1, 2], 1, 1) => [0, 2]
   //   shiftLeft([0, 1, 2], 2, 1) => [0, 1]
-  var shiftLeft = function(collection, start, size) {
-    var absSize = Math.abs(size);
-    var oldLength = collection.length;
-    var newLength = oldLength - absSize;
-    var max = start + absSize;
+  const shiftLeft = (collection, start, size) => {
+    const absSize = Math.abs(size);
+    const oldLength = collection.length;
+    const newLength = oldLength - absSize;
+    const max = start + absSize;
 
-    var removed = [];
+    const removed = [];
 
     // Swap elements index by index
-    for (var i = max; i < oldLength; ++i) {
+    for (let i = max; i < oldLength; ++i) {
       swap(collection, i, i - absSize);
     }
 
     // Clean last elements of array
-    for (var k = newLength; k < oldLength; ++k) {
-      var o = collection.at(k);
+    for (let k = newLength; k < oldLength; ++k) {
+      let o = collection.at(k);
       removed.unshift(o);
       unset(collection, o);
     }
@@ -249,20 +215,21 @@ var Collection = (function() {
     return removed;
   };
 
-  var merge = function(collection, array) {
-    var sortFn = collection.$$sortFn;
-    var sizeCollection = collection.length;
-    var sizeArray = array.length;
-    var newSize = sizeCollection + sizeArray;
+  const merge = (collection, array) => {
+    const sortFn = collection.$$sortFn;
+    const sizeCollection = collection.length;
+    const sizeArray = array.length;
+    const newSize = sizeCollection + sizeArray;
 
-    var changes = [];
-    var change;
+    const changes = [];
 
-    var j = sizeCollection - 1;
-    var k = sizeArray - 1;
-    for (var i = newSize - 1; i >= 0; --i) {
+    let change;
+    let j = sizeCollection - 1;
+    let k = sizeArray - 1;
+
+    for (let i = newSize - 1; i >= 0; --i) {
       if (j < 0 || sortFn(collection[j], array[k]) < 0) {
-        var addedElement = put(collection, array[k--], i);
+        const addedElement = put(collection, array[k--], i);
 
         // New change occurs
         change = _.first(changes);
@@ -290,16 +257,16 @@ var Collection = (function() {
     return changes;
   };
 
-  var isSorted = function(collection, model, idx) {
-    var length = collection.length;
-    var sortFn = collection.$$sortFn;
+  const isSorted = (collection, model, idx) => {
+    const length = collection.length;
+    const sortFn = collection.$$sortFn;
 
-    var previous = idx > 0 ? collection[idx - 1] : null;
+    const previous = idx > 0 ? collection[idx - 1] : null;
     if (previous != null && sortFn(previous, model) > 0) {
       return false;
     }
 
-    var next = idx < length ? collection[idx + 1] : null;
+    const next = idx < length ? collection[idx + 1] : null;
     if (next != null && sortFn(model, next) > 0) {
       return false;
     }
@@ -307,66 +274,90 @@ var Collection = (function() {
     return true;
   };
 
-  // == Public prototype
+  class Collection {
+    constructor(data, options) {
+      const opts = options || {};
 
-  Constructor.prototype = {
+      // We keep an internal map that will store, for each data, an additionnal context
+      // object that can be used to keep various information (index in collection,
+      // internal state of data etc.).
+      // Each entry is indexed by data identifier (value retrieved from $$key).
+      this.$$map = new HashMap();
+
+      // Internal data model object.
+      // Use Object as a fallback since every object is already an instance of Object !
+      this.$$model = opts.model || Object;
+
+      // Key may be an attribute name or an explicit function
+      this.$$key = opts.key || 'id';
+      if (!_.isFunction(this.$$key)) {
+        this.$$key = $parse(this.$$key);
+      }
+
+      // Initialize collection
+      this.length = 0;
+      if (data && data.length) {
+        this.push.apply(this, data);
+      }
+    }
+
     // Get collection options
-    options: function() {
+    options() {
       return {
         model: this.$$model,
         key: this.$$key
       };
-    },
+    }
 
     // Get element at given index
     // Shortcut to array notation
-    at: function(index) {
+    at(index) {
       return this[index];
-    },
+    }
 
     // Get item by its key value
-    byKey: function(key) {
-      var index = this.indexOf(key);
+    byKey(key) {
+      const index = this.indexOf(key);
       return index >= 0 ? this.at(index) : undefined;
-    },
+    }
 
     // Get current context of given data.
-    ctx: function(o) {
-      var key = _.isObject(o) ? this.$$key(o) : o;
+    ctx(o) {
+      const key = _.isObject(o) ? this.$$key(o) : o;
       return this.$$map.contains(key) ? this.$$map.get(key) : null;
-    },
+    }
 
     // Get index of data in collection.
     // This function use internal id to check index faster.
     // This function accept data or data identifier as argument.
-    indexOf: function(o) {
-      var ctx = this.ctx(o);
+    indexOf(o) {
+      const ctx = this.ctx(o);
       return ctx ? ctx.idx : -1;
-    },
+    }
 
     // Check if data object is already inside collection.
     // This function is a shortcut for checking return value of indexOf.
     // This function accept data or data identifier as argument.
-    contains: function(o) {
+    contains(o) {
       return this.indexOf(o) >= 0;
-    },
+    }
 
     // Returns an index in the array, if an element in the array
     // satisfies the provided testing function. Otherwise -1 is returned.
-    findIndex: function(callback, ctx) {
-      for (var i = 0, size = this.length; i < size; ++i) {
+    findIndex(callback, ctx) {
+      for (let i = 0, size = this.length; i < size; ++i) {
         if (callback.call(ctx, this.at(i), i, this)) {
           return i;
         }
       }
       return -1;
-    },
+    }
 
     // Replace data in collection.
     // Data with same id will be replaced by data in parameter.
-    replace: function(data) {
-      var model = parseModel(this, data);
-      var idx = this.indexOf(model);
+    replace(data) {
+      const model = parseModel(this, data);
+      const idx = this.indexOf(model);
 
       // If data does not exist, then it should fail as soon as possible.
       if (idx < 0) {
@@ -375,8 +366,8 @@ var Collection = (function() {
 
       // If collection is sorted, data may have to be put at
       // a different index.
-      var length = this.length;
-      var sortFn = this.$$sortFn;
+      const length = this.length;
+      const sortFn = this.$$sortFn;
 
       if (sortFn && length > 1 && !isSorted(this, model, idx)) {
         this.remove(model);
@@ -387,16 +378,16 @@ var Collection = (function() {
       }
 
       return this;
-    },
+    }
 
     // Add new elements at given index
     // This is a shortcut for splice(start, O, models...)
-    add: function(models, start) {
-      var startIdx = start == null ? this.length : start;
-      var args = [startIdx, 0].concat(models);
+    add(models, start) {
+      const startIdx = start == null ? this.length : start;
+      const args = [startIdx, 0].concat(models);
       this.splice.apply(this, args);
       return this.length;
-    },
+    }
 
     // Remove elements of collection
     // If first argument is:
@@ -405,7 +396,7 @@ var Collection = (function() {
     // - An object, then this item is removed.
     // - Otherwise, this should be a predicate. This predicate will be called for
     //   each element, and must return a truthy value to remove that element.
-    remove: function(start, deleteCount) {
+    remove(start, deleteCount) {
       // If first argument is a number, then this is a shortcut for splice method.
       if (_.isNumber(start)) {
         return this.splice.call(this, start, deleteCount || this.length);
@@ -413,33 +404,30 @@ var Collection = (function() {
 
       // If it is an array, then remove everything in array.
       if (_.isArray(start)) {
-        var $key = this.$$key;
-        var map = _.indexBy(start, function(o) {
-          return $key(o);
-        });
-
-        return this.remove(function(current) {
-          return !!map[$key(current)];
-        });
+        const $key = this.$$key;
+        const map = _.indexBy(start, o => $key(o));
+        return this.remove(current => !!map[$key(current)]);
       }
 
       // If it is an object, then remove single item.
       if (_.isObject(start) && !_.isFunction(start)) {
-        var model = parseModel(this, start);
-        var index = this.indexOf(model);
+        const model = parseModel(this, start);
+        const index = this.indexOf(model);
         return index >= 0 ? this.remove(index, 1) : [];
       }
 
-      var predicate = start;
-      var ctx =  deleteCount;
-      var idx = 0;
-      var lastChangeIdx = null;
-      var changes = [];
-      var removed = [];
+      const predicate = start;
+      const ctx =  deleteCount;
 
-      for (var i = 0, size = this.length; i < size; ++i) {
-        var o = this.at(i);
-        var id = this.$$key(o);
+      let idx = 0;
+      let lastChangeIdx = null;
+
+      const changes = [];
+      const removed = [];
+
+      for (let i = 0, size = this.length; i < size; ++i) {
+        const o = this.at(i);
+        const id = this.$$key(o);
 
         if (predicate.call(ctx, o, i)) {
           // Remove
@@ -475,58 +463,58 @@ var Collection = (function() {
       }
 
       return removed;
-    },
+    }
 
     // Force an update change.
     // This will force a row update.
-    notifyUpdate: function(idx) {
+    notifyUpdate(idx) {
       return this.notify([createUpdate(idx, this)]);
-    },
+    }
 
     // Adds one or more elements to the end of the collection
     // and returns the new length of the collection.
     // Semantic is the same as [].push function
-    push: function() {
+    push() {
       return this.add.call(this, _.toArray(arguments));
-    },
+    }
 
     // adds one or more elements to the beginning of the collection
     // and returns the new length of the collection.
     // Semantic is the same as [].unshift function
-    unshift: function() {
+    unshift() {
       return this.add.call(this, _.toArray(arguments), 0);
-    },
+    }
 
     // Removes the last element from the collection
     // and returns that element.
-    pop: function() {
+    pop() {
       return this.remove(this.length - 1, 1)[0];
-    },
+    }
 
     // removes the first element from the collection
     // and returns that element.
-    shift: function() {
+    shift() {
       return this.remove(0, 1)[0];
-    },
+    }
 
     // Toggle data :
     // - If data is already in collection, it will be removed
     // - Otherwise it will be pushed into the collection
-    toggle: function(data) {
-      var index = this.indexOf(data);
+    toggle(data) {
+      const index = this.indexOf(data);
 
       if (index >= 0) {
         return this.remove(index, 1);
       } else {
         return this.push(data);
       }
-    },
+    }
 
     // Clear collection
-    clear: function() {
+    clear() {
       if (this.length > 0) {
-        var array = [];
-        for (var i = 0, size = this.length; i < size; ++i) {
+        const array = [];
+        for (let i = 0, size = this.length; i < size; ++i) {
           array[i] = this.at(i);
           unsetAt(this, i);
         }
@@ -537,26 +525,28 @@ var Collection = (function() {
       }
 
       return this;
-    },
+    }
 
     // Reset entire collection with new data array
-    reset: function(array) {
-      var oldSize = this.length;
-      var newSize = array.length;
+    reset(array) {
+      const oldSize = this.length;
+      const newSize = array.length;
 
       // Transform models before anything else
-      var models = _.map(array, parseModelIteratee, this);
+      const models = _.map(array, parseModelIteratee, this);
 
-      var sortFn = this.$$sortFn;
+      const sortFn = this.$$sortFn;
       if (sortFn) {
         models.sort(sortFn);
       }
 
       this.$$map.clear();
 
-      var removed = [];
+      const removed = [];
 
-      for (var i = 0; i < newSize; ++i) {
+      let i = 0;
+
+      for (i = 0; i < newSize; ++i) {
         if (i < oldSize) {
           removed.push(this.at(i));
         }
@@ -576,46 +566,46 @@ var Collection = (function() {
       ]);
 
       return this;
-    },
+    }
 
     // Check if collection is empty
-    isEmpty: function() {
+    isEmpty() {
       return this.length === 0;
-    },
+    }
 
     // Returns a new collection comprised of the collection on which it is called
     // joined with the collection(s) and/or value(s) provided as arguments.
-    concat: function() {
-      var newArray = ArrayProto.concat.apply(this.toArray(), arguments);
-      return new Constructor(newArray, this.options());
-    },
+    concat() {
+      const newArray = ArrayProto.concat.apply(this.toArray(), arguments);
+      return new Collection(newArray, this.options());
+    }
 
     // returns a shallow copy of a portion of the collection
     // into a new collection object.
-    slice: function() {
-      var results = callNativeArrayFn('slice', this, arguments);
-      return new Constructor(results, this.options());
-    },
+    slice() {
+      const results = callNativeArrayFn('slice', this, arguments);
+      return new Collection(results, this.options());
+    }
 
     // Changes the content of the collection by removing existing
     // elements and/or adding new elements.
     // If collection is sorted, splice will insert new elements
     // in order (collection remains sorted).
-    splice: function(start, deleteCount) {
-      var sortFn = this.$$sortFn;
-      var size = this.length;
-      var data = _.rest(arguments, 2);
+    splice(start, deleteCount) {
+      const sortFn = this.$$sortFn;
+      const size = this.length;
+      const data = _.rest(arguments, 2);
 
       // Data to model transformation.
       // This iteration will also check for undefined / null values.
-      var models = _.map(data, parseModelIteratee, this);
+      const models = _.map(data, parseModelIteratee, this);
 
       // Index at which to start changing the array.
       // If greater than the length of the array, actual starting index will
       // be set to the length of the array.
       // If negative, will begin that many elements from the end.
       // See: http://es5.github.io/#x15.4.4.10
-      var actualStart = toInt(start);
+      let actualStart = toInt(start);
       if (actualStart >= 0) {
         actualStart = Math.min(size, actualStart);
       } else {
@@ -629,28 +619,28 @@ var Collection = (function() {
       // starting at start, then all of the elements through the end of
       // the array will be deleted.
       // See: http://es5.github.io/#x15.4.4.10
-      var actualDeleteCount = Math.min(Math.max(toInt(deleteCount) || 0, 0), size - actualStart);
+      const actualDeleteCount = Math.min(Math.max(toInt(deleteCount) || 0, 0), size - actualStart);
 
       // Track removed elements
-      var removed = [];
+      const removed = [];
 
       // First delete elements
       if (actualDeleteCount > 0) {
-        for (var i = 0; i < actualDeleteCount; ++i) {
+        for (let i = 0; i < actualDeleteCount; ++i) {
           removed.push(this[i + actualStart]);
         }
 
         shiftLeft(this, actualStart, actualDeleteCount);
       }
 
-      var changes;
+      let changes;
 
       // We need to split between existing data and new data to add.
-      var parts = _.groupBy(models, this.contains, this);
-      var existing = parts[true] || [];
-      var added = parts[false] || [];
-      var addedCount = added.length;
-      var existingCount = existing.length;
+      const parts = _.groupBy(models, this.contains, this);
+      const existing = parts[true] || [];
+      const added = parts[false] || [];
+      const addedCount = added.length;
+      const existingCount = existing.length;
 
       // Add new elements
       if (addedCount > 0) {
@@ -662,7 +652,7 @@ var Collection = (function() {
           // Shift and put elements at given indexes
           shiftRight(this, actualStart, addedCount);
 
-          for (var k = 0; k < addedCount; ++k) {
+          for (let k = 0; k < addedCount; ++k) {
             put(this, added[k], actualStart + k);
           }
 
@@ -674,9 +664,7 @@ var Collection = (function() {
 
       // Add change for removed elements
       if (removed.length > 0) {
-        var change = _.find(changes, function(c) {
-          return c.index === actualStart;
-        });
+        const change = _.find(changes, c => c.index === actualStart);
 
         if (change) {
           // Merge change for removed elements with added elements changes
@@ -698,7 +686,7 @@ var Collection = (function() {
           existing.sort(sortFn);
         }
 
-        for (var x = 0; x < existingCount; ++x) {
+        for (let x = 0; x < existingCount; ++x) {
           this.replace(existing[x]);
         }
       }
@@ -707,76 +695,74 @@ var Collection = (function() {
       // If only one element is removed, an array of one element is returned.
       // If no elements are removed, an empty array is returned.
       return removed;
-    },
+    }
 
     // Reverses collection in place.
     // The first array element becomes the last and the last becomes the first.
-    reverse: function() {
+    reverse() {
       if (this.$$sortFn) {
         // If collection is sorted, reverse is a no-op
         return this;
       }
 
-      var size = this.length;
-      var mid = Math.floor(size / 2);
+      const size = this.length;
+      const mid = Math.floor(size / 2);
 
       // Track changes using two arrays to have changes in order
-      var changesStart = [];
-      var changesEnd = [];
+      const changesStart = [];
+      const changesEnd = [];
 
-      for (var i = 0, j = size - 1; i < mid; ++i, --j) {
+      for (let i = 0, j = size - 1; i < mid; ++i, --j) {
         swap(this, i, j);
         changesStart.push(createUpdate(i, this));
         changesEnd.unshift(createUpdate(j, this));
       }
 
       // Trigger changes in order
-      var changes = changesStart.concat(changesEnd);
+      const changes = changesStart.concat(changesEnd);
       if (changes.length) {
         this.notify(changes);
       }
 
       return this;
-    },
+    }
 
     // Split collection into smaller arrays
     // Returned value is an array of smaller arrays.
-    split: function(size) {
+    split(size) {
       return $util.split(this, size);
-    },
+    }
 
     // Custom json representation
     // Need JSON.stringify to be available
-    toJSON: function() {
+    toJSON() {
       return $json.toJson(this.toArray());
-    },
+    }
 
     // Sort given collection in place
     // Sorted collection is returned
-    sort: function(sortFn) {
+    sort(sortFn) {
       this.$$sortFn = sortFn;
       return this.reset(this.toArray())
                  .clearChanges();
-    },
+    }
 
     // Extract property of collection items
-    pluck: function(name) {
-      var getter = $parse(name);
-      return this.map(function(o) {
-        return getter(o);
-      });
+    pluck(name) {
+      const getter = $parse(name);
+      return this.map(o => getter(o));
     }
-  };
+  }
 
   // Since collection should only contains uniq elements, indexOf and lastIndexOf should
   // be the same.
-  Constructor.prototype.lastIndexOf = Constructor.prototype.indexOf;
+  Collection.prototype.lastIndexOf = Collection.prototype.indexOf;
 
   // Turn collection to an observable object
-  _.extend(Constructor.prototype, Observable);
+  _.extend(Collection.prototype, Observable);
 
   // Add underscore functions to Collection prototype
-  var underscoreMethods = [
+  const underscoreMethods = [
     'size',
     'first',
     'last',
@@ -795,24 +781,22 @@ var Collection = (function() {
     'toArray'
   ];
 
-  _.forEach(underscoreMethods, function(fn) {
+  _.forEach(underscoreMethods, fn => {
     if (_[fn]) {
-      Constructor.prototype[fn] = function() {
-        var args = [this].concat(_.toArray(arguments));
+      Collection.prototype[fn] = function() {
+        const args = [this].concat(_.toArray(arguments));
         return _[fn].apply(_, args);
       };
     }
   });
 
   // These functions may allow nested properties
-  _.forEach(['countBy', 'groupBy', 'indexBy'], function(fn) {
-    Constructor.prototype[fn] = function(callback, ctx) {
+  _.forEach(['countBy', 'groupBy', 'indexBy'], fn => {
+    Collection.prototype[fn] = function(callback, ctx) {
       // Support nested property in collection object
       if (_.isString(callback)) {
-        var getter = $parse(callback);
-        callback = function(o) {
-          return getter(o);
-        };
+        const getter = $parse(callback);
+        callback = o => getter(o);
       }
 
       return _[fn].call(_, this, callback, ctx);
@@ -820,9 +804,9 @@ var Collection = (function() {
   });
 
   // Add some Array functions to Collection prototype
-  _.forEach(['toString', 'toLocaleString', 'join'], function(fn) {
-    Constructor.prototype[fn] = callNativeArrayWrapper(fn);
+  _.forEach(['toString', 'toLocaleString', 'join'], fn => {
+    Collection.prototype[fn] = callNativeArrayWrapper(fn);
   });
 
-  return Constructor;
+  return Collection;
 })();

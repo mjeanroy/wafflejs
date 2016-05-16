@@ -27,29 +27,24 @@
 /* global BasicComparator */
 /* exported SortByComparator */
 
-var SortByComparator = (function() {
-  var SortByComparator = function(grid, predicate) {
+class SortByComparator extends BasicComparator {
+  constructor(grid, predicate) {
+    super();
     this.id = _.uniqueId();
     this.parser = predicate;
-  };
-
-  var proto = SortByComparator.prototype = new BasicComparator();
+  }
 
   // Compare object.
-  proto.compare = function(o1, o2) {
+  compare(o1, o2) {
     if (o1 === o2) {
       return 0;
     }
 
-    var f1 = this.parser(o1);
-    var f2 = this.parser(o2);
+    const f1 = this.parser(o1);
+    const f2 = this.parser(o2);
     return $comparators.$auto(f1, f2);
-  };
+  }
+}
 
-  // Create comparator.
-  SortByComparator.of = function(grid, sortBy) {
-    return sortBy instanceof SortByComparator ? sortBy : new SortByComparator(grid, sortBy);
-  };
-
-  return SortByComparator;
-})();
+// Create comparator.
+SortByComparator.of = (grid, sortBy) => sortBy instanceof SortByComparator ? sortBy : new SortByComparator(grid, sortBy);

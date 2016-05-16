@@ -24,29 +24,18 @@
 
 /* exported BasicComparator */
 
-var BasicComparator = (function() {
-  var throwError = function(fnName) {
-    return function() {
-      throw 'Function ' + fnName + ' must be implemented';
-    };
-  };
+class BasicComparator {
+  compare() {
+    throw 'Function compare must be implemented';
+  }
 
-  var BasicComparator = function() {
-  };
+  // Default equals function.
+  equals(c) {
+    return this.predicate() === c.predicate();
+  }
 
-  BasicComparator.prototype = {
-    compare: throwError('compare'),
-
-    // Default equals function.
-    equals: function(c) {
-      return this.predicate() === c.predicate();
-    },
-
-    // Get predicate value.
-    predicate: function() {
-      return this.id;
-    }
-  };
-
-  return BasicComparator;
-})();
+  // Get predicate value.
+  predicate() {
+    return this.id;
+  }
+}

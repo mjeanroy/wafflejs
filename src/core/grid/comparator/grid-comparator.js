@@ -30,17 +30,17 @@
 /* global SortByComparator */
 /* exported GridComparator */
 
-var GridComparator = (function() {
-  var comparisonFunction = function(o1, o2) {
+const GridComparator = (() => {
+  const comparisonFunction = function(o1, o2) {
     if (o1 === o2 || (o1 == null && o2 == null)) {
       return 0;
     }
 
-    var comparators = this.$comparators;
+    const comparators = this.$comparators;
 
-    for (var i = 0, size = comparators.length; i < size; ++i) {
-      var current = comparators[i];
-      var result = current.compare(o1, o2);
+    for (let i = 0, size = comparators.length; i < size; ++i) {
+      const current = comparators[i];
+      const result = current.compare(o1, o2);
 
       // Return first result that is not zero
       if (result) {
@@ -50,11 +50,11 @@ var GridComparator = (function() {
 
     // Each comparator return zero.
     // Provide a stable sort by using data index.
-    var $data = this.$data;
+    const $data = this.$data;
     return $data.indexOf(o1) - $data.indexOf(o2);
   };
 
-  var createComparator = function(grid, comparator) {
+  const createComparator = (grid, comparator) => {
     if (comparator instanceof BasicComparator) {
       return comparator;
     }
@@ -64,29 +64,29 @@ var GridComparator = (function() {
     }
 
     if (_.isFunction(comparator)) {
-      var nbArgs = comparator.length;
+      const nbArgs = comparator.length;
       return nbArgs <= 1 ?
         SortByComparator.of(grid, comparator) :
         SorterComparator.of(grid, comparator);
     }
 
-    throw 'Cannot create comparator from object: ' + comparator;
+    throw `Cannot create comparator from object: ${comparator}`;
   };
 
   return {
     // Create comparators.
     // Return value will always be an array.
-    of: function(grid, comparators) {
+    of: (grid, comparators) => {
       if (!_.isArray(comparators)) {
         comparators = [comparators];
       }
 
-      return _.map(comparators, function(id) {
-        var comparator = createComparator(grid, id);
+      return _.map(comparators, id => {
+        const comparator = createComparator(grid, id);
 
         // Update column.
         // TODO find another way, it should not have side effect.
-        var column = grid.$columns.byKey(comparator.id);
+        const column = grid.$columns.byKey(comparator.id);
         if (column) {
           column.asc = comparator.asc;
         }
@@ -96,7 +96,7 @@ var GridComparator = (function() {
     },
 
     // Check if both comparators are equals.
-    equals: function(comparators1, comparators2) {
+    equals: (comparators1, comparators2) => {
       if (comparators1 === comparators2) {
         return true;
       }
@@ -105,14 +105,10 @@ var GridComparator = (function() {
         return false;
       }
 
-      return _.every(comparators1, function(c, idx) {
-        return c.equals(comparators2[idx]);
-      });
+      return _.every(comparators1, (c, idx) => c.equals(comparators2[idx]));
     },
 
     // Create comparison function for given grid.
-    createComparator: function(grid) {
-      return _.bind(comparisonFunction, grid);
-    }
+    createComparator: grid => _.bind(comparisonFunction, grid)
   };
 })();

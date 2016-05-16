@@ -29,17 +29,19 @@
 /* global BasicComparator */
 /* exported FieldComparator */
 
-var FieldComparator = (function() {
-  var FieldComparator = function(grid, predicate) {
-    var flag = predicate.charAt(0);
-    var id = flag === CHAR_ORDER_ASC || flag === CHAR_ORDER_DESC ? predicate.slice(1) : predicate;
-    var column = grid.$columns.byKey(id);
+class FieldComparator extends BasicComparator {
+  constructor(grid, predicate) {
+    super();
+
+    const flag = predicate.charAt(0);
+    const id = flag === CHAR_ORDER_ASC || flag === CHAR_ORDER_DESC ? predicate.slice(1) : predicate;
+    const column = grid.$columns.byKey(id);
 
     this.id = id;
     this.asc = flag !== CHAR_ORDER_DESC;
 
-    var parser;
-    var comparator;
+    let parser;
+    let comparator;
     if (column) {
       parser = column.$parser;
       comparator = column.$comparator;
@@ -47,39 +49,32 @@ var FieldComparator = (function() {
 
     this.parser = parser || $parse(id);
     this.comparator = comparator || $comparators.$auto;
-  };
+  }
 
-  var proto = FieldComparator.prototype = new BasicComparator();
-
-  // Compare object.
-  proto.compare = function(o1, o2) {
+  compare(o1, o2) {
     if (o1 === o2) {
       return 0;
     }
 
-    var f1 = this.parser(o1);
-    var f2 = this.parser(o2);
-    var result = this.comparator(f1, f2);
+    const f1 = this.parser(o1);
+    const f2 = this.parser(o2);
+    const result = this.comparator(f1, f2);
     return this.asc ? result : result * -1;
-  };
+  }
 
   // Get predicate representation.
-  proto.predicate = function() {
-    var prefix = this.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+  predicate() {
+    const prefix = this.asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
     return prefix + this.id;
-  };
+  }
 
   // Check if both comparator are equals.
-  proto.equals = function(comparator) {
+  equals(comparator) {
     return this.id === comparator.id &&
       this.asc === comparator.asc &&
       this.comparator === comparator.comparator;
-  };
+  }
+}
 
-  // Create comparator.
-  FieldComparator.of = function(grid, sortBy) {
-    return sortBy instanceof FieldComparator ? sortBy : new FieldComparator(grid, sortBy);
-  };
-
-  return FieldComparator;
-})();
+// Create comparator.
+FieldComparator.of = (grid, sortBy) => sortBy instanceof FieldComparator ? sortBy : new FieldComparator(grid, sortBy);

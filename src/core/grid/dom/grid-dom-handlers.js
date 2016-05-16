@@ -45,42 +45,38 @@
  * - Drag & Drop
  */
 
-var GridDomHandlers = (function() {
+const GridDomHandlers = (() => {
 
-  var THEAD = 'THEAD';
-  var TFOOT = 'TFOOT';
-  var TBODY = 'TBODY';
-  var TH = 'TH';
-  var TR = 'TR';
-  var INPUT = 'INPUT';
-  var SELECT = 'SELECT';
+  const THEAD = 'THEAD';
+  const TFOOT = 'TFOOT';
+  const TBODY = 'TBODY';
+  const TH = 'TH';
+  const TR = 'TR';
+  const INPUT = 'INPUT';
+  const SELECT = 'SELECT';
 
-  var isInputCheckbox = function(node) {
-    return node.tagName === INPUT && node.getAttribute('type') === 'checkbox';
-  };
+  const isInputCheckbox = node => node.tagName === INPUT && node.getAttribute('type') === 'checkbox';
 
-  var isEditableControl = function(node) {
-    var tagName = node.tagName;
-    var isControl = tagName === INPUT || tagName === SELECT;
+  const isEditableControl = node => {
+    const tagName = node.tagName;
+    const isControl = tagName === INPUT || tagName === SELECT;
     return isControl && node.getAttribute(DATA_WAFFLE_ID) != null;
   };
 
-  var isDraggable = function(node) {
-    return !!node.getAttribute('draggable');
-  };
+  const isDraggable = node => !!node.getAttribute('draggable');
 
-  var hasParent = function(node, expectedParent) {
-    var parent = $doc.findParent(node, expectedParent.tagName);
+  const hasParent = (node, expectedParent) => {
+    const parent = $doc.findParent(node, expectedParent.tagName);
     return parent === expectedParent;
   };
 
-  var inputValue = {
+  const inputValue = {
     checkbox: 'checked'
   };
 
-  var onClickTitle = function(e, tagName) {
-    var target = e.target;
-    var th = $doc.findParent(e.target, TH);
+  const onClickTitle = function(e, tagName) {
+    const target = e.target;
+    const th = $doc.findParent(e.target, TH);
 
     // If target is thead it means click was pressed in a th and released in another
     if (target.tagName === tagName) {
@@ -99,18 +95,16 @@ var GridDomHandlers = (function() {
     } else if (th && th.getAttribute(DATA_WAFFLE_SORTABLE)) {
       // Column header
 
-      var id = th.getAttribute(DATA_WAFFLE_ID);
-      var currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
-      var newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
-      var newPredicate = newOrder + id;
+      const id = th.getAttribute(DATA_WAFFLE_ID);
+      const currentOrder = th.getAttribute(DATA_WAFFLE_ORDER) || CHAR_ORDER_DESC;
+      const newOrder = currentOrder === CHAR_ORDER_ASC ? CHAR_ORDER_DESC : CHAR_ORDER_ASC;
+      const newPredicate = newOrder + id;
 
-      var newSortBy;
+      let newSortBy;
 
       if (e.shiftKey) {
-        var oldPredicate = currentOrder + id;
-        newSortBy = _.reject(this.$comparators, function(comparator) {
-          return comparator.predicate() === oldPredicate;
-        });
+        const oldPredicate = currentOrder + id;
+        newSortBy = _.reject(this.$comparators, comparator => comparator.predicate() === oldPredicate);
       } else {
         newSortBy = [];
       }
@@ -120,31 +114,31 @@ var GridDomHandlers = (function() {
     }
   };
 
-  var stopDebouncer = function(column, id) {
-    var debouncers = column.$debouncers;
+  const stopDebouncer = (column, id) => {
+    const debouncers = column.$debouncers;
     if (debouncers.contains(id)) {
       clearTimeout(debouncers.get(id));
       debouncers.remove(id);
     }
   };
 
-  var createDebouncer = function(column, id, fn, debounce) {
+  const createDebouncer = (column, id, fn, debounce) => {
     stopDebouncer(column, id);
     column.$debouncers.put(id, setTimeout(fn, debounce));
   };
 
-  var editFn = function(grid, column, tr, target) {
-    return function() {
-      var type = column.editable.type;
-      var inputProp = inputValue[type] || 'value';
+  const editFn = (grid, column, tr, target) => {
+    return () => {
+      const type = column.editable.type;
+      const inputProp = inputValue[type] || 'value';
 
-      var idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
-      var dataId = tr.getAttribute(DATA_WAFFLE_ID);
-      var data = grid.$data;
-      var object = data.byKey(dataId);
+      const idx = Number(tr.getAttribute(DATA_WAFFLE_IDX));
+      const dataId = tr.getAttribute(DATA_WAFFLE_ID);
+      const data = grid.$data;
+      const object = data.byKey(dataId);
 
-      var oldValue = column.value(object);
-      var newValue = $parsers.$format(type, target[inputProp]);
+      const oldValue = column.value(object);
+      const newValue = $parsers.$format(type, target[inputProp]);
 
       if (oldValue !== newValue) {
         column.value(object, newValue);
@@ -173,7 +167,7 @@ var GridDomHandlers = (function() {
     };
   };
 
-  var o = {
+  const o = {
     onClickThead: function(e) {
       return onClickTitle.call(this, e, THEAD);
     },
@@ -188,7 +182,7 @@ var GridDomHandlers = (function() {
         return;
       }
 
-      var target = e.target;
+      const target = e.target;
 
       // If target is tbody it means click was pressed in a tr and released in another.
       // If target is an editable control added by waffle, then we should not update selection, since
@@ -197,28 +191,28 @@ var GridDomHandlers = (function() {
         return;
       }
 
-      var tr = $doc.findParent(target, TR);
-      var idx = tr.getAttribute(DATA_WAFFLE_IDX);
-      var $data = this.$data;
-      var data = $data.at(idx);
+      const tr = $doc.findParent(target, TR);
+      const idx = tr.getAttribute(DATA_WAFFLE_IDX);
+      const $data = this.$data;
+      const data = $data.at(idx);
 
       // If data is not selectable, ignore event
       if (!this.isSelectable(data)) {
         return;
       }
 
-      var selection = this.$selection;
+      const selection = this.$selection;
 
       if (this.options.selection.multi) {
         if (e.shiftKey) {
-          var idxF = parseFloat(idx);
-          var selectAnchorF = parseFloat(this.$$selectAnchor);
-          var lowerBound = Math.min(idxF, selectAnchorF);
-          var upperBound = Math.max(idxF, selectAnchorF);
+          const idxF = parseFloat(idx);
+          const selectAnchorF = parseFloat(this.$$selectAnchor);
+          const lowerBound = Math.min(idxF, selectAnchorF);
+          const upperBound = Math.max(idxF, selectAnchorF);
 
-          var toAdd = [];
-          for (var i = lowerBound; i <= upperBound; ++i) {
-            var current = $data.at(i);
+          const toAdd = [];
+          for (let i = lowerBound; i <= upperBound; ++i) {
+            const current = $data.at(i);
             if (!selection.contains(current) && this.isSelectable(current)) {
               toAdd.push(current);
             }
@@ -232,7 +226,7 @@ var GridDomHandlers = (function() {
           this.$$selectAnchor = idx;
         }
       } else {
-        var dataIdx = selection.indexOf(data);
+        const dataIdx = selection.indexOf(data);
 
         if (dataIdx >= 0) {
           selection.remove(dataIdx, 1);
@@ -244,34 +238,34 @@ var GridDomHandlers = (function() {
 
     // Update grid data when editable column has been updated
     onInputTbody: function(e) {
-      var eventType = e.type;
-      var target = e.target;
+      const eventType = e.type;
+      const target = e.target;
 
-      var tr = $doc.findParent(target, 'TR');
+      const tr = $doc.findParent(target, 'TR');
       if (!tr) {
         return;
       }
 
-      var columnId = target.getAttribute(DATA_WAFFLE_ID);
-      var column = columnId ? this.$columns.byKey(columnId) : null;
+      const columnId = target.getAttribute(DATA_WAFFLE_ID);
+      const column = columnId ? this.$columns.byKey(columnId) : null;
 
       if (!column || !column.handleEvent(eventType)) {
         return;
       }
 
       // Create update function.
-      var fn = editFn(this, column, tr, target);
+      const fn = editFn(this, column, tr, target);
 
       // Cancel previous timer.
       stopDebouncer(column);
 
-      var debounceValue = column.editable.debounce;
-      var debounce = _.isNumber(debounceValue) ?
+      const debounceValue = column.editable.debounce;
+      const debounce = _.isNumber(debounceValue) ?
         debounceValue :
         debounceValue[eventType] || 0;
 
       if (debounce) {
-        var id = tr.getAttribute(DATA_WAFFLE_ID);
+        const id = tr.getAttribute(DATA_WAFFLE_ID);
         createDebouncer(column, id, fn, debounce);
       } else {
         fn();
@@ -280,9 +274,9 @@ var GridDomHandlers = (function() {
 
     // Triggered when drag event is started
     onDragStart: function(e) {
-      var target = e.target;
-      var originalEvent = e.originalEvent || e;
-      var dataTransfer = originalEvent.dataTransfer;
+      const target = e.target;
+      const originalEvent = e.originalEvent || e;
+      const dataTransfer = originalEvent.dataTransfer;
 
       if (isDraggable(target)) {
         $(target).addClass(CSS_DRAGGABLE_DRAG);
@@ -295,8 +289,8 @@ var GridDomHandlers = (function() {
 
     // Triggered when drag event is finished
     onDragEnd: function(e) {
-      var target = e.target;
-      var table = this.$table[0];
+      const target = e.target;
+      const table = this.$table[0];
 
       $($doc.byTagName('th', table)).removeClass(CSS_DRAGGABLE_OVER);
 
@@ -307,10 +301,10 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element is over an other element.
     onDragOver: function(e) {
-      var target = e.target;
+      const target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
-        var originalEvent = e.originalEvent || e;
-        var dataTransfer = originalEvent.dataTransfer;
+        const originalEvent = e.originalEvent || e;
+        const dataTransfer = originalEvent.dataTransfer;
         dataTransfer.dropEffect = 'move';
 
         e.preventDefault();
@@ -320,7 +314,7 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element enter inside other element.
     onDragEnter: function(e) {
-      var target = e.target;
+      const target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
         $(target).addClass(CSS_DRAGGABLE_OVER);
 
@@ -331,7 +325,7 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element leaves other element.
     onDragLeave: function(e) {
-      var target = e.target;
+      const target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
         $(target).removeClass(CSS_DRAGGABLE_OVER);
 
@@ -342,19 +336,19 @@ var GridDomHandlers = (function() {
 
     // Triggerd when draggable element is dropped on other element.
     onDragDrop: function(e) {
-      var target = e.target;
+      const target = e.target;
       if (isDraggable(target) && hasParent(target, this.$table[0])) {
 
-        var originalEvent = e.originalEvent || e;
-        var dataTransfer = originalEvent.dataTransfer;
+        const originalEvent = e.originalEvent || e;
+        const dataTransfer = originalEvent.dataTransfer;
 
-        var oldId = dataTransfer.getData('Text');
-        var newId = target.getAttribute(DATA_WAFFLE_ID);
+        const oldId = dataTransfer.getData('Text');
+        const newId = target.getAttribute(DATA_WAFFLE_ID);
 
         if (oldId !== newId) {
-          var columns = this.$columns;
-          var oldIdx = columns.indexOf(oldId);
-          var newIdx = columns.indexOf(newId);
+          const columns = this.$columns;
+          const oldIdx = columns.indexOf(oldId);
+          const newIdx = columns.indexOf(newId);
           columns.add(columns.remove(oldIdx, 1), newIdx);
 
           // Do not forget to remove css class
@@ -370,7 +364,7 @@ var GridDomHandlers = (function() {
     // This is an event for IE <= 9 to handle drag&drop
     // on none link nodes.
     onSelectStart: function(e) {
-      var target = e.target;
+      const target = e.target;
       if (isDraggable(target)) {
         e.preventDefault();
         target.dragDrop();

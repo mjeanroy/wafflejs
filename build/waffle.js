@@ -38,7 +38,8 @@ Object.keys($core).forEach(function(placeholder) {
   target.vendor = vendors.src || [];
   target.test = (vendors.test || []).concat(target.test);
 
-  // Prepend jasmine plugin.
+  // Prepend plugins.
+  target.test.unshift('node_modules/es5-shim/es5-shim.js');
   target.test.unshift('node_modules/jasmine-utils/src/jasmine-utils.js');
 
   // Add to dictionary

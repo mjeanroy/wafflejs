@@ -65,6 +65,7 @@ var add = {
   ],
 
   $angular: [
+    'extensions/angular/test-bootstrap.js',
     'core/jq-lite/jq-lite-spec.js',
     'core/underscore-lite/underscore-lite-spec.js',
     'core/commons/parser-spec.js'

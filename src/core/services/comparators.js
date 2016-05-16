@@ -26,45 +26,37 @@
 /* global _ */
 /* exported $comparators */
 
-var $comparators = (function() {
+const $comparators = (() => {
 
   // Convert an object to a string.
-  var toString = function(o) {
-    return o == null ? '' : String(o.toString());
-  };
+  const toString = o => o == null ? '' : String(o.toString());
 
   // Convert an object to a number.
   // NaN is automatically converted to zero.
-  var toNumber = function(o) {
-    return o == null ? 0 : (Number(o) || 0);
-  };
+  const toNumber = o => o == null ? 0 : (Number(o) || 0);
 
   // Convert an object to a boolean integer.
   // A boolean integer is zero for a falsy value, one for a truthy value.
   // String "false" will be converted to a falsy boolean.
-  var toBoolean = function(o) {
-    return o === 'false' ? 0 : (Boolean(o) ? 1 : 0);
-  };
+  const toBoolean = o => o === 'false' ? 0 : (Boolean(o) ? 1 : 0);
 
   // Convert an object to a timestamp.
-  var toDate = function(o) {
-    var d = _.isDate(o) ? o : new Date(toNumber(o));
+  const toDate = o => {
+    const d = _.isDate(o) ? o : new Date(toNumber(o));
     return d.getTime();
   };
 
   // Create a comparison function by using substract operator.
   // First argument is a factory to transform arguments to a mathemical value.
-  var toSubstraction = function(factory) {
-    return function(a, b) {
+  const toSubstraction = factory => {
+    return (a, b) => {
       return factory(a) - factory(b);
     };
   };
 
-  var instance = {
+  const instance = {
     // Compare two strings
-    $string: function(a, b) {
-      return toString(a).localeCompare(toString(b));
-    },
+    $string: (a, b) => toString(a).localeCompare(toString(b)),
 
     // Compare two numbers
     $number: toSubstraction(toNumber),
@@ -78,15 +70,15 @@ var $comparators = (function() {
 
     // Perform an automatic comparison
     // Type of elements will be detected and appropriate comparison will be made
-    $auto: function(a, b) {
+    $auto: (a, b) => {
       if (a === b || (a == null && b == null)) {
         return 0;
       }
 
       // Try to get most precise type
       // String must be always at last because it is the less precise type
-      var value = _.find(['Number', 'Boolean', 'Date', 'String'], function(val) {
-        var fn = _['is' + val];
+      const value = _.find(['Number', 'Boolean', 'Date', 'String'], val => {
+        const fn = _['is' + val];
         return fn(a) || fn(b);
       });
 
@@ -100,9 +92,7 @@ var $comparators = (function() {
 
     // Get comparator by its name
     // Can be overridden by custom lookup
-    $get: function(name) {
-      return instance[name];
-    }
+    $get: name => instance[name]
   };
 
   return instance;

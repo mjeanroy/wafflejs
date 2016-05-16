@@ -25,14 +25,14 @@
 var gulp = require('gulp');
 var less = require('gulp-less');
 var rename = require('gulp-rename');
-var minifyCSS = require('gulp-minify-css');
+var cssnano = require('gulp-cssnano');
 
 module.exports = function(options) {
   gulp.task('less', function() {
     return gulp.src('src/less/*.less')
       .pipe(less())
       .pipe(gulp.dest(options.dist))
-      .pipe(minifyCSS())
+      .pipe(cssnano())
       .pipe(rename('waffle.min.css'))
       .pipe(gulp.dest(options.dist));
   });

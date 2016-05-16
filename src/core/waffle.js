@@ -27,7 +27,7 @@
 /* global $comparators */
 /* global $parsers */
 
-var Waffle = {
+const Waffle = {
   // Make Grid constructor available.
   // This is deprecated, create function should be used instead.
   // @deprecated
@@ -40,18 +40,18 @@ var Waffle = {
   create: Grid.create,
 
   // Add new "global" renderer
-  addRenderer: function(id, fn) {
+  addRenderer: (id, fn) => {
     $renderers[id] = fn;
     return Waffle;
   },
 
   // Add new "global" comparator
-  addComparator: function(id, fn) {
+  addComparator: (id, fn) => {
     $comparators[id] = fn;
     return Waffle;
   },
 
-  addParser: function(type, fn) {
+  addParser: (type, fn) => {
     $parsers.$add(type, fn);
     return Waffle;
   }

@@ -28,29 +28,28 @@
 /* global Waffle */
 
 // Plugin name used to register grid with $.fn.data method
-var $PLUGIN_NAME = 'wafflejs';
+const $PLUGIN_NAME = 'wafflejs';
 
 $.fn.waffle = function(options) {
 
-  var retValue = this;
-  var args = [retValue].concat(_.rest(arguments));
+  let retValue = this;
+  const args = [retValue].concat(_.rest(arguments));
 
   // Initialize plugin
   if (_.isUndefined(options) || _.isObject(options)) {
     this.each(function() {
-      var $this = $(this);
-      var $waffle = $this.data($PLUGIN_NAME);
+      const $this = $(this);
 
+      let $waffle = $this.data($PLUGIN_NAME);
       if (!$waffle) {
         $waffle = Waffle.create(this, options);
         $this.data($PLUGIN_NAME, $waffle);
 
         // Destroy grid when node is removed
         $this.on('waffleDestroyed', function() {
-          var $table = $(this);
+          const $table = $(this);
           $table.data($PLUGIN_NAME).destroy();
-          $table.removeData($PLUGIN_NAME)
-                .off();
+          $table.removeData($PLUGIN_NAME).off();
         });
       }
     });
@@ -83,21 +82,19 @@ $.event.special.waffleDestroyed = {
 
 // Map public functions of grid
 
-var $publicFunctions = _.filter(_.functions(Grid.prototype), function(fn) {
-  return fn.charAt(0) !== '$';
-});
+const $publicFunctions = _.filter(_.functions(Grid.prototype), fn => fn.charAt(0) !== '$');
 
 _.forEach($publicFunctions, function(fn) {
   $.fn.waffle[fn] = function($selection) {
-    var args = _.rest(arguments);
-    var retValue = [];
+    const args = _.rest(arguments);
+    let retValue = [];
 
     $selection.each(function() {
-      var $table = $(this);
-      var $grid = $table.data($PLUGIN_NAME);
+      const $table = $(this);
+      const $grid = $table.data($PLUGIN_NAME);
       if ($grid) {
-        var result = $grid[fn].apply($grid, args);
-        var chainResult = result instanceof Grid ? $selection : result;
+        const result = $grid[fn].apply($grid, args);
+        const chainResult = result instanceof Grid ? $selection : result;
 
         if (chainResult === $selection) {
           retValue[0] = chainResult;
@@ -112,9 +109,7 @@ _.forEach($publicFunctions, function(fn) {
 });
 
 // Map static waffle methods
-_.forEach(_.functions(Waffle), function(prop) {
-  $.fn.waffle[prop] = Waffle[prop];
-});
+_.forEach(_.functions(Waffle), prop => $.fn.waffle[prop] = Waffle[prop]);
 
 // Map options with $.fn.waffle.options
 $.fn.waffle.options = Grid.options;

@@ -38,96 +38,95 @@
  *     $parse('nested.id')({ nested: { id: 1 } }) === 1
  */
 
-var $parse = (function() {
-  var cache = new HashMap();
+const $parse = (() => {
+  const cache = new HashMap();
 
-  var throwError = function(end) {
+  const throwError = end => {
     throw Error('Malformed expression: ' + end || 'unexpected end of input');
   };
 
-  var defaultHandler = function(currentChar, current) {
-    return current + currentChar;
-  };
+  const defaultHandler = (currentChar, current) => current + currentChar;
 
-  var checkEnd = function(openChar) {
-    return function(currentChar, current, results, stack) {
+  const checkEnd = openChar => {
+    return (currentChar, current, results, stack) => {
       if (stack.pop() !== openChar) {
         throwError();
       }
     };
   };
 
-  var EMPTY_STR = '';
-  var DOT = '.';
-  var OPEN_BRACKET = '[';
-  var OPEN_PARENTHESIS = '(';
-  var CLOSE_BRACKET = ']';
-  var CLOSE_PARENTHESIS = ')';
-  var DOUBLE_QUOTE = '"';
-  var SINGLE_QUOTE = '\'';
-  var SPACE = ' ';
+  const EMPTY_STR = '';
+  const DOT = '.';
+  const OPEN_BRACKET = '[';
+  const OPEN_PARENTHESIS = '(';
+  const CLOSE_BRACKET = ']';
+  const CLOSE_PARENTHESIS = ')';
+  const DOUBLE_QUOTE = '"';
+  const SINGLE_QUOTE = '\'';
+  const SPACE = ' ';
 
-  var handlers = {};
+  const handlers = {
+    // Process dot character.
+    // This should indicate a key delimiter.
+    [DOT]: (currentChar, current, results) => {
+      results.push(current);
+      return EMPTY_STR;
+    },
 
-  // Process dot character.
-  // This should indicate a key delimiter.
-  handlers[DOT] = function(currentChar, current, results) {
-    results.push(current);
-    return EMPTY_STR;
-  };
+    // Process open parenthesis.
+    // This should indicate a function call.
+    // Note that open parenthesis must be closed at the end.
+    [OPEN_PARENTHESIS]: (currentChar, current, results, stack) => {
+      stack.push(currentChar);
+    },
 
-  // Process bracket character.
-  // This should indicate a key delimiter.
-  // Note that open bracket must be closed at the end.
-  handlers[OPEN_BRACKET] = function(currentChar, current, results, stack) {
-    stack.push(currentChar);
-    return handlers[DOT].apply(this, arguments);
-  };
+    // Process double quote.
+    // Note that double quote must be closed at the end.
+    [DOUBLE_QUOTE]: (currentChar, current, results, stack) => {
+      switch (stack.peek()) {
+        case currentChar:
+          // First case is simple: quote is closed
+          stack.pop();
+          break;
+        case OPEN_BRACKET:
+          // Second case is also simple: quote is preceeded by a bracket
+          stack.push(currentChar);
+          break;
+        default:
+          // Otherwise, this is a malformed expression
+          throwError();
+      }
+    },
 
-  // Process open parenthesis.
-  // This should indicate a function call.
-  // Note that open parenthesis must be closed at the end.
-  handlers[OPEN_PARENTHESIS] = function(currentChar, current, results, stack) {
-    stack.push(currentChar);
-  };
+    // Process space.
+    // Space is ignored between open and close parenthesis.
+    // Space is ignored between open and close bracket (if not inside a key).
+    [SPACE]: (currentChar, current, results, stack) => {
+      const previous = stack.peek();
+      if (previous !== OPEN_PARENTHESIS && previous !== OPEN_BRACKET) {
+        return current + currentChar;
+      }
+    },
 
-  // Process double quote.
-  // Note that double quote must be closed at the end.
-  handlers[DOUBLE_QUOTE] = function(currentChar, current, results, stack) {
-    switch (stack.peek()) {
-      case currentChar:
-        // First case is simple: quote is closed
-        stack.pop();
-        break;
-      case OPEN_BRACKET:
-        // Second case is also simple: quote is preceeded by a bracket
-        stack.push(currentChar);
-        break;
-      default:
-        // Otherwise, this is a malformed expression
-        throwError();
-    }
-  };
+    // Process bracket character.
+    // This should indicate a key delimiter.
+    // Note that open bracket must be closed at the end.
+    [OPEN_BRACKET]: (currentChar, current, results, stack) => {
+      stack.push(currentChar);
+      return handlers[DOT](currentChar, current, results, stack);
+    },
 
-  // Process space.
-  // Space is ignored between open and close parenthesis.
-  // Space is ignored between open and close bracket (if not inside a key).
-  handlers[SPACE] = function(currentChar, current, results, stack) {
-    var previous = stack.peek();
-    if (previous !== OPEN_PARENTHESIS && previous !== OPEN_BRACKET) {
-      return current + currentChar;
-    }
+    // Process close tags.
+    // This should only check that associated open tag is the last value in
+    // stack.
+    [CLOSE_BRACKET]: checkEnd(OPEN_BRACKET),
+    [CLOSE_PARENTHESIS]: checkEnd(OPEN_PARENTHESIS)
   };
 
   // Process single quote.
-  // Behavior should be the same as double quote.
+  // Behavior should be the same as double quote: just make this function
+  // point to the double quote function.
   handlers[SINGLE_QUOTE] = handlers[DOUBLE_QUOTE];
-
-  // Process close tags.
-  // This should only check that associated open tag is the last value in
-  // stack.
-  handlers[CLOSE_BRACKET] = checkEnd(OPEN_BRACKET);
-  handlers[CLOSE_PARENTHESIS] = checkEnd(OPEN_PARENTHESIS);
 
   // This is a really simple parser that will turn attribute
   // path to a normalized path.
@@ -140,17 +139,17 @@ var $parse = (function() {
   //  foo.bar[0]['id']  => foo.bar.0.id
   // --
   // Running time: 0(n)
-  var $normalize = function(key) {
-    var results = [];
-    var stack = new Stack();
-    var current = '';
+  const $normalize = key => {
+    const results = [];
+    const stack = new Stack();
+    let current = '';
 
-    for (var i = 0, size = key.length; i < size; ++i) {
-      var currentChar = key.charAt(i);
-      var handler = handlers[currentChar] || defaultHandler;
+    for (let i = 0, size = key.length; i < size; ++i) {
+      const currentChar = key.charAt(i);
+      const handler = handlers[currentChar] || defaultHandler;
 
       // Process handler and check result.
-      var handlerResult = handler(currentChar, current, results, stack);
+      const handlerResult = handler(currentChar, current, results, stack);
 
       // If returned value is a string, then current part must be updated
       // with the returned value.
@@ -171,19 +170,13 @@ var $parse = (function() {
     return results;
   };
 
-  var ensureObject = function(object) {
-    if (object == null) {
-      return {};
-    }
+  const ensureObject = object => object == null ? {} : object;
 
-    return object;
-  };
+  const getter = (parts, object) => {
+    const size = parts.length;
+    let current = object;
 
-  var getter = function(parts, object) {
-    var size = parts.length;
-    var current = object;
-
-    for (var i = 0; i < size; ++i) {
+    for (let i = 0; i < size; ++i) {
       if (current == null || !_.isObject(current)) {
         return undefined;
       }
@@ -194,10 +187,10 @@ var $parse = (function() {
     return current;
   };
 
-  var setter = function(parts, object, value) {
-    var size = parts.length - 1;
-    var current = object;
-    var result = current;
+  const setter = (parts, object, value) => {
+    const size = parts.length - 1;
+    const current = object;
+    let result = current;
 
     for (var i = 0; i < size; ++i) {
       result = _.result(current, parts[i]);
@@ -208,17 +201,12 @@ var $parse = (function() {
     return value;
   };
 
-  return function(key) {
+  return (key) => {
     if (!cache.contains(key)) {
-      var parts = $normalize(key);
+      const parts = $normalize(key);
+      const $getter = object => getter(parts, object);
 
-      var $getter = function(object) {
-        return getter(parts, object);
-      };
-
-      $getter.assign = function(object, value) {
-        return setter(parts, object, value);
-      };
+      $getter.assign = (object, value) => setter(parts, object, value);
 
       cache.put(key, $getter);
     }

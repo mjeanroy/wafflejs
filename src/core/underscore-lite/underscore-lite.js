@@ -33,49 +33,41 @@
  * replace this utility object by underscore or lodash.
  */
 
-(function() {
-  var toString = Object.prototype.toString;
+(() => {
+  const toString = Object.prototype.toString;
 
   // Returns undefined irrespective of the arguments passed to it
   _.noop = function() {};
 
   // Returns the same value that is used as the argument
-  _.identity = function(value) {
-    return value;
-  };
+  _.identity = value => value;
 
   // Check if given object is undefined
-  _.isUndefined = function(obj) {
-    return typeof obj === 'undefined';
-  };
+  _.isUndefined = obj => typeof obj === 'undefined';
 
   // Check if given object is a plain old javascript object
-  _.isObject = function(obj) {
-    var type = typeof obj;
+  _.isObject = obj => {
+    const type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
   };
 
   // Check that given object is a DOM element
-  _.isElement = function(obj) {
-    return !!(obj && obj.nodeType === 1);
-  };
+  _.isElement = obj => !!(obj && obj.nodeType === 1);
 
   // Clone array or object.
-  _.clone = function(o) {
-    return _.isArray(o) ? _.map(o, _.identity) : _.extend({}, o);
-  };
+  _.clone = o => _.isArray(o) ? _.map(o, _.identity) : _.extend({}, o);
 
   // Apply callback for each item of array
-  _.forEach = function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.forEach = (array, callback, ctx) => {
+    for (let i = 0, size = array.length; i < size; ++i) {
       callback.call(ctx, array[i], i, array);
     }
   };
 
   // Copy all of the properties in the source objects over to the
   // destination object.
-  _.extend = function(destination, source) {
-    for (var i in source) {
+  _.extend = (destination, source) => {
+    for (let i in source) {
       if (_.has(source, i)) {
         destination[i] = source[i];
       }
@@ -84,10 +76,8 @@
   };
 
   // Generic is<Type> functions
-  _.forEach(['String', 'Function', 'Number', 'Date', 'Array'], function(type) {
-    _['is' + type] = function(o) {
-      return toString.call(o) === '[object ' + type + ']';
-    };
+  _.forEach(['String', 'Function', 'Number', 'Date', 'Array'], type => {
+    _['is' + type] = o => toString.call(o) === '[object ' + type + ']';
   });
 
   // Optimisation: use native isArray if available

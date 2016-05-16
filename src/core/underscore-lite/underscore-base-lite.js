@@ -34,37 +34,34 @@
  * replace this utility object by underscore or lodash.
  */
 
-var _ = (function() {
+const _ = (function() {
 
-  var ArrayProto = Array.prototype;
-  var nativeSlice = ArrayProto.slice;
-  var ObjectProto = Object.prototype;
-  var nativeKeys = Object.keys;
-  var hasOwnProperty = ObjectProto.hasOwnProperty;
-  var toString = ObjectProto.toString;
-  var nativeBind = Function.prototype.bind;
+  const ArrayProto = Array.prototype;
+  const nativeSlice = ArrayProto.slice;
+  const ObjectProto = Object.prototype;
+  const nativeKeys = Object.keys;
+  const hasOwnProperty = ObjectProto.hasOwnProperty;
+  const toString = ObjectProto.toString;
+  const nativeBind = Function.prototype.bind;
 
   // Create initial empty object.
-  var _ = {};
+  const _ = {};
 
-  var callbackWrapper = function(callback) {
+  const callbackWrapper = callback => {
     if (_.isString(callback)) {
-      return function(value) {
-        return value[callback];
-      };
+      return value => value[callback];
     }
 
     return callback;
   };
 
-  var groupByWrapper = function(behavior) {
-    return function(array, callback, ctx) {
-      var result = {};
+  const groupByWrapper = behavior => {
+    return (array, callback, ctx) => {
+      const result = {};
+      const iteratee = callbackWrapper(callback);
 
-      var iteratee = callbackWrapper(callback);
-
-      for (var i = 0, size = array.length; i < size; ++i) {
-        var key = iteratee.call(ctx, array[i], i, array);
+      for (let i = 0, size = array.length; i < size; ++i) {
+        const key = iteratee.call(ctx, array[i], i, array);
         behavior(result, array[i], key);
       }
 
@@ -73,54 +70,38 @@ var _ = (function() {
   };
 
   // Check if given object is null
-  _.isNull = function(obj) {
-    return obj === null;
-  };
+  _.isNull = obj => obj === null;
 
   // Check if given object is a boolean
-  _.isBoolean = function(obj) {
-    return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
-  };
+  _.isBoolean = obj => obj === true || obj === false || toString.call(obj) === '[object Boolean]';
 
   // Bind a function to an object, meaning that whenever the function is called,
   // the value of this will be the object.
-  _.bind = function(fn, ctx) {
+  _.bind = (fn, ctx) => {
     if (nativeBind) {
       return fn.bind(ctx);
     }
 
-    return function() {
-      return fn.apply(ctx, arguments);
-    };
+    return () => fn.apply(ctx, arguments);
   };
 
   // Creates a function that returns the same value that is used as the
   // argument of _.constant.
-  _.constant = function(value) {
-    return function() {
-      return value;
-    };
-  };
+  _.constant = value => () => value;
 
   // Creates a real Array from the list (anything that can be iterated over).
   // Useful for transmuting the arguments object.
-  _.toArray = function(obj) {
-    return _.map(obj, function(value) {
-      return value;
-    });
-  };
+  _.toArray = obj => _.map(obj, value => value);
 
   // Is the given value NaN? (NaN is the only number which does not equal itself).
-  _.isNaN = function(obj) {
-    return _.isNumber(obj) && obj !== +obj;
-  };
+  _.isNaN = obj => _.isNumber(obj) && obj !== +obj;
 
   // Creates a version of the function that can only be called one time.
   // Repeated calls to the modified function will have no effect, returning the value
   // from the original call.
-  _.once = function(fn) {
-    var wasCalled = false;
-    var returnValue;
+  _.once = fn => {
+    let wasCalled = false;
+    let returnValue;
 
     return function() {
       if (!wasCalled) {
@@ -134,8 +115,8 @@ var _ = (function() {
   };
 
   // Fill in undefined properties in object with the first value present in the default objects.
-  _.defaults = function(o1, o2) {
-    _.forEach(_.keys(o2), function(k) {
+  _.defaults = (o1, o2) => {
+    _.forEach(_.keys(o2), k => {
       if (_.isUndefined(o1[k])) {
         o1[k] = o2[k];
       }
@@ -146,62 +127,44 @@ var _ = (function() {
 
   // If the value of the named property is a function, then invoke it with
   // the object as context, otherwise return it.
-  _.result = function(o, prop) {
-    var value = o[prop];
+  _.result = (o, prop) => {
+    const value = o[prop];
     return _.isFunction(value) ? value.call(o) : value;
   };
 
   // Check if object has given key
-  _.has = function(object, key) {
-    return hasOwnProperty.call(object, key);
-  };
+  _.has = (object, key) => hasOwnProperty.call(object, key);
 
   // Return the number of values in the list.
-  _.size = function(array) {
-    if (array == null) {
-      return 0;
-    }
-
-    return array.length;
-  };
+  _.size = array => array == null ? 0 : array.length;
 
   // Returns the first element of an array.
   // Passing n will return the first n elements of the array.
-  _.first = function(array, n) {
-    if (n == null) {
-      return array[0];
-    }
-    return nativeSlice.call(array, 0, n);
-  };
+  _.first = (array, n) => n == null ? array[0] : nativeSlice.call(array, 0, n);
 
   // Returns the last element of an array.
   // Passing n will return the last n elements of the array.
-  _.last = function(array, n) {
-    if (n == null) {
-      return array[array.length - 1];
-    }
-    return nativeSlice.call(array, array.length - n, array.length);
-  };
+  _.last = (array, n) => n == null ? array[array.length - 1] : nativeSlice.call(array, array.length - n, array.length);
 
   // Returns the rest of the elements in an array.
   // Pass an index to return the values of the array from that index onward.
   _.rest = function(array, index) {
-    var start = arguments.length > 1 ? index : 1;
+    const start = arguments.length > 1 ? index : 1;
     return nativeSlice.call(array, start, array.length);
   };
 
   // Returns the rest of the elements in an array.
   // Pass an index to return the values of the array from that index onward.
   _.initial = function(array, index) {
-    var length = array.length;
-    var end = arguments.length > 1 ? length - index : length - 1;
+    const length = array.length;
+    const end = arguments.length > 1 ? length - index : length - 1;
     return nativeSlice.call(array, 0, end);
   };
 
   // Return the position of the first occurrence of an item in an array, or -1
   // if the item is not included in the array.
-  _.indexOf = function(array, item) {
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.indexOf = (array, item) => {
+    for (let i = 0, size = array.length; i < size; ++i) {
       if (array[i] === item) {
         return i;
       }
@@ -211,8 +174,8 @@ var _ = (function() {
 
   // Return the position of the last occurrence of an item in an array, or -1
   // if the item is not included in the array.
-  _.lastIndexOf = function(array, item) {
-    for (var i = array.length - 1; i >= 0; --i) {
+  _.lastIndexOf = (array, item) => {
+    for (let i = array.length - 1; i >= 0; --i) {
       if (array[i] === item) {
         return i;
       }
@@ -221,12 +184,10 @@ var _ = (function() {
   };
 
   // Check that array contains given item.
-  _.contains = function(array, item) {
-    return _.indexOf(array, item) >= 0;
-  };
+  _.contains = (array, item) => _.indexOf(array, item) >= 0;
 
   // Get all keys of object
-  _.keys = function(object) {
+  _.keys = object => {
     if (!_.isObject(object)) {
       return [];
     }
@@ -235,8 +196,9 @@ var _ = (function() {
       return nativeKeys(object);
     }
 
-    var keys = [];
-    for (var key in object) {
+    const keys = [];
+
+    for (let key in object) {
       if (_.has(object, key)) {
         keys.push(key);
       }
@@ -246,20 +208,22 @@ var _ = (function() {
   };
 
   // Returns a sorted list of the names of every method in an object.
-  _.functions = function(obj) {
-    var names = [];
-    for (var key in obj) {
+  _.functions = obj => {
+    const names = [];
+
+    for (let key in obj) {
       if (_.isFunction(obj[key])) {
         names.push(key);
       }
     }
+
     return names.sort();
   };
 
   // Map array to a new array using callback results
-  _.map = function(array, callback, ctx) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.map = (array, callback, ctx) => {
+    const newArray = [];
+    for (let i = 0, size = array.length; i < size; ++i) {
       newArray[i] = callback.call(ctx, array[i], i, array);
     }
     return newArray;
@@ -267,8 +231,8 @@ var _ = (function() {
 
   // Tests whether all elements in the array pass the test
   // implemented by the provided function.
-  _.every = function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.every = (array, callback, ctx) => {
+    for (let i = 0, size = array.length; i < size; ++i) {
       if (!callback.call(ctx, array[i], i, array)) {
         return false;
       }
@@ -278,8 +242,8 @@ var _ = (function() {
 
   // Tests whether some element in the array passes the test
   // implemented by the provided function.
-  _.some = function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.some = (array, callback, ctx) => {
+    for (let i = 0, size = array.length; i < size; ++i) {
       if (callback.call(ctx, array[i], i, array)) {
         return true;
       }
@@ -289,9 +253,9 @@ var _ = (function() {
 
   // Creates a new array with all elements that pass
   // the test implemented by the provided function.
-  _.filter = function(array, callback, ctx) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.filter = (array, callback, ctx) => {
+    const newArray = [];
+    for (let i = 0, size = array.length; i < size; ++i) {
       if (callback.call(ctx, array[i], i, array)) {
         newArray.push(array[i]);
       }
@@ -300,9 +264,9 @@ var _ = (function() {
   };
 
   // Returns the values in list without the elements that the truth test (predicate) passes.
-  _.reject = function(array, callback, ctx) {
-    var newArray = [];
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.reject = (array, callback, ctx) => {
+    const newArray = [];
+    for (let i = 0, size = array.length; i < size; ++i) {
       if (!callback.call(ctx, array[i], i, array)) {
         newArray.push(array[i]);
       }
@@ -313,10 +277,11 @@ var _ = (function() {
   // Applies a function against an accumulator and each value
   // of the array (from left-to-right) has to reduce it to a single value.
   _.reduce = function(array, callback, initialValue, ctx) {
-    var nbArgs = arguments.length;
-    var step = nbArgs >= 3 ? initialValue : array[0];
-    var size = array.length;
-    var i = nbArgs >= 3 ? 0 : 1;
+    const nbArgs = arguments.length;
+    const size = array.length;
+
+    let step = nbArgs >= 3 ? initialValue : array[0];
+    let i = nbArgs >= 3 ? 0 : 1;
 
     for (; i < size; ++i) {
       step = callback.call(ctx, step, array[i], i, array);
@@ -328,10 +293,11 @@ var _ = (function() {
   // Applies a function against an accumulator and each value
   // of the array (from right-to-left) has to reduce it to a single value.
   _.reduceRight = function(array, callback, initialValue, ctx) {
-    var nbArgs = arguments.length;
-    var size = array.length - 1;
-    var step = nbArgs >= 3 ? initialValue : array[size];
-    var i = nbArgs >= 3 ? size : size - 1;
+    const nbArgs = arguments.length;
+    const size = array.length - 1;
+
+    let step = nbArgs >= 3 ? initialValue : array[size];
+    let i = nbArgs >= 3 ? size : size - 1;
 
     for (; i >= 0; --i) {
       step = callback.call(ctx, step, array[i], i, array);
@@ -343,8 +309,8 @@ var _ = (function() {
   // Looks through each value in the list, returning the first one that
   // passes a truth test (predicate), or undefined if no value passes the test.
   // The function returns as soon as it finds an acceptable element, and doesn't traverse the entire list.
-  _.find = function(array, callback, ctx) {
-    for (var i = 0, size = array.length; i < size; ++i) {
+  _.find = (array, callback, ctx) => {
+    for (let i = 0, size = array.length; i < size; ++i) {
       if (callback.call(ctx, array[i], i, array)) {
         return array[i];
       }
@@ -355,11 +321,11 @@ var _ = (function() {
   // Split a collection into two arrays: one whose elements all
   // satisfy the given predicate, and one whose elements all
   // do not satisfy the predicate.
-  _.partition = function(array, iteratee) {
-    var pass = [];
-    var fail = [];
+  _.partition = (array, iteratee) => {
+    const pass = [];
+    const fail = [];
 
-    for (var i = 0, size = array.length; i < size; ++i) {
+    for (let i = 0, size = array.length; i < size; ++i) {
       if (iteratee.call(null, array[i], i, array)) {
         pass.push(array[i]);
       } else {
@@ -371,10 +337,10 @@ var _ = (function() {
   };
 
   // Memoize an expensive function by storing its results.
-  _.memoize = function(func, hasher) {
+  _.memoize = (func, hasher) => {
     var memoize = function(key) {
-      var cache = memoize.cache;
-      var address = hasher ? hasher.apply(this, arguments) : key;
+      const cache = memoize.cache;
+      const address = hasher ? hasher.apply(this, arguments) : key;
       if (!_.has(cache, address)) {
         cache[address] = func.apply(this, arguments);
       }
@@ -390,13 +356,13 @@ var _ = (function() {
   // be triggered. The function will be called after it stops being called for
   // N milliseconds. If `immediate` is passed, trigger the function on the
   // leading edge, instead of the trailing.
-  _.debounce = function(func, wait, immediate) {
+  _.debounce = (func, wait, immediate) => {
     var timeout;
     return function() {
-      var context = this;
-      var args = arguments;
+      const context = this;
+      const args = arguments;
 
-      var later = function() {
+      var later = () => {
         timeout = null;
         if (!immediate) {
           func.apply(context, args);
@@ -420,10 +386,10 @@ var _ = (function() {
 
   // Wrap the function inside of the wrapper function, passing it
   // as the first argument.
-  _.wrap = function(fn, wrapper) {
+  _.wrap = (fn, wrapper) => {
     return function() {
-      var args = _.toArray(arguments);
-      var newArgs = [fn].concat(args);
+      const args = _.toArray(arguments);
+      const newArgs = [fn].concat(args);
       return wrapper.apply(this, newArgs);
     };
   };
@@ -433,34 +399,28 @@ var _ = (function() {
     return new Date().getTime();
   };
 
-  var uid = 0;
+  let uid = 0;
 
   // Generate a unique integer id (unique within the entire client session).
-  _.uniqueId = function(prefix) {
-    var id = ++uid + '';
+  _.uniqueId = prefix => {
+    const id = ++uid + '';
     return prefix ? prefix + id : id;
   };
 
   // Given a list, and an iteratee function that returns a key for each element in the list (or a property name),
   // returns an object with an index of each item.
-  _.indexBy = groupByWrapper(function(result, value, key) {
-    result[key] = value;
-  });
+  _.indexBy = groupByWrapper((result, value, key) => result[key] = value);
 
   // Splits a collection into sets, grouped by the result of
   // running each value through iteratee.
   // If iteratee is a string instead of a function, groups by the property
   // named by iteratee on each of the values.
-  _.groupBy = groupByWrapper(function(result, value, key) {
-    (result[key] = result[key] || []).push(value);
-  });
+  _.groupBy = groupByWrapper((result, value, key) => (result[key] = result[key] || []).push(value));
 
   // Sorts a list into groups and returns a count for the number of objects
   // in each group. Similar to groupBy, but instead of returning a list of values,
   // returns a count for the number of values in that group.
-  _.countBy = groupByWrapper(function(result, value, key) {
-    result[key] = (result[key] || 0) + 1;
-  });
+  _.countBy = groupByWrapper((result, value, key) => result[key] = (result[key] || 0) + 1);
 
   return _;
 

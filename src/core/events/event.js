@@ -31,10 +31,8 @@
  * TODO Use custom event api if available.
  */
 
-var WaffleEvent = (function() {
-  var noop = _.noop;
-
-  var WaffleEvent = function(event, target, params) {
+class WaffleEvent {
+  constructor(event, target, params) {
     this.type = event;
     this.bubbles = false;
     this.cancelable = false;
@@ -44,13 +42,14 @@ var WaffleEvent = (function() {
     this.target = target;
     this.currentTarget = target;
     this.srcElement = target;
-  };
+  }
 
-  WaffleEvent.prototype = {
-    preventDefault: noop,
-    stopPropagation: noop,
-    stopImmediatePropagation: noop
-  };
+  // Nothing to do for now.
+  preventDefault() {}
 
-  return WaffleEvent;
-})();
+  // Nothing to do for now.
+  stopPropagation() {}
+
+  // Nothing to do for now.
+  stopImmediatePropagation() {}
+}

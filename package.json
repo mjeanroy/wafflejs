@@ -65,7 +65,7 @@
     "log4js": "0.6.36",
     "pretty-bytes": "2.0.1",
     "gzip-size": "3.0.0",
-    "through2": "2.0.0",
+    "through2": "2.0.1",
     "gulp-util": "3.0.7",
     "pad": "1.0.0",
     "q": "1.4.1",

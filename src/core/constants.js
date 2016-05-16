@@ -50,31 +50,31 @@
  * Set of constants used across all project components.
  */
 
-var CSS_PREFIX = 'waffle-';
-var CSS_GRID = CSS_PREFIX + 'grid';
-var CSS_SORTABLE = CSS_PREFIX + 'sortable';
-var CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
-var CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
-var CSS_DRAGGABLE = CSS_PREFIX + 'draggable';
-var CSS_DRAGGABLE_DRAG = CSS_DRAGGABLE + '-drag';
-var CSS_DRAGGABLE_OVER = CSS_DRAGGABLE + '-over';
-var CSS_SCROLLABLE = CSS_PREFIX + 'fixedheader';
-var CSS_SELECTABLE = CSS_PREFIX + 'selectable';
-var CSS_SELECTED = CSS_PREFIX + 'selected';
-var CSS_CHECKBOX_CELL = CSS_PREFIX + 'checkbox';
+const CSS_PREFIX = 'waffle-';
+const CSS_GRID = CSS_PREFIX + 'grid';
+const CSS_SORTABLE = CSS_PREFIX + 'sortable';
+const CSS_SORTABLE_ASC = CSS_SORTABLE + '-asc';
+const CSS_SORTABLE_DESC = CSS_SORTABLE + '-desc';
+const CSS_DRAGGABLE = CSS_PREFIX + 'draggable';
+const CSS_DRAGGABLE_DRAG = CSS_DRAGGABLE + '-drag';
+const CSS_DRAGGABLE_OVER = CSS_DRAGGABLE + '-over';
+const CSS_SCROLLABLE = CSS_PREFIX + 'fixedheader';
+const CSS_SELECTABLE = CSS_PREFIX + 'selectable';
+const CSS_SELECTED = CSS_PREFIX + 'selected';
+const CSS_CHECKBOX_CELL = CSS_PREFIX + 'checkbox';
 
-var DATA_PREFIX = 'data-waffle-';
-var DATA_WAFFLE_CID = DATA_PREFIX + 'cid';
-var DATA_WAFFLE_ID = DATA_PREFIX + 'id';
-var DATA_WAFFLE_SORTABLE = DATA_PREFIX + 'sortable';
-var DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';
-var DATA_WAFFLE_IDX = DATA_PREFIX + 'idx';
+const DATA_PREFIX = 'data-waffle-';
+const DATA_WAFFLE_CID = DATA_PREFIX + 'cid';
+const DATA_WAFFLE_ID = DATA_PREFIX + 'id';
+const DATA_WAFFLE_SORTABLE = DATA_PREFIX + 'sortable';
+const DATA_WAFFLE_ORDER = DATA_PREFIX + 'order';
+const DATA_WAFFLE_IDX = DATA_PREFIX + 'idx';
 
-var CHAR_ORDER_ASC = '+';
-var CHAR_ORDER_DESC = '-';
+const CHAR_ORDER_ASC = '+';
+const CHAR_ORDER_DESC = '-';
 
 // Save bytes
-var TBODY = 'tbody';
-var THEAD = 'thead';
-var TFOOT = 'tfoot';
-var TABLE = 'table';
+const TBODY = 'tbody';
+const THEAD = 'thead';
+const TFOOT = 'tfoot';
+const TABLE = 'table';

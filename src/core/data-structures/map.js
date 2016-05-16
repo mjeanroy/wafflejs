@@ -38,49 +38,45 @@
  * Each operation should run in O(1).
  */
 
-var HashMap = (function() {
-  var prefix = 'key_';
-  var keyFactory = function(k) {
-    return prefix + k;
-  };
+const HashMap = (() => {
+  const prefix = 'key_';
+  const keyFactory = k => prefix + k;
 
-  var HashMap = function() {
-    this.$o = {};
-  };
+  return class HashMap {
+    constructor() {
+      this.$o = {};
+    }
 
-  HashMap.prototype = {
     // Clear map
     // Running time: O(1)
-    clear: function() {
+    clear() {
       this.$o = {};
-    },
+    }
 
     // Put value into map using given key
     // Running time: O(1)
-    put: function(key, value) {
+    put(key, value) {
       this.$o[keyFactory(key)] = value;
       return this;
-    },
+    }
 
     // Get value associated to given key
     // Running time: O(1)
-    get: function(key) {
+    get(key) {
       return this.$o[keyFactory(key)];
-    },
+    }
 
     // Remove value associated to given key
     // Running time: O(1)
-    remove: function(key) {
+    remove(key) {
       delete this.$o[keyFactory(key)];
       return this;
-    },
+    }
 
     // Check if given key is inside the map
     // Running time: O(1)
-    contains: function(key) {
+    contains(key) {
       return _.has(this.$o, keyFactory(key));
     }
   };
-
-  return HashMap;
 })();

@@ -31,68 +31,50 @@
  * These functions should remain simple and waffle agnostic.
  */
 
-var $util = {
+const $util = {
   // Get version of Internet Explorer
-  msie: function() {
-    return document.documentMode;
-  },
+  msie: () => document.documentMode,
 
   // Check if string end with given suffix
-  endWith: function(value, suffix) {
-    return !!value && value.slice(value.length - suffix.length) === suffix;
-  },
+  endWith: (value, suffix) => !!value && value.slice(value.length - suffix.length) === suffix,
 
   // Check if value is a pixel value
-  isPx: function(value) {
-    return $util.endWith(value, 'px');
-  },
+  isPx: value => $util.endWith(value, 'px'),
 
   // Check if value is a percentage value
-  isPercentage: function(value) {
-    return $util.endWith(value, '%');
-  },
+  isPercentage: value => $util.endWith(value, '%'),
 
   // Convert percentage string value to percentage number
-  fromPercentage: function(value) {
-    return _.isString(value) ? Number(value.replace('%', '')) : value;
-  },
+  fromPercentage: value => _.isString(value) ? Number(value.replace('%', '')) : value,
 
   // Translate a value to a valid px notation
   //   toPx(1OO) => '100px'
   //   toPx('100px') => '100px'
-  toPx: function(value) {
-    return _.isNumber(value) ? value + 'px' : value;
-  },
+  toPx: value => _.isNumber(value) ? value + 'px' : value,
 
   // Translate a px notation to a valid number
   //   fromPx('100px') => 100
   //   fromPx(100) => 100
-  fromPx: function(value) {
-    return _.isString(value) ? Number(value.replace('px', '')) : value;
-  },
+  fromPx: value => _.isString(value) ? Number(value.replace('px', '')) : value,
 
   // Capitalize given string
-  capitalize: function(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  },
+  capitalize: str => str.charAt(0).toUpperCase() + str.slice(1),
 
   // Get the result of given function.
   // If first argument is not a function, then it is automatically
   // returned.
   // Otherwise, function is executed using ctx as context and args as
   // arguments.
-  resultWith: function(fn, ctx, args) {
-    return _.isFunction(fn) ? fn.apply(ctx, args) : fn;
-  },
+  resultWith: (fn, ctx, args) => _.isFunction(fn) ? fn.apply(ctx, args) : fn,
 
   // Split array (or array like object) into smaller arrays.
   // Returned value is an array of smaller arrays (a.k.a chunks).
-  split: function(array, size) {
-    var actualSize = size || 20;
-    var chunks = [];
+  split: (array, size) => {
+    const actualSize = size || 20;
+    const chunks = [];
 
-    var chunk = [];
-    for (var i = 0, length = array.length; i < length; ++i) {
+    let chunk = [];
+    for (let i = 0, length = array.length; i < length; ++i) {
       chunk.push(array[i]);
 
       if (chunk.length === actualSize) {
@@ -109,7 +91,7 @@ var $util = {
   },
 
   // Parse value
-  parse: function(json) {
+  parse: json => {
     try {
       return $json.fromJson(json);
     }
@@ -124,7 +106,7 @@ var $util = {
         return true;
       }
 
-      var nb = Number(json);
+      const nb = Number(json);
       return _.isNaN(nb) ? json : nb;
     }
   },
@@ -133,8 +115,8 @@ var $util = {
   // Note that this function will also destroy prototype attribute,
   // so this function must be called when object does not need to
   // be used anymore.
-  destroy: function(o) {
-    for (var i in o) {
+  destroy: o => {
+    for (let i in o) {
       if (_.has(o, i)) {
         o[i] = null;
       }
@@ -142,11 +124,11 @@ var $util = {
   },
 
   // Turn a camel case string to a spinal case string.
-  toSpinalCase: function(str) {
-    var result = '';
+  toSpinalCase: str => {
+    let result = '';
 
-    for (var i = 0, size = str.length; i < size; ++i) {
-      var current = str.charAt(i);
+    for (let i = 0, size = str.length; i < size; ++i) {
+      const current = str.charAt(i);
       if (current.toLowerCase() === current) {
         result += current;
       } else {
@@ -158,12 +140,12 @@ var $util = {
   },
 
   // Execute asynchronous tasks on small chunks of data.
-  asyncTask: function(chunks, delay, onIteration, onEnded) {
-    var idx = 0;
+  asyncTask: (chunks, delay, onIteration, onEnded) => {
+    let idx = 0;
 
-    var timer = function() {
+    let timer = function() {
       if (chunks.length > 0) {
-        var current = chunks.shift();
+        const current = chunks.shift();
         onIteration(current, idx);
         idx += current.length;
 

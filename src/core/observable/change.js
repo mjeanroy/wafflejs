@@ -24,8 +24,8 @@
 
 /* exported Change */
 
-var Change = (function() {
-  var newChange = function(type, removed, added, index, collection) {
+const Change = (() => {
+  const newChange = (type, removed, added, index, collection) => {
     return {
       type: type,
       removed: removed,
@@ -42,13 +42,9 @@ var Change = (function() {
 
   return {
     // Create new splice change.
-    createSplice: function(removed, added, index, object) {
-      return newChange('splice', removed, added, index, object);
-    },
+    createSplice: (removed, added, index, object) => newChange('splice', removed, added, index, object),
 
     // Create new update change.
-    createUpdate: function(index, object) {
-      return newChange('update', [], [], index, object);
-    }
+    createUpdate: (index, object) => newChange('update', [], [], index, object)
   };
 })();

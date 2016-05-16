@@ -77,12 +77,15 @@ describe('vendors', function() {
     it('should have vendors files', function() {
       expect($react.src).toEqual([
         'vendors/es5-shim/es5-shim.js',
-        'vendors/react/react-with-addons.js'
+        'vendors/react/react-with-addons.js',
+        'vendors/react/react-dom.js'
       ]);
     });
 
     it('should not have test files', function() {
-      expect($react.test).toBeEmpty();
+      expect($react.test).toEqual([
+        'vendors/react/react-dom-server.js'
+      ]);
     });
   });
 });

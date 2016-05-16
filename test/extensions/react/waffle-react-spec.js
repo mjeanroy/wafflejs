@@ -43,7 +43,7 @@ describe('WaffleComponent', function() {
     });
 
     var component = TestUtils.renderIntoDocument(waffle);
-    var el = component.getDOMNode();
+    var el = ReactDOM.findDOMNode(component);
 
     expect(el).toBeDefined();
     expect(el.tagName).toBe('TABLE');
@@ -69,7 +69,7 @@ describe('WaffleComponent', function() {
       }
     });
 
-    var html = React.renderToString(waffle);
+    var html = ReactDOMServer.renderToString(waffle);
 
     expect(html).toBeDefined();
     expect(html).toBeAString();

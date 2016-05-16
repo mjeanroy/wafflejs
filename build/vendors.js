@@ -66,7 +66,12 @@ var vendors = {
   $react: {
     src: [
       'es5-shim/es5-shim.js',
-      'react/react-with-addons.js'
+      'react/react-with-addons.js',
+      'react/react-dom.js'
+    ],
+
+    test: [
+      'react/react-dom-server.js'
     ]
   },
 

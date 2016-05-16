@@ -32,7 +32,8 @@ describe('WaffleReactMixin', function() {
 
     mixin = Object.create(WaffleReactMixin);
     mixin.props = Grid.options;
-    mixin.getDOMNode = jasmine.createSpy('getDOMNode').and.callFake(function() {
+
+    spyOn(ReactDOM, 'findDOMNode').and.callFake(function () {
       return table;
     });
 

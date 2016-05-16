@@ -241,7 +241,8 @@ describe('waffle-files', function() {
       expect($react.vendor).toBeDefined();
       expect($react.vendor).toEqual([
         'vendors/es5-shim/es5-shim.js',
-        'vendors/react/react-with-addons.js'
+        'vendors/react/react-with-addons.js',
+        'vendors/react/react-dom.js'
       ]);
     });
 

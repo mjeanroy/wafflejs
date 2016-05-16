@@ -42,7 +42,8 @@ var WaffleReactMixin = {
   // Call just after component has been mount into dom.
   // This step is used to initialized grid.
   componentDidMount: function() {
-    this.grid.attach(this.getDOMNode());
+    var domNode = ReactDOM.findDOMNode(this);
+    this.grid.attach(domNode);
   },
 
   // Call just before component is destroyed.

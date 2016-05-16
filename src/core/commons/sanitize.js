@@ -29,8 +29,8 @@
  * This is a really simple implementation.
  */
 
-var $sanitize = function(input) {
-  var div = document.createElement('div');
+const $sanitize = input => {
+  const div = document.createElement('div');
   div.appendChild(document.createTextNode(input));
   return div.innerHTML;
 };

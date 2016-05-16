@@ -41,63 +41,49 @@
  * - Editable controls
  */
 
-var GridBuilder = (function() {
+const GridBuilder = (() => {
 
-  var PX = 'px';
-  var PERCENT = 'percent';
-  var AUTO = 'auto';
+  const PX = 'px';
+  const PERCENT = 'percent';
+  const AUTO = 'auto';
 
-  var widthComputer = {};
-
-  widthComputer[PX] = function(col) {
-    return $util.fromPx(col.computedWidth);
+  const widthComputer = {
+    [PX]: col => $util.fromPx(col.computedWidth),
+    [PERCENT]: (col, total) => $util.fromPercentage(col.computedWidth) * total / 100,
+    [AUTO]: (col, total, size) => total / size
   };
 
-  widthComputer[PERCENT] = function(col, total) {
-    return $util.fromPercentage(col.computedWidth) * total / 100;
+  const formatters = {
+    checkbox: value => !!value
   };
 
-  widthComputer[AUTO] = function(col, total, size) {
-    return total / size;
-  };
+  const createCheckboxCell = (grid, thead) => {
+    const selectionLength = grid.$selection.size();
+    const span = $doc.span({title: selectionLength}, '' + selectionLength);
 
-  var formatters = {
-    checkbox: function(value) {
-      return !!value;
-    }
-  };
-
-  var createCheckboxCell = function(grid, thead) {
-    var selectionLength = grid.$selection.size();
-
-    var span = $doc.span({title: selectionLength}, '' + selectionLength);
-
-    var isSelected = grid.isSelected();
-    var input = $doc.inputCheckbox({
+    const isSelected = grid.isSelected();
+    const input = $doc.inputCheckbox({
       checked: isSelected,
       indeterminate: !isSelected && selectionLength > 0
     });
 
-    var children = thead ? [span, input] : [input, span];
-    var attributes = {
+    const children = thead ? [span, input] : [input, span];
+    const attributes = {
       className: CSS_CHECKBOX_CELL
     };
 
     return $doc.th(attributes, children);
   };
 
-  var o = {
+  const o = {
     // Compute width for each columns
-    computeWidth: function(totalWidth, columns) {
-      var remainingSpace = totalWidth;
-      var constrainedColumnCount = 0;
-
+    computeWidth: (totalWidth, columns) => {
       // Split columns into groups:
       // - Group with fixed width.
       // - Group with width that must be computed using percentage of remaining space.
       // - Group with width that should expand to remaining space.
-      var groups = columns.groupBy(function(column) {
-        var width = column.computedWidth = _.result(column, 'width');
+      const groups = columns.groupBy(column => {
+        const width = column.computedWidth = _.result(column, 'width');
 
         if (_.isNumber(width) || $util.isPx(width)) {
           return PX;
@@ -110,15 +96,18 @@ var GridBuilder = (function() {
         return AUTO;
       });
 
-      // Now, update widths for each columns
-      _.forEach([PX, PERCENT, AUTO], function(group) {
-        var cols = groups[group];
-        if (cols) {
-          var total = remainingSpace;
-          var size = cols.length;
+      let constrainedColumnCount = 0;
+      let remainingSpace = totalWidth;
 
-          _.forEach(cols, function(col) {
-            var computedWidth = widthComputer[group](col, total, size);
+      // Now, update widths for each columns
+      _.forEach([PX, PERCENT, AUTO], group => {
+        const cols = groups[group];
+        if (cols) {
+          const total = remainingSpace;
+          const size = cols.length;
+
+          _.forEach(cols, col => {
+            const computedWidth = widthComputer[group](col, total, size);
 
             // Update computed width
             col.computedWidth = computedWidth;
@@ -132,62 +121,52 @@ var GridBuilder = (function() {
     },
 
     // Create row to append to thead node.
-    theadRow: function(grid) {
-      var children = [];
+    theadRow: grid => {
+      const children = [];
 
       if (grid.hasCheckbox()) {
         children.push(o.theadCheckboxCell(grid));
       }
 
-      grid.$columns.forEach(function(column, idx) {
-        children.push(o.theadCell(grid, column, idx));
-      });
+      grid.$columns.forEach((column, idx) => children.push(o.theadCell(grid, column, idx)));
 
       return $doc.tr(null, children);
     },
 
     // Create cell for grid thead node.
-    theadCell: function(grid, column, idx) {
-      var attributes = column.attributes(idx, true);
+    theadCell: (grid, column, idx) => {
+      const attributes = column.attributes(idx, true);
       attributes.className = column.cssClasses(idx, true);
       attributes.style = column.styles(idx, true);
       return $doc.th(attributes, column.title);
     },
 
     // Create cell for grid thead node.
-    theadCheckboxCell: function(grid) {
-      return createCheckboxCell(grid, true);
-    },
+    theadCheckboxCell: grid => createCheckboxCell(grid, true),
 
     // Create row to append to thead node.
-    tfootRow: function(grid) {
-      var children = [];
+    tfootRow: grid => {
+      const children = [];
 
       if (grid.hasCheckbox()) {
         children.push(o.tfootCheckboxCell(grid));
       }
 
-      grid.$columns.forEach(function(column, idx) {
-        children.push(o.tfootCell(grid, column, idx));
-      });
+      grid.$columns.forEach((column, idx) => children.push(o.tfootCell(grid, column, idx)));
 
       return $doc.tr(null, children);
     },
 
     // For now, tfoot cell is the same as the thead cell
-    tfootCell: function(grid, column, idx) {
-      return o.theadCell(grid, column, idx);
-    },
+    tfootCell: (grid, column, idx) => o.theadCell(grid, column, idx),
 
     // Create cell for grid thead node.
-    tfootCheckboxCell: function(grid) {
-      return createCheckboxCell(grid, false);
-    },
+    tfootCheckboxCell: grid => createCheckboxCell(grid, false),
 
     // Create fragment of rows.
-    tbodyRows: function(grid, data, startIdx) {
-      var fragment = $doc.createFragment();
-      for (var i = 0, size = data.length; i < size; ++i) {
+    tbodyRows: (grid, data, startIdx) => {
+      const fragment = $doc.createFragment();
+      for (let i = 0, size = data.length; i < size; ++i) {
         fragment.appendChild(o.tbodyRow(grid, data[i], startIdx + i));
       }
 
@@ -195,14 +174,14 @@ var GridBuilder = (function() {
     },
 
     // Create a row for grid tbody node.
-    tbodyRow: function(grid, data, idx) {
-      var attributes = {};
+    tbodyRow: (grid, data, idx) => {
+      const attributes = {};
       attributes[DATA_WAFFLE_IDX] = idx;
       attributes[DATA_WAFFLE_ID] = grid.$data.$$key(data);
       attributes[DATA_WAFFLE_CID] = _.uniqueId();
 
-      var children = [];
-      var className = '';
+      const children = [];
+      let className = '';
 
       if (grid.isSelectable()) {
         // Add css to show that row is selectable
@@ -225,60 +204,59 @@ var GridBuilder = (function() {
         attributes.className = className;
       }
 
-      grid.$columns.forEach(function(column, idx) {
-        children.push(o.tbodyCell(grid, data, column, idx));
-      });
+      grid.$columns.forEach((column, idx) => children.push(o.tbodyCell(grid, data, column, idx)));
 
       return $doc.tr(attributes, children);
     },
 
     // Create a cell for grid tbody node
-    tbodyCell: function(grid, data, column, idx) {
-      var attributes = column.attributes(idx, false);
+    tbodyCell: (grid, data, column, idx) => {
+      const attributes = column.attributes(idx, false);
       attributes.className = column.cssClasses(idx, false, data);
       attributes.style = column.styles(idx, false);
 
-      var children = column.isEditable(data) ?
+      const children = column.isEditable(data) ?
         o.tbodyControl(column, data) : column.render(data);
 
       return $doc.td(attributes, children);
     },
 
     // Create a cell for grid tbody node
-    tbodyCheckboxCell: function(grid, data) {
-      var attributes = {
+    tbodyCheckboxCell: (grid, data) => {
+      const attributes = {
         className: CSS_CHECKBOX_CELL
       };
 
-      var children = grid.isSelectable(data) ?
+      const children = grid.isSelectable(data) ?
         $doc.inputCheckbox({checked: grid.isSelected(data)}) : null;
 
       return $doc.td(attributes, children);
     },
 
     // Create control for editable cell
-    tbodyControl: function(column, data) {
-      var editable = column.editable;
+    tbodyControl: (column, data) => {
+      const editable = column.editable;
+      const attributes = {};
 
-      var control;
-      var children = null;
-      var attributes = {};
+      let control;
+      let children;
 
       if (editable.type === 'select') {
         control = 'select';
 
         // Append custom options
         if (editable.options) {
-          children = _.map(editable.options, function(option) {
-            var attributes = option.value != null ?
+          children = _.map(editable.options, option => {
+            const attributes = option.value != null ?
               {value: option.value} : null;
 
-            var text = option.label != null ? option.label : '';
+            const text = option.label != null ? option.label : '';
             return $doc.option(attributes, text);
           });
         }
       } else {
         control = 'input';
+        children = null;
         attributes.type = editable.type;
       }
 
@@ -286,8 +264,8 @@ var GridBuilder = (function() {
       attributes[DATA_WAFFLE_ID] = column.id;
 
       // For checkbox inputs, we must set the 'checked' property...
-      var prop = editable.type === 'checkbox' ? 'checked' : 'value';
-      var formatter = formatters[editable.type] || _.identity;
+      const prop = editable.type === 'checkbox' ? 'checked' : 'value';
+      const formatter = formatters[editable.type] || _.identity;
       attributes[prop] = formatter(column.value(data));
 
       // Append custom css

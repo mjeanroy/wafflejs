@@ -25,19 +25,19 @@
 /* global DATA_WAFFLE_IDX */
 /* exported GridUtil */
 
-var GridUtil = (function() {
+const GridUtil = (() => {
 
   // Create initial empty object.
-  var instance = {};
+  const instance = {};
 
-  var findRow = function(rows, index, def, stopOn) {
-    var max = rows.length - 1;
+  const findRow = (rows, index, def, stopOn) => {
+    const max = rows.length - 1;
     if (max < 0 || index < 0 || index <= def) {
       return def;
     }
 
-    var currentIndex = Math.min(index, max);
-    var dataIndex = index;
+    let currentIndex = Math.min(index, max);
+    let dataIndex = index;
 
     while (currentIndex >= 0 && dataIndex >= index) {
       dataIndex = instance.getDataIndex(rows[currentIndex]);
@@ -51,24 +51,16 @@ var GridUtil = (function() {
     return def;
   };
 
-  instance.getDataIndex = function(row) {
-    return Number(row.getAttribute(DATA_WAFFLE_IDX));
+  instance.getDataIndex = row => Number(row.getAttribute(DATA_WAFFLE_IDX));
+
+  instance.getCheckbox = row => row.childNodes[0].childNodes[0];
+
+  instance.getRowIndexForDataIndex = (rows, index) => {
+    return findRow(rows, index, -1, (dataIndex, index) => dataIndex === index);
   };
 
-  instance.getRowIndexForDataIndex = function(rows, index) {
-    return findRow(rows, index, -1, function(dataIndex, index) {
-      return dataIndex === index;
-    });
-  };
-
-  instance.getPreviousRowIndexForDataIndex = function(rows, index) {
-    return findRow(rows, index - 1, -1, function(dataIndex, index) {
-      return dataIndex <= index;
-    });
-  };
-
-  instance.getCheckbox = function(row) {
-    return row.childNodes[0].childNodes[0];
+  instance.getPreviousRowIndexForDataIndex = (rows, index) => {
+    return findRow(rows, index - 1, -1, (dataIndex, index) => dataIndex <= index);
   };
 
   return instance;

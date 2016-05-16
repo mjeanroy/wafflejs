@@ -40,21 +40,19 @@
  * - When column is updated, associated dom nodes are updated.
  */
 
-var GridColumnsObserver = (function() {
+const GridColumnsObserver = (() => {
 
-  var tdIndexer = function(td) {
-    return td.getAttribute(DATA_WAFFLE_ID);
-  };
+  const tdIndexer = td => td.getAttribute(DATA_WAFFLE_ID);
 
-  var removeColumns = function(wrapper, columns) {
-    var removedNodes = [];
-    var childNodes = wrapper.childNodes;
-    for (var i = 0, size = childNodes.length; i < size; ++i) {
-      var row = childNodes[i];
-      var map = _.indexBy(row.childNodes, tdIndexer);
+  const removeColumns = (wrapper, columns) => {
+    const removedNodes = [];
+    const childNodes = wrapper.childNodes;
+    for (let i = 0, size = childNodes.length; i < size; ++i) {
+      const row = childNodes[i];
+      const map = _.indexBy(row.childNodes, tdIndexer);
 
-      for (var k = 0, count = columns.length; k < count; ++k) {
-        var childToRemove = map[columns[k].id];
+      for (let k = 0, count = columns.length; k < count; ++k) {
+        const childToRemove = map[columns[k].id];
         if (childToRemove) {
           removedNodes.push(row.removeChild(childToRemove));
         }
@@ -64,12 +62,10 @@ var GridColumnsObserver = (function() {
     return removedNodes;
   };
 
-  var insertBefore = function(parentNode, child, idx) {
-    return parentNode.insertBefore(child, parentNode.childNodes[idx] || null);
-  };
+  const insertBefore = (parentNode, child, idx) => parentNode.insertBefore(child, parentNode.childNodes[idx] || null);
 
   // Cell factories, related to parent tag name.
-  var cellFactories = {
+  const cellFactories = {
     tbody: function(column, nodeIndex, idx) {
       return GridBuilder.tbodyCell(this, this.$data.at(idx), column, nodeIndex);
     },
@@ -84,11 +80,11 @@ var GridColumnsObserver = (function() {
   // Cell updater.
   // This function will update cell at given index for
   // each row of given tag name.
-  var cellFactory = function(tagName, column, nodeIndex) {
+  const cellFactory = (tagName, column, nodeIndex) => {
     return function(tr, index) {
-      var oldNode = tr.childNodes[nodeIndex];
-      var newNode = cellFactories[tagName].call(this, column, nodeIndex, index);
-      var result = $vdom.mergeNodes(tr, oldNode, newNode);
+      const oldNode = tr.childNodes[nodeIndex];
+      const newNode = cellFactories[tagName].call(this, column, nodeIndex, index);
+      const result = $vdom.mergeNodes(tr, oldNode, newNode);
       return {
         oldNode: oldNode,
         newNode: result
@@ -97,7 +93,7 @@ var GridColumnsObserver = (function() {
   };
 
   // Update column flag according to grid options
-  var updateColumn = function(grid, column) {
+  const updateColumn = (grid, column) => {
     // Update draggable flag
     column.draggable = !!column.draggable || !!grid.isDraggable();
 
@@ -106,45 +102,39 @@ var GridColumnsObserver = (function() {
     }
   };
 
-  var instance = {
+  const instance = {
     // Apply columns changes to grid.
     on: function(changes) {
-      _.forEach(changes, function(change) {
-        var fnName = 'on' + $util.capitalize(change.type);
+      _.forEach(changes, change => {
+        const fnName = 'on' + $util.capitalize(change.type);
         instance[fnName].call(this, change);
-      }, this);
+      });
 
       return this;
     },
 
     // Update columns on splice change.
     onSplice: function(change) {
-      var tbody = this.$tbody[0];
-      var thead = this.hasHeader() ? this.$thead[0] : null;
-      var tfoot = this.hasFooter() ? this.$tfoot[0] : null;
+      const tbody = this.$tbody[0];
+      const thead = this.hasHeader() ? this.$thead[0] : null;
+      const tfoot = this.hasFooter() ? this.$tfoot[0] : null;
 
-      var hasCheckbox = this.hasCheckbox();
-      var index = change.index;
-      var added = change.added;
-      var addedCount = change.addedCount;
-      var removedData = change.removed;
+      const hasCheckbox = this.hasCheckbox();
+      const index = change.index;
+      const added = change.added;
+      const addedCount = change.addedCount;
+      const removedData = change.removed;
 
-      var theadRemovedNodes = [];
-      var tbodyRemovedNodes = [];
-      var tfootRemovedNodes = [];
+      const theadRemovedNodes = [];
+      const tbodyRemovedNodes = [];
+      const tfootRemovedNodes = [];
 
-      var $data = this.$data;
-      var $columns = this.$columns;
+      const $data = this.$data;
+      const $columns = this.$columns;
 
-      var i;
-      var k;
-      var idx;
-      var tr;
-      var dataSize;
+      const removedCount = removedData.length;
 
-      var removedCount = removedData.length;
-
-      var hasDiff = removedCount > 0 || addedCount > 0;
+      const hasDiff = removedCount > 0 || addedCount > 0;
       if (hasDiff && this.isResizable()) {
         // Columns have been added or removed, a new resize should be applied
         this.resize();
@@ -162,30 +152,30 @@ var GridColumnsObserver = (function() {
         }
       }
 
-      var theadAddedNodes = [];
-      var tbodyAddedNodes = [];
-      var tfootAddedNodes = [];
+      const theadAddedNodes = [];
+      const tbodyAddedNodes = [];
+      const tfootAddedNodes = [];
 
       // Insert new columns
       if (addedCount > 0) {
         // Update header & footer
-        for (i = 0; i < addedCount; ++i) {
-          idx = index + i;
+        for (let i = 0; i < addedCount; ++i) {
+          let idx = index + i;
 
-          var column = added[i];
+          const column = added[i];
 
           // Update column flags
           updateColumn(this, column);
 
           if (thead) {
-            var th1 = GridBuilder.theadCell(this, column, idx);
-            tr = thead.childNodes[0];
+            const th1 = GridBuilder.theadCell(this, column, idx);
+            let tr = thead.childNodes[0];
             theadAddedNodes.push(insertBefore(tr, th1, hasCheckbox ? idx + 1 : idx));
           }
 
           if (tfoot) {
-            var th2 = GridBuilder.tfootCell(this, column, idx);
-            tr = tfoot.childNodes[0];
+            const th2 = GridBuilder.tfootCell(this, column, idx);
+            let tr = tfoot.childNodes[0];
             tfootAddedNodes.push(insertBefore(tr, th2, hasCheckbox ? idx + 1 : idx));
           }
         }
@@ -194,32 +184,32 @@ var GridColumnsObserver = (function() {
         // It is important to run through tbody nodes (and not data collection), since
         // some data may have been added, and associate change is still pending (so row
         // are not added yet).
-        for (k = 0, dataSize = tbody.childNodes.length; k < dataSize; ++k) {
-          tr = tbody.childNodes[k];
+        for (let k = 0, dataSize = tbody.childNodes.length; k < dataSize; ++k) {
+          let tr = tbody.childNodes[k];
 
           // Index current cell
           // If grid has already been rendered due to a previous change,
           // columns may already be here
-          var map = _.indexBy(tr.childNodes, tdIndexer);
+          const map = _.indexBy(tr.childNodes, tdIndexer);
 
           // We should retrieve data by its id
           // It is really important to do this way since data may have been unshift
           // or spliced at an arbitrary index, so row index may not be sync with data index
           // at this step (it will be updated by a pending change).
-          var dataId = tr.getAttribute(DATA_WAFFLE_ID);
-          var data = $data.byKey(dataId);
+          const dataId = tr.getAttribute(DATA_WAFFLE_ID);
+          const data = $data.byKey(dataId);
 
-          for (i = 0; i < addedCount; ++i) {
-            idx = index + i;
+          for (let i = 0; i < addedCount; ++i) {
+            let idx = index + i;
 
-            var currentColumn = added[i];
-            var columnId = currentColumn.id;
+            const currentColumn = added[i];
+            const columnId = currentColumn.id;
             if (map[columnId]) {
               // Remove, it will be added right after at the right position
               tr.removeChild(map[columnId]);
             }
 
-            var td = GridBuilder.tbodyCell(this, data, $columns.at(idx), idx);
+            const td = GridBuilder.tbodyCell(this, data, $columns.at(idx), idx);
             tbodyAddedNodes.push(insertBefore(tr, td, hasCheckbox ? idx + 1 : idx));
           }
         }
@@ -228,7 +218,7 @@ var GridColumnsObserver = (function() {
       if (hasDiff) {
         // Editable column may have been added, or editable columns
         // may have been removed, so we should bind or unbind event.
-        var isEditable = this.isEditable();
+        const isEditable = this.isEditable();
         if (addedCount > 0 && isEditable) {
           GridDomBinders.bindEdition(this);
         } else if (removedCount > 0 && !isEditable) {
@@ -257,26 +247,26 @@ var GridColumnsObserver = (function() {
 
     // Column has been updated
     onUpdate: function(change) {
-      var index = change.index;
-      var nodeIndex = this.hasCheckbox() ? index + 1 : index;
-      var column = this.$columns.at(index);
+      const index = change.index;
+      const nodeIndex = this.hasCheckbox() ? index + 1 : index;
+      const column = this.$columns.at(index);
 
       // Update column flags
       updateColumn(this, column);
 
-      var iteratee = function(tagName) {
-        var acc = [
+      const iteratee = function(tagName) {
+        let acc = [
           [], // Store old nodes
           []  // Store new nodes
         ];
 
-        var el = this['$' + tagName];
+        const el = this['$' + tagName];
 
         if (el) {
-          var childNodes = el[0].childNodes;
-          var factory = cellFactory.call(this, tagName, column, nodeIndex);
-          var fn = function(acc, tr, index) {
-            var result = factory.call(this, tr, index);
+          const childNodes = el[0].childNodes;
+          const factory = cellFactory.call(this, tagName, column, nodeIndex);
+          const fn = function(acc, tr, index) {
+            const result = factory.call(this, tr, index);
             acc[0].push(result.oldNode);
             acc[1].push(result.newNode);
             return acc;
@@ -289,7 +279,7 @@ var GridColumnsObserver = (function() {
       };
 
       // Iterate for each section
-      var results = _.map([THEAD, TFOOT, TBODY], iteratee, this);
+      const results = _.map([THEAD, TFOOT, TBODY], iteratee, this);
 
       // Update editable state
       if (column.editable) {

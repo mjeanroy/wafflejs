@@ -30,7 +30,7 @@
 /* global DATA_WAFFLE_CID */
 /* exported NgCompilator */
 
-var NgCompilator = (function() {
+const NgCompilator = (() => {
 
   // Store created child scopes to be able to destroy it properly.
   // In previous releases of angular, we could rely on core
@@ -39,25 +39,25 @@ var NgCompilator = (function() {
   // This is a dictionnary:
   // - Each row has a unique cid (accross all grids).
   // - This dictionnary associate row cid to the scope.
-  var scopes = new HashMap();
+  const scopes = new HashMap();
 
   // Compile row (i.e associate row to a newly created scope).
   // A new scope will be created inheriting from the parent scope.
   // This scope will store new variables:
   // - The data.
   // - Index of data.
-  var ngCompile = function(parentScope, node, data, index) {
-    var $scope = parentScope.$new();
+  const ngCompile = (parentScope, node, data, index) => {
+    const $scope = parentScope.$new();
 
     // Add data to child scope
     $scope.$data = data;
     $scope.$index = index;
 
     // Store scope to be able to destroy it later
-    var cid = node.getAttribute(DATA_WAFFLE_CID);
+    const cid = node.getAttribute(DATA_WAFFLE_CID);
 
     // If a current scope exist, destroy it.
-    var currentScope = scopes.get(cid);
+    const currentScope = scopes.get(cid);
     if (currentScope) {
       currentScope.$destroy();
     }
@@ -71,11 +71,11 @@ var NgCompilator = (function() {
   // Refresh scope:
   // - Destroy old scope.
   // - Recreate new one.
-  var refreshScope = function(node) {
-    var cid = node.getAttribute(DATA_WAFFLE_CID);
+  const refreshScope = node => {
+    const cid = node.getAttribute(DATA_WAFFLE_CID);
 
     if (cid) {
-      var scope = scopes.get(cid);
+      const scope = scopes.get(cid);
       if (scope) {
         node = ngCompile(scope.$parent, node, scope.$data, scope.$index);
       }
@@ -88,16 +88,16 @@ var NgCompilator = (function() {
   // If first argument is an array, then each scope associated to the given
   // rows will be destroyed. If it is not an array, then a single scope will
   // be destroyed.
-  var ngDestroy = function(cids) {
+  const ngDestroy = cids => {
     if (!_.isArray(cids)) {
       cids = [cids];
     }
 
     // Destroy each scope
-    _.forEach(cids, function(cid) {
+    _.forEach(cids, cid => {
       // Get scope associated to row or cid.
-      var key = _.isElement(cid) ? cid.getAttribute(DATA_WAFFLE_CID) : cid;
-      var scope = scopes.get(key);
+      const key = _.isElement(cid) ? cid.getAttribute(DATA_WAFFLE_CID) : cid;
+      const scope = scopes.get(key);
 
       // If scope does not exist, then this is a no-op.
       if (scope) {
@@ -117,11 +117,11 @@ var NgCompilator = (function() {
 
   // Wrap original builder to build a custom scope for each created rows
   GridBuilder.tbodyRow = _.wrap(GridBuilder.tbodyRow, function(original, grid, data, idx) {
-    var tr = original.apply(this, _.rest(arguments));
+    let tr = original.apply(this, _.rest(arguments));
 
     // If ng-compilation is enable on the grid, then created row must
     // be linked to a new scope.
-    var ng = grid.options.ng;
+    const ng = grid.options.ng;
     if (ng) {
       tr = ngCompile(ng.$scope, tr, data, idx);
     }
@@ -133,11 +133,11 @@ var NgCompilator = (function() {
   // and new row. It means that temporary scope may have been created: we
   // have to destroy it properly to prevent memory leaks.
   $vdom.mergeNodes = _.wrap($vdom.mergeNodes, function(original, parent, oldNode, newNode) {
-    var result = original.apply(this, _.rest(arguments));
+    const result = original.apply(this, _.rest(arguments));
 
     // If merged node is a row, then a scope may have been created.
     if (result.tagName === 'TR') {
-      var cid = newNode.getAttribute(DATA_WAFFLE_CID);
+      const cid = newNode.getAttribute(DATA_WAFFLE_CID);
       if (cid) {
         ngDestroy(cid);
       }

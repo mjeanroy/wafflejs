@@ -28,7 +28,7 @@
 
 // Override default options.
 angular.extend(Grid.options, {
-  key: function(o) {
+  key: o => {
     // Mimic ngRepeat directive
     // By default, it add an attribute called $$hashKey to track same instances.
     return (o.$$hashKey = o.$$hashKey || _.uniqueId());

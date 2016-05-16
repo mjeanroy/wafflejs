@@ -35,16 +35,16 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
     require: '?ngModel',
     templateUrl: 'views/waffle.html',
 
-    link: function(scope, element, attrs, ngModel) {
-      var unwatchers = [];
-      var noop = _.noop;
+    link: (scope, element, attrs, ngModel) => {
+      let unwatchers = [];
+      const noop = _.noop;
 
       // Execute given function in a digest cycle.
       // If a digest cycle is already in progress, function
       // will be executed as a standard call (does not trigger
       // digest "aldready in progress" error).
-      var $apply = function(fn) {
-        var func = fn || noop;
+      const $apply = fn => {
+        const func = fn || noop;
         if ($rootScope.$$phase) {
           return func();
         } else {
@@ -54,9 +54,9 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
 
       // Debounced apply
       // Should be used to not trigger too many digest cycle
-      var $applyDebounced = _.debounce($apply, 200);
+      const $applyDebounced = _.debounce($apply, 200);
 
-      var table = element;
+      let table = element;
       if (table[0].tagName.toLowerCase() !== 'table') {
         table = table.children().eq(0);
       }
@@ -64,16 +64,14 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
       // Wrap function in a digest cycle
       // This will preserve arguments and "this" context
       // of original function.
-      var wrap = function(fn) {
+      const wrap = fn => {
         if (fn) {
           return function() {
-            var args = arguments;
-            var ctx = this;
+            let args = arguments;
+            let ctx = this;
 
             // Exec in a digest cycle
-            var result = $apply(function() {
-              return fn.apply(ctx, args);
-            });
+            const result = $apply(() => fn.apply(ctx, args));
 
             // Free memory
             ctx = args = null;
@@ -86,30 +84,30 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
       // Options can be defined in two ways
       // - Using waffle-options: one way binding, given option will never be updated
       // - Using waffle-grid: two way binding, grid attribute will be update with grid object
-      var options = (function() {
-        var attr = attrs.waffleOptions || attrs.waffleGrid;
+      let options = (() => {
+        const attr = attrs.waffleOptions || attrs.waffleGrid;
         return $parse(attr)(scope) || {};
       })();
 
       // Initialize options using html attributes
       // With angular, html attributes can be set on scope, that's why we use scope.$eval
-      _.forEach(_.keys(Grid.options), function(optName) {
+      _.forEach(_.keys(Grid.options), optName => {
         if (!options[optName] && attrs[optName]) {
           options[optName] = scope.$eval(attrs[optName]);
         }
       });
 
       // Map callbacks to dom attribute
-      var events = options.events = options.events || {};
+      const events = options.events = options.events || {};
 
-      _.forEach(_.keys(Grid.options.events), function(f) {
+      _.forEach(_.keys(Grid.options.events), f => {
         // Wrap original event callback
-        var fn = events[f] = wrap(events[f]);
+        const fn = events[f] = wrap(events[f]);
 
         // If an angular handler is defined, wrap event
         // callback to execute handler.
         if (attrs[f]) {
-          events[f] = wrap(function(evt) {
+          events[f] = wrap(evt => {
             // Execute original event callback.
             if (fn) {
               fn.call(this, evt);
@@ -125,8 +123,8 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
       });
 
       // Check if we should compile each row
-      var ngCompile = attrs.ngCompile || attrs.waffleNgCompile;
-      var useCompile = ngCompile && !!scope.$eval(ngCompile);
+      const ngCompile = attrs.ngCompile || attrs.waffleNgCompile;
+      const useCompile = ngCompile && !!scope.$eval(ngCompile);
       if (useCompile) {
         options.ng = {
           $scope: scope
@@ -134,7 +132,7 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
       }
 
       // Create grid object
-      var grid = Waffle.create(table, options);
+      let grid = Waffle.create(table, options);
 
       // If grid use ng-compilation, then we should destroy scopes when rows
       // are removed.
@@ -146,23 +144,19 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
       // - When column collection is spliced: if new cell are added, then scope
       //   must be updated because dom representation has changed.
       if (useCompile) {
-        _.forEach(['rendered', 'dataspliced', 'filterupdated'], function(evtName) {
-          grid.addEventListener(evtName, function(e) {
-            _.forEach(e.details.removedNodes, function(node) {
-              NgCompilator.destroy(node);
-            });
+        _.forEach(['rendered', 'dataspliced', 'filterupdated'], evtName => {
+          grid.addEventListener(evtName, e => {
+            _.forEach(e.details.removedNodes, node => NgCompilator.destroy(node));
           });
         });
 
-        grid.addEventListener('columnsspliced', function() {
-          _.forEach(grid.$tbody[0].childNodes, function(node) {
-            NgCompilator.refresh(node);
-          });
+        grid.addEventListener('columnsspliced', () => {
+          _.forEach(grid.$tbody[0].childNodes, node =>  NgCompilator.refresh(node));
         });
       }
 
       // Implement two-ways binding and set it to grid attribute
-      var setter = $parse(attrs.waffleGrid).assign || _.noop;
+      let setter = $parse(attrs.waffleGrid).assign || _.noop;
       setter(scope, grid);
 
       // When something happen, we need to launch a new digest phase if needed.
@@ -172,8 +166,8 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
       // current selection. If grid is not selectable, then
       // this attribute is useless.
       if (grid.isSelectable()) {
-        grid.addEventListener('selectionchanged', function(event) {
-          $apply(function() {
+        grid.addEventListener('selectionchanged', event => {
+          $apply(() => {
             if (ngModel) {
               ngModel.$setViewValue(event.details.selection);
             }
@@ -182,47 +176,36 @@ waffleModule.directive('waffle', ['$parse', '$rootScope', '$interpolate', functi
 
         if (ngModel) {
           // Update selection when ngModel value is updated from outside
-          ngModel.$formatters.push(function(value) {
+          ngModel.$formatters.push(value => {
             grid.selection().reset(value);
             return value;
           });
 
           // Override: ngModel is empty means that selection is not defined
           // or is an empty array
-          ngModel.$isEmpty = function(value) {
-            return !value || !value.length;
-          };
+          ngModel.$isEmpty = value => !value || !value.length;
         }
       }
 
       // Watch filter if it specified.
-      var filterAttr = _.find(['waffleFilter', 'filter'], function(attrName) {
-        return _.has(attrs, attrName);
-      });
+      const filterAttr = _.find(['waffleFilter', 'filter'], attrName => _.has(attrs, attrName));
 
       if (filterAttr) {
         // Check if attribute must be interpolated.
         // If attribute is not an interpolated attribute, then interpolate function will return undefined,
         // in this case, attribute will be read using $parse service.
-        var evalFn = $interpolate(element.attr(attrs.$attr[filterAttr]), true) || $parse(attrs[filterAttr]);
+        const evalFn = $interpolate(element.attr(attrs.$attr[filterAttr]), true) || $parse(attrs[filterAttr]);
 
-        var updateFilter = function(newValue) {
-          return grid.filter(newValue);
-        };
-
-        var readFilterValue = function() {
-          return evalFn(scope);
-        };
+        const updateFilter = newValue => grid.filter(newValue);
+        const readFilterValue = () => evalFn(scope);
 
         unwatchers.push(scope.$watchCollection(readFilterValue, updateFilter));
       }
 
       // Destroy grid when scope is destroyed
-      scope.$on('$destroy', function() {
+      scope.$on('$destroy', () => {
         // Unwatch everything
-        _.forEach(unwatchers, function(unwatcher) {
-          unwatcher();
-        });
+        _.forEach(unwatchers, unwatcher => unwatcher());
 
         // Destroy child scopes
         if (useCompile) {

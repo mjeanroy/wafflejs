@@ -35,7 +35,7 @@
  */
 
 // Map functions that already exist in angular.js
-angular.forEach(['noop', 'identity', 'isUndefined', 'isFunction', 'isObject', 'isArray', 'isNumber', 'isDate', 'isElement', 'isString', 'extend'], function(fn) {
+angular.forEach(['noop', 'identity', 'isUndefined', 'isFunction', 'isObject', 'isArray', 'isNumber', 'isDate', 'isElement', 'isString', 'extend'], fn => {
   _[fn] = angular[fn];
 });
 
@@ -44,8 +44,8 @@ _.clone = angular.copy;
 
 // Rewrite simple forEach function since `angular.forEach` does not
 // play well with empty array-like object.
-_.forEach = function(array, iteratee, ctx) {
-  for (var i = 0, size = array.length; i < size; ++i) {
+_.forEach = (array, iteratee, ctx) => {
+  for (let i = 0, size = array.length; i < size; ++i) {
     iteratee.call(ctx, array[i], i, array);
   }
 };

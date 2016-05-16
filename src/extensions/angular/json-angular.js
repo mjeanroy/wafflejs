@@ -25,7 +25,7 @@
 /* global angular */
 /* exported $json */
 
-var $json = {
+const $json = {
   toJson: angular.toJson,
   fromJson: angular.fromJson
 };

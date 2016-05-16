@@ -28,12 +28,8 @@
 
 // Define Waffle as a global service
 waffleModule.provider('Waffle', function() {
-  this.$get = function() {
-    return Waffle;
-  };
+  this.$get = () => Waffle;
 
   // Map functions of Waffle to the provider
-  _.forEach(_.keys(Waffle), function(fn) {
-    this[fn] = Waffle[fn];
-  }, this);
+  _.forEach(_.keys(Waffle), fn => this[fn] = Waffle[fn]);
 });

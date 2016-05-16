@@ -31,12 +31,12 @@
 
 // Use $parse and $sanitize services from angularjs framework
 
-var $parse;
-var $sanitize;
-var $sniffer;
-var $compile;
+let $parse;
+let $sanitize;
+let $sniffer;
+let $compile;
 
-waffleModule.run(['$injector', '$log', '$filter', function($injector, $log, $filter) {
+waffleModule.run(['$injector', '$log', '$filter', ($injector, $log, $filter) => {
   // Service $parse is a mandatory module
   $parse = $injector.get('$parse');
   $sniffer = $injector.get('$sniffer');
@@ -53,8 +53,8 @@ waffleModule.run(['$injector', '$log', '$filter', function($injector, $log, $fil
   }
 
   // Override $renderers lookup
-  var $getRenderer = $renderers.$get;
-  $renderers.$get = function(name) {
+  const $getRenderer = $renderers.$get;
+  $renderers.$get = name => {
     // An angular fitler should be a waffle renderer.
     // Native waffle renderer should be check first.
     return $getRenderer(name) || $filter(name);

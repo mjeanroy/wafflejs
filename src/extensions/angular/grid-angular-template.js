@@ -24,6 +24,6 @@
 
 /* global waffleModule */
 
-waffleModule.run(['$templateCache', function($templateCache) {
+waffleModule.run(['$templateCache', $templateCache => {
   $templateCache.put('views/waffle.html', '<table></table>');
 }]);

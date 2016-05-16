@@ -25,4 +25,4 @@
 /* global angular */
 /* exported waffleModule */
 
-var waffleModule = angular.module('waffle', []);
+const waffleModule = angular.module('waffle', []);

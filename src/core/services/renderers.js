@@ -27,43 +27,31 @@
 /* global $util */
 /* exported $renderers */
 
-var $renderers = (function() {
+const $renderers = (() => {
   // Turn value to a valid string
-  var toString = function(value) {
-    return (value == null ? '' : value).toString();
-  };
+  const toString = value => (value == null ? '' : value).toString();
 
-  var o = {
+  const o = {
     // Simple renderer that just return same value
     $identity: _.identity,
 
     // Simple renderer that just return an empty value
     // Could be used to renderer a cell with always an empty value
-    $empty: function() {
-      return '';
-    },
+    $empty: () => '',
 
     // Render a value as a lower case string
-    $lowercase: function(value) {
-      return toString(value).toLowerCase();
-    },
+    $lowercase: value => toString(value).toLowerCase(),
 
     // Render a value as an upper case string
-    $uppercase: function(value) {
-      return toString(value).toUpperCase();
-    },
+    $uppercase: value => toString(value).toUpperCase(),
 
     // Render a value as a capitalized string
     // First character is changed to an uppercase character, other characters remains unchanged
-    $capitalize: function(value) {
-      return $util.capitalize(toString(value));
-    },
+    $capitalize: value => $util.capitalize(toString(value)),
 
     // Get renderer by its name
     // Could be overridden by custom lookup
-    $get: function(name) {
-      return o[name];
-    }
+    $get: name => o[name]
   };
 
   return o;

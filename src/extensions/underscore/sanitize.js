@@ -25,6 +25,4 @@
 /* global _ */
 /* exported $sanitize */
 
-var $sanitize = function(input) {
-  return _.escape(input);
-};
+const $sanitize = input => _.escape(input);

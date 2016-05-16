@@ -26,72 +26,64 @@
 /* global WaffleEvent */
 /* exported EventBus */
 
-var EventBus = (function() {
+const EventBus = (() => {
 
-  var formatEventName = function(type) {
-    return type.toLowerCase();
-  };
+  const formatEventName = type => type.toLowerCase();
 
-  var EventBus = function() {
-    this.$events = {};
-  };
+  return class EventBus {
+    constructor() {
+      this.$events = {};
+    }
 
-  EventBus.prototype = {
     // Add new event listener.
     // Event type is case insensitive.
-    addEventListener: function(type, listener) {
-      var name = formatEventName(type);
-      var events = this.$events;
-      var listeners = events[name] = events[name] || [];
+    addEventListener(type, listener) {
+      const name = formatEventName(type);
+      const events = this.$events;
+      const listeners = events[name] = events[name] || [];
       listeners.push(listener);
-    },
+    }
 
     // Remove event listener.
     // Event type is case insensitive.
-    removeEventListener: function(type, listener) {
-      var name = formatEventName(type);
-      var listeners = this.$events[name];
+    removeEventListener(type, listener) {
+      const name = formatEventName(type);
+      const listeners = this.$events[name];
 
       if (!listeners || !listeners.length) {
         return;
       }
 
-      this.$events[name] = _.reject(listeners, function(current) {
-        return current === listener;
-      });
-    },
+      this.$events[name] = _.reject(listeners, current => current === listener);
+    }
 
     // Dispatch new event.
     // Event type is case insensitive.
     // Last parameter will be set to the event details attribute.
-    dispatchEvent: function(grid, type, params) {
+    dispatchEvent(grid, type, params) {
       // Format event name
       // Event name should be case insensitive
-      type = formatEventName(type);
-
-      var listeners = this.$events[type];
+      const listeners = this.$events[formatEventName(type)];
       if (!listeners || !listeners.length) {
         return;
       }
 
       // Create WaffleEvent object
-      var evt = new WaffleEvent(type, grid, _.isFunction(params) ? params.call(grid) : params);
+      const args = _.isFunction(params) ? params.call(grid) : params;
+      const evt = new WaffleEvent(type, grid, args);
 
-      for (var i = 0, size = listeners.length; i < size; ++i) {
+      for (let i = 0, size = listeners.length; i < size; ++i) {
         try {
           listeners[i].call(grid, evt);
         } catch (e) {
           // Do not fail everything if one listener fail...
         }
       }
-    },
+    }
 
     // Clear events
-    clear: function() {
+    clear() {
       this.$events = {};
     }
   };
-
-  return EventBus;
-
 })();

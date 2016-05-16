@@ -32,48 +32,37 @@
  * Resize grid: compute new columns width and apply change events.
  */
 
-var GridResizer = (function() {
+const GridResizer = (() => {
 
-  var PX = 'px';
-  var PERCENT = 'percent';
-  var AUTO = 'auto';
-
-  var widthComputer = {};
-
-  widthComputer[PX] = function(newWidth) {
-    return $util.fromPx(newWidth);
+  const PX = 'px';
+  const PERCENT = 'percent';
+  const AUTO = 'auto';
+  const widthComputer = {
+    [PX]: newWidth => $util.fromPx(newWidth),
+    [PERCENT]: (newWidth, total) => $util.fromPercentage(newWidth) * total / 100,
+    [AUTO]: (newWidth, total, size) => total / size
   };
 
-  widthComputer[PERCENT] = function(newWidth, total) {
-    return $util.fromPercentage(newWidth) * total / 100;
-  };
-
-  widthComputer[AUTO] = function(newWidth, total, size) {
-    return total / size;
-  };
-
-  var o = {
+  const o = {
     // Resize grid.
-    resize: function(grid) {
-      o.applySize(grid);
-    },
+    resize: grid => o.applySize(grid),
 
     // Apply new size on the grid.
-    applySize: function(grid) {
-      var size = grid.options.size;
+    applySize: grid => {
+      const size = grid.options.size;
 
       // Get table size
       // These properties may be some external functions
-      var tableWidth = _.result(size, 'width');
-      var tableHeight = _.result(size, 'height');
+      const tableWidth = _.result(size, 'width');
+      const tableHeight = _.result(size, 'height');
 
       // Check if grid has fixed size
-      var isFixedWidth = tableWidth && tableWidth !== AUTO;
-      var isFixedHeight = tableHeight && tableHeight !== AUTO;
+      const isFixedWidth = tableWidth && tableWidth !== AUTO;
+      const isFixedHeight = tableHeight && tableHeight !== AUTO;
 
       // Fix table width using inline styles
       if (isFixedWidth) {
-        var pxWidth = $util.toPx(tableWidth);
+        const pxWidth = $util.toPx(tableWidth);
         grid.$table.css({
           width: pxWidth,
           maxWidth: pxWidth,
@@ -83,14 +72,14 @@ var GridResizer = (function() {
 
       // Fix table height using inline styles
       if (isFixedHeight) {
-        var pxHeight = $util.toPx(tableHeight);
+        const pxHeight = $util.toPx(tableHeight);
         grid.$tbody.css({
           maxHeight: pxHeight
         });
       }
 
       // Compute available space
-      var rowWidth = isFixedWidth ? $util.fromPx(tableWidth) : null;
+      let rowWidth = isFixedWidth ? $util.fromPx(tableWidth) : null;
 
       // Size is not explicitly fixed, try to get width from real dom element
       // This allow size to be defined with css rules
@@ -108,18 +97,16 @@ var GridResizer = (function() {
       }
 
       // Now, we can update column width
-      var columns = grid.$columns;
-      var diff = o.computeWidth(rowWidth, columns);
+      const columns = grid.$columns;
+      const diff = o.computeWidth(rowWidth, columns);
 
       if (diff.length > 0) {
         // If a pending change is already here for this column, then do not trigger
         // a second one since the first will be enough to update column
-        var pendingChanges = _.indexBy(columns.pendingChanges(), function(change) {
-          return change.type + '_' + change.index;
-        });
+        const pendingChanges = _.indexBy(columns.pendingChanges(), change => change.type + '_' + change.index);
 
-        for (var i = 0, ln = diff.length; i < ln; ++i) {
-          var index = columns.indexOf(diff[i]);
+        for (let i = 0, ln = diff.length; i < ln; ++i) {
+          const index = columns.indexOf(diff[i]);
           if (!_.has(pendingChanges, 'update_' + index)) {
             // We can trigger the update
             columns.notifyUpdate(index);
@@ -131,18 +118,18 @@ var GridResizer = (function() {
     },
 
     // Compute width for each columns
-    computeWidth: function(totalWidth, columns) {
-      var remainingSpace = totalWidth;
-      var constrainedColumnCount = 0;
+    computeWidth: (totalWidth, columns) => {
+      let remainingSpace = totalWidth;
+      let constrainedColumnCount = 0;
 
-      var mapWidth = new HashMap();
+      const mapWidth = new HashMap();
 
       // Split columns into groups:
       // - Group with fixed width.
       // - Group with width that must be computed using percentage of remaining space.
       // - Group with width that should expand to remaining space.
-      var groups = columns.groupBy(function(column) {
-        var width = _.result(column, 'width');
+      const groups = columns.groupBy(column => {
+        const width = _.result(column, 'width');
 
         // Track width
         mapWidth.put(column.id, width);
@@ -163,17 +150,17 @@ var GridResizer = (function() {
       });
 
       // Track changes
-      var diff = [];
+      const diff = [];
 
       // Now, update widths for each groups
-      _.forEach([PX, PERCENT, AUTO], function(group) {
-        var cols = groups[group];
+      _.forEach([PX, PERCENT, AUTO], group => {
+        const cols = groups[group];
         if (cols) {
-          var total = remainingSpace;
-          var size = cols.length;
+          const total = remainingSpace;
+          const size = cols.length;
 
-          _.forEach(cols, function(column) {
-            var computedWidth = widthComputer[group](mapWidth.get(column.id), total, size);
+          _.forEach(cols, column => {
+            const computedWidth = widthComputer[group](mapWidth.get(column.id), total, size);
 
             // Update computed width
             if (computedWidth !== column.computedWidth) {

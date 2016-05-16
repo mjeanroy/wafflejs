@@ -25,38 +25,23 @@
 /* global _ */
 /* exported $parsers */
 
-var $parsers = (function() {
+const $parsers = (() => {
 
-  var toNumber = function(value) {
-    return Number(value);
-  };
-
-  var toBoolean = function(value) {
-    return !!value;
-  };
-
-  var reducerFn = function(acc, fn) {
-    return fn(acc);
-  };
-
-  var reduce = function(array, acc) {
-    return _.reduce(array, reducerFn, acc);
-  };
-
-  var parsers = {
+  const toNumber = value => Number(value);
+  const toBoolean = value => !!value;
+  const reducerFn = (acc, fn) => fn(acc);
+  const reduce = (array, acc) => _.reduce(array, reducerFn, acc);
+  const parsers = {
     number: [toNumber],
     checkbox: [toBoolean]
   };
 
   return {
-    $add: function(type, fn) {
-      parsers[type] = (parsers[type] || []).concat(fn);
-      return this;
-    },
+    $add: (type, fn) =>  parsers[type] = (parsers[type] || []).concat(fn),
 
     // Apply formatting.
-    $format: function(type, value) {
-      var array = parsers[type];
+    $format: (type, value) => {
+      const array = parsers[type];
       return array ? reduce(array, value) : value;
     }
   };

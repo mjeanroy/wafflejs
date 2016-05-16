@@ -26,40 +26,39 @@
 /* global $sniffer */
 /* exported $events */
 
-var $events = (function() {
+const $events = (() => {
 
-  var INPUT_EVT = 'input';
-  var CHANGE_EVT = 'change';
-  var KEYUP_EVT = 'keyup';
-  var SPACE = ' ';
+  const INPUT_EVT = 'input';
+  const CHANGE_EVT = 'change';
+  const KEYUP_EVT = 'keyup';
+  const SPACE = ' ';
 
   var defaultEvents = {
     checkbox: CHANGE_EVT,
   };
 
-  var inputEvents = function() {
-    var inputEvt = $sniffer.hasEvent(INPUT_EVT) ? INPUT_EVT : KEYUP_EVT;
+  const inputEvents = () => {
+    const inputEvt = $sniffer.hasEvent(INPUT_EVT) ? INPUT_EVT : KEYUP_EVT;
     return inputEvt + SPACE + CHANGE_EVT;
   };
 
   return {
     // Get default events for input type.
-    $defaults: function(type) {
-      return defaultEvents[type] || inputEvents();
-    },
+    $defaults: type => defaultEvents[type] || inputEvents(),
 
     // Parse events list to produce a string containing only
     // unique events.
     // Each trailing spaces is automatically removed.
     // Running time: 0(n).
-    $parse: function(events) {
-      var results = [];
-      var lastChar;
-      var pendingEvt = '';
-      var map = {};
+    $parse: events => {
+      const results = [];
+      const map = {};
 
-      for (var i = 0, size = events.length; i < size; ++i) {
-        var currentChar = events.charAt(i);
+      let lastChar;
+      let pendingEvt = '';
+
+      for (let i = 0, size = events.length; i < size; ++i) {
+        const currentChar = events.charAt(i);
 
         if (currentChar !== SPACE) {
           pendingEvt += currentChar;

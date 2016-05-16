@@ -55,7 +55,7 @@ var Collection = (function() {
     try {
       var obj = {};
       obj[0] = 1;
-      return !!ArrayProto.toString.call(obj);
+      return !!ArrayProto.toLocaleString.call(obj);
     } catch (error) {
       return false;
     }

@@ -32,9 +32,9 @@
  * This implementation should never be published.
  */
 
-var $ = (function() {
+const $ = (() => {
 
-  var JqLite = function(nodes) {
+  const JqLite = function(nodes) {
     if (nodes instanceof JqLite) {
       return nodes;
     }
@@ -49,9 +49,7 @@ var $ = (function() {
       nodes = [nodes];
     }
 
-    _.forEach(nodes, function(node, idx) {
-      this[idx] = node;
-    }, this);
+    _.forEach(nodes, (node, idx) => this[idx] = node);
 
     this.length = nodes.length;
 
@@ -62,7 +60,7 @@ var $ = (function() {
   };
 
   // Bind event
-  var bind = function($o, event, callback, node) {
+  const bind = ($o, event, callback, node) => {
     node.addEventListener(event, callback);
 
     // Track event
@@ -74,13 +72,11 @@ var $ = (function() {
   };
 
   // Unbind event
-  var unbind = function($o, event, callback, node) {
-    node.removeEventListener(event, callback);
-  };
+  const unbind = ($o, event, callback, node) => node.removeEventListener(event, callback);
 
   // Iterate over all internal elements applying given function
   // and return current context value
-  var iterate = function($o, fn) {
+  const iterate = ($o, fn) => {
     _.forEach($o, fn, $o);
     return $o;
   };
@@ -88,10 +84,10 @@ var $ = (function() {
   JqLite.prototype = {
     // Get the children of each element in the set of matched elements.
     children: function() {
-      var children = [];
+      const children = [];
 
-      iterate(this, function(node) {
-        _.forEach(node.childNodes, function(childNode) {
+      iterate(this, node => {
+        _.forEach(node.childNodes, childNode => {
           if (childNode.nodeType === 1) {
             children.push(childNode);
           }
@@ -108,10 +104,10 @@ var $ = (function() {
 
     // Attach event(s)
     on: function(events, callback) {
-      var array = events.indexOf(' ') >= 0 ? events.split(' ') : [events];
+      const array = events.indexOf(' ') >= 0 ? events.split(' ') : [events];
 
-      for (var i = 0, size = array.length; i < size; ++i) {
-        for (var k = 0, ln = this.length; k < ln; ++k) {
+      for (let i = 0, size = array.length; i < size; ++i) {
+        for (let k = 0, ln = this.length; k < ln; ++k) {
           bind(this, array[i], callback, this[k]);
         }
       }
@@ -121,20 +117,19 @@ var $ = (function() {
 
     // Detach events
     off: function(events, listener) {
-      var array = events ?
+      const array = events ?
         (events.indexOf(' ') >= 0 ? events.split(' ') : [events]) :
         [];
 
-      var nbEvents = array.length;
+      const nbEvents = array.length;
+      const $$events = [];
 
-      var $$events = [];
+      for (let i = 0, size = this.$$events.length; i < size; ++i) {
+        const e = this.$$events[i];
 
-      for (var i = 0, size = this.$$events.length; i < size; ++i) {
-        var e = this.$$events[i];
-        var found = nbEvents === 0;
-
-        for (var k = 0; k < nbEvents; ++k) {
-          var current = array[k];
+        let found = nbEvents === 0;
+        for (let k = 0; k < nbEvents; ++k) {
+          const current = array[k];
           if ((!current || e.event === current) && (!listener || e.callback === listener)) {
             found = true;
             break;
@@ -153,7 +148,7 @@ var $ = (function() {
 
     // Clear node
     empty: function() {
-      return iterate(this, function(node) {
+      return iterate(this, node => {
         while (node.firstChild) {
           node.removeChild(node.firstChild);
         }
@@ -162,99 +157,92 @@ var $ = (function() {
 
     // Append node
     append: function(childNode) {
-      return iterate(this, function(node, idx, collection) {
-        var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+      return iterate(this, (node, idx, collection) => {
+        const clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
         node.appendChild(clone);
       });
     },
 
     // Prepend node
     prepend: function(childNode) {
-      return iterate(this, function(node, idx, collection) {
-        var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+      return iterate(this, (node, idx, collection) => {
+        const clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
         node.insertBefore(clone, node.childNodes[0]);
       });
     },
 
     // Append node after element
     after: function(childNode) {
-      return iterate(this, function(node, idx, collection) {
-        var clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
+      return iterate(this, (node, idx, collection) => {
+        const clone = idx === (collection.length - 1) ? childNode : childNode.cloneNode(true);
         node.parentNode.insertBefore(clone, node.nextSibling);
       });
     },
 
     // Add inline style
     css: function(propertyName, value) {
-      var styles;
-      var keys;
+      let styles;
+      let keys;
 
       if (_.isObject(propertyName)) {
         styles = propertyName;
         keys = _.keys(styles);
       } else {
-        styles = {};
-        styles[propertyName] = value;
+        styles = {
+          [propertyName]: value
+        };
+
         keys = [propertyName];
       }
 
-      return iterate(this, function(node) {
-        _.forEach(keys, function(propertyName) {
-          node.style[propertyName] = styles[propertyName];
-        });
+      return iterate(this, node => {
+        _.forEach(keys, propertyName => node.style[propertyName] = styles[propertyName]);
       });
     },
 
     // Add css class
     addClass: function(css) {
-      return iterate(this, function(node) {
-        var actualCss = node.className;
+      return iterate(this, node => {
+        const actualCss = node.className;
         node.className = (actualCss ? actualCss + ' ' : '') + css;
       });
     },
 
     // Remove a single class, multiple classes in the set of matched elements.
     removeClass: function(classes) {
-      var css = classes.split(' ');
-      var map = _.indexBy(css, function(c) {
-        return c;
-      });
+      const css = classes.split(' ');
+      const map = _.indexBy(css, c => c);
 
-      return iterate(this, function(node) {
-        var actualClasses = node.className;
-        var newClasses = _.filter(actualClasses.split(' '), function(c) {
-          return !map[c];
-        });
-
+      return iterate(this, node => {
+        const actualClasses = node.className;
+        const newClasses = _.filter(actualClasses.split(' '), c => !map[c]);
         node.className = newClasses.join(' ');
       });
     },
 
     // Set attribute to value
     attr: function(name, value) {
-      var values = name;
-      var keys;
+      let values = name;
+      let keys;
 
       if (arguments.length === 2) {
-        values = {};
-        values[name] = value;
+        values = {
+          [name]: value
+        };
+
         keys = [name];
       } else {
         keys = _.keys(values);
       }
 
-      return iterate(this, function(node) {
-        _.forEach(keys, function(k) {
-          node.setAttribute(k, values[k]);
-        });
+      return iterate(this, node => {
+        _.forEach(keys, k => node.setAttribute(k, values[k]));
       });
     },
 
     // Remove attribute
     removeAttr: function(name) {
-      return iterate(this, function(node) {
-        node.removeAttribute(name);
-      });
+      return iterate(this, node => node.removeAttribute(name));
     }
   };
 

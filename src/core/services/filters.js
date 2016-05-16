@@ -27,30 +27,24 @@
 /* global $parse */
 /* exported $filters */
 
-var $filters = (function() {
-  var toString = function(val) {
-    return val == null ? '' : val.toString();
-  };
+const $filters = (() => {
+  const toString = val => val == null ? '' : val.toString();
 
-  var $match = function(value, predicate, matcher) {
-    var str1 = toString(value);
-    var str2 = toString(predicate);
+  const $match = (value, predicate, matcher) => {
+    const str1 = toString(value);
+    const str2 = toString(predicate);
     return matcher(str1, str2);
   };
 
   // Case-insensitive matching
-  var $ciMatching = function(o1, o2) {
-    return o1.toLowerCase().indexOf(o2.toLowerCase()) >= 0;
-  };
+  const $ciMatching = (o1, o2) => o1.toLowerCase().indexOf(o2.toLowerCase()) >= 0;
 
-  var $contains = function(value, predicate) {
-    return $match(value, predicate, $ciMatching);
-  };
+  const $contains = (value, predicate) => $match(value, predicate, $ciMatching);
 
-  var createPredicateFromValue = function(predicateValue) {
-    var newPredicate = function(value) {
-      return _.some(_.keys(value), function(prop) {
-        var propValue = value[prop];
+  const createPredicateFromValue = predicateValue => {
+    const newPredicate = value => {
+      return _.some(_.keys(value), prop => {
+        const propValue = value[prop];
         return _.isObject(propValue) ?
           newPredicate(propValue) :
           $contains(value[prop], predicateValue);
@@ -60,35 +54,29 @@ var $filters = (function() {
     return newPredicate;
   };
 
-  var createPredicateFromObject = function(predicateObject) {
-    var predicates = _.map(_.keys(predicateObject), function(prop) {
-      return function(value) {
-        return $contains($parse(prop)(value), predicateObject[prop]);
-      };
+  const createPredicateFromObject = predicateObject => {
+    const predicates = _.map(_.keys(predicateObject), prop => {
+      return value => $contains($parse(prop)(value), predicateObject[prop]);
     });
 
-    return function(value) {
-      return _.every(predicates, function(predicate) {
-        return predicate(value);
-      });
-    };
+    return value => _.every(predicates, predicate => predicate(value));
   };
 
   // Create filter function from a custom predicate
   return {
-    $create: function(predicate) {
+    $create: predicate => {
       if (_.isFunction(predicate)) {
         // If it is already a function, return it.
         return predicate;
       }
 
       // Get appropriate factory
-      var predicateFactory = _.isObject(predicate) ?
+      const predicateFactory = _.isObject(predicate) ?
         createPredicateFromObject :
         createPredicateFromValue;
 
       // Create predicate function using factory
-      var predicateFn = predicateFactory(predicate);
+      const predicateFn = predicateFactory(predicate);
 
       // Store original predicate value
       predicateFn.$predicate = predicate;

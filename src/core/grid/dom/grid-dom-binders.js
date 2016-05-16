@@ -37,24 +37,24 @@
  * Bind DOM events on the grid.
  */
 
-var GridDomBinders = (function() {
+const GridDomBinders = (() => {
 
-  var unbind = function(grid, target, events, handlerName) {
-    var el = grid['$' + target];
+  const unbind = (grid, target, events, handlerName) => {
+    const el = grid['$' + target];
     if (el && grid.$$events[handlerName]) {
-      var handler = grid.$$events[handlerName];
+      const handler = grid.$$events[handlerName];
       el.off(handler.events, handler.handler);
       grid.$$events[handlerName] = null;
     }
   };
 
-  var bind = function(grid, target, events, handlerName) {
-    var el = grid['$' + target];
+  const bind = (grid, target, events, handlerName) => {
+    const el = grid['$' + target];
     if (!el) {
       return;
     }
 
-    var handler = grid.$$events[handlerName];
+    let handler = grid.$$events[handlerName];
 
     // If events is not the same value as previous handler, we need
     // to rebind everything.
@@ -74,30 +74,25 @@ var GridDomBinders = (function() {
   };
 
   // Save bytes
-  var CLICK = 'click';
+  const CLICK = 'click';
 
   // Create binder/unbinder for events.
-  var createDomBinding = function(o, name, fn) {
-    o['bind' + name] = function(grid) {
-      fn(grid, bind);
-    };
-
-    o['unbind' + name] = function(grid) {
-      fn(grid, unbind);
-    };
+  const createDomBinding = (o, name, fn) => {
+    o['bind' + name] = grid => fn(grid, bind);
+    o['unbind' + name] = grid => fn(grid, unbind);
   };
 
-  var instance = {
-    bindResize: function(grid) {
+  const instance = {
+    bindResize: grid => {
       if (!grid.$$events.onResize) {
-        var resizeFn = _.bind(grid.resize, grid);
+        const resizeFn = _.bind(grid.resize, grid);
         grid.$$events.onResize = _.debounce(resizeFn, 100);
         grid.$window = $(window);
         grid.$window.on('resize', grid.$$events.onResize);
       }
     },
 
-    unbindResize: function(grid) {
+    unbindResize: grid => {
       if (grid.$$events.onResize) {
         grid.$window.off('resize', grid.$$events.onResize);
         grid.$window = null;
@@ -105,35 +100,30 @@ var GridDomBinders = (function() {
     }
   };
 
-  var reducer = function(acc, column) {
-    return column.isEditable() ? acc + ' ' + column.editable.updateOn : acc;
-  };
-
-  var parseEvents = function(columns) {
-    return columns.reduce(reducer, '');
-  };
+  const reducer = (acc, column) => column.isEditable() ? acc + ' ' + column.editable.updateOn : acc;
+  const parseEvents = columns => columns.reduce(reducer, '');
 
   // Create bind/unbind functions for edition events.
-  createDomBinding(instance, 'Edition', function(grid, factory) {
-    var events = $events.$parse(parseEvents(grid.$columns));
+  createDomBinding(instance, 'Edition', (grid, factory) => {
+    const events = $events.$parse(parseEvents(grid.$columns));
     factory(grid, TBODY, events, 'onInputTbody');
   });
 
   // Create bind/unbind functions for selection events.
-  createDomBinding(instance, 'Selection', function(grid, factory) {
+  createDomBinding(instance, 'Selection', (grid, factory) => {
     factory(grid, THEAD, CLICK, 'onClickThead');
     factory(grid, TFOOT, CLICK, 'onClickTfoot');
     factory(grid, TBODY, CLICK, 'onClickTbody');
   });
 
   // Create bind/unbind functions for sort events.
-  createDomBinding(instance, 'Sort', function(grid, factory) {
+  createDomBinding(instance, 'Sort', (grid, factory) => {
     factory(grid, THEAD, CLICK, 'onClickThead');
     factory(grid, TFOOT, CLICK, 'onClickTfoot');
   });
 
   // Create bind/unbind functions for drag&drop events.
-  createDomBinding(instance, 'DragDrop', function(grid, factory) {
+  createDomBinding(instance, 'DragDrop', (grid, factory) => {
     factory(grid, TABLE, 'dragstart', 'onDragStart');
     factory(grid, TABLE, 'dragover', 'onDragOver');
     factory(grid, TABLE, 'dragend', 'onDragEnd');

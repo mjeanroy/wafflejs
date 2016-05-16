@@ -29,7 +29,7 @@
 
 var WaffleReactMixin = {
   // Get component default props.
-  getDefaultProps: function() {
+  getDefaultProps: () => {
     return {
       waffle: _.clone(Waffle.options)
     };
@@ -53,9 +53,7 @@ var WaffleReactMixin = {
   },
 
   // Update will be handled by Waffle.
-  shouldComponentUpdate: function() {
-    return false;
-  },
+  shouldComponentUpdate: () => false,
 
   // If state is updated, then render everything.
   componentDidUpdate: function() {

@@ -29,7 +29,7 @@
 /* global React */
 /* exported WaffleComponent */
 
-var WaffleComponent = React.createClass({
+const WaffleComponent = React.createClass({
   // React display name.
   displayName: 'Waffle',
 
@@ -39,21 +39,19 @@ var WaffleComponent = React.createClass({
   // Render a simple table.
   // Everything else will be rendered using Waffle.
   render: function() {
-    var $docCreate = $doc.create;
+    const $docCreate = $doc.create;
 
     // React will create element.
     $doc.create = React.createElement;
 
     // Get a local reference.
-    var grid = this.grid;
+    const grid = this.grid;
 
     // Initialize main dom nodes.
-    var children = [];
+    const children = [];
 
     // Append rows.
-    children.push(React.DOM.tbody(null, _.map(this.grid.visibleData(), function(current, idx) {
-      return GridBuilder.tbodyRow(grid, current, idx);
-    })));
+    children.push(React.DOM.tbody(null, _.map(this.grid.visibleData(), (current, idx) => GridBuilder.tbodyRow(grid, current, idx))));
 
     // Unshift header.
     if (grid.hasHeader()) {
@@ -66,11 +64,11 @@ var WaffleComponent = React.createClass({
     }
 
     // Initialize props.
-    var props = _.clone(this.props);
+    const props = _.clone(this.props);
 
     // Get css classes.
     // Do not forget to keep original classes.
-    var className = props.className || '';
+    let className = props.className || '';
     if (_.isArray(className)) {
       className = className.join(' ');
     }
@@ -82,7 +80,7 @@ var WaffleComponent = React.createClass({
     props.className = className;
 
     // Create react element.
-    var table = React.DOM.table(props, children);
+    const table = React.DOM.table(props, children);
 
     // Restore original function.
     $doc.create = $docCreate;

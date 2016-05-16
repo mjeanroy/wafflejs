@@ -52,178 +52,148 @@
 /* global TBODY */
 /* exported Grid */
 
-var Grid = (function() {
+const Grid = (() => {
 
   // Save bytes
-  var resultWith = $util.resultWith;
+  const resultWith = $util.resultWith;
 
-  // == Private utilities
-
-  // Get exisiting node or create it and append it to the table.
-  var createNode = function(tagName) {
-    // Get existing node or create it
-    var varName = '$' + tagName;
-    var $table = this.$table;
-
-    // Get it...
-    this[varName] = $($doc.byTagName(tagName, $table[0]));
-
-    // ... or create it !
-    if (!this[varName].length) {
-      this[varName] = $($doc[tagName]());
-    }
-
-    // Just append at the end of the table
-    $table.append(this[varName][0]);
-  };
-
-  var callbackWrapper = function(name) {
-    var fn = this.options.events[name];
-    if (fn) {
-      this.addEventListener(name.slice(2), this.options.events[name]);
-    }
-  };
-
-  var Constructor = function(node, options) {
-    if (!(this instanceof Constructor)) {
-      return new Constructor(node, options);
-    }
-
-    // Grid may be attached to a dom node later.
-    if (arguments.length === 0 || (!_.isElement(node) && !(node instanceof $))) {
-      options = node;
-      node = null;
-    }
-
-    // Initialize main table and default options
-    var table = node ? $(node)[0] : null;
-    var opts = this.options = options = options || {};
-    var defaultOptions = Constructor.options;
-
-    // Try to initialize options with default values
-    // - If option is already defined, use it (but initialize default values for nested object).
-    // - If option is not defined, try to get html value.
-    // - If option is still not defined, use default.
-    _.forEach(_.keys(defaultOptions), function(optName) {
-      var opt = opts[optName];
-      var def = defaultOptions[optName];
-
-      // Try to initialize from html
-      // If options is already defined, do not try to parse html
-      if (_.isUndefined(opt) && table) {
-        var attrName = $util.toSpinalCase(optName);
-        var htmlAttr = table.getAttribute('data-waffle-' + attrName) ||
-          table.getAttribute('waffle-' + attrName) ||
-          table.getAttribute('data-' + attrName) ||
-          table.getAttribute(attrName);
-
-        if (htmlAttr) {
-          opt = opts[optName] = $util.parse(htmlAttr);
-        }
+  class Grid {
+    constructor(node, options) {
+      // Grid may be attached to a dom node later.
+      if (arguments.length === 0 || (!_.isElement(node) && !(node instanceof $))) {
+        options = node;
+        node = null;
       }
 
-      // Initialize default values of nested objects
-      if (_.isObject(def) && (_.isObject(opt) || _.isUndefined(opt))) {
-        opt = opts[optName] = _.defaults(opt || {}, def);
-      }
+      // Initialize main table and default options
+      const table = node ? $(node)[0] : null;
+      const opts = this.options = options = options || {};
+      const defaultOptions = Grid.options;
 
-      // It it is still undefined, use default value
-      if (_.isUndefined(opt)) {
-        opt = opts[optName] = def;
-      }
-    });
+      // Try to initialize options with default values
+      // - If option is already defined, use it (but initialize default values for nested object).
+      // - If option is not defined, try to get html value.
+      // - If option is still not defined, use default.
+      _.forEach(_.keys(defaultOptions), optName => {
+        const def = defaultOptions[optName];
 
-    // Translate size to valid numbers.
-    opts.size = {
-      width: opts.size.width,
-      height: opts.size.height
-    };
+        let opt = opts[optName];
 
-    // Force scroll if height is specified.
-    opts.scrollable = opts.scrollable || !!opts.size.height;
+        // Try to initialize from html
+        // If options is already defined, do not try to parse html
+        if (_.isUndefined(opt) && table) {
+          const attrName = $util.toSpinalCase(optName);
+          const htmlAttr = table.getAttribute('data-waffle-' + attrName) ||
+            table.getAttribute('waffle-' + attrName) ||
+            table.getAttribute('data-' + attrName) ||
+            table.getAttribute(attrName);
 
-    var isSortable = this.isSortable();
-    var isDraggable = this.isDraggable();
-
-    if (opts.columns && (!isSortable || isDraggable)) {
-      // Force column not to be sortable
-      _.forEach(opts.columns, function(column) {
-        if (!isSortable) {
-          column.sortable = false;
+          if (htmlAttr) {
+            opt = opts[optName] = $util.parse(htmlAttr);
+          }
         }
 
-        // Force column to be draggable if flag is not set.
-        if (isDraggable) {
-          column.draggable = column.draggable == null ? true : !!column.draggable;
+        // Initialize default values of nested objects
+        if (_.isObject(def) && (_.isObject(opt) || _.isUndefined(opt))) {
+          opt = opts[optName] = _.defaults(opt || {}, def);
+        }
+
+        // It it is still undefined, use default value
+        if (_.isUndefined(opt)) {
+          opt = opts[optName] = def;
         }
       });
-    }
 
-    // Initialize data
-    this.$data = new Collection(opts.data, {
-      key: opts.key,
-      model: opts.model
-    });
+      // Translate size to valid numbers.
+      opts.size = {
+        width: opts.size.width,
+        height: opts.size.height
+      };
 
-    // Initialize columns
-    this.$columns = new Collection(opts.columns, {
-      key: 'id',
-      model: Column
-    });
+      // Force scroll if height is specified.
+      opts.scrollable = opts.scrollable || !!opts.size.height;
 
-    // Initialize selection.
-    this.$selection = new Collection([], this.$data.options());
+      const isSortable = this.isSortable();
+      const isDraggable = this.isDraggable();
 
-    // Initialize comparators.
-    this.$comparators = new Collection([], {
-      key: function(o) {
-        return o.id;
+      if (opts.columns && (!isSortable || isDraggable)) {
+        // Force column not to be sortable
+        _.forEach(opts.columns, column => {
+          if (!isSortable) {
+            column.sortable = false;
+          }
+
+          // Force column to be draggable if flag is not set.
+          if (isDraggable) {
+            column.draggable = column.draggable == null ? true : !!column.draggable;
+          }
+        });
       }
-    });
 
-    // Create event bus.
-    this.$bus = new EventBus();
+      // Initialize data
+      this.$data = new Collection(opts.data, {
+        key: opts.key,
+        model: opts.model
+      });
 
-    // Wrap callbacks to events
-    _.forEach(_.keys(opts.events), callbackWrapper, this);
+      // Initialize columns
+      this.$columns = new Collection(opts.columns, {
+        key: 'id',
+        model: Column
+      });
 
-    // Parse sortBy option.
-    this.sortBy(options.sortBy, false);
+      // Initialize selection.
+      this.$selection = new Collection([], this.$data.options());
 
-    // Attach dom node if it was specified.
-    if (table) {
-      this.attach(table);
+      // Initialize comparators.
+      this.$comparators = new Collection([], {
+        key: function(o) {
+          return o.id;
+        }
+      });
+
+      // Create event bus.
+      this.$bus = new EventBus();
+
+      // Wrap callbacks to events
+      _.forEach(_.keys(opts.events), name => {
+        const fn = this.options.events[name];
+        if (fn) {
+          this.addEventListener(name.slice(2), this.options.events[name]);
+        }
+      });
+
+      // Parse sortBy option.
+      this.sortBy(options.sortBy, false);
+
+      // Attach dom node if it was specified.
+      if (table) {
+        this.attach(table);
+      }
+
+      this.dispatchEvent('initialized');
     }
 
-    this.dispatchEvent('initialized');
-  };
-
-  // Create new grid
-  Constructor.create = function(table, options) {
-    return new Constructor(table, options);
-  };
-
-  Constructor.prototype = {
     // Attach table.
     // Note that once initialized, grid options should not be updated, so
     // updating attached table will not use html attributes.
-    attach: function(table) {
+    attach(table) {
       // First detach current dom node if it is already attached.
       if (this.$table) {
         this.detach();
       }
 
-      var $table = this.$table = $(table);
-      var isSortable = this.isSortable();
-      var isDraggable = this.isDraggable();
-      var isSelectable = this.isSelectable();
-      var isEditable = this.isEditable();
+      const $table = this.$table = $(table);
+      const isSortable = this.isSortable();
+      const isDraggable = this.isDraggable();
+      const isSelectable = this.isSelectable();
+      const isEditable = this.isEditable();
 
       // Add appropriate css to table
       $table.addClass(this.cssClasses().join(' '));
 
       // Create main nodes
-      var view = [TBODY];
+      const view = [TBODY];
 
       // Check if we should append table header
       if (this.hasHeader()) {
@@ -235,7 +205,22 @@ var Grid = (function() {
         view.push(TFOOT);
       }
 
-      _.forEach(view, createNode, this);
+      _.forEach(view, tagName => {
+        // Get existing node or create it
+        const varName = '$' + tagName;
+        const $table = this.$table;
+
+        // Get it...
+        this[varName] = $($doc.byTagName(tagName, $table[0]));
+
+        // ... or create it !
+        if (!this[varName].length) {
+          this[varName] = $($doc[tagName]());
+        }
+
+        // Just append at the end of the table
+        $table.append(this[varName][0]);
+      });
 
       // Observe collection to update grid accordingly
       this.$data.observe(GridDataObserver.on, this);
@@ -275,14 +260,14 @@ var Grid = (function() {
       this.dispatchEvent('attached');
 
       return this;
-    },
+    }
 
     // Detach table:
     // - Unbind dom events.
     // - Remove observers.
     // - Dispatch detach event.
-    detach: function() {
-      var $table = this.$table;
+    detach() {
+      const $table = this.$table;
       if ($table) {
         // Remove waffle classes.
         $table.removeClass(this.cssClasses().join(' '));
@@ -309,10 +294,10 @@ var Grid = (function() {
       }
 
       return this;
-    },
+    }
 
-    cssClasses: function() {
-      var classes = [CSS_GRID];
+    cssClasses() {
+      const classes = [CSS_GRID];
 
       if (this.isSelectable()) {
         classes.push(CSS_SELECTABLE);
@@ -323,44 +308,42 @@ var Grid = (function() {
       }
 
       return classes;
-    },
+    }
 
     // Get all rows.
     // An array is returned (not a NodeList).
-    rows: function() {
+    rows() {
       return _.toArray(this.$tbody[0].childNodes);
-    },
+    }
 
     // Get data collection
-    data: function() {
+    data() {
       return this.$data;
-    },
+    }
 
     // Get columns collection
-    columns: function() {
+    columns() {
       return this.$columns;
-    },
+    }
 
     // Get selection collection
-    selection: function() {
+    selection() {
       return this.$selection;
-    },
+    }
 
     // Check if grid hasat least
-    isEditable: function() {
-      return this.options.editable || this.$columns.some(function(column) {
-        return column.isEditable();
-      });
-    },
+    isEditable() {
+      return this.options.editable || this.$columns.some(column => column.isEditable());
+    }
 
     // Check if grid is sortable
-    isSortable: function() {
+    isSortable() {
       return this.options.sortable;
-    },
+    }
 
     // Check if grid is selectable
-    isSelectable: function(data) {
-      var selection = this.options.selection;
+    isSelectable(data) {
+      const selection = this.options.selection;
 
       // We are sure it is disable
       if (!selection || !selection.enable) {
@@ -368,37 +351,37 @@ var Grid = (function() {
       }
 
       return data ? resultWith(selection.enable, this, [data]) : true;
-    },
+    }
 
     // Check if grid is resizable
-    isResizable: function() {
-      var size = this.options.size;
+    isResizable() {
+      const size = this.options.size;
       return !!size.height || !!size.width;
-    },
+    }
 
     // Check if grid is scrollable.
-    isScrollable: function() {
+    isScrollable() {
       return this.options.scrollable;
-    },
+    }
 
     // Check if grid render checkbox as first column
-    hasCheckbox: function() {
+    hasCheckbox() {
       return this.isSelectable() && this.options.selection.checkbox;
-    },
+    }
 
     // Check if grid has a table header
-    hasHeader: function() {
+    hasHeader() {
       return this.options.view.thead;
-    },
+    }
 
     // Check if grid has a table footer
-    hasFooter: function() {
+    hasFooter() {
       return this.options.view.tfoot;
-    },
+    }
 
     // Without parameter, check if grid is selected.
     // If first parameter is set, check if data is selected.
-    isSelected: function(data) {
+    isSelected(data) {
       if (!this.isSelectable()) {
         return false;
       }
@@ -407,12 +390,12 @@ var Grid = (function() {
         return this.$selection.contains(data);
       }
 
-      var selectionSize = this.$selection.length;
+      const selectionSize = this.$selection.length;
       if (selectionSize === 0) {
         return false;
       }
 
-      var dataSize = this.$data.length;
+      let dataSize = this.$data.length;
 
       // If some data may not be selectable, then we should check size
       // against all selectable data.
@@ -421,75 +404,74 @@ var Grid = (function() {
       }
 
       return selectionSize >= dataSize;
-    },
+    }
 
     // Check if grid columns should be draggable by default.
-    isDraggable: function() {
+    isDraggable() {
       return !!this.options.dnd;
-    },
+    }
 
     // Check if given is visible (not filtered).
     // If data is visible, then a row should exist.
-    isVisible: function(current) {
-      var ctx = this.$data.ctx(current);
+    isVisible(current) {
+      const ctx = this.$data.ctx(current);
       return ctx && ctx.visible !== false;
-    },
+    }
 
     // Get only visible data.
     // An array will always be returned.
-    visibleData: function() {
-      var data = this.$data;
-      var filter = this.$filter;
+    visibleData() {
+      const data = this.$data;
+      const filter = this.$filter;
       return filter != null ? data.filter(this.isVisible, this) : data.toArray();
-    },
+    }
 
     // Render entire grid
-    render: function(async) {
+    render(async) {
       return this.renderHeader()
           .renderFooter()
           .renderBody(async)
           .clearChanges();
-    },
+    }
 
     // Render entire header of grid
-    renderHeader: function() {
+    renderHeader() {
       if (this.hasHeader()) {
-        var tr = GridBuilder.theadRow(this);
+        const tr = GridBuilder.theadRow(this);
         this.$thead.empty().append(tr);
       }
       return this;
-    },
+    }
 
     // Render entire footer of grid
-    renderFooter: function() {
+    renderFooter() {
       if (this.hasFooter()) {
-        var tr = GridBuilder.tfootRow(this);
+        const tr = GridBuilder.tfootRow(this);
         this.$tfoot.empty().append(tr);
       }
       return this;
-    },
+    }
 
     // Render entire body of grid
     // Each row is appended to a fragment in memory
     // This fragment will be appended once to tbody element to avoid unnecessary DOM access
     // If render is asynchronous, data will be split into chunks, each chunks will be appended
     // one by one using setTimeout to let the browser to be refreshed periodically.
-    renderBody: function(async) {
-      var asyncRender = async == null ? this.options.async : async;
-      var grid = this;
-      var oldNodes = this.rows();
+    renderBody(async) {
+      const asyncRender = async == null ? this.options.async : async;
 
-      var empty = _.once(function() {
-        grid.$tbody.empty();
-      });
+      let oldNodes = this.rows();
+      let grid = this;
 
-      var build = function(data, startIdx) {
-        var fragment = GridBuilder.tbodyRows(grid, data, startIdx);
+      var empty = _.once(() => grid.$tbody.empty());
+
+      var build = (data, startIdx) => {
+        const fragment = GridBuilder.tbodyRows(grid, data, startIdx);
         empty();
         grid.$tbody.append(fragment);
       };
 
-      var onEnded = function() {
+      var onEnded = () => {
         grid.$data.clearChanges();
 
         grid.dispatchEvent('rendered', {
@@ -503,7 +485,7 @@ var Grid = (function() {
       };
 
       // If grid is filtered, then we must only render visible data.
-      var dataToRender = this.$filter == null ? this.$data : this.visibleData();
+      const dataToRender = this.$filter == null ? this.$data : this.visibleData();
       if (asyncRender) {
         $util.asyncTask($util.split(dataToRender, 200), 10, build, onEnded);
       } else {
@@ -512,37 +494,37 @@ var Grid = (function() {
       }
 
       return this;
-    },
+    }
 
     // Resize grid with new values
-    resize: function() {
+    resize() {
       GridResizer.resize(this);
       return this;
-    },
+    }
 
     // Select everything
-    select: function() {
+    select() {
       if (this.$selection.length !== this.$data.length) {
         this.$selection.add(this.$data.filter(this.isSelectable, this));
       }
 
       return this;
-    },
+    }
 
     // Deselect everything
-    deselect: function() {
+    deselect() {
       if (!this.$selection.isEmpty()) {
         this.$selection.clear();
       }
 
       return this;
-    },
+    }
 
     // Sort grid by fields
     // Second parameter is a parameter used internally to disable automatic rendering after sort
-    sortBy: function(sortBy, $$render) {
+    sortBy(sortBy, $$render) {
       // Store new sort
-      var comparators = sortBy != null ? GridComparator.of(this, sortBy) : [];
+      const comparators = sortBy != null ? GridComparator.of(this, sortBy) : [];
 
       // Check if sort predicate has changed
       // Compare array instance, or serialized array to string and compare string values (faster than array comparison)
@@ -554,19 +536,19 @@ var Grid = (function() {
       this.$data.sort(GridComparator.createComparator(this));
 
       if (this.$table) {
-        var hasHeader = this.hasHeader();
-        var hasFooter = this.hasFooter();
+        const hasHeader = this.hasHeader();
+        const hasFooter = this.hasFooter();
 
-        var $headers = hasHeader ? this.$thead.children().eq(0).children() : null;
-        var $footers = hasFooter ? this.$tfoot.children().eq(0).children() : null;
+        const $headers = hasHeader ? this.$thead.children().eq(0).children() : null;
+        const $footers = hasFooter ? this.$tfoot.children().eq(0).children() : null;
 
-        var clearSort = function($items) {
+        const clearSort = $items => {
           $items.removeClass(CSS_SORTABLE_ASC + ' ' + CSS_SORTABLE_DESC)
                 .removeAttr(DATA_WAFFLE_ORDER);
         };
 
-        var addSort = function($items, index, asc) {
-          var flag = asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
+        const addSort = ($items, index, asc) => {
+          const flag = asc ? CHAR_ORDER_ASC : CHAR_ORDER_DESC;
           $items.eq(index)
                 .addClass(asc ? CSS_SORTABLE_ASC : CSS_SORTABLE_DESC)
                 .attr(DATA_WAFFLE_ORDER, flag);
@@ -582,16 +564,16 @@ var Grid = (function() {
           clearSort($footers);
         }
 
-        var $columns = this.$columns;
-        var hasCheckbox = this.hasCheckbox();
+        const $columns = this.$columns;
+        const hasCheckbox = this.hasCheckbox();
 
         // Update DOM
-        _.forEach(this.$comparators, function(comparator) {
-          var columnId = comparator.id;
-          var asc = comparator.asc;
+        _.forEach(this.$comparators, comparator => {
+          const columnId = comparator.id;
+          const asc = comparator.asc;
 
-          var index = $columns.indexOf(columnId);
-          var thIndex = hasCheckbox ? index + 1 : index;
+          const index = $columns.indexOf(columnId);
+          const thIndex = hasCheckbox ? index + 1 : index;
 
           if (index >= 0) {
             // Update order flag
@@ -611,18 +593,18 @@ var Grid = (function() {
       }
 
       return this.dispatchEvent('sorted');
-    },
+    }
 
     // Filter data
-    filter: function(predicate) {
+    filter(predicate) {
       // Check if predicate is empty.
       // Note that an empty string should remove filter since everything will match.
-      var isEmptyPredicate = predicate == null || predicate === '';
-      var newPredicate = isEmptyPredicate ? undefined : predicate;
+      const isEmptyPredicate = predicate == null || predicate === '';
+      const newPredicate = isEmptyPredicate ? undefined : predicate;
 
-      var oldFilter = this.$filter;
-      var oldPredicate = oldFilter ? oldFilter.$predicate : null;
-      var isUpdated = oldPredicate == null || oldPredicate !== newPredicate;
+      const oldFilter = this.$filter;
+      const oldPredicate = oldFilter ? oldFilter.$predicate : null;
+      const isUpdated = oldPredicate == null || oldPredicate !== newPredicate;
 
       if (isUpdated) {
         // Store predicate...
@@ -634,16 +616,16 @@ var Grid = (function() {
 
       // Chain
       return this;
-    },
+    }
 
     // This is a shorthand for this.filter(null);
-    removeFilter: function() {
+    removeFilter() {
       if (this.$filter != null) {
         this.filter(undefined);
       }
 
       return this;
-    },
+    }
 
     // Trigger events listeners
     // First argument is the name of the event.
@@ -651,7 +633,7 @@ var Grid = (function() {
     // should return event argument. This function will be called if and only if
     // event need to be triggered.
     // If lazy evaluation is needless, just put arguments next to event name.
-    dispatchEvent: function(name, argFn) {
+    dispatchEvent(name, argFn) {
       this.$bus.dispatchEvent(this, name, argFn);
 
       // Trigger events when one of other event is triggered
@@ -659,24 +641,24 @@ var Grid = (function() {
       this.$bus.dispatchEvent(this, 'updated');
 
       return this;
-    },
+    }
 
     // Add new event listener.
     // Type of event is case insensitive.
-    addEventListener: function(type, listener) {
+    addEventListener(type, listener) {
       this.$bus.addEventListener(type, listener);
       return this;
-    },
+    }
 
     // Remove existing event listener.
     // Type of event is case insensitive.
-    removeEventListener: function(type, listener) {
+    removeEventListener(type, listener) {
       this.$bus.removeEventListener(type, listener);
       return this;
-    },
+    }
 
     // Clear all pending changes.
-    clearChanges: function() {
+    clearChanges() {
       this.$data.clearChanges();
       this.$columns.clearChanges();
 
@@ -685,19 +667,22 @@ var Grid = (function() {
       }
 
       return this;
-    },
+    }
 
     // Destroy datagrid
-    destroy: function() {
+    destroy() {
       this.detach();
       this.$bus.clear();
       this.$$events = null;
       $util.destroy(this);
     }
-  };
+  }
+
+  // Create new grid
+  Grid.create = (table, options) => new Grid(table, options);
 
   // Define default options.
-  Constructor.options = {
+  Grid.options = {
     // Default identifier for data.
     key: 'id',
 
@@ -776,10 +761,10 @@ var Grid = (function() {
     'onDetached'
   ];
 
-  _.forEach(events, function(name) {
-    Constructor.options.events[name] = null;
+  _.forEach(events, name => {
+    Grid.options.events[name] = null;
   });
 
-  return Constructor;
+  return Grid;
 
 })();

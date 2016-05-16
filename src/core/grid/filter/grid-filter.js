@@ -27,31 +27,31 @@
 /* global GridBuilder */
 /* exported GridFilter */
 
-var GridFilter = (function() {
+const GridFilter = (() => {
 
-  var o = {
+  return {
     applyFilter: function(predicate) {
       // Create a function that return always true if first
       // argument is not defined.
-      var filterFunction = predicate == null ? _.constant(true) : predicate;
+      const filterFunction = predicate == null ? _.constant(true) : predicate;
 
-      var filterIteratee = function(accumulator, current, idx) {
-        var tbody = this.$tbody[0];
-        var rows = tbody.childNodes;
-        var ctx = this.$data.ctx(current);
-        var wasVisible = _.isUndefined(ctx.visible) ? true : !!ctx.visible;
-        var isVisible = !!filterFunction(current);
+      const filterIteratee = function(accumulator, current, idx) {
+        const tbody = this.$tbody[0];
+        const rows = tbody.childNodes;
+        const ctx = this.$data.ctx(current);
+        const wasVisible = _.isUndefined(ctx.visible) ? true : !!ctx.visible;
+        const isVisible = !!filterFunction(current);
 
-        var inc = 0;
-        var removedRow = null;
+        let inc = 0;
+        let removedRow = null;
 
         // Update flag
         ctx.visible = isVisible;
 
         if (wasVisible !== isVisible) {
-          var currentRow = rows[ctx.idx - accumulator.nbFiltered];
+          const currentRow = rows[ctx.idx - accumulator.nbFiltered];
           if (isVisible) {
-            var tr = GridBuilder.tbodyRow(this, current, idx);
+            const tr = GridBuilder.tbodyRow(this, current, idx);
             tbody.insertBefore(tr, currentRow);
           } else {
             removedRow = tbody.removeChild(currentRow);
@@ -70,16 +70,16 @@ var GridFilter = (function() {
         return accumulator;
       };
 
-      var accumulator = {
+      const accumulator = {
         nbFiltered: 0,
         removed: []
       };
 
-      var result = this.$data.reduce(filterIteratee, accumulator, this);
+      const result = this.$data.reduce(filterIteratee, accumulator, this);
 
       // Trigger event !
-      var nbFiltered = result.nbFiltered;
-      var removedNodes = result.removed;
+      const nbFiltered = result.nbFiltered;
+      const removedNodes = result.removed;
 
       this.dispatchEvent('filterupdated', {
         predicate: predicate,
@@ -89,6 +89,4 @@ var GridFilter = (function() {
       });
     }
   };
-
-  return o;
 })();

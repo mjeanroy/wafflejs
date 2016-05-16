@@ -29,20 +29,18 @@
  * Provide functions to merge DOM nodes.
  */
 
-var $vdom = (function() {
-  var instance = {};
+const $vdom = (() => {
+  const instance = {};
 
-  var replaceNode = function(rootNode, oldNode, newNode) {
-    return rootNode.replaceChild(newNode, oldNode);
-  };
+  const replaceNode = (rootNode, oldNode, newNode) => rootNode.replaceChild(newNode, oldNode);
 
-  var updateTextNode = function(oldNode, newNode) {
+  const updateTextNode = (oldNode, newNode) => {
     if (oldNode.nodeValue !== newNode.nodeValue) {
       oldNode.nodeValue = newNode.nodeValue;
     }
   };
 
-  var replaceContent = function(oldNode, newNode) {
+  const replaceContent = (oldNode, newNode) => {
     while (oldNode.firstChild) {
       oldNode.removeChild(oldNode.firstChild);
     }
@@ -52,17 +50,17 @@ var $vdom = (function() {
     }
   };
 
-  var mergeNodes = function(oldNode, newNode) {
+  const mergeNodes = (oldNode, newNode) => {
     instance.mergeAttributes(oldNode, newNode);
 
-    var oldChildNodes = oldNode.childNodes;
-    var newChildNodes = newNode.childNodes;
+    const oldChildNodes = oldNode.childNodes;
+    const newChildNodes = newNode.childNodes;
 
     if (oldChildNodes.length !== newChildNodes.length) {
       // We can't merge tree easily, just replace the entire content
       replaceContent(oldNode, newNode);
     } else {
-      for (var i = 0, size = oldChildNodes.length; i < size; ++i) {
+      for (let i = 0, size = oldChildNodes.length; i < size; ++i) {
         instance.mergeNodes(oldNode, oldChildNodes[i], newChildNodes[i]);
       }
     }
@@ -74,14 +72,14 @@ var $vdom = (function() {
   // - Update attributes
   // - Update className
   // - Update childs recursively
-  instance.mergeNodes = function(rootNode, oldNode, newNode) {
-    var oldType = oldNode.nodeType;
-    var newType = newNode.nodeType;
+  instance.mergeNodes = (rootNode, oldNode, newNode) => {
+    const oldType = oldNode.nodeType;
+    const newType = newNode.nodeType;
 
-    var oldTagName = oldNode.tagName;
-    var newTagName = newNode.tagName;
+    const oldTagName = oldNode.tagName;
+    const newTagName = newNode.tagName;
 
-    var result = oldNode;
+    let result = oldNode;
 
     if (oldType !== newType || oldTagName !== newTagName) {
       // We can't easily merge two different node, just replace
@@ -100,15 +98,15 @@ var $vdom = (function() {
   };
 
   // Update attributes of old node with attributes of new node
-  instance.mergeAttributes = function(oldNode, newNode) {
-    var oldAttributes = _.indexBy(oldNode.attributes, 'name');
-    var newAttributes = _.indexBy(newNode.attributes, 'name');
+  instance.mergeAttributes = (oldNode, newNode) => {
+    const oldAttributes = _.indexBy(oldNode.attributes, 'name');
+    const newAttributes = _.indexBy(newNode.attributes, 'name');
 
     // Update and add new attributes
-    _.forEach(_.keys(newAttributes), function(name) {
-      var oldAttr = oldAttributes[name] || null;
-      var oldValue = oldAttr ? oldAttr.value : null;
-      var newValue = newAttributes[name].value;
+    _.forEach(_.keys(newAttributes), name => {
+      const oldAttr = oldAttributes[name] || null;
+      const oldValue = oldAttr ? oldAttr.value : null;
+      const newValue = newAttributes[name].value;
 
       if (oldValue !== newValue) {
         oldNode.setAttribute(name, newValue);
@@ -120,9 +118,7 @@ var $vdom = (function() {
     });
 
     // Remove missing
-    _.forEach(_.keys(oldAttributes), function(name) {
-      oldNode.removeAttribute(name);
-    });
+    _.forEach(_.keys(oldAttributes), name => oldNode.removeAttribute(name));
   };
 
   return instance;

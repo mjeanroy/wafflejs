@@ -10,7 +10,7 @@
     "url": "git@github.com:mjeanroy/wafflejs.git"
   },
   "devDependencies": {
-    "bower": "1.7.7",
+    "bower": "1.7.9",
     "gulp-bower": "0.0.13",
     "connect-livereload": "0.5.4",
     "del": "2.2.0",

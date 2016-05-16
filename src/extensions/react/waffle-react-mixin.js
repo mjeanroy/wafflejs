@@ -23,6 +23,7 @@
  */
 
 /* global _ */
+/* global ReactDOM */
 /* global Waffle */
 /* exported WaffleReactMixin */
 

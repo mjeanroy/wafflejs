@@ -26,4 +26,4 @@
 /* exported $ */
 
 // Just define $ variable
-var $ = Backbone.$;
+const $ = Backbone.$;

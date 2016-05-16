@@ -30,11 +30,11 @@
 
 // Just define $ variable
 Backbone.WaffleView = (function() {
-  var KEY = '_cid';
+  const KEY = '_cid';
 
-  var createBackboneEventHandler = function(fn) {
+  const createBackboneEventHandler = fn => {
     return function() {
-      var options = _.last(arguments);
+      const options = _.last(arguments);
 
       // Execute handler iif it is not triggered by waffle view.
       // Options is always the last argument.
@@ -46,33 +46,31 @@ Backbone.WaffleView = (function() {
     };
   };
 
-  var BB_HANDLERS = {};
-  var BB_EVENTS = ['add', 'remove', 'reset', 'change', 'sort'];
-  var WAFFLE_EVENTS = ['datachanged', 'sorted'];
+  const BB_HANDLERS = {};
+  const BB_EVENTS = ['add', 'remove', 'reset', 'change', 'sort'];
+  const WAFFLE_EVENTS = ['datachanged', 'sorted'];
 
-  _.forEach(BB_EVENTS, function(evt) {
-    BB_HANDLERS[evt] = createBackboneEventHandler('on' + $util.capitalize(evt));
-  });
+  _.forEach(BB_EVENTS, evt => BB_HANDLERS[evt] = createBackboneEventHandler('on' + $util.capitalize(evt)));
 
-  var bindBackboneEvents = function(evt) {
+  const bindBackboneEvents = function(evt) {
     this.listenTo(this.collection, evt, BB_HANDLERS[evt]);
   };
 
-  var bindWaffleEvents = function(evt) {
-    var callback = '_' + evt;
-    var fn = this[callback];
+  const bindWaffleEvents = function(evt) {
+    const callback = '_' + evt;
+    const fn = this[callback];
     this.grid.addEventListener(evt, _.bind(fn, this));
   };
 
-  var Model = function(o) {
+  const Model = function(o) {
     _.extend(this, o.toJSON());
     this[KEY] = o.cid;
   };
 
-  var createComparatorFunction = function(comparator) {
-    var sortFn = function(o1, o2) {
-      var v1 = o1 instanceof Backbone.Model ? o1.toJSON() : o1;
-      var v2 = o2 instanceof Backbone.Model ? o2.toJSON() : o2;
+  const createComparatorFunction = comparator => {
+    const sortFn = (o1, o2) => {
+      const v1 = o1 instanceof Backbone.Model ? o1.toJSON() : o1;
+      const v2 = o2 instanceof Backbone.Model ? o2.toJSON() : o2;
       return comparator(v1, v2);
     };
 
@@ -84,7 +82,7 @@ Backbone.WaffleView = (function() {
     return sortFn;
   };
 
-  var WaffleView = Backbone.View.extend({
+  const WaffleView = Backbone.View.extend({
     // Default tagName.
     tagName: 'table',
 
@@ -100,8 +98,8 @@ Backbone.WaffleView = (function() {
       // If grid is already created, do not override it.
       if (!this.grid) {
         // Create options.
-        var opts = options || {};
-        var waffleOpts = _.extend(opts.waffle || {}, {
+        const opts = options || {};
+        const waffleOpts = _.extend(opts.waffle || {}, {
           data: this.collection.models,
           sortBy: this.collection.comparator,
           model: Model,
@@ -125,14 +123,14 @@ Backbone.WaffleView = (function() {
     // Remove view.
     // Grid must be destroyed.
     remove: function() {
-      var retValue = Backbone.View.prototype.remove.apply(this, arguments);
+      const retValue = Backbone.View.prototype.remove.apply(this, arguments);
       this.grid.destroy();
       return retValue;
     },
 
     // Apply view to a different DOM element.
     setElement: function() {
-      var retValue = Backbone.View.prototype.setElement.apply(this, arguments);
+      const retValue = Backbone.View.prototype.setElement.apply(this, arguments);
 
       // Reattach grid to the new element.
       if (this.grid) {
@@ -175,10 +173,10 @@ Backbone.WaffleView = (function() {
 
     // Collection has been sorted.
     onSort: function(collection) {
-      var comparator = collection.comparator;
+      const comparator = collection.comparator;
 
       // Extract comparison function.
-      var sortFn = _.isFunction(comparator) && _.isFunction(comparator.$$sortFn) ?
+      const sortFn = _.isFunction(comparator) && _.isFunction(comparator.$$sortFn) ?
         comparator.$$sortFn : comparator;
 
       // Apply sort if it is needed.
@@ -191,9 +189,9 @@ Backbone.WaffleView = (function() {
 
     // Field has been edited.
     _datachanged: function(event) {
-      var details = event.details;
-      var cid = details.object[KEY];
-      var model = this.collection.get(cid);
+      const details = event.details;
+      const cid = details.object[KEY];
+      const model = this.collection.get(cid);
 
       // Do not forget to tag event as a waffle event.
       // This allow us to not update grid since it's already done.
@@ -219,7 +217,7 @@ Backbone.WaffleView = (function() {
   });
 
   // Bind some waffle function.
-  var proxyMethods = [
+  const proxyMethods = [
     'filter',
     'removeFilter',
     'select',
@@ -231,9 +229,9 @@ Backbone.WaffleView = (function() {
     'renderHeader'
   ];
 
-  _.forEach(proxyMethods, function(fn) {
+  _.forEach(proxyMethods, fn => {
     WaffleView.prototype[fn] = function() {
-      var retValue = this.grid[fn].apply(this.grid, arguments);
+      const retValue = this.grid[fn].apply(this.grid, arguments);
       return retValue === this.grid ? this : retValue;
     };
   });

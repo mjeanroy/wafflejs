@@ -36,33 +36,35 @@
  * Each operation should run in O(1).
  */
 
-var Stack = (function() {
-  var Node = function(value, next) {
-    this.value = value;
-    this.next = next || null;
-  };
+const Stack = (() => {
+  class Node {
+    constructor(value, next) {
+      this.value = value;
+      this.next = next || null;
+    }
+  }
 
-  var Stack = function() {
-    this.root = null;
-  };
+  return class Stack {
+    constructor() {
+      this.root = null;
+    }
 
-  Stack.prototype = {
     // Push new value onto the stack.
     // Running time: O(1)
-    push: function(value) {
+    push(value) {
       this.root = new Node(value, this.root);
-    },
+    }
 
     // Peek value from the stack.
     // Running time: O(1)
-    peek: function() {
+    peek() {
       return this.root ? this.root.value : undefined;
-    },
+    }
 
     // Peek value from the stack and remove entry.
     // Running time: O(1)
-    pop: function() {
-      var value;
+    pop() {
+      let value;
 
       if (this.root) {
         value = this.root.value;
@@ -70,14 +72,12 @@ var Stack = (function() {
       }
 
       return value;
-    },
+    }
 
     // Check if stack is empty.
     // Running time: O(1)
-    isEmpty: function() {
+    isEmpty() {
       return !this.root;
     }
   };
-
-  return Stack;
 })();

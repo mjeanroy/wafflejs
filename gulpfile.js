@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
+var fs = require('fs');
+var path = require('path');
 var gulp = require('gulp');
-var wrench = require('wrench');
 var files = require('./build/waffle');
 
 // Options for each sub-tasks
@@ -34,8 +35,8 @@ var options = {
 };
 
 // Read sub-tasks
-wrench.readdirSyncRecursive('./gulp').forEach(function(file) {
-  require('./gulp/' + file)(options);
+fs.readdirSync(path.join(__dirname, 'gulp')).forEach(function(file) {
+  require(path.join(__dirname, 'gulp', file))(options);
 });
 
 // Create default tasks

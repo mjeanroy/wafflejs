@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-describe('_', function() {
+describe('_', () => {
 
-  it('should define noop function that always return undefined', function() {
+  it('should define noop function that always return undefined', () => {
     expect(_.noop(undefined)).toBeUndefined();
     expect(_.noop(null)).toBeUndefined();
     expect(_.noop(0)).toBeUndefined();
@@ -33,7 +33,7 @@ describe('_', function() {
     expect(_.noop([])).toBeUndefined();
   });
 
-  it('should define identity function that always return undefined', function() {
+  it('should define identity function that always return undefined', () => {
     expect(_.identity(undefined)).toEqual(undefined);
     expect(_.identity(null)).toEqual(null);
     expect(_.identity(0)).toEqual(0);
@@ -42,7 +42,7 @@ describe('_', function() {
     expect(_.identity([])).toEqual([]);
   });
 
-  it('should check if object is undefined', function() {
+  it('should check if object is undefined', () => {
     expect(_.isUndefined(undefined)).toBe(true);
     expect(_.isUndefined(null)).toBe(false);
     expect(_.isUndefined(0)).toBe(false);
@@ -50,17 +50,17 @@ describe('_', function() {
     expect(_.isUndefined(NaN)).toBe(false);
   });
 
-  it('should check if object is a function', function() {
+  it('should check if object is a function', () => {
     expect(_.isFunction(null)).toBe(false);
     expect(_.isFunction(undefined)).toBe(false);
     expect(_.isFunction(0)).toBe(false);
     expect(_.isFunction('')).toBe(false);
     expect(_.isFunction(NaN)).toBe(false);
 
-    expect(_.isFunction(function() {})).toBe(true);
+    expect(_.isFunction(() => {})).toBe(true);
   });
 
-  it('should check if object is an object', function() {
+  it('should check if object is an object', () => {
     expect(_.isObject({})).toBe(true);
     expect(_.isObject(null)).toBe(false);
     expect(_.isObject(undefined)).toBe(false);
@@ -68,7 +68,7 @@ describe('_', function() {
     expect(_.isObject('')).toBe(false);
   });
 
-  it('should check if object is an array', function() {
+  it('should check if object is an array', () => {
     expect(_.isArray([])).toBe(true);
     expect(_.isArray(undefined)).toBe(false);
     expect(_.isArray(null)).toBe(false);
@@ -77,7 +77,7 @@ describe('_', function() {
     expect(_.isArray(NaN)).toBe(false);
   });
 
-  it('should check if object is a dom element', function() {
+  it('should check if object is a dom element', () => {
     expect(_.isElement(undefined)).toBe(false);
     expect(_.isElement(null)).toBe(false);
     expect(_.isElement(1)).toBe(false);
@@ -87,7 +87,7 @@ describe('_', function() {
     expect(_.isElement(document.createElement('div'))).toBe(true);
   });
 
-  it('should check if object is a string', function() {
+  it('should check if object is a string', () => {
     expect(_.isString(undefined)).toBe(false);
     expect(_.isString(null)).toBe(false);
     expect(_.isString(1)).toBe(false);
@@ -100,7 +100,7 @@ describe('_', function() {
     // expect(_.isString(new String('foo'))).toBe(true);
   });
 
-  it('should check if object is a number', function() {
+  it('should check if object is a number', () => {
     expect(_.isNumber(0)).toBe(true);
     expect(_.isNumber(1)).toBe(true);
     expect(_.isNumber(NaN)).toBe(true);
@@ -111,7 +111,7 @@ describe('_', function() {
     expect(_.isNumber(null)).toBe(false);
   });
 
-  it('should check if object is a date', function() {
+  it('should check if object is a date', () => {
     expect(_.isDate(new Date())).toBe(true);
 
     expect(_.isDate(0)).toBe(false);
@@ -123,31 +123,31 @@ describe('_', function() {
     expect(_.isDate(null)).toBe(false);
   });
 
-  it('should clone to new array', function() {
-    var array = [1, 2, 3];
+  it('should clone to new array', () => {
+    const array = [1, 2, 3];
 
-    var newArray = _.clone(array);
+    const newArray = _.clone(array);
 
     expect(array).toEqual([1, 2, 3]);
     expect(newArray).toEqual(array);
     expect(newArray).not.toBe(array);
   });
 
-  it('should clone to new object', function() {
-    var o1 = {
+  it('should clone to new object', () => {
+    const o1 = {
       id: 1,
       name: 'foo'
     };
 
-    var o2 = _.clone(o1);
+    const o2 = _.clone(o1);
 
     expect(o2).not.toBe(o1);
     expect(o2).toEqual(o1);
   });
 
-  it('should apply callback for each array element', function() {
-    var callback = jasmine.createSpy('callback');
-    var array = [1, 2, 3];
+  it('should apply callback for each array element', () => {
+    const callback = jasmine.createSpy('callback');
+    const array = [1, 2, 3];
 
     _.forEach(array, callback);
 
@@ -157,16 +157,16 @@ describe('_', function() {
     expect(callback).toHaveBeenCalledWith(3, 2, array);
   });
 
-  it('should extend destination with source', function() {
-    var destination = {
+  it('should extend destination with source', () => {
+    const destination = {
       foo: 'bar'
     };
 
-    var source = {
+    const source = {
       bar: 'foo'
     };
 
-    var result = _.extend(destination, source);
+    const result = _.extend(destination, source);
 
     expect(result).toBe(destination);
     expect(destination).toEqual({

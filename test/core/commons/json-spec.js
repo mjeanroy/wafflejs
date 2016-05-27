@@ -22,61 +22,47 @@
  * SOFTWARE.
  */
 
-describe('$json', function() {
+describe('$json', () => {
 
-  var JSON;
+  let JSON;
 
-  beforeEach(function() {
-    JSON = window.JSON;
-  });
+  beforeEach(() => JSON = window.JSON);
+  afterEach(() => window.JSON = JSON);
 
-  afterEach(function() {
-    window.JSON = JSON;
-  });
-
-  it('toJson should turn a javascript to a json string', function() {
-    var json = $json.toJson({
+  it('toJson should turn a javascript to a json string', () => {
+    const json = $json.toJson({
       foo: "bar"
     });
 
     expect(json).toBe('{"foo":"bar"}');
   });
 
-  it('toJson should turn a json string to a javascript object', function() {
-    var o = $json.fromJson('{"foo":"bar"}');
+  it('toJson should turn a json string to a javascript object', () => {
+    const o = $json.fromJson('{"foo":"bar"}');
     expect(o).toEqual({
       foo: 'bar'
     });
   });
 
-  it('should throw error if JSON object is not available', function() {
+  it('should throw error if JSON object is not available', () => {
     window.JSON = null;
-    var toJson = function() {
-      return $json.toJson({
-        foo: 'bar'
-      });
-    };
 
-    var fromJson = function() {
-      return $json.fromJson('{"foo": "bar"}');
-    };
+    const fromJson = () => $json.fromJson('{"foo": "bar"}');
+    const toJson = () => $json.toJson({
+      foo: 'bar'
+    });
 
     expect(toJson).toThrow(Error('JSON.stringify is not available in your browser'));
     expect(fromJson).toThrow(Error('JSON.parse is not available in your browser'));
   });
 
-  it('should throw error if JSON functions are not available', function() {
+  it('should throw error if JSON functions are not available', () => {
     window.JSON = {};
 
-    var toJson = function() {
-      return $json.toJson({
-        foo: 'bar'
-      });
-    };
-
-    var fromJson = function() {
-      return $json.fromJson('{"foo": "bar"}');
-    };
+    const fromJson = () => $json.fromJson('{"foo": "bar"}');
+    const toJson = () => $json.toJson({
+      foo: 'bar'
+    });
 
     expect(toJson).toThrow(Error('JSON.stringify is not available in your browser'));
     expect(fromJson).toThrow(Error('JSON.parse is not available in your browser'));

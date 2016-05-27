@@ -22,18 +22,18 @@
  * SOFTWARE.
  */
 
-describe('GridComparator', function() {
+describe('GridComparator', () => {
 
-  var grid;
+  let grid;
 
-  beforeEach(function() {
-    var columns = [
+  beforeEach(() => {
+    const columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
       { id: 'lastName' }
     ];
 
-    var data = [
+    const data = [
       { id: 1, firstName: 'foo1', lastName: 'bar1' },
       { id: 2, firstName: 'foo2', lastName: 'bar2' },
       { id: 3, firstName: 'foo2', lastName: 'bar3' }
@@ -42,102 +42,95 @@ describe('GridComparator', function() {
     grid = new Grid({
       data: data,
       columns: columns,
-      key: function(o) {
-        return o.id;
-      }
+      key: o => o.id
     });
   });
 
-  describe('Comparators', function() {
-    it('create single comparator in ascendant order', function() {
-      var flag = '+';
-      var field = 'firstName';
-      var sortBy = flag + field;
+  describe('Comparators', () => {
+    it('create single comparator in ascendant order', () => {
+      const flag = '+';
+      const field = 'firstName';
+      const sortBy = flag + field;
 
-      var comparators = GridComparator.of(grid, sortBy);
+      const comparators = GridComparator.of(grid, sortBy);
 
       expect(comparators).toBeDefined();
       expect(comparators.length).toBe(1);
 
-      var comparator = comparators[0];
+      const comparator = comparators[0];
       expect(comparator.id).toBe(field);
       expect(comparator.parser).toBeDefined();
       expect(comparator.parser).toBe(grid.$columns[1].$parser);
       expect(comparator.asc).toBeTrue();
     });
 
-    it('create single comparator in descendant order', function() {
-      var flag = '-';
-      var field = 'firstName';
-      var sortBy = flag + field;
+    it('create single comparator in descendant order', () => {
+      const flag = '-';
+      const field = 'firstName';
+      const sortBy = flag + field;
 
-      var comparators = GridComparator.of(grid, sortBy);
+      const comparators = GridComparator.of(grid, sortBy);
 
       expect(comparators).toBeDefined();
       expect(comparators.length).toBe(1);
 
-      var comparator = comparators[0];
+      const comparator = comparators[0];
       expect(comparator.id).toBe(field);
       expect(comparator.parser).toBeDefined();
       expect(comparator.parser).toBe(grid.$columns[1].$parser);
       expect(comparator.asc).toBeFalse();
     });
 
-    it('create sorter comparator in descendant order', function() {
-      var sorter = function(o1, o2) {
-        return o1.id - o2.id;
-      };
-
-      var comparators = GridComparator.of(grid, sorter);
+    it('create sorter comparator in descendant order', () => {
+      const sorter = (o1, o2) => o1.id - o2.id;
+      const comparators = GridComparator.of(grid, sorter);
 
       expect(comparators).toBeDefined();
       expect(comparators.length).toBe(1);
 
-      var comparator = comparators[0];
+      const comparator = comparators[0];
       expect(comparator).toBeInstanceOf(SorterComparator);
     });
 
-    it('create sortBy comparator in descendant order', function() {
-      var sortByFunction = function(o) {
-        return o.id;
-      };
+    it('create sortBy comparator in descendant order', () => {
+      const sortByFunction = o => o.id;
 
-      var comparators = GridComparator.of(grid, sortByFunction);
+      const comparators = GridComparator.of(grid, sortByFunction);
 
       expect(comparators).toBeDefined();
       expect(comparators.length).toBe(1);
 
-      var comparator = comparators[0];
+      const comparator = comparators[0];
       expect(comparator).toBeInstanceOf(SortByComparator);
     });
 
-    it('create fail if comparator cannot be created', function() {
-      var comp = true;
+    it('create fail if comparator cannot be created', () => {
+      const comp = true;
 
-      var create = function() {
+      const create = () => {
         GridComparator.of(grid, comp);
       };
 
       expect(create).toThrow('Cannot create comparator from object: true');
     });
 
-    it('create array of comparators', function() {
-      var f1 = 'firstName';
-      var f2 = 'lastName';
-      var sortBy = ['+' + f1, '-' + f2];
+    it('create array of comparators', () => {
+      const f1 = 'firstName';
+      const f2 = 'lastName';
+      const sortBy = ['+' + f1, '-' + f2];
 
-      var comparators = GridComparator.of(grid, sortBy);
+      const comparators = GridComparator.of(grid, sortBy);
 
       expect(comparators).toBeDefined();
       expect(comparators.length).toBe(2);
 
-      var c1 = comparators[0];
+      const c1 = comparators[0];
       expect(c1.id).toBe(f1);
       expect(c1.parser).toBeDefined();
       expect(c1.parser).toBe(grid.$columns[1].$parser);
       expect(c1.asc).toBeTrue();
 
-      var c2 = comparators[1];
+      const c2 = comparators[1];
       expect(c2.id).toBe(f2);
       expect(c2.parser).toBeDefined();
       expect(c2.parser).toBe(grid.$columns[2].$parser);
@@ -145,17 +138,17 @@ describe('GridComparator', function() {
     });
   });
 
-  describe('Comparison Function', function() {
-    it('should compare two objects using single comparator', function() {
-      var comparator = FieldComparator.of(grid, '+name');
+  describe('Comparison Function', () => {
+    it('should compare two objects using single comparator', () => {
+      const comparator = FieldComparator.of(grid, '+name');
       grid.$comparators = [comparator];
 
-      var o1 = { id: 1, name: 'foo' };
-      var o2 = { id: 2, name: 'bar' };
-      var o3 = { id: 3, name: 'bar' };
-      var o4 = { id: 1, name: 'foo' };
+      const o1 = { id: 1, name: 'foo' };
+      const o2 = { id: 2, name: 'bar' };
+      const o3 = { id: 3, name: 'bar' };
+      const o4 = { id: 1, name: 'foo' };
 
-      var compareFn = GridComparator.createComparator(grid);
+      const compareFn = GridComparator.createComparator(grid);
 
       // o1 === o1 => should return zero
       expect(compareFn(o1, o1)).toBeZero();
@@ -167,24 +160,22 @@ describe('GridComparator', function() {
       expect(compareFn(o2, o1)).toBeNegative();
     });
 
-    it('should compare two objects using array of comparators', function() {
-      var comparators = [
+    it('should compare two objects using array of comparators', () => {
+      const comparators = [
         FieldComparator.of(grid, '+name'),
         FieldComparator.of(grid, '-idx')
       ];
 
       grid.$comparators = comparators;
 
-      var o1 = { id: 1, name: 'foo', idx: 1 };
-      var o2 = { id: 2, name: 'bar', idx: 2 };
-      var o3 = { id: 3, name: 'bar', idx: 3 };
-      var o4 = { id: 4, name: 'foo', idx: 1 };
+      const o1 = { id: 1, name: 'foo', idx: 1 };
+      const o2 = { id: 2, name: 'bar', idx: 2 };
+      const o3 = { id: 3, name: 'bar', idx: 3 };
+      const o4 = { id: 4, name: 'foo', idx: 1 };
 
-      spyOn(grid.$data, 'indexOf').and.callFake(function(o) {
-        return o.id;
-      });
+      spyOn(grid.$data, 'indexOf').and.callFake(o => o.id);
 
-      var compareFn = GridComparator.createComparator(grid);
+      const compareFn = GridComparator.createComparator(grid);
 
       // o1 === o1 => should return zero
       expect(compareFn(o1, o1)).toBeZero();
@@ -209,16 +200,16 @@ describe('GridComparator', function() {
     });
   });
 
-  it('should check if comparators are equals', function() {
-    var c1 = FieldComparator.of(grid, '+name');
-    var c2 = FieldComparator.of(grid, '+idx');
+  it('should check if comparators are equals', () => {
+    const c1 = FieldComparator.of(grid, '+name');
+    const c2 = FieldComparator.of(grid, '+idx');
 
     spyOn(c1, 'equals').and.callThrough();
     spyOn(c2, 'equals').and.callThrough();
 
-    var comparators1 = [c1, c2];
-    var comparators2 = [c2, c1];
-    var comparators3 = [c2, c1, c2];
+    const comparators1 = [c1, c2];
+    const comparators2 = [c2, c1];
+    const comparators3 = [c2, c1, c2];
 
     expect(GridComparator.equals(comparators1, comparators1)).toBeTrue();
     expect(c1.equals).not.toHaveBeenCalled();

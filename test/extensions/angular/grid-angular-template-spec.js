@@ -22,16 +22,14 @@
  * SOFTWARE.
  */
 
-describe('Waffle Angular Template', function() {
+describe('Waffle Angular Template', () => {
 
-  var $templateCache;
+  let $templateCache;
 
-  beforeEach(inject(function(_$templateCache_) {
-    $templateCache = _$templateCache_;
-  }));
+  beforeEach(inject((_$templateCache_) => $templateCache = _$templateCache_));
 
-  it('should have a template', function() {
-    var template = $templateCache.get('views/waffle.html');
+  it('should have a template', () => {
+    const  template = $templateCache.get('views/waffle.html');
     expect(template).toBeDefined();
     expect(template).toEqual('<table></table>');
   });

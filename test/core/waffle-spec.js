@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-describe('waffle', function() {
+describe('waffle', () => {
 
-  it('should define Grid', function() {
+  it('should define Grid', () => {
     expect(Waffle.Grid).toBe(Grid);
   });
 
-  it('should create Grid', function() {
-    var table = document.createElement('table');
-    var options = {
+  it('should create Grid', () => {
+    const table = document.createElement('table');
+    const options = {
     };
 
-    var grid = Waffle.create(table, options);
+    const grid = Waffle.create(table, options);
 
     expect(grid).toBeDefined();
     expect(grid).toBeInstanceOf(Grid);
   });
 
-  it('should add new global renderer', function() {
+  it('should add new global renderer', () => {
     expect($renderers.foo).toBeUndefined();
-    var renderer = jasmine.createSpy('renderer').and.returnValue('foo');
+    const renderer = jasmine.createSpy('renderer').and.returnValue('foo');
 
     Waffle.addRenderer('foo', renderer);
 
@@ -49,9 +49,9 @@ describe('waffle', function() {
     delete $renderers.foo;
   });
 
-  it('should add new global comparator', function() {
+  it('should add new global comparator', () => {
     expect($comparators.foo).toBeUndefined();
-    var comparator = jasmine.createSpy('comparator').and.returnValue(0);
+    const comparator = jasmine.createSpy('comparator').and.returnValue(0);
 
     Waffle.addComparator('foo', comparator);
 
@@ -59,11 +59,9 @@ describe('waffle', function() {
     delete $comparators.foo;
   });
 
-  it('should add new global parser', function() {
+  it('should add new global parser', () => {
     spyOn($parsers, '$add');
-    var spy = jasmine.createSpy('spy').and.callFake(function(value) {
-      return value;
-    });
+    const spy = jasmine.createSpy('spy').and.callFake(value => value);
 
     Waffle.addParser('text', spy);
 

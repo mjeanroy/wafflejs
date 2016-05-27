@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-describe('Grid Render', function() {
+describe('Grid Render', () => {
 
-  it('should render column header', function() {
-    var columns = [
+  it('should render column header', () => {
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo' }
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: columns,
       view: {
@@ -41,31 +41,25 @@ describe('Grid Render', function() {
       }
     });
 
-    var tbody = grid.$tbody[0];
+    const tbody = grid.$tbody[0];
     expect(tbody.childNodes).toHaveLength(0);
 
-    var thead = grid.$thead[0];
-    var tr = thead.childNodes;
+    const thead = grid.$thead[0];
+    const tr = thead.childNodes;
     expect(tr).toHaveLength(1);
     expect(tr[0]).toBeDOMElement('tr');
 
-    var ths = tr[0].childNodes;
+    const ths = tr[0].childNodes;
 
     // 2 columns + 1 column for checkbox
     expect(ths).toHaveLength(3);
+    expect(ths).toVerify(node => node.tagName === 'TH');
 
-    expect(ths).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
+    const dataColumns = Array.prototype.slice.call(ths, 1);
 
-    var dataColumns = Array.prototype.slice.call(ths, 1);
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.innerHTML === columns[idx].title;
-    });
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      var cssClasses = [
+    expect(dataColumns).toVerify((node, idx) => node.innerHTML === columns[idx].title);
+    expect(dataColumns).toVerify((node, idx) => {
+      const cssClasses = [
         columns[idx].id,
         'waffle-sortable'
       ];
@@ -73,28 +67,20 @@ describe('Grid Render', function() {
       return node.className === cssClasses.join(' ');
     });
 
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-id') === columns[idx].id;
-    });
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-order') === null;
-    });
-
-    expect(dataColumns).toVerify(function(node) {
-      return node.getAttribute('data-waffle-sortable') === 'true';
-    });
+    expect(dataColumns).toVerify((node, idx) => node.getAttribute('data-waffle-id') === columns[idx].id);
+    expect(dataColumns).toVerify((node, idx) => node.getAttribute('data-waffle-order') === null);
+    expect(dataColumns).toVerify(node => node.getAttribute('data-waffle-sortable') === 'true');
   });
 
-  it('should not render header', function() {
-    var columns = [
+  it('should not render header', () => {
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo' }
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: columns,
       view: {
@@ -105,19 +91,19 @@ describe('Grid Render', function() {
 
     expect(grid.$thead).not.toBeDefined();
 
-    var nodes = table.getElementsByTagName('thead');
+    const nodes = table.getElementsByTagName('thead');
     expect(nodes.length).toBe(0);
   });
 
-  it('should not render footer', function() {
-    var columns = [
+  it('should not render footer', () => {
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo' }
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: columns,
       view: {
@@ -128,19 +114,19 @@ describe('Grid Render', function() {
 
     expect(grid.$tfoot).not.toBeDefined();
 
-    var nodes = table.getElementsByTagName('tfoot');
+    const nodes = table.getElementsByTagName('tfoot');
     expect(nodes.length).toBe(0);
   });
 
-  it('should render column header with unsortable column', function() {
-    var columns = [
+  it('should render column header with unsortable column', () => {
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo', sortable: false }
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: columns,
       view: {
@@ -149,28 +135,23 @@ describe('Grid Render', function() {
       }
     });
 
-    var tbody = grid.$tbody[0];
+    const tbody = grid.$tbody[0];
     expect(tbody.childNodes).toHaveLength(0);
 
-    var thead = grid.$thead[0];
-    var tr = thead.childNodes;
+    const thead = grid.$thead[0];
+    const tr = thead.childNodes;
     expect(tr).toHaveLength(1);
     expect(tr[0]).toBeDOMElement('tr');
 
-    var ths = tr[0].childNodes;
+    const ths = tr[0].childNodes;
 
     // 2 columns + 1 column for checkbox
     expect(ths).toHaveLength(3);
 
-    var dataColumns = Array.prototype.slice.call(ths, 1);
+    const dataColumns = Array.prototype.slice.call(ths, 1);
 
-    expect(dataColumns).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.innerHTML === columns[idx].title;
-    });
+    expect(dataColumns).toVerify(node => node.tagName === 'TH');
+    expect(dataColumns).toVerify((node, idx) => node.innerHTML === columns[idx].title);
 
     expect(dataColumns[0].className.split(' ')).toContain('waffle-sortable');
     expect(dataColumns[1].className.split(' ')).not.toContain('waffle-sortable');
@@ -179,15 +160,15 @@ describe('Grid Render', function() {
     expect(dataColumns[1].getAttribute('data-waffle-sortable')).toBeNull();
   });
 
-  it('should render column footer', function() {
-    var columns = [
+  it('should render column footer', () => {
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo' }
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: columns,
       view: {
@@ -196,31 +177,25 @@ describe('Grid Render', function() {
       }
     });
 
-    var tbody = grid.$tbody[0];
+    const tbody = grid.$tbody[0];
     expect(tbody.childNodes).toHaveLength(0);
 
-    var tfoot = grid.$tfoot[0];
-    var tr = tfoot.childNodes;
+    const tfoot = grid.$tfoot[0];
+    const tr = tfoot.childNodes;
     expect(tr).toHaveLength(1);
     expect(tr[0]).toBeDOMElement('tr');
 
-    var ths = tr[0].childNodes;
+    const ths = tr[0].childNodes;
 
     // 2 columns + 1 column for checkbox
     expect(ths).toHaveLength(3);
+    expect(ths).toVerify(node => node.tagName === 'TH');
 
-    expect(ths).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
+    const dataColumns = Array.prototype.slice.call(ths, 1);
 
-    var dataColumns = Array.prototype.slice.call(ths, 1);
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.innerHTML === columns[idx].title;
-    });
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      var cssClasses = [
+    expect(dataColumns).toVerify((node, idx) => node.innerHTML === columns[idx].title);
+    expect(dataColumns).toVerify((node, idx) => {
+      const cssClasses = [
         columns[idx].id,
         'waffle-sortable'
       ];
@@ -228,28 +203,20 @@ describe('Grid Render', function() {
       return node.className === cssClasses.join(' ');
     });
 
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-id') === columns[idx].id;
-    });
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-order') === null;
-    });
-
-    expect(dataColumns).toVerify(function(node) {
-      return node.getAttribute('data-waffle-sortable') === 'true';
-    });
+    expect(dataColumns).toVerify((node, idx) => node.getAttribute('data-waffle-id') === columns[idx].id);
+    expect(dataColumns).toVerify((node, idx) => node.getAttribute('data-waffle-order') === null);
+    expect(dataColumns).toVerify(node => node.getAttribute('data-waffle-sortable') === 'true');
   });
 
-  it('should render column footer with unsortable column', function() {
-    var columns = [
+  it('should render column footer with unsortable column', () => {
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo', sortable: false }
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: columns,
       view: {
@@ -258,28 +225,23 @@ describe('Grid Render', function() {
       }
     });
 
-    var tbody = grid.$tbody[0];
+    const tbody = grid.$tbody[0];
     expect(tbody.childNodes).toHaveLength(0);
 
-    var tfoot = grid.$tfoot[0];
-    var tr = tfoot.childNodes;
+    const tfoot = grid.$tfoot[0];
+    const tr = tfoot.childNodes;
     expect(tr).toHaveLength(1);
     expect(tr[0]).toBeDOMElement('tr');
 
-    var ths = tr[0].childNodes;
+    const ths = tr[0].childNodes;
 
     // 2 columns + 1 column for checkbox
     expect(ths).toHaveLength(3);
 
-    var dataColumns = Array.prototype.slice.call(ths, 1);
+    const dataColumns = Array.prototype.slice.call(ths, 1);
 
-    expect(dataColumns).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
-
-    expect(dataColumns).toVerify(function(node, idx) {
-      return node.innerHTML === columns[idx].title;
-    });
+    expect(dataColumns).toVerify(node => node.tagName === 'TH');
+    expect(dataColumns).toVerify((node, idx) => node.innerHTML === columns[idx].title);
 
     expect(dataColumns[0].className.split(' ')).toContain('waffle-sortable');
     expect(dataColumns[1].className.split(' ')).not.toContain('waffle-sortable');
@@ -288,99 +250,88 @@ describe('Grid Render', function() {
     expect(dataColumns[1].getAttribute('data-waffle-sortable')).toBeNull();
   });
 
-  it('should render data', function() {
-    var columns = [
+  it('should render data', () => {
+    const columns = [
       { id: 'id', title: 'Foo' },
       { id: 'name', title: 'Boo' }
     ];
 
-    var data = [
+    const data = [
       { id: 1, name: 'foo1 '},
       { id: 2, name: 'foo2 '},
       { id: 3, name: 'foo3 '}
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: data,
       columns: columns
     });
 
-    var $tbody = grid.$tbody;
-    var trs = $tbody[0].childNodes;
+    const $tbody = grid.$tbody;
+    const trs = $tbody[0].childNodes;
     expect(trs.length).toBe(data.length);
 
-    expect(trs).toVerify(function(node) {
-      return node.tagName === 'TR';
-    });
-
-    expect(trs).toVerify(function(node) {
-      // 2 columns + 1 column for checkbox
-      return node.childNodes.length === 3;
-    });
-
-    expect(trs).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-idx') === idx.toString();
-    });
-
-    expect(trs).toVerify(function(node, idx) {
-      var tds = node.childNodes;
+    // 2 columns + 1 column for checkbox
+    expect(trs).toVerify(node => node.tagName === 'TR');
+    expect(trs).toVerify(node => node.childNodes.length === 3);
+    expect(trs).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
+    expect(trs).toVerify((node, idx) => {
+      const tds = node.childNodes;
       return tds[1].innerHTML === data[idx].id.toString() &&
              tds[2].innerHTML === data[idx].name.toString();
     });
 
-    expect(trs).toVerify(function(node) {
-      var css1 = [columns[0].id, 'waffle-sortable'];
-      var css2 = [columns[1].id, 'waffle-sortable'];
-      var tds = node.childNodes;
+    expect(trs).toVerify(node => {
+      const css1 = [columns[0].id, 'waffle-sortable'];
+      const css2 = [columns[1].id, 'waffle-sortable'];
+      const tds = node.childNodes;
       return tds[1].className === css1.join(' ') &&
              tds[2].className === css2.join(' ');
     });
 
-    expect(trs).toVerify(function(node, idx) {
-      var tds = node.childNodes;
+    expect(trs).toVerify((node, idx) => {
+      const tds = node.childNodes;
       return tds[1].getAttribute('data-waffle-id') === columns[0].id &&
              tds[2].getAttribute('data-waffle-id') === columns[1].id;
     });
 
     // Each row should have a unique cid
-    expect(trs).toVerify(function(node) {
-      return node.getAttribute('data-waffle-cid') !== null;
-    });
+    expect(trs).toVerify(node => node.getAttribute('data-waffle-cid') !== null);
 
-    var cids = [];
-    for (var i = 0; i < trs.length; i++) {
+    const cids = [];
+    for (let i = 0; i < trs.length; i++) {
       cids.push(trs[i].getAttribute('data-waffle-cid'));
     }
 
     expect(cids).toContainsDistinctValues();
   });
 
-  it('should render data asynchronously', function() {
-    var columns = [
+  it('should render data asynchronously', () => {
+    const columns = [
       { id: 'id', title: 'Foo' },
       { id: 'name', title: 'Boo' }
     ];
 
-    var data = [];
-    for (var i = 0; i < 215; ++i) {
+    const data = [];
+    for (let i = 0; i < 215; ++i) {
       data.push({
         id: i + 1,
         name: 'foo' + (i + 1)
       });
     }
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: data,
       columns: columns
     });
 
     expect(grid.$tbody[0].childNodes.length).toBe(data.length);
 
-    var result = grid.renderBody(true);
+    const result = grid.renderBody(true);
 
     expect(result).toBe(grid);
 
@@ -395,9 +346,7 @@ describe('Grid Render', function() {
     jasmine.clock().tick(10);
     expect(grid.$tbody[0].childNodes.length).toBe(215);
 
-    var trs = grid.$tbody[0].childNodes;
-    expect(trs).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-idx') === idx.toString();
-    });
+    const trs = grid.$tbody[0].childNodes;
+    expect(trs).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
   });
 });

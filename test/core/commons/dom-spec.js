@@ -22,37 +22,35 @@
  * SOFTWARE.
  */
 
-describe('$doc', function() {
+describe('$doc', () => {
 
-  var fixtures;
+  let fixtures;
 
-  beforeEach(function() {
+  beforeEach(() => {
     fixtures = document.createElement('div');
     fixtures.setAttribute('id', 'fixtures');
 
-    var node1 = document.createElement('span');
+    const node1 = document.createElement('span');
     node1.setAttribute('id', 'span1');
     fixtures.appendChild(node1);
 
-    var node2 = document.createElement('span');
+    const node2 = document.createElement('span');
     node2.setAttribute('id', 'span2');
     fixtures.appendChild(node2);
 
     document.body.appendChild(fixtures);
   });
 
-  afterEach(function() {
-    fixtures.parentNode.removeChild(fixtures);
-  });
+  afterEach(() => fixtures.parentNode.removeChild(fixtures));
 
-  it('should create element', function() {
-    var element = $doc.create('div');
+  it('should create element', () => {
+    const element = $doc.create('div');
     expect(element).toBeDefined();
     expect(element.tagName).toBe('DIV');
   });
 
-  it('should create element with attributes', function() {
-    var element = $doc.create('div', {
+  it('should create element with attributes', () => {
+    const element = $doc.create('div', {
       'id': 'foo',
       'data-waffle-order': '+'
     });
@@ -63,8 +61,8 @@ describe('$doc', function() {
     expect(element.getAttribute('data-waffle-order')).toBe('+');
   });
 
-  it('should create element with attributes and className', function() {
-    var element = $doc.create('div', {
+  it('should create element with attributes and className', () => {
+    const element = $doc.create('div', {
       'id': 'foo',
       'data-waffle-order': '+',
       'className': 'foo bar'
@@ -77,8 +75,8 @@ describe('$doc', function() {
     expect(element.className).toBe('foo bar');
   });
 
-  it('should create element with attributes and styles', function() {
-    var element = $doc.create('div', {
+  it('should create element with attributes and styles', () => {
+    const element = $doc.create('div', {
       'id': 'foo',
       'data-waffle-order': '+',
       'style': {
@@ -93,10 +91,10 @@ describe('$doc', function() {
     expect(element.style.fontSize).toBe('10px');
   });
 
-  it('should create element with children', function() {
-    var span1 = document.createElement('span');
-    var span2 = document.createElement('span');
-    var element = $doc.create('div', null, [span1, span2]);
+  it('should create element with children', () => {
+    const span1 = document.createElement('span');
+    const span2 = document.createElement('span');
+    const element = $doc.create('div', null, [span1, span2]);
 
     expect(element).toBeDefined();
     expect(element.tagName).toBe('DIV');
@@ -106,8 +104,8 @@ describe('$doc', function() {
     expect(element.childNodes[1]).toBe(span2);
   });
 
-  it('should create element with text node', function() {
-    var element = $doc.create('div', null, 'Hello World');
+  it('should create element with text node', () => {
+    const element = $doc.create('div', null, 'Hello World');
 
     expect(element).toBeDefined();
     expect(element.tagName).toBe('DIV');
@@ -116,17 +114,17 @@ describe('$doc', function() {
     expect(element.childNodes[0].nodeValue).toBe('Hello World');
   });
 
-  it('should create element with html', function() {
-    var element = $doc.create('div', null, '<b>Hello World</b>');
+  it('should create element with html', () => {
+    const element = $doc.create('div', null, '<b>Hello World</b>');
 
     expect(element).toBeDefined();
     expect(element.tagName).toBe('DIV');
     expect(element.innerHTML).toBe('<b>Hello World</b>');
   });
 
-  it('should find element by id', function() {
-    var node = $doc.byId('span1');
-    var unknownNode = $doc.byId('foo');
+  it('should find element by id', () => {
+    const node = $doc.byId('span1');
+    const unknownNode = $doc.byId('foo');
 
     expect(node).toBeDefined();
     expect(node.length).toBe(1);
@@ -135,9 +133,9 @@ describe('$doc', function() {
     expect(unknownNode.length).toBe(0);
   });
 
-  it('should find element by tag name', function() {
-    var nodes = $doc.byTagName('span');
-    var unknownNodes = $doc.byTagName('foo');
+  it('should find element by tag name', () => {
+    const nodes = $doc.byTagName('span');
+    const unknownNodes = $doc.byTagName('foo');
     expect(nodes).toBeDefined();
     expect(nodes.length).toBe(2);
 
@@ -145,147 +143,145 @@ describe('$doc', function() {
     expect(unknownNodes.length).toBe(0);
   });
 
-  it('should find element by tag name of parent node', function() {
+  it('should find element by tag name of parent node', () => {
     spyOn(fixtures, 'getElementsByTagName').and.callThrough();
-    var nodes = $doc.byTagName('span', fixtures);
+    const nodes = $doc.byTagName('span', fixtures);
 
     expect(fixtures.getElementsByTagName).toHaveBeenCalled();
     expect(nodes).toBeDefined();
     expect(nodes.length).toBe(2);
   });
 
-  it('should create new empty document fragment', function() {
-    var fragment = $doc.createFragment();
+  it('should create new empty document fragment', () => {
+    const fragment = $doc.createFragment();
     expect(fragment).toBeDefined();
     expect(fragment instanceof DocumentFragment).toBe(true);
   });
 
-  it('should create tr element', function() {
-    var node = $doc.tr();
+  it('should create tr element', () => {
+    const node = $doc.tr();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('TR');
   });
 
-  it('should create td element', function() {
-    var node = $doc.td();
+  it('should create td element', () => {
+    const node = $doc.td();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('TD');
   });
 
-  it('should create th element', function() {
-    var node = $doc.th();
+  it('should create th element', () => {
+    const node = $doc.th();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('TH');
   });
 
-  it('should create tbody element', function() {
-    var node = $doc.tbody();
+  it('should create tbody element', () => {
+    const node = $doc.tbody();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('TBODY');
   });
 
-  it('should create thead element', function() {
-    var node = $doc.thead();
+  it('should create thead element', () => {
+    const node = $doc.thead();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('THEAD');
   });
 
-  it('should create tfoot element', function() {
-    var node = $doc.tfoot();
+  it('should create tfoot element', () => {
+    const node = $doc.tfoot();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('TFOOT');
   });
 
-  it('should create input element', function() {
-    var node = $doc.input();
+  it('should create input element', () => {
+    const node = $doc.input();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
   });
 
-  it('should create input type "checkbox" element', function() {
-    var node = $doc.inputCheckbox();
+  it('should create input type "checkbox" element', () => {
+    const node = $doc.inputCheckbox();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('checkbox');
   });
 
-  it('should create input type "text" element', function() {
-    var node = $doc.inputText();
+  it('should create input type "text" element', () => {
+    const node = $doc.inputText();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('text');
   });
 
-  it('should create input type "number" element', function() {
-    var node = $doc.inputNumber();
+  it('should create input type "number" element', () => {
+    const node = $doc.inputNumber();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('number');
   });
 
-  it('should create input type "email" element', function() {
-    var node = $doc.inputEmail();
+  it('should create input type "email" element', () => {
+    const node = $doc.inputEmail();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('email');
   });
 
-  it('should create input type "email" element', function() {
-    var node = $doc.inputUrl();
+  it('should create input type "email" element', () => {
+    const node = $doc.inputUrl();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('url');
   });
 
-  it('should create input type "date" element', function() {
-    var node = $doc.inputDate();
+  it('should create input type "date" element', () => {
+    const node = $doc.inputDate();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('date');
   });
 
-  it('should create input type "time" element', function() {
-    var node = $doc.inputTime();
+  it('should create input type "time" element', () => {
+    const node = $doc.inputTime();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('time');
   });
 
-  it('should create input type "datetime" element', function() {
-    var node = $doc.inputDatetime();
+  it('should create input type "datetime" element', () => {
+    const node = $doc.inputDatetime();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('INPUT');
     expect(node.getAttribute('type')).toBe('datetime');
   });
 
-  it('should create select element', function() {
-    var node = $doc.select();
+  it('should create select element', () => {
+    const node = $doc.select();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('SELECT');
   });
 
-  it('should create option element', function() {
-    var node = $doc.option();
+  it('should create option element', () => {
+    const node = $doc.option();
     expect(node).toBeDefined();
     expect(node.tagName).toBe('OPTION');
   });
 
-  it('should find parent', function() {
-    var nodes = $doc.byTagName('span');
-    var parent = $doc.findParent(nodes[0], 'DIV');
+  it('should find parent', () => {
+    const nodes = $doc.byTagName('span');
+    const parent = $doc.findParent(nodes[0], 'DIV');
     expect(parent).toBe(fixtures);
   });
 
-  it('should return undefined if parent does not exist', function() {
-    var nodes = $doc.byTagName('span');
-    var parent = $doc.findParent(nodes[0], 'TABLE');
+  it('should return undefined if parent does not exist', () => {
+    const nodes = $doc.byTagName('span');
+    const parent = $doc.findParent(nodes[0], 'TABLE');
     expect(parent).toBeNull();
   });
 
-  it('should get size of scrollbar', function() {
-    var size = $doc.scrollbarWidth();
+  it('should get size of scrollbar', () => {
+    const size = $doc.scrollbarWidth();
     expect(size).toBeDefined();
-    expect(size).not.toBeZero();
-    expect(size).toBePositive();
   });
 });

@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-describe('waffle-jquery', function() {
+describe('waffle-jquery', () => {
 
-  var table;
-  var css;
+  let table;
+  let css;
 
-  beforeEach(function() {
+  beforeEach(() => {
     css = 'waffle-grid';
 
     table = document.createElement('table');
@@ -36,25 +36,23 @@ describe('waffle-jquery', function() {
     fixtures.appendChild(table);
   });
 
-  afterEach(function() {
-    table = null;
-  });
+  afterEach(() => table = null);
 
-  it('should define waffle as a jquery plugin', function() {
-    var $table = $('#waffle-table');
+  it('should define waffle as a jquery plugin', () => {
+    const $table = $('#waffle-table');
     expect($table.data('wafflejs')).toBeUndefined();
 
-    var $result = $table.waffle();
+    const $result = $table.waffle();
 
     expect($result).toBe($table);
     expect($.data(table, 'wafflejs')).not.toBeUndefined();
     expect($.data(table, 'wafflejs')).toBeInstanceOf(Grid);
   });
 
-  it('should create grid with jquery element', function() {
-    var $table = $('#waffle-table');
+  it('should create grid with jquery element', () => {
+    const $table = $('#waffle-table');
 
-    var grid = Waffle.create($table, {
+    const grid = Waffle.create($table, {
       key: 'id',
       columns: [
         { id: 'name' }
@@ -65,53 +63,49 @@ describe('waffle-jquery', function() {
     expect(grid.$table[0]).toBe($table[0]);
   });
 
-  it('should have default options', function() {
+  it('should have default options', () => {
     expect($.fn.waffle.options).toBe(Grid.options);
   });
 
-  it('should instantiate grid with options', function() {
-  	var data = [
+  it('should instantiate grid with options', () => {
+  	const data = [
       { id: 1, name: 'foo' },
       { id: 2, name: 'bar' }
     ];
 
-    var columns = [
+    const columns = [
       { id: 'id' },
       { id: 'name' }
     ];
 
-    var $table = $('#waffle-table').waffle({
+    const $table = $('#waffle-table').waffle({
       data: data,
       columns: columns
     });
 
-    var grid = $.data(table, 'wafflejs');
+    const grid = $.data(table, 'wafflejs');
 
     expect(grid.$data.length).toBe(data.length);
-    expect(grid.$data).toVerify(function(current, idx) {
-      return current.id === data[idx].id;
-    });
+    expect(grid.$data).toVerify((current, idx) => current.id === data[idx].id);
 
     expect(grid.$columns.length).toBe(columns.length);
-    expect(grid.$columns).toVerify(function(column, idx) {
-      return column.id === columns[idx].id;
-    });
+    expect(grid.$columns).toVerify((column, idx) => column.id === columns[idx].id);
   });
 
-  describe('once initialized', function() {
-    var $table;
-    var $grid;
+  describe('once initialized', () => {
+    let $table;
+    let $grid;
 
-    beforeEach(function() {
+    beforeEach(() => {
       $table = $('#waffle-table').waffle();
       $grid = $table.data('wafflejs');
 
       jasmine.spyEach(Grid.prototype);
     });
 
-    it('should have public functions of Grid', function() {
-      var functions = [];
-      for (var i in Grid.prototype) {
+    it('should have public functions of Grid', () => {
+      const functions = [];
+      for (const i in Grid.prototype) {
       	if (typeof Grid.prototype[i] === 'function' && i.charAt(0) !== '$') {
           functions.push(i);
           expect($.fn.waffle[i]).toBeAFunction();
@@ -122,45 +116,45 @@ describe('waffle-jquery', function() {
       expect(functions).not.toBeEmpty();
     });
 
-    it('should render grid and chain result', function() {
-      var $result = $table.waffle('renderBody');
+    it('should render grid and chain result', () => {
+      const $result = $table.waffle('renderBody');
       expect(Grid.prototype.renderBody).toHaveBeenCalledOnce();
       expect($result).toBe($table);
     });
 
-    it('should get grid data', function() {
-      var $result = $table.waffle('data');
+    it('should get grid data', () => {
+      const $result = $table.waffle('data');
       expect(Grid.prototype.data).toHaveBeenCalledOnce();
       expect($result).toEqual($grid.data());
     });
 
-    it('should not instantiate Grid twice', function() {
-      var $table2 = $('#waffle-table').waffle();
-      var grid2 = $table2.data('wafflejs');
+    it('should not instantiate Grid twice', () => {
+      const $table2 = $('#waffle-table').waffle();
+      const grid2 = $table2.data('wafflejs');
       expect($grid).toBe(grid2);
     });
 
-    it('should define global renderer', function() {
-      var renderer = jasmine.createSpy('foo').and.returnValue('foobar');
+    it('should define global renderer', () => {
+      const renderer = jasmine.createSpy('foo').and.returnValue('foobar');
       $.fn.waffle.addRenderer('foo', renderer);
       expect($renderers.foo).toBe(renderer);
       delete $renderers.foo;
     });
 
-    it('should define global comparator', function() {
-      var comparator = jasmine.createSpy('foo').and.returnValue(1);
+    it('should define global comparator', () => {
+      const comparator = jasmine.createSpy('foo').and.returnValue(1);
       $.fn.waffle.addComparator('foo', comparator);
       expect($comparators.foo).toBe(comparator);
       delete $comparators.foo;
     });
 
-    it('should call waffle methods using static methods', function() {
-      var $result = $.fn.waffle.renderBody($table);
+    it('should call waffle methods using static methods', () => {
+      const $result = $.fn.waffle.renderBody($table);
       expect(Grid.prototype.renderBody).toHaveBeenCalledOnce();
       expect($result).toBe($table);
     });
 
-    it('should destroy grid when node is removed', function() {
+    it('should destroy grid when node is removed', () => {
       expect(Grid.prototype.destroy).not.toHaveBeenCalled();
 
       $table.remove();
@@ -170,14 +164,14 @@ describe('waffle-jquery', function() {
     });
   });
 
-  describe('with several matcher', function() {
-    var table2;
-    var $tables;
+  describe('with several matcher', () => {
+    let table2;
+    let $tables;
 
-    var $grid1;
-    var $grid2;
+    let $grid1;
+    let $grid2;
 
-    beforeEach(function() {
+    beforeEach(() => {
       table2 = document.createElement('table');
       table2.className = css;
 
@@ -190,9 +184,9 @@ describe('waffle-jquery', function() {
       jasmine.spyEach(Grid.prototype);
     });
 
-    it('should have public functions of Grid', function() {
-      var functions = [];
-      for (var i in Grid.prototype) {
+    it('should have public functions of Grid', () => {
+      const functions = [];
+      for (const i in Grid.prototype) {
         if (typeof Grid.prototype[i] === 'function' && i.charAt(0) !== '$') {
           functions.push(i);
           expect($.fn.waffle[i]).toBeAFunction();
@@ -203,10 +197,10 @@ describe('waffle-jquery', function() {
       expect(functions).not.toBeEmpty();
     });
 
-    it('should render grid and chain result', function() {
+    it('should render grid and chain result', () => {
       Grid.prototype.renderBody.calls.reset();
 
-      var $result = $tables.waffle('renderBody');
+      const $result = $tables.waffle('renderBody');
 
       expect($grid1.renderBody).toHaveBeenCalled();
       expect($grid2.renderBody).toHaveBeenCalled();
@@ -215,10 +209,10 @@ describe('waffle-jquery', function() {
       expect($result).toBe($tables);
     });
 
-    it('should get grid data', function() {
+    it('should get grid data', () => {
       Grid.prototype.renderBody.calls.reset();
 
-      var $result = $tables.waffle('data');
+      const $result = $tables.waffle('data');
 
       expect(Grid.prototype.data).toHaveBeenCalled();
       expect(Grid.prototype.data.calls.count()).toBe(2);
@@ -229,7 +223,7 @@ describe('waffle-jquery', function() {
       expect($result[1]).toEqual($grid2.data());
     });
 
-    it('should destroy both grid when nodes are removed', function() {
+    it('should destroy both grid when nodes are removed', () => {
       expect(Grid.prototype.destroy).not.toHaveBeenCalled();
 
       $tables.remove();

@@ -22,22 +22,22 @@
  * SOFTWARE.
  */
 
-describe('Collection observers', function() {
+describe('Collection observers', () => {
 
-  var o1;
-  var o2;
-  var collection;
+  let o1;
+  let o2;
+  let collection;
 
-  var callback1;
-  var callback2;
+  let callback1;
+  let callback2;
 
-  var ctx1;
-  var ctx2;
+  let ctx1;
+  let ctx2;
 
-  var change1;
-  var change2;
+  let change1;
+  let change2;
 
-  beforeEach(function() {
+  beforeEach(() => {
     o1 = { id: 1, name: 'foo' };
     o2 = { id: 2, name: 'bar' };
 
@@ -59,7 +59,7 @@ describe('Collection observers', function() {
     change2 = { type: 'splice', addedCount: 1, index: 4, object: collection, removed: [] };
   });
 
-  it('should register observer', function() {
+  it('should register observer', () => {
     collection.observe(callback1);
 
     expect(collection.$$observers).toEqual([
@@ -67,7 +67,7 @@ describe('Collection observers', function() {
     ]);
   });
 
-  it('should register observer with context', function() {
+  it('should register observer with context', () => {
     collection.observe(callback1, ctx1);
 
     expect(collection.$$observers).toEqual([
@@ -75,7 +75,7 @@ describe('Collection observers', function() {
     ]);
   });
 
-  it('should unregister everything', function() {
+  it('should unregister everything', () => {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
@@ -86,7 +86,7 @@ describe('Collection observers', function() {
     expect(collection.$$observers).toEqual([]);
   });
 
-  it('should unregister callback', function() {
+  it('should unregister callback', () => {
     collection.$$observers = [
       { ctx: null, callback: callback1 },
       { ctx: null, callback: callback2 }
@@ -99,7 +99,7 @@ describe('Collection observers', function() {
     ]);
   });
 
-  it('should unregister callback with context', function() {
+  it('should unregister callback with context', () => {
     collection.$$observers = [
       { ctx: ctx1, callback: callback1 },
       { ctx: ctx2, callback: callback1 }
@@ -112,20 +112,20 @@ describe('Collection observers', function() {
     ]);
   });
 
-  it('should notify changes asynchronously', function() {
+  it('should notify changes asynchronously', () => {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    var changes = [change1, change2];
+    const changes = [change1, change2];
 
     collection.notify(changes);
 
     expect(collection.$$changes).toEqual(changes);
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes.slice();
+    const $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -133,7 +133,7 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual([]);
   });
 
-  it('should notify single change', function() {
+  it('should notify single change', () => {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
@@ -145,7 +145,7 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual([change1]);
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes.slice();
+    const $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -153,19 +153,19 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual([]);
   });
 
-  it('should notify all changes once asynchronously', function() {
+  it('should notify all changes once asynchronously', () => {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    var changes1 = [change1];
+    const changes1 = [change1];
     collection.notify(changes1);
 
     expect(collection.$$changes.length).toBe(1);
     expect(collection.$$changes).toEqual([change1]);
 
-    var changes2 = [change2];
+    const changes2 = [change2];
     collection.notify(changes2);
 
     expect(collection.$$changes.length).toBe(2);
@@ -173,7 +173,7 @@ describe('Collection observers', function() {
 
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes.slice();
+    const $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -181,13 +181,13 @@ describe('Collection observers', function() {
     expect(collection.$$changes).toEqual([]);
   });
 
-  it('should notify an update change', function() {
+  it('should notify an update change', () => {
     collection.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    var result = collection.notifyUpdate(0);
+    const result = collection.notifyUpdate(0);
 
     expect(result).toBe(collection);
     expect(collection.$$changes.length).toBe(1);
@@ -197,7 +197,7 @@ describe('Collection observers', function() {
 
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = collection.$$changes.slice();
+    const $$changes = collection.$$changes.slice();
 
     jasmine.clock().tick(1);
 

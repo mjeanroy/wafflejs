@@ -22,53 +22,50 @@
  * SOFTWARE.
  */
 
-describe('Grid Util', function() {
+describe('Grid Util', () => {
 
-  beforeEach(function() {
-  });
-
-  it('should get data index from row', function() {
-    var row = document.createElement('tr');
+  it('should get data index from row', () => {
+    const row = document.createElement('tr');
     row.setAttribute('data-waffle-idx', 10);
     expect(GridUtil.getDataIndex(row)).toBe(10);
   });
 
-  describe('getRowIndexForDataIndex', function() {
-    it('should return -1 if rows is an empty array', function() {
-      var rows = [];
+  describe('getRowIndexForDataIndex', () => {
+    it('should return -1 if rows is an empty array', () => {
+      const rows = [];
       expect(GridUtil.getRowIndexForDataIndex(rows, 0)).toBe(-1);
       expect(GridUtil.getRowIndexForDataIndex(rows, 1)).toBe(-1);
       expect(GridUtil.getRowIndexForDataIndex(rows, 2)).toBe(-1);
     });
 
-    it('should get row index of data', function() {
-      var upperBound = 10;
-      var rows = [];
+    it('should get row index of data', () => {
+      const upperBound = 10;
+      const rows = [];
 
-      for (var i = 0; i < upperBound; i++) {
-        var row = document.createElement('tr');
+      for (let i = 0; i < upperBound; i++) {
+        const row = document.createElement('tr');
         row.setAttribute('data-waffle-idx', i);
         rows.push(row);
       }
 
-      for (var k = 0; k < upperBound; k++) {
+      for (let k = 0; k < upperBound; k++) {
         expect(GridUtil.getRowIndexForDataIndex(rows, k)).toBe(k);
       }
     });
 
-    it('should get row index of data with filtered data', function() {
-      var upperBound = 10;
-      var rows = [];
+    it('should get row index of data with filtered data', () => {
+      const upperBound = 10;
+      const rows = [];
 
-      for (var i = 0; i < upperBound; i++) {
+      for (let i = 0; i < upperBound; i++) {
         if (i % 2 === 0) {
-          var row = document.createElement('tr');
+          const row = document.createElement('tr');
           row.setAttribute('data-waffle-idx', i);
           rows.push(row);
         }
       }
 
-      for (var k = 0, expectedIndex = 0; k < upperBound; k++) {
+      for (let k = 0, expectedIndex = 0; k < upperBound; k++) {
         if (k % 2 === 0) {
           expect(GridUtil.getRowIndexForDataIndex(rows, k)).toBe(expectedIndex);
           expectedIndex++;
@@ -76,12 +73,12 @@ describe('Grid Util', function() {
       }
     });
 
-    it('should return -1 if row does not exist', function() {
-      var upperBound = 10;
-      var rows = [];
+    it('should return -1 if row does not exist', () => {
+      const upperBound = 10;
+      const rows = [];
 
-      for (var i = 0; i < upperBound; i++) {
-        var row = document.createElement('tr');
+      for (let i = 0; i < upperBound; i++) {
+        const row = document.createElement('tr');
         row.setAttribute('data-waffle-idx', i);
         rows.push(row);
       }
@@ -90,42 +87,42 @@ describe('Grid Util', function() {
     });
   });
 
-  describe('getPreviousRowIndexForDataIndex', function() {
-    it('should return -1 for en empty array', function() {
-      var rows = [];
+  describe('getPreviousRowIndexForDataIndex', () => {
+    it('should return -1 for en empty array', () => {
+      const rows = [];
       expect(GridUtil.getPreviousRowIndexForDataIndex(rows, 0)).toBe(-1);
       expect(GridUtil.getPreviousRowIndexForDataIndex(rows, 1)).toBe(-1);
       expect(GridUtil.getPreviousRowIndexForDataIndex(rows, 2)).toBe(-1);
     });
 
-    it('should get row index of data', function() {
-      var upperBound = 10;
-      var rows = [];
+    it('should get row index of data', () => {
+      const upperBound = 10;
+      const rows = [];
 
-      for (var i = 0; i < upperBound; i++) {
-        var row = document.createElement('tr');
+      for (let i = 0; i < upperBound; i++) {
+        const row = document.createElement('tr');
         row.setAttribute('data-waffle-idx', i);
         rows.push(row);
       }
 
-      for (var k = 0; k < upperBound; k++) {
+      for (let k = 0; k < upperBound; k++) {
         expect(GridUtil.getPreviousRowIndexForDataIndex(rows, k)).toBe(Math.max(k - 1, -1));
       }
     });
 
-    it('should get previous row index of data with filtered data', function() {
-      var upperBound = 10;
-      var rows = [];
+    it('should get previous row index of data with filtered data', () => {
+      const upperBound = 10;
+      const rows = [];
 
-      for (var i = 0; i < upperBound; i++) {
+      for (let i = 0; i < upperBound; i++) {
         if (i % 2 === 0) {
-          var row = document.createElement('tr');
+          const row = document.createElement('tr');
           row.setAttribute('data-waffle-idx', i);
           rows.push(row);
         }
       }
 
-      for (var k = 0, expectedIndex = 0; k < upperBound; k++) {
+      for (let k = 0, expectedIndex = 0; k < upperBound; k++) {
         if (k % 2 === 0) {
           expect(GridUtil.getPreviousRowIndexForDataIndex(rows, k)).toBe(Math.max(expectedIndex - 1, -1));
           expectedIndex++;
@@ -133,18 +130,18 @@ describe('Grid Util', function() {
       }
     });
 
-    it('should return -1 if previous row does not exist', function() {
-      var upperBound = 10;
-      var lowerBound = 5;
-      var rows = [];
+    it('should return -1 if previous row does not exist', () => {
+      const upperBound = 10;
+      const lowerBound = 5;
+      const rows = [];
 
-      for (var i = lowerBound; i < upperBound; i++) {
-        var row = document.createElement('tr');
+      for (let i = lowerBound; i < upperBound; i++) {
+        const row = document.createElement('tr');
         row.setAttribute('data-waffle-idx', i);
         rows.push(row);
       }
 
-      for (var k = 0; k < lowerBound; k++) {
+      for (let k = 0; k < lowerBound; k++) {
         expect(GridUtil.getPreviousRowIndexForDataIndex(rows, k)).toBe(-1);
       }
     });

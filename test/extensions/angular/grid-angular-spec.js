@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-describe('Waffle Angular Directive', function() {
+describe('Waffle Angular Directive', () => {
 
-  var $rootScope;
-  var $compile;
-  var $scope;
+  let $rootScope;
+  let $compile;
+  let $scope;
 
-  var options;
-  var compileTable;
+  let options;
+  let compileTable;
 
-  beforeEach(inject(function(_$rootScope_, _$compile_) {
+  beforeEach(inject((_$rootScope_, _$compile_) => {
     $rootScope = _$rootScope_;
     $compile = _$compile_;
     $scope = $rootScope.$new();
@@ -52,86 +52,78 @@ describe('Waffle Angular Directive', function() {
       }
     };
 
-    compileTable = function(table, $scope) {
-      var $table = $compile(table)($scope);
+    compileTable = (table, $scope) => {
+      const $table = $compile(table)($scope);
       $scope.$digest();
       return $table;
     };
   }));
 
-  it('should build table using directive with immutable option', function() {
+  it('should build table using directive with immutable option', () => {
     $scope.options = options;
-    var table = '<table waffle waffle-options="options"></table>';
-    var $table = compileTable(table, $scope);
+    const table = '<table waffle waffle-options="options"></table>';
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
 
-    var childNodes = $table[0].childNodes;
+    const childNodes = $table[0].childNodes;
     expect(childNodes.length).toBe(3);
     expect(childNodes[0]).toBeDOMElement('thead');
     expect(childNodes[1]).toBeDOMElement('tbody');
     expect(childNodes[2]).toBeDOMElement('tfoot');
 
-    var thead = childNodes[0];
-    var tbody = childNodes[1];
-    var tfoot = childNodes[2];
+    const thead = childNodes[0];
+    const tbody = childNodes[1];
+    const tfoot = childNodes[2];
 
     expect(thead.childNodes[0].childNodes.length).toBe(3);
     expect(tfoot.childNodes[0].childNodes.length).toBe(3);
 
-    var dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
-    expect(dataHeader).toVerify(function(node, idx) {
-      return node.innerHTML === $scope.options.columns[idx].title;
-    });
+    const dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
+    expect(dataHeader).toVerify((node, idx) => node.innerHTML === $scope.options.columns[idx].title);
 
-    var dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
-    expect(dataFooter).toVerify(function(node, idx) {
-      return node.innerHTML === $scope.options.columns[idx].title;
-    });
+    const dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
+    expect(dataFooter).toVerify((node, idx) => node.innerHTML === $scope.options.columns[idx].title);
 
     expect(tbody.childNodes.length).toBe(3);
-    expect(tbody.childNodes).toVerify(function(node, idx) {
-      var tds = node.childNodes;
-      var data = $scope.options.data[idx];
+    expect(tbody.childNodes).toVerify((node, idx) => {
+      const tds = node.childNodes;
+      const data = $scope.options.data[idx];
       return tds[1].innerHTML === data.id.toString() &&
              tds[2].innerHTML === data.name.toString();
     });
   });
 
-  it('should build table using directive with immutable option and set grid object', function() {
+  it('should build table using directive with immutable option and set grid object', () => {
     $scope.options = options;
-    var table = '<table waffle waffle-options="options" waffle-grid="grid"></table>';
-    var $table = compileTable(table, $scope);
+    const table = '<table waffle waffle-options="options" waffle-grid="grid"></table>';
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
 
-    var childNodes = $table[0].childNodes;
+    const childNodes = $table[0].childNodes;
     expect(childNodes.length).toBe(3);
     expect(childNodes[0]).toBeDOMElement('thead');
     expect(childNodes[1]).toBeDOMElement('tbody');
     expect(childNodes[2]).toBeDOMElement('tfoot');
 
-    var thead = childNodes[0];
-    var tbody = childNodes[1];
-    var tfoot = childNodes[2];
+    const thead = childNodes[0];
+    const tbody = childNodes[1];
+    const tfoot = childNodes[2];
 
     expect(thead.childNodes[0].childNodes.length).toBe(3);
     expect(tfoot.childNodes[0].childNodes.length).toBe(3);
 
-    var dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
-    expect(dataHeader).toVerify(function(node, idx) {
-      return node.innerHTML === $scope.options.columns[idx].title;
-    });
+    const dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
+    expect(dataHeader).toVerify((node, idx) => node.innerHTML === $scope.options.columns[idx].title);
 
-    var dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
-    expect(dataFooter).toVerify(function(node, idx) {
-      return node.innerHTML === $scope.options.columns[idx].title;
-    });
+    const dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
+    expect(dataFooter).toVerify((node, idx) => node.innerHTML === $scope.options.columns[idx].title);
 
     expect(tbody.childNodes.length).toBe(3);
-    expect(tbody.childNodes).toVerify(function(node, idx) {
-      var tds = node.childNodes;
-      var data = $scope.options.data[idx];
+    expect(tbody.childNodes).toVerify((node, idx) => {
+      const tds = node.childNodes;
+      const data = $scope.options.data[idx];
       return tds[1].innerHTML === data.id.toString() &&
              tds[2].innerHTML === data.name.toString();
     });
@@ -140,40 +132,36 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.$data.toArray()).toEqual(options.data);
   });
 
-  it('should build table using directive with grid options', function() {
+  it('should build table using directive with grid options', () => {
     $scope.grid = options;
-    var table = '<table waffle waffle-grid="grid"></table>';
-    var $table = compileTable(table, $scope);
+    const table = '<table waffle waffle-grid="grid"></table>';
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
 
-    var childNodes = $table[0].childNodes;
+    const childNodes = $table[0].childNodes;
     expect(childNodes.length).toBe(3);
     expect(childNodes[0]).toBeDOMElement('thead');
     expect(childNodes[1]).toBeDOMElement('tbody');
     expect(childNodes[2]).toBeDOMElement('tfoot');
 
-    var thead = childNodes[0];
-    var tbody = childNodes[1];
-    var tfoot = childNodes[2];
+    const thead = childNodes[0];
+    const tbody = childNodes[1];
+    const tfoot = childNodes[2];
 
     expect(thead.childNodes[0].childNodes.length).toBe(3);
     expect(tfoot.childNodes[0].childNodes.length).toBe(3);
 
-    var dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
-    expect(dataHeader).toVerify(function(node, idx) {
-      return node.innerHTML === options.columns[idx].title;
-    });
+    const dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
+    expect(dataHeader).toVerify((node, idx) => node.innerHTML === options.columns[idx].title);
 
-    var dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
-    expect(dataFooter).toVerify(function(node, idx) {
-      return node.innerHTML === options.columns[idx].title;
-    });
+    const dataFooter = Array.prototype.slice(tfoot.childNodes[0].childNodes, 1);
+    expect(dataFooter).toVerify((node, idx) => node.innerHTML === options.columns[idx].title);
 
     expect(tbody.childNodes.length).toBe(3);
-    expect(tbody.childNodes).toVerify(function(node, idx) {
-      var tds = node.childNodes;
-      var data = options.data[idx];
+    expect(tbody.childNodes).toVerify((node, idx) => {
+      const tds = node.childNodes;
+      const data = options.data[idx];
       return tds[1].innerHTML === data.id.toString() &&
              tds[2].innerHTML === data.name.toString();
     });
@@ -182,48 +170,46 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.$data.toArray()).toEqual(options.data);
   });
 
-  it('should build table using columns initialization', function() {
+  it('should build table using columns initialization', () => {
     $scope.columns = [
       { id: 'foo' },
       { id: 'bar' }
     ];
 
-    var table = '<table waffle waffle-grid="grid" columns="columns"></table>';
-    var $table = compileTable(table, $scope);
+    const table = '<table waffle waffle-grid="grid" columns="columns"></table>';
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
 
-    var childNodes = $table[0].childNodes;
+    const childNodes = $table[0].childNodes;
     expect(childNodes.length).toBe(2);
     expect(childNodes[0]).toBeDOMElement('thead');
     expect(childNodes[1]).toBeDOMElement('tbody');
 
-    var thead = childNodes[0];
-    var tbody = childNodes[1];
+    const thead = childNodes[0];
+    const tbody = childNodes[1];
 
     expect(thead.childNodes[0].childNodes.length).toBe(3);
 
-    var dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
-    expect(dataHeader).toVerify(function(node, idx) {
-      return node.innerHTML === options.columns[idx].title;
-    });
+    const dataHeader = Array.prototype.slice(thead.childNodes[0].childNodes, 1);
+    expect(dataHeader).toVerify((node, idx) => node.innerHTML === options.columns[idx].title);
   });
 
-  it('should trigger callbacks', function() {
+  it('should trigger callbacks', () => {
     $scope.grid = options;
 
     $scope.onInitialized = jasmine.createSpy('onInitialized');
     $scope.onRendered = jasmine.createSpy('onRendered');
     $scope.onDataSpliced = jasmine.createSpy('onDataSpliced');
 
-    var table = '' +
-      '<table waffle waffle-grid="grid" ' +
-      '       on-initialized="onInitialized()" ' +
-      '       on-rendered="onRendered()" ' +
-      '       on-data-spliced="onDataSpliced()" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              on-initialized="onInitialized()"
+              on-rendered="onRendered()"
+              on-data-spliced="onDataSpliced()"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.onInitialized).toHaveBeenCalled();
@@ -240,20 +226,19 @@ describe('Waffle Angular Directive', function() {
     expect($scope.onDataSpliced).toHaveBeenCalled();
   });
 
-  it('should destroy grid when scope is destroyed', function() {
-    var unwatcher = jasmine.createSpy('unwatcher');
+  it('should destroy grid when scope is destroyed', () => {
+    const unwatcher = jasmine.createSpy('unwatcher');
     spyOn($scope, '$watch').and.returnValue(unwatcher);
     spyOn(Grid.prototype, 'destroy').and.callThrough();
 
     $scope.options = options;
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-options="options" ' +
-      '       waffle-filter="filter" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-options="options"
+              waffle-filter="filter"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect(Grid.prototype.destroy).not.toHaveBeenCalled();
@@ -265,27 +250,27 @@ describe('Waffle Angular Directive', function() {
     expect(unwatcher).toHaveBeenCalled();
   });
 
-  it('should not override events if dom attribute is not defined', function() {
+  it('should not override events if dom attribute is not defined', () => {
     $scope.grid = options;
 
     $scope.onInitialized = jasmine.createSpy('onInitialized');
     $scope.onRendered = jasmine.createSpy('onRendered');
     $scope.onDataSpliced = jasmine.createSpy('onDataSpliced');
 
-    var table = '' +
-      '<table waffle waffle-grid="grid" ' +
-      '       on-initialized="onInitialized()" ' +
-      '       on-rendered="onRendered()" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              on-initialized="onInitialized()"
+              on-rendered="onRendered()"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid.options.events.onDataSpliced).toBeNull();
     expect($scope.grid.options.events.onRendered).not.toBe(_.noop);
   });
 
-  it('should bind selection to ng-model attribute', function() {
+  it('should bind selection to ng-model attribute', () => {
     $scope.grid = angular.extend(options, {
       selection: {
         enable: true
@@ -294,19 +279,19 @@ describe('Waffle Angular Directive', function() {
 
     $scope.selection = [];
 
-    var table = '' +
-      '<table waffle waffle-grid="grid" ' +
-      '       ng-model="selection" ' +
-      '       on-initialized="onInitialized()" ' +
-      '       on-rendered="onRendered()" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              ng-model="selection"
+              on-initialized="onInitialized()"
+              on-rendered="onRendered()"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.selection).toBeDefined();
 
-    var d1 = $scope.grid.data().at(0);
+    const d1 = $scope.grid.data().at(0);
 
     $scope.grid.selection().push(d1);
 
@@ -317,32 +302,31 @@ describe('Waffle Angular Directive', function() {
     expect($scope.selection[0]).toBe(d1);
   });
 
-  it('should disable selection', function() {
-    var columns = options.columns;
+  it('should disable selection', () => {
+    const columns = options.columns;
 
     // Set options on scope
     $scope.options = options;
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-options="options" ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-selection="false" ' +
-      '       on-initialized="onInitialized()" ' +
-      '       on-rendered="onRendered()" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-options="options"
+              waffle-grid="grid"
+              waffle-selection="false"
+              on-initialized="onInitialized()"
+              on-rendered="onRendered()"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     // Trigger a digest
     $rootScope.$digest();
 
     // Selection column should not be here
-    var thead = $scope.grid.$thead[0];
+    const thead = $scope.grid.$thead[0];
     expect(thead.childNodes[0].childNodes.length).toBe(columns.length);
   });
 
-  it('should update selection with ngModel value', function() {
+  it('should update selection with ngModel value', () => {
     $scope.grid = angular.extend(options, {
       selection: {
         enable: true
@@ -351,19 +335,19 @@ describe('Waffle Angular Directive', function() {
 
     $scope.selection = [];
 
-    var table = '' +
-      '<table waffle waffle-grid="grid" ' +
-      '       ng-model="selection" ' +
-      '       on-initialized="onInitialized()" ' +
-      '       on-rendered="onRendered()" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              ng-model="selection"
+              on-initialized="onInitialized()"
+              on-rendered="onRendered()"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.selection).toBeDefined();
 
-    var d1 = $scope.grid.data().at(0);
+    const d1 = $scope.grid.data().at(0);
 
     $scope.selection = [d1];
 
@@ -374,39 +358,37 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.selection()[0]).toBe(d1);
   });
 
-  it('should update filter using binding', function() {
+  it('should update filter using binding', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="filter" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="filter"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
     expect($scope.grid.filter).toHaveBeenCalledWith(undefined);
 
     $scope.grid.filter.calls.reset();
 
-    $scope.$apply(function() {
+    $scope.$apply(() => {
       $scope.filter = 'foo';
     });
 
     expect($scope.grid.filter).toHaveBeenCalledWith('foo');
   });
 
-  it('should update filter using attribute simple name', function() {
+  it('should update filter using attribute simple name', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       filter="filter" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              filter="filter"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
     expect($scope.grid.filter).toHaveBeenCalledWith(undefined);
@@ -414,23 +396,22 @@ describe('Waffle Angular Directive', function() {
 
     $scope.grid.filter.calls.reset();
 
-    $scope.$apply(function() {
+    $scope.$apply(() => {
       $scope.filter = 'foo';
     });
 
     expect($scope.grid.filter).toHaveBeenCalledWith('foo');
   });
 
-  it('should update filter using attribute interpolation', function() {
+  it('should update filter using attribute interpolation', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="{{ filter }}" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="{{ filter }}"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
     expect($scope.grid.filter).toHaveBeenCalledWith('');
@@ -438,23 +419,22 @@ describe('Waffle Angular Directive', function() {
 
     $scope.grid.filter.calls.reset();
 
-    $scope.$apply(function() {
+    $scope.$apply(() => {
       $scope.filter = 'foo';
     });
 
     expect($scope.grid.filter).toHaveBeenCalledWith('foo');
   });
 
-  it('should update filter when directive is initialized with constant value', function() {
+  it('should update filter when directive is initialized with constant value', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="\'foo\'" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="'foo'"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -462,18 +442,17 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
 
-  it('should update filter when directive is initialized with attribute interpolated', function() {
+  it('should update filter when directive is initialized with attribute interpolated', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="{{ filter }}" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="{{ filter }}"></table>`;
 
     $scope.filter = 'foo';
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -481,18 +460,17 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
 
-  it('should update filter when directive is initialized with attribute interpolated and constant variable', function() {
+  it('should update filter when directive is initialized with attribute interpolated and constant variable', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="hello {{ filter }}" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="hello {{ filter }}"></table>`;
 
     $scope.filter = 'foo';
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -500,18 +478,17 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
 
-  it('should update filter using an object', function() {
+  it('should update filter using an object', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="{ foo: filter }" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="{ foo: filter }"></table>`;
 
     $scope.filter = 'foo';
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -523,18 +500,17 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
 
-  it('should update filter using a new object', function() {
+  it('should update filter using a new object', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="{ foo: filter }" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="{ foo: filter }"></table>`;
 
     $scope.filter = 'foo';
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -546,7 +522,7 @@ describe('Waffle Angular Directive', function() {
 
     $scope.grid.filter.calls.reset();
 
-    $scope.$apply(function() {
+    $scope.$apply(() => {
       $scope.filter = 'bar';
     });
 
@@ -556,20 +532,19 @@ describe('Waffle Angular Directive', function() {
     });
   });
 
-  it('should update filter using an object in scope', function() {
+  it('should update filter using an object in scope', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="filter" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="filter"></table>`;
 
     $scope.filter = {
       foo: 'foo'
     };
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -581,7 +556,7 @@ describe('Waffle Angular Directive', function() {
 
     $scope.grid.filter.calls.reset();
 
-    $scope.$apply(function() {
+    $scope.$apply(() => {
       $scope.filter.foo = 'bar';
     });
 
@@ -591,16 +566,15 @@ describe('Waffle Angular Directive', function() {
     });
   });
 
-  it('should update filter using a static object', function() {
+  it('should update filter using a static object', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       waffle-grid="grid" ' +
-      '       waffle-filter="{ foo: \'foo\' }" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              waffle-grid="grid"
+              waffle-filter="{ foo: 'foo' }"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -612,17 +586,16 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
 
-  it('should use filter even if datagrid is not selectable', function() {
+  it('should use filter even if datagrid is not selectable', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       data-waffle-grid="grid" ' +
-      '       data-waffle-selection="{ enable: false }" ' +
-      '       data-waffle-filter="{ foo: \'foo\' }" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              data-waffle-grid="grid"
+              data-waffle-selection="{ enable: false }"
+              data-waffle-filter="{ foo: 'foo' }"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
@@ -634,35 +607,33 @@ describe('Waffle Angular Directive', function() {
     expect($scope.grid.filter.calls.count()).toBe(1);
   });
 
-  it('should not use ng compilation by default', function() {
+  it('should not use ng compilation by default', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       data-waffle-grid="grid" ' +
-      '       data-waffle-selection="{ enable: false }" ' +
-      '       data-waffle-filter="{ foo: \'foo\' }" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              data-waffle-grid="grid"
+              data-waffle-selection="{ enable: false }"
+              data-waffle-filter="{ foo: 'foo' }"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();
     expect($scope.grid.options.ng).toBeUndefined();
   });
 
-  it('should use ng compilation', function() {
+  it('should use ng compilation', () => {
     spyOn(Grid.prototype, 'filter').and.callThrough();
 
-    var table = '' +
-      '<table waffle ' +
-      '       data-waffle-grid="grid" ' +
-      '       data-waffle-ng-compile="true" ' +
-      '       data-waffle-selection="{ enable: false }" ' +
-      '       data-waffle-filter="{ foo: \'foo\' }" ' +
-      '></table>';
+    const table =
+      `<table waffle
+              data-waffle-grid="grid"
+              data-waffle-ng-compile="true"
+              data-waffle-selection="{ enable: false }"
+              data-waffle-filter="{ foo: 'foo' }"></table>`;
 
-    var $table = compileTable(table, $scope);
+    const $table = compileTable(table, $scope);
 
     expect($table).toBeDefined();
     expect($scope.grid).toBeDefined();

@@ -22,68 +22,67 @@
  * SOFTWARE.
  */
 
-describe('WaffleComponent', function() {
+describe('WaffleComponent', () => {
 
-  var TestUtils = React.addons.TestUtils;
+  const TestUtils = React.addons.TestUtils;
 
-  beforeEach(function() {
+  beforeEach(() => {
     expect(TestUtils).toBeDefined();
-
     spyOn(React.DOM, 'table').and.callThrough();
   });
 
-  it('should render component', function() {
+  it('should render component', () => {
     spyOn(Grid.prototype, 'visibleData').and.callThrough();
 
-    var waffle = React.createElement(WaffleComponent, {
+    const waffle = React.createElement(WaffleComponent, {
       view: {
         thead: true,
         tfoot: true
       }
     });
 
-    var component = TestUtils.renderIntoDocument(waffle);
-    var el = ReactDOM.findDOMNode(component);
+    const component = TestUtils.renderIntoDocument(waffle);
+    const el = ReactDOM.findDOMNode(component);
 
     expect(el).toBeDefined();
     expect(el.tagName).toBe('TABLE');
     expect(component.grid).toBeDefined();
     expect(component.grid.visibleData).toHaveBeenCalled();
 
-    var tbody = el.getElementsByTagName('tbody')[0];
-    var thead = el.getElementsByTagName('thead')[0];
-    var tfoot = el.getElementsByTagName('tfoot')[0];
+    const tbody = el.getElementsByTagName('tbody')[0];
+    const thead = el.getElementsByTagName('thead')[0];
+    const tfoot = el.getElementsByTagName('tfoot')[0];
 
     expect(tbody).not.toBeNull();
     expect(thead).not.toBeNull();
     expect(tfoot).not.toBeNull();
   });
 
-  it('should render component to a string', function() {
+  it('should render component to a string', () => {
     spyOn(Grid.prototype, 'visibleData').and.callThrough();
 
-    var waffle = React.createElement(WaffleComponent, {
+    const waffle = React.createElement(WaffleComponent, {
       view: {
         thead: true,
         tfoot: true
       }
     });
 
-    var html = ReactDOMServer.renderToString(waffle);
+    const html = ReactDOMServer.renderToString(waffle);
 
     expect(html).toBeDefined();
     expect(html).toBeAString();
     expect(Grid.prototype.visibleData).toHaveBeenCalled();
 
-    var node = document.createElement('div');
+    const node = document.createElement('div');
     node.innerHTML = html;
 
-    var table = node.childNodes[0];
+    const table = node.childNodes[0];
     expect(node).not.toBeNull();
 
-    var tbody = table.getElementsByTagName('tbody')[0];
-    var thead = table.getElementsByTagName('thead')[0];
-    var tfoot = table.getElementsByTagName('tfoot')[0];
+    const tbody = table.getElementsByTagName('tbody')[0];
+    const thead = table.getElementsByTagName('thead')[0];
+    const tfoot = table.getElementsByTagName('tfoot')[0];
 
     expect(tbody).not.toBeNull();
     expect(thead).not.toBeNull();

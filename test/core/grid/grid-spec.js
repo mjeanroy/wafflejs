@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-describe('Grid', function() {
+describe('Grid', () => {
 
-  var jq, oldDocumentMode;
+  let jq, oldDocumentMode;
 
-  beforeEach(function() {
+  beforeEach(() => {
     jq = $.fn || $.prototype;
 
     // Spy ie version
@@ -34,11 +34,9 @@ describe('Grid', function() {
     document.documentMode = undefined;
   });
 
-  afterEach(function() {
-    document.documentMode = oldDocumentMode;
-  });
+  afterEach(() =>  document.documentMode = oldDocumentMode);
 
-  it('should define custom options', function() {
+  it('should define custom options', () => {
     expect(Grid.options).toEqual(jasmine.objectContaining({
       columns: null,
       data: null,
@@ -78,7 +76,7 @@ describe('Grid', function() {
       }
     }));
 
-    var key = Grid.options.key;
+    const key = Grid.options.key;
     expect(key).toBeDefined();
 
     // Key is not the same for angular wrapper or others
@@ -89,21 +87,21 @@ describe('Grid', function() {
     }
   });
 
-  it('should create grid using default options', function() {
-    var columns = [
+  it('should create grid using default options', () => {
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo' }
     ];
 
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       columns: columns
     });
 
     expect(grid.options).toBeDefined();
     expect(grid.options).not.toBe(Grid.options);
 
-    var defaultOptions = jasmine.util.clone(Grid.options);
+    const defaultOptions = jasmine.util.clone(Grid.options);
 
     // We should ignore these properties
     delete defaultOptions.columns;
@@ -112,16 +110,18 @@ describe('Grid', function() {
     expect(grid.options).toEqual(jasmine.objectContaining(defaultOptions));
   });
 
-  it('should create grid with custom options', function() {
-    var Model = function(o) {
-      this.id = o.id;
-    };
+  it('should create grid with custom options', () => {
+    class Model {
+      constructor(o) {
+        this.id = o.id;
+      }
+    }
 
-    var table = document.createElement('table');
-    var onInitialized = jasmine.createSpy('onInitialized');
-    var onDataSpliced = jasmine.createSpy('onDataSpliced');
+    const table = document.createElement('table');
+    const onInitialized = jasmine.createSpy('onInitialized');
+    const onDataSpliced = jasmine.createSpy('onDataSpliced');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       key: 'title',
       model: Model,
       async: true,
@@ -178,16 +178,18 @@ describe('Grid', function() {
     }));
   });
 
-  it('should create grid with custom options', function() {
-    var Model = function(o) {
-      this.id = o.id;
-    };
+  it('should create grid with custom options', () => {
+    class Model {
+      constructor(o) {
+        this.id = o.id;
+      }
+    }
 
-    var table = document.createElement('table');
-    var onInitialized = jasmine.createSpy('onInitialized');
-    var onDataSpliced = jasmine.createSpy('onDataSpliced');
+    const table = document.createElement('table');
+    const onInitialized = jasmine.createSpy('onInitialized');
+    const onDataSpliced = jasmine.createSpy('onDataSpliced');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       key: 'title',
       model: Model,
       async: true,
@@ -244,12 +246,14 @@ describe('Grid', function() {
     }));
   });
 
-  it('should create grid without table element', function() {
-    var Model = function(o) {
-      this.id = o.id;
-    };
+  it('should create grid without table element', () => {
+    class Model {
+      constructor(o) {
+        this.id = o.id;
+      }
+    }
 
-    var grid = new Grid({
+    const grid = new Grid({
       key: 'title',
       model: Model,
       async: true,
@@ -302,16 +306,16 @@ describe('Grid', function() {
     }));
   });
 
-  it('should create grid using factory', function() {
-    var table = document.createElement('table');
-    var grid = Grid.create(table);
+  it('should create grid using factory', () => {
+    const table = document.createElement('table');
+    const grid = Grid.create(table);
     expect(grid).toBeInstanceOf(Grid);
   });
 
-  it('should detach grid', function() {
-    var table = document.createElement('table');
+  it('should detach grid', () => {
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       scrollable: true,
       sortable: true,
       selection: {
@@ -347,7 +351,7 @@ describe('Grid', function() {
     expect(grid.$columns.$$observers).not.toBeEmpty();
     expect(grid.$selection.$$observers).not.toBeEmpty();
 
-    var result = grid.detach();
+    const result = grid.detach();
 
     expect(result).toBe(grid);
     expect(grid.$table).toBeNull();
@@ -377,11 +381,11 @@ describe('Grid', function() {
     expect(GridDomBinders.unbindResize).toHaveBeenCalledWith(grid);
   });
 
-  it('should re-attach dom node', function() {
-    var table1 = document.createElement('table');
-    var table2 = document.createElement('table');
+  it('should re-attach dom node', () => {
+    const table1 = document.createElement('table');
+    const table2 = document.createElement('table');
 
-    var grid = new Grid(table1, {
+    const grid = new Grid(table1, {
       scrollable: true,
       sortable: true,
       dnd: true,
@@ -418,7 +422,7 @@ describe('Grid', function() {
     spyOn(GridDomBinders, 'bindDragDrop').and.callThrough();
     spyOn(GridDomBinders, 'bindResize').and.callThrough();
 
-    var result = grid.attach(table2);
+    const result = grid.attach(table2);
 
     expect(result).toBe(grid);
     expect(grid.$table).not.toBeNull();
@@ -457,27 +461,27 @@ describe('Grid', function() {
     expect(grid.dispatchEvent).toHaveBeenCalledWith('attached');
   });
 
-  it('should initialize grid and clear changes', function() {
+  it('should initialize grid and clear changes', () => {
     spyOn(Grid.prototype, 'clearChanges');
 
-    var columns = [
+    const columns = [
       { id: 'foo', title: 'Foo' },
       { id: 'bar', title: 'Boo' }
     ];
 
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       columns: columns
     });
 
     expect(grid.clearChanges).toHaveBeenCalled();
   });
 
-  it('should create grid with columns set using html options', function() {
-    var table = document.createElement('table');
+  it('should create grid with columns set using html options', () => {
+    const table = document.createElement('table');
     table.setAttribute('data-columns', '[{"id": "bar"}, {"id": "foo"}]');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       key: 'title',
     });
 
@@ -497,11 +501,11 @@ describe('Grid', function() {
     }));
   });
 
-  it('should create grid with columns set using data-waffle html options', function() {
-    var table = document.createElement('table');
+  it('should create grid with columns set using data-waffle html options', () => {
+    const table = document.createElement('table');
     table.setAttribute('data-waffle-columns', '[{"id": "bar"}, {"id": "foo"}]');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       key: 'title',
     });
 
@@ -521,11 +525,11 @@ describe('Grid', function() {
     }));
   });
 
-  it('should create grid with columns set using waffle html options', function() {
-    var table = document.createElement('table');
+  it('should create grid with columns set using waffle html options', () => {
+    const table = document.createElement('table');
     table.setAttribute('waffle-columns', '[{"id": "bar"}, {"id": "foo"}]');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       key: 'title',
     });
 
@@ -545,42 +549,42 @@ describe('Grid', function() {
     }));
   });
 
-  it('should initialize grid and set key value using html options', function() {
-    var table = document.createElement('table');
+  it('should initialize grid and set key value using html options', () => {
+    const table = document.createElement('table');
     table.setAttribute('data-key', 'title');
 
-    var grid = new Grid(table);
+    const grid = new Grid(table);
 
     expect(grid.options).toBeDefined();
     expect(grid.options.key).toBeDefined();
     expect(grid.options.key).toBe('title');
   });
 
-  it('should initialize grid and set scrollable value using html options', function() {
-    var table = document.createElement('table');
+  it('should initialize grid and set scrollable value using html options', () => {
+    const table = document.createElement('table');
     table.setAttribute('data-scrollable', 'true');
 
-    var grid = new Grid(table);
+    const grid = new Grid(table);
 
     expect(grid.options).toBeDefined();
     expect(grid.options.scrollable).toBeDefined();
     expect(grid.options.scrollable).toBe(true);
   });
 
-  it('should initialize grid and set sortable value using html options', function() {
-    var table = document.createElement('table');
+  it('should initialize grid and set sortable value using html options', () => {
+    const table = document.createElement('table');
     table.setAttribute('data-sortable', 'false');
 
-    var grid = new Grid(table);
+    const grid = new Grid(table);
 
     expect(grid.options).toBeDefined();
     expect(grid.options.sortable).toBeDefined();
     expect(grid.options.sortable).toBe(false);
   });
 
-  it('should create grid with size values as numbers', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should create grid with size values as numbers', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       size: {
         width: '100px',
         height: '200px'
@@ -595,9 +599,9 @@ describe('Grid', function() {
     }));
   });
 
-  it('should create selectable grid', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should create selectable grid', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       selection: {
         multi: true
       }
@@ -606,27 +610,27 @@ describe('Grid', function() {
     expect(table.className).toContain('waffle-selectable');
   });
 
-  it('should not create selectable grid', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should not create selectable grid', () => {
+    const table1 = document.createElement('table');
+    const grid1 = new Grid(table1, {
       selection: false
     });
 
-    expect(table.className).not.toContain('waffle-selectable');
+    expect(table1.className).not.toContain('waffle-selectable');
 
-    table = document.createElement('table');
-    grid = new Grid(table, {
+    const table2 = document.createElement('table');
+    const grid2 = new Grid(table2, {
       selection: {
         enable: false
       }
     });
 
-    expect(table.className).not.toContain('waffle-selectable');
+    expect(table2.className).not.toContain('waffle-selectable');
   });
 
-  it('should not create sortable grid', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should not create sortable grid', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       sortable: false,
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -639,9 +643,9 @@ describe('Grid', function() {
     });
   });
 
-  it('should add default css to grid', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should add default css to grid', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       size: {
         height: 300
       }
@@ -650,25 +654,25 @@ describe('Grid', function() {
     expect(table.className).toContain('waffle-grid');
   });
 
-  it('should create scrollable grid', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should create scrollable grid', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       scrollable: true
     });
 
     expect(table.className).toContain('waffle-fixedheader');
   });
 
-  it('should create draggable grid', function() {
-    var table = document.createElement('table');
+  it('should create draggable grid', () => {
+    const table = document.createElement('table');
 
-    var columns = [
+    const columns = [
       { id: 'id' },
       { id: 'foo' },
       { id: 'bar' }
     ];
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       dnd: true
     });
 
@@ -677,9 +681,9 @@ describe('Grid', function() {
     });
   });
 
-  it('should create scrollable grid using size', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should create scrollable grid using size', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       size: {
         height: 300
       }
@@ -688,15 +692,15 @@ describe('Grid', function() {
     expect(table.className).toContain('waffle-fixedheader');
   });
 
-  it('should not override draggable flags of columns', function() {
-    var table = document.createElement('table');
-    var columns = [
+  it('should not override draggable flags of columns', () => {
+    const table = document.createElement('table');
+    const columns = [
       { id: 'id', draggable: false },
       { id: 'foo', draggable: true },
       { id: 'bar' }
     ];
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       dnd: true,
       columns: columns
     });
@@ -706,22 +710,22 @@ describe('Grid', function() {
     expect(grid.$columns.at(2).draggable).toBeTrue();
   });
 
-  it('should not create scrollable grid', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table);
+  it('should not create scrollable grid', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table);
     expect(table.className).not.toContain('waffle-fixedheader');
   });
 
-  it('should retrieve thead, tfoot and tbody element', function() {
-    var table = document.createElement('table');
-    var thead = document.createElement('thead');
-    var tfoot = document.createElement('tfoot');
-    var tbody = document.createElement('tbody');
+  it('should retrieve thead, tfoot and tbody element', () => {
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tfoot = document.createElement('tfoot');
+    const tbody = document.createElement('tbody');
     table.appendChild(thead);
     table.appendChild(tfoot);
     table.appendChild(tbody);
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -745,10 +749,10 @@ describe('Grid', function() {
     expect(grid.$tfoot[0]).toBe(tfoot);
   });
 
-  it('should create thead, tfoot and tbody element', function() {
-    var table = document.createElement('table');
+  it('should create thead, tfoot and tbody element', () => {
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -769,19 +773,19 @@ describe('Grid', function() {
     expect(grid.$thead[0]).toBeDOMElement('thead');
     expect(grid.$tfoot[0]).toBeDOMElement('tfoot');
 
-    var childs = table.childNodes;
+    const childs = table.childNodes;
     expect(childs.length).toBe(3);
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
     expect(childs[2]).toBe(grid.$tfoot[0]);
   });
 
-  it('should create only unknown nodes', function() {
-    var table = document.createElement('table');
-    var tbody = document.createElement('tbody');
+  it('should create only unknown nodes', () => {
+    const table = document.createElement('table');
+    const tbody = document.createElement('tbody');
     table.appendChild(tbody);
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -801,16 +805,16 @@ describe('Grid', function() {
     expect(grid.$thead[0]).toBeDOMElement('thead');
     expect(grid.$tfoot[0]).toBeDOMElement('tfoot');
 
-    var childs = table.childNodes;
+    const childs = table.childNodes;
     expect(childs.length).toBe(3);
     expect(childs[0]).toBe(grid.$thead[0]);
     expect(childs[1]).toBe(grid.$tbody[0]);
     expect(childs[2]).toBe(grid.$tfoot[0]);
   });
 
-  it('should create grid with fixed size', function() {
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+  it('should create grid with fixed size', () => {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       columns: [
         { id: 'id' },
         { id: 'foo' }
@@ -831,11 +835,11 @@ describe('Grid', function() {
     expect(grid.$columns[0].computedWidth).toBeANumber();
     expect(grid.$columns[1].computedWidth).toBeANumber();
 
-    var w1 = grid.$columns[0].computedWidth + 'px';
-    var w2 = grid.$columns[1].computedWidth + 'px';
+    const w1 = grid.$columns[0].computedWidth + 'px';
+    const w2 = grid.$columns[1].computedWidth + 'px';
     expect(w1).toBe(w2);
 
-    var theads = grid.$thead[0].childNodes[0].childNodes;
+    const theads = grid.$thead[0].childNodes[0].childNodes;
     expect(theads[1].style.maxWidth).toBe(w1);
     expect(theads[1].style.minWidth).toBe(w1);
     expect(theads[1].style.width).toBe(w1);
@@ -845,12 +849,12 @@ describe('Grid', function() {
     expect(theads[2].style.width).toBe(w2);
   });
 
-  it('should create grid with fixed size and compute size with functions', function() {
-    var width = jasmine.createSpy('width').and.returnValue('100px');
-    var height = jasmine.createSpy('height').and.returnValue('200px');
+  it('should create grid with fixed size and compute size with functions', () => {
+    const width = jasmine.createSpy('width').and.returnValue('100px');
+    const height = jasmine.createSpy('height').and.returnValue('200px');
 
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       columns: [
         { id: 'id' },
         { id: 'foo' }
@@ -871,11 +875,11 @@ describe('Grid', function() {
     expect(grid.$columns[0].computedWidth).toBeANumber();
     expect(grid.$columns[1].computedWidth).toBeANumber();
 
-    var w1 = grid.$columns[0].computedWidth + 'px';
-    var w2 = grid.$columns[0].computedWidth + 'px';
+    const w1 = grid.$columns[0].computedWidth + 'px';
+    const w2 = grid.$columns[0].computedWidth + 'px';
     expect(w1).toBe(w2);
 
-    var theads = grid.$thead[0].childNodes[0].childNodes;
+    const theads = grid.$thead[0].childNodes[0].childNodes;
     expect(theads[1].style.maxWidth).toBe(w1);
     expect(theads[1].style.minWidth).toBe(w1);
     expect(theads[1].style.width).toBe(w1);
@@ -888,12 +892,12 @@ describe('Grid', function() {
     expect(height).toHaveBeenCalled();
   });
 
-  it('should create grid with fixed size with percentages', function() {
-    var width = jasmine.createSpy('width').and.returnValue('100px');
-    var height = jasmine.createSpy('height').and.returnValue('200px');
+  it('should create grid with fixed size with percentages', () => {
+    const width = jasmine.createSpy('width').and.returnValue('100px');
+    const height = jasmine.createSpy('height').and.returnValue('200px');
 
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       columns: [
         { id: 'id', width: '20%' },
         { id: 'foo', width: 'auto' }
@@ -914,11 +918,11 @@ describe('Grid', function() {
     expect(grid.$columns[0].computedWidth).toBeANumber();
     expect(grid.$columns[1].computedWidth).toBeANumber();
 
-    var w1 = grid.$columns[0].computedWidth + 'px';
-    var w2 = grid.$columns[1].computedWidth + 'px';
+    const w1 = grid.$columns[0].computedWidth + 'px';
+    const w2 = grid.$columns[1].computedWidth + 'px';
     expect(w1).not.toBe(w2);
 
-    var theads = grid.$thead[0].childNodes[0].childNodes;
+    const theads = grid.$thead[0].childNodes[0].childNodes;
     expect(theads[1].style.maxWidth).toBe(w1);
     expect(theads[1].style.minWidth).toBe(w1);
     expect(theads[1].style.width).toBe(w1);
@@ -931,12 +935,12 @@ describe('Grid', function() {
     expect(height).toHaveBeenCalled();
   });
 
-  it('should create and destroy resizable grid', function() {
+  it('should create and destroy resizable grid', () => {
     spyOn(jq, 'on').and.callThrough();
     spyOn(jq, 'off').and.callThrough();
 
-    var table = document.createElement('table');
-    var grid = new Grid(table, {
+    const table = document.createElement('table');
+    const grid = new Grid(table, {
       size: {
         width: 100,
         height: 200
@@ -951,7 +955,7 @@ describe('Grid', function() {
 
     expect(grid.$window).toBeDefined();
 
-    var $window = grid.$window;
+    const $window = grid.$window;
 
     grid.destroy();
 
@@ -960,12 +964,12 @@ describe('Grid', function() {
     expect(grid.$window).toBeNull();
   });
 
-  it('should bind click on header and body when grid is initialized', function() {
+  it('should bind click on header and body when grid is initialized', () => {
     spyOn(jq, 'on').and.callThrough();
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -977,20 +981,20 @@ describe('Grid', function() {
       }
     });
 
-    var onCalls = jq.on.calls.all();
+    const onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(3);
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
     expect(onCalls[2].args).toContain('click', Function);
   });
 
-  it('should bind input on body when grid is initialized if grid is editable and input event is available', function() {
+  it('should bind input on body when grid is initialized if grid is editable and input event is available', () => {
     spyOn(jq, 'on').and.callThrough();
     spyOn($sniffer, 'hasEvent').and.returnValue(true);
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo', editable: true },
@@ -1002,7 +1006,7 @@ describe('Grid', function() {
       }
     });
 
-    var onCalls = jq.on.calls.all();
+    const onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(4);
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
@@ -1010,13 +1014,13 @@ describe('Grid', function() {
     expect(onCalls[3].args).toContain('click', Function);
   });
 
-  it('should bind input on body when grid is initialized if grid option is editable', function() {
+  it('should bind input on body when grid is initialized if grid option is editable', () => {
     spyOn(jq, 'on').and.callThrough();
     spyOn($sniffer, 'hasEvent').and.returnValue(true);
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       editable: true,
       columns: [
@@ -1029,7 +1033,7 @@ describe('Grid', function() {
       }
     });
 
-    var onCalls = jq.on.calls.all();
+    const onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(4);
     expect(onCalls[0].args).toContain('click', Function);
     expect(onCalls[1].args).toContain('click', Function);
@@ -1037,13 +1041,13 @@ describe('Grid', function() {
     expect(onCalls[3].args).toContain('click', Function);
   });
 
-  it('should bind keyup and change events on body when grid is initialized if grid is editable and input event is not available', function() {
+  it('should bind keyup and change events on body when grid is initialized if grid is editable and input event is not available', () => {
     spyOn(jq, 'on').and.callThrough();
     spyOn($sniffer, 'hasEvent').and.returnValue(false);
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo', editable: true },
@@ -1074,7 +1078,7 @@ describe('Grid', function() {
       }
     });
 
-    var onCalls = jq.on.calls.all();
+    const onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(4);
     expect(onCalls[0].args).toContain('click', grid.$$events.onClickThead);
     expect(onCalls[1].args).toContain('click', grid.$$events.onClickTfoot);
@@ -1082,12 +1086,12 @@ describe('Grid', function() {
     expect(onCalls[3].args).toContain('click', grid.$$events.onClickTbody);
   });
 
-  it('should bind click on header and footer if grid is not selectable and not sortable', function() {
+  it('should bind click on header and footer if grid is not selectable and not sortable', () => {
     spyOn(jq, 'on').and.callThrough();
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       selection: false,
       sortable: false,
@@ -1104,12 +1108,12 @@ describe('Grid', function() {
     expect(jq.on).not.toHaveBeenCalled();
   });
 
-  it('should bind click on header and footer only if grid is not selectable', function() {
+  it('should bind click on header and footer only if grid is not selectable', () => {
     spyOn(jq, 'on').and.callThrough();
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       selection: false,
       columns: [
@@ -1133,18 +1137,18 @@ describe('Grid', function() {
       }
     });
 
-    var onCalls = jq.on.calls.all();
+    const onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(2);
     expect(onCalls[0].args).toContain('click', grid.$$events.onClickThead);
     expect(onCalls[1].args).toContain('click', grid.$$events.onClickTfoot);
   });
 
-  it('should bind drag & drop events', function() {
+  it('should bind drag & drop events', () => {
     spyOn(jq, 'on').and.callThrough();
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       selection: false,
       sortable: false,
@@ -1186,7 +1190,7 @@ describe('Grid', function() {
       }
     });
 
-    var onCalls = jq.on.calls.all();
+    const onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(6);
 
     expect(onCalls[0].args).toContain('dragstart', grid.$$events.onDragStart);
@@ -1197,15 +1201,15 @@ describe('Grid', function() {
     expect(onCalls[5].args).toContain('drop', grid.$$events.onDragDrop);
   });
 
-  it('should bind drag & drop workaround event for IE <= 9', function() {
+  it('should bind drag & drop workaround event for IE <= 9', () => {
     spyOn(jq, 'on').and.callThrough();
 
     // Spy IE9
     document.documentMode = 9;
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       selection: false,
       sortable: false,
@@ -1251,7 +1255,7 @@ describe('Grid', function() {
       }
     });
 
-    var onCalls = jq.on.calls.all();
+    const onCalls = jq.on.calls.all();
     expect(onCalls).toHaveLength(7);
 
     expect(onCalls[0].args).toContain('dragstart', grid.$$events.onDragStart);
@@ -1263,10 +1267,10 @@ describe('Grid', function() {
     expect(onCalls[6].args).toContain('selectstart', grid.$$events.onSelectStart);
   });
 
-  it('should destroy grid', function() {
-    var table = document.createElement('table');
+  it('should destroy grid', () => {
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -1285,8 +1289,8 @@ describe('Grid', function() {
     expect(grid.$selection).toBeDefined();
     expect(grid.$columns).toBeDefined();
 
-    var $data = grid.$data;
-    var $selection = grid.$selection;
+    const $data = grid.$data;
+    const $selection = grid.$selection;
 
     spyOn($data, 'unobserve').and.callThrough();
     spyOn($selection, 'unobserve').and.callThrough();
@@ -1304,10 +1308,10 @@ describe('Grid', function() {
     expect($selection.unobserve).toHaveBeenCalled();
   });
 
-  it('should destroy without footer', function() {
-    var table = document.createElement('table');
+  it('should destroy without footer', () => {
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -1326,10 +1330,10 @@ describe('Grid', function() {
     expect(grid.$tfoot).toBeNull();
   });
 
-  it('should destroy without header', function() {
-    var table = document.createElement('table');
+  it('should destroy without header', () => {
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -1348,10 +1352,10 @@ describe('Grid', function() {
     expect(grid.$thead).toBeNull();
   });
 
-  it('should unobserve collections when grid is destroyed', function() {
-    var table = document.createElement('table');
+  it('should unobserve collections when grid is destroyed', () => {
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -1359,8 +1363,8 @@ describe('Grid', function() {
       ]
     });
 
-    var $data = grid.$data;
-    var $selection = grid.$selection;
+    const $data = grid.$data;
+    const $selection = grid.$selection;
 
     spyOn($data, 'unobserve').and.callThrough();
     spyOn($selection, 'unobserve').and.callThrough();
@@ -1371,10 +1375,10 @@ describe('Grid', function() {
     expect($selection.unobserve).toHaveBeenCalled();
   });
 
-  it('should clear event bus when grid is destroyed', function() {
-    var table = document.createElement('table');
+  it('should clear event bus when grid is destroyed', () => {
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -1382,7 +1386,7 @@ describe('Grid', function() {
       ]
     });
 
-    var $bus = grid.$bus;
+    const $bus = grid.$bus;
 
     spyOn($bus, 'clear').and.callThrough();
 
@@ -1391,13 +1395,13 @@ describe('Grid', function() {
     expect($bus.clear).toHaveBeenCalled();
   });
 
-  it('should unbind events when grid is destroyed', function() {
+  it('should unbind events when grid is destroyed', () => {
     spyOn(jq, 'on').and.callThrough();
     spyOn(jq, 'off').and.callThrough();
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -1416,10 +1420,10 @@ describe('Grid', function() {
     expect(grid.$selection).toBeDefined();
     expect(grid.$columns).toBeDefined();
 
-    var $table = grid.$table;
-    var $thead = grid.$thead;
-    var $tbody = grid.$tbody;
-    var $tfoot = grid.$tfoot;
+    const $table = grid.$table;
+    const $thead = grid.$thead;
+    const $tbody = grid.$tbody;
+    const $tfoot = grid.$tfoot;
 
     spyOn(GridDomBinders, 'unbindSort');
     spyOn(GridDomBinders, 'unbindEdition');
@@ -1443,10 +1447,10 @@ describe('Grid', function() {
     expect(GridDomBinders.unbindDragDrop).toHaveBeenCalledWith(grid);
   });
 
-  describe('once initialized', function() {
-    var columns, data, table, grid;
+  describe('once initialized', () => {
+    let columns, data, table, grid;
 
-    beforeEach(function() {
+    beforeEach(() => {
       columns = [
         { id: 'id', sortable: false },
         { id: 'firstName' },
@@ -1468,32 +1472,32 @@ describe('Grid', function() {
       });
     });
 
-    it('should get rows', function() {
-      var rows = grid.rows();
+    it('should get rows', () => {
+      const rows = grid.rows();
 
-      var expectedRows = [];
-      var tbody = grid.$tbody[0];
-      var childNodes = tbody.childNodes;
-      for (var i = 0; i < childNodes.length; i++) {
+      const expectedRows = [];
+      const tbody = grid.$tbody[0];
+      const childNodes = tbody.childNodes;
+      for (let i = 0; i < childNodes.length; i++) {
         expectedRows.push(childNodes[i]);
       }
 
       expect(rows).toEqual(rows);
     });
 
-    it('should get data collection', function() {
+    it('should get data collection', () => {
       expect(grid.data()).toBe(grid.$data);
     });
 
-    it('should get selection collection', function() {
+    it('should get selection collection', () => {
       expect(grid.selection()).toBe(grid.$selection);
     });
 
-    it('should get column collection', function() {
+    it('should get column collection', () => {
       expect(grid.columns()).toBe(grid.$columns);
     });
 
-    it('should get css classes', function() {
+    it('should get css classes', () => {
       spyOn(grid, 'isSelectable').and.returnValue(false);
       spyOn(grid, 'isScrollable').and.returnValue(false);
       expect(grid.cssClasses()).toEqual(['waffle-grid']);
@@ -1505,13 +1509,13 @@ describe('Grid', function() {
       expect(grid.cssClasses()).toEqual(['waffle-grid', 'waffle-selectable', 'waffle-fixedheader']);
     });
 
-    it('should resize grid', function() {
+    it('should resize grid', () => {
       spyOn(GridResizer, 'resize');
       grid.resize();
       expect(GridResizer.resize).toHaveBeenCalled();
     });
 
-    it('should clear changes', function() {
+    it('should clear changes', () => {
       spyOn(grid.$data, 'clearChanges');
       spyOn(grid.$columns, 'clearChanges');
       spyOn(grid.$selection, 'clearChanges');
@@ -1523,7 +1527,7 @@ describe('Grid', function() {
       expect(grid.$selection.clearChanges).toHaveBeenCalled();
     });
 
-    it('should clear changes without selection', function() {
+    it('should clear changes without selection', () => {
       spyOn(grid.$data, 'clearChanges');
       spyOn(grid.$columns, 'clearChanges');
 
@@ -1535,13 +1539,13 @@ describe('Grid', function() {
       expect(grid.$columns.clearChanges).toHaveBeenCalled();
     });
 
-    it('should render grid', function() {
+    it('should render grid', () => {
       spyOn(grid, 'renderHeader').and.callThrough();
       spyOn(grid, 'renderFooter').and.callThrough();
       spyOn(grid, 'renderBody').and.callThrough();
       spyOn(grid, 'clearChanges').and.callThrough();
 
-      var result = grid.render();
+      const result = grid.render();
 
       expect(result).toBe(grid);
       expect(grid.renderHeader).toHaveBeenCalled();
@@ -1550,13 +1554,13 @@ describe('Grid', function() {
       expect(grid.clearChanges).toHaveBeenCalled();
     });
 
-    it('should render grid asynchronously', function() {
+    it('should render grid asynchronously', () => {
       spyOn(grid, 'renderHeader').and.callThrough();
       spyOn(grid, 'renderFooter').and.callThrough();
       spyOn(grid, 'renderBody').and.callThrough();
       spyOn(grid, 'clearChanges').and.callThrough();
 
-      var result = grid.render(true);
+      const result = grid.render(true);
 
       expect(result).toBe(grid);
       expect(grid.renderHeader).toHaveBeenCalled();
@@ -1565,18 +1569,16 @@ describe('Grid', function() {
       expect(grid.clearChanges).toHaveBeenCalled();
     });
 
-    it('should check if data is selectable', function() {
-      var data1 = {
+    it('should check if data is selectable', () => {
+      const data1 = {
         id: 1
       };
 
-      var data2 = {
+      const data2 = {
         id: 2
       };
 
-      var fn = jasmine.createSpy('fn').and.callFake(function(data) {
-        return data.id === 1;
-      });
+      const fn = jasmine.createSpy('fn').and.callFake(data => data.id === 1);
 
       grid.options.selection = false;
 
@@ -1598,11 +1600,9 @@ describe('Grid', function() {
       expect(grid.isSelectable(data2)).toBe(false);
     });
 
-    it('should check if grid is editable', function() {
+    it('should check if grid is editable', () => {
       grid.options.editable = true;
-      grid.$columns.forEach(function(column) {
-        column.editable = false;
-      });
+      grid.$columns.forEach(column => column.editable = false);
 
       expect(grid.isEditable()).toBe(true);
 

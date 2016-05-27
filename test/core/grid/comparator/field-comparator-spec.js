@@ -22,18 +22,18 @@
  * SOFTWARE.
  */
 
-describe('FieldComparator', function() {
+describe('FieldComparator', () => {
 
-  var grid;
+  let grid;
 
-  beforeEach(function() {
-    var columns = [
+  beforeEach(() => {
+    const columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
       { id: 'lastName' }
     ];
 
-    var data = [
+    const data = [
       { id: 1, firstName: 'foo1', lastName: 'bar1' },
       { id: 2, firstName: 'foo2', lastName: 'bar2' },
       { id: 3, firstName: 'foo2', lastName: 'bar3' }
@@ -42,16 +42,14 @@ describe('FieldComparator', function() {
     grid = new Grid({
       data: data,
       columns: columns,
-      key: function(o) {
-        return o.id;
-      }
+      key: o => o.id
     });
   });
 
-  it('should create comparator', function() {
-    var column = grid.$columns[1];
+  it('should create comparator', () => {
+    const column = grid.$columns[1];
 
-    var comparator = FieldComparator.of(grid, '+firstName');
+    const comparator = FieldComparator.of(grid, '+firstName');
     expect(comparator.id).toBe('firstName');
     expect(comparator.asc).toBe(true);
     expect(comparator.parser).toBeDefined();
@@ -60,15 +58,15 @@ describe('FieldComparator', function() {
     expect(comparator.comparator).toBe(column.$comparator);
   });
 
-  it('should be an instance of BasicComparator', function() {
-    var comparator = FieldComparator.of(grid, '+firstName');
+  it('should be an instance of BasicComparator', () => {
+    const comparator = FieldComparator.of(grid, '+firstName');
     expect(comparator).toBeInstanceOf(BasicComparator);
   });
 
-  it('should create comparator in descendant order', function() {
-    var column = grid.$columns[1];
+  it('should create comparator in descendant order', () => {
+    const column = grid.$columns[1];
 
-    var comparator = FieldComparator.of(grid, '-firstName');
+    const comparator = FieldComparator.of(grid, '-firstName');
     expect(comparator.id).toBe('firstName');
     expect(comparator.asc).toBe(false);
     expect(comparator.parser).toBeDefined();
@@ -77,10 +75,10 @@ describe('FieldComparator', function() {
     expect(comparator.comparator).toBe(column.$comparator);
   });
 
-  it('should create comparator in default order', function() {
-    var column = grid.$columns[1];
+  it('should create comparator in default order', () => {
+    const column = grid.$columns[1];
 
-    var comparator = FieldComparator.of(grid, 'firstName');
+    const comparator = FieldComparator.of(grid, 'firstName');
     expect(comparator.id).toBe('firstName');
     expect(comparator.asc).toBe(true);
     expect(comparator.parser).toBeDefined();
@@ -89,28 +87,28 @@ describe('FieldComparator', function() {
     expect(comparator.comparator).toBe(column.$comparator);
   });
 
-  it('should create comparator twice', function() {
-    var c1 = FieldComparator.of(grid, 'firstName');
-    var c2 = FieldComparator.of(grid, c1);
+  it('should create comparator twice', () => {
+    const c1 = FieldComparator.of(grid, 'firstName');
+    const c2 = FieldComparator.of(grid, c1);
     expect(c1).toBe(c2);
   });
 
-  it('should compare objects', function() {
-    var comparator = FieldComparator.of(grid, 'firstName');
+  it('should compare objects', () => {
+    const comparator = FieldComparator.of(grid, 'firstName');
 
-    var o1 = {firstName: 'foo'};
-    var o2 = {firstName: 'bar'};
-    var o3 = {firstName: 'bar'};
+    const o1 = {firstName: 'foo'};
+    const o2 = {firstName: 'bar'};
+    const o3 = {firstName: 'bar'};
 
     expect(comparator.compare(o1, o2)).toBePositive();
     expect(comparator.compare(o2, o1)).toBeNegative();
     expect(comparator.compare(o2, o3)).toBeZero();
   });
 
-  it('should chcck if comparators are equals', function() {
-    var c1 = FieldComparator.of(grid, 'firstName');
-    var c2 = FieldComparator.of(grid, '+firstName');
-    var c3 = FieldComparator.of(grid, '-firstName');
+  it('should chcck if comparators are equals', () => {
+    const c1 = FieldComparator.of(grid, 'firstName');
+    const c2 = FieldComparator.of(grid, '+firstName');
+    const c3 = FieldComparator.of(grid, '-firstName');
 
     expect(c1.equals(c2)).toBeTrue();
     expect(c2.equals(c1)).toBeTrue();

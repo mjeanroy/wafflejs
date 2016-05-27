@@ -22,18 +22,18 @@
  * SOFTWARE.
  */
 
-describe('$json', function() {
+describe('$json', () => {
 
-  it('toJson should turn a javascript to a json string', function() {
-    var json = $json.toJson({
+  it('toJson should turn a javascript to a json string', () => {
+    const json = $json.toJson({
       foo: "bar"
     });
 
     expect(json).toBe('{"foo":"bar"}');
   });
 
-  it('toJson should turn a json string to a javascript object', function() {
-    var o = $json.fromJson('{"foo":"bar"}');
+  it('toJson should turn a json string to a javascript object', () => {
+    const o = $json.fromJson('{"foo":"bar"}');
     expect(o).toEqual({
       foo: 'bar'
     });

@@ -22,12 +22,10 @@
  * SOFTWARE.
  */
 
-describe('$events', function() {
-  beforeEach(function() {
-    spyOn($sniffer, 'hasEvent');
-  });
+describe('$events', () => {
+  beforeEach(() => spyOn($sniffer, 'hasEvent'));
 
-  it('should get default events', function() {
+  it('should get default events', () => {
     expect($events.$defaults('checkbox')).toBe('change');
 
     $sniffer.hasEvent.and.returnValue(true);
@@ -37,7 +35,7 @@ describe('$events', function() {
     expect($events.$defaults('text')).toBe('keyup change');
   });
 
-  it('should parse events', function() {
+  it('should parse events', () => {
     expect($events.$parse('input')).toBe('input');
     expect($events.$parse('input change')).toBe('input change');
     expect($events.$parse('input change change')).toBe('input change');

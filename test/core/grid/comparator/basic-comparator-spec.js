@@ -22,18 +22,18 @@
  * SOFTWARE.
  */
 
-describe('GridComparator', function() {
+describe('GridComparator', () => {
 
-  var grid;
+  let grid;
 
-  beforeEach(function() {
-    var columns = [
+  beforeEach(() => {
+    const columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
       { id: 'lastName' }
     ];
 
-    var data = [
+    const data = [
       { id: 1, firstName: 'foo1', lastName: 'bar1' },
       { id: 2, firstName: 'foo2', lastName: 'bar2' },
       { id: 3, firstName: 'foo2', lastName: 'bar3' }
@@ -42,22 +42,20 @@ describe('GridComparator', function() {
     grid = new Grid({
       data: data,
       columns: columns,
-      key: function(o) {
-        return o.id;
-      }
+      key: o => o.id
     });
   });
 
-  it('should create basic comparator', function() {
-    var column = grid.$columns[1];
+  it('should create basic comparator', () => {
+    const column = grid.$columns[1];
 
-    var c1 = new BasicComparator();
+    const c1 = new BasicComparator();
     c1.id = 'foo';
 
-    var c2 = new BasicComparator();
+    const c2 = new BasicComparator();
     c2.id = 'bar';
 
-    var c3 = new BasicComparator();
+    const c3 = new BasicComparator();
     c3.id = 'foo';
 
     expect(c1.predicate()).toBe('foo');
@@ -68,13 +66,13 @@ describe('GridComparator', function() {
     expect(c1.equals(c3)).toBeTrue();
   });
 
-  it('should throw error in compare function', function() {
-    var c1 = new BasicComparator();
+  it('should throw error in compare function', () => {
+    const c1 = new BasicComparator();
     c1.id = 'foo';
 
-    var compare = function() {
-      var o1 = {};
-      var o2 = {};
+    const compare = () => {
+      const o1 = {};
+      const o2 = {};
       return c1.compare(o1, o2);
     };
 

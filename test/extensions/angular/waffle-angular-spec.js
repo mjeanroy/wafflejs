@@ -22,21 +22,21 @@
  * SOFTWARE.
  */
 
-describe('waffle-jq-angular', function() {
+describe('waffle-jq-angular', () => {
 
-  it('should override default options', function() {
+  it('should override default options', () => {
     expect(Waffle.options).toBe(Grid.options);
     expect(Grid.options).toEqual(jasmine.objectContaining({
       key: jasmine.any(Function)
     }));
   });
 
-  it('should generate $$hashKey by default', function() {
+  it('should generate $$hashKey by default', () => {
     spyOn(_, 'uniqueId').and.callThrough();
 
-    var keyFn = Grid.options.key;
-    var o = {};
-    var id = keyFn(o);
+    const keyFn = Grid.options.key;
+    const o = {};
+    const id = keyFn(o);
 
     expect(_.uniqueId).toHaveBeenCalled();
     expect(id).toBeDefined();
@@ -45,7 +45,7 @@ describe('waffle-jq-angular', function() {
 
     _.uniqueId.calls.reset();
 
-    var newId = keyFn(o);
+    const newId = keyFn(o);
     expect(newId).toBe(id);
     expect(_.uniqueId).not.toHaveBeenCalled();
   });

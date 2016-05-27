@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-describe('GridResizer', function() {
+describe('GridResizer', () => {
 
-  var table, grid;
+  let table, grid;
 
-  beforeEach(function() {
-    var columns = [
+  beforeEach(() => {
+    const columns = [
       { id: 'foo', title: 'Foo', width: 100 },
       { id: 'bar', title: 'Boo', sortable: false }
     ];
 
-    var data = [
+    const data = [
       { foo: 'foo1', bar: 'bar1' },
       { foo: 'foo2', bar: 'bar2' }
     ];
@@ -47,12 +47,12 @@ describe('GridResizer', function() {
     });
   });
 
-  afterEach(function() {
+  afterEach(() => {
     fixtures.removeChild(table);
     table = null;
   });
 
-  it('should fix table width', function() {
+  it('should fix table width', () => {
     grid.options.size = {
       width: 300
     };
@@ -64,8 +64,8 @@ describe('GridResizer', function() {
     expect(grid.$table[0].style.width).toBe('300px');
   });
 
-  it('should fix table width using function', function() {
-    var width = jasmine.createSpy('width').and.returnValue(300);
+  it('should fix table width using function', () => {
+    const width = jasmine.createSpy('width').and.returnValue(300);
 
     grid.options.size = {
       width: width
@@ -79,7 +79,7 @@ describe('GridResizer', function() {
     expect(grid.$table[0].style.width).toBe('300px');
   });
 
-  it('should fix tbody height', function() {
+  it('should fix tbody height', () => {
     grid.options.size = {
       height: 300
     };
@@ -89,8 +89,8 @@ describe('GridResizer', function() {
     expect(grid.$tbody[0].style.maxHeight).toBe('300px');
   });
 
-  it('should fix tbody height using function', function() {
-    var height = jasmine.createSpy('height').and.returnValue(300);
+  it('should fix tbody height using function', () => {
+    const height = jasmine.createSpy('height').and.returnValue(300);
 
     grid.options.size = {
       height: height
@@ -102,7 +102,7 @@ describe('GridResizer', function() {
     expect(grid.$tbody[0].style.maxHeight).toBe('300px');
   });
 
-  it('should update columns size', function() {
+  it('should update columns size', () => {
     spyOn(GridResizer, 'computeWidth').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(false);
     spyOn($doc, 'scrollbarWidth').and.returnValue(10);
@@ -116,7 +116,7 @@ describe('GridResizer', function() {
     expect(GridResizer.computeWidth).toHaveBeenCalledWith(290, grid.$columns);
   });
 
-  it('should update columns size and retain checkbox size', function() {
+  it('should update columns size and retain checkbox size', () => {
     spyOn(GridResizer, 'computeWidth').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(true);
     spyOn($doc, 'scrollbarWidth').and.returnValue(10);
@@ -130,7 +130,7 @@ describe('GridResizer', function() {
     expect(GridResizer.computeWidth).toHaveBeenCalledWith(260, grid.$columns);
   });
 
-  it('should compute table size', function() {
+  it('should compute table size', () => {
     spyOn(GridResizer, 'computeWidth').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(true);
     spyOn($doc, 'scrollbarWidth').and.returnValue(10);
@@ -144,7 +144,7 @@ describe('GridResizer', function() {
     expect(GridResizer.computeWidth).toHaveBeenCalledWith(jasmine.any(Number), grid.$columns);
   });
 
-  it('should trigger update for each diff', function() {
+  it('should trigger update for each diff', () => {
     spyOn(grid.$columns, 'notifyUpdate');
     spyOn(GridResizer, 'computeWidth').and.returnValue([
       grid.$columns.at(0)
@@ -162,8 +162,8 @@ describe('GridResizer', function() {
     expect(grid.$columns.notifyUpdate).toHaveBeenCalledWith(0);
   });
 
-  it('should not trigger update if there is a pending change', function() {
-    var change = {
+  it('should not trigger update if there is a pending change', () => {
+    const change = {
       type: 'update',
       removed: [],
       addedCount: 0,
@@ -190,7 +190,7 @@ describe('GridResizer', function() {
     expect(grid.$columns.notifyUpdate).not.toHaveBeenCalled();
   });
 
-  it('should compute columns width', function() {
+  it('should compute columns width', () => {
     GridResizer.computeWidth(300, grid.$columns);
 
     // First column should have size equal to 100
@@ -199,7 +199,7 @@ describe('GridResizer', function() {
     expect(grid.$columns[1].computedWidth).toBe(200);
   });
 
-  it('should compute columns width', function() {
+  it('should compute columns width', () => {
     grid.$columns[0].width = 120;
     grid.$columns[1].width = 180;
 
@@ -210,9 +210,9 @@ describe('GridResizer', function() {
     expect(grid.$columns[1].computedWidth).toBe(180);
   });
 
-  it('should compute columns width using functions', function() {
-    var width1 = jasmine.createSpy('width1').and.returnValue(120);
-    var width2 = jasmine.createSpy('width2').and.returnValue(180);
+  it('should compute columns width using functions', () => {
+    const width1 = jasmine.createSpy('width1').and.returnValue(120);
+    const width2 = jasmine.createSpy('width2').and.returnValue(180);
 
     grid.$columns[0].width = width1;
     grid.$columns[1].width = width2;
@@ -230,7 +230,7 @@ describe('GridResizer', function() {
     expect(width2.calls.count()).toBe(1);
   });
 
-  it('should compute columns width using percentage', function() {
+  it('should compute columns width using percentage', () => {
     grid.$columns[0].width = '10%';
     grid.$columns[1].width = 'auto';
 
@@ -242,14 +242,14 @@ describe('GridResizer', function() {
     expect(grid.$columns[1].computedWidth).toBe(270);
   });
 
-  it('should compute columns width and return changes', function() {
+  it('should compute columns width and return changes', () => {
     grid.$columns[0].computedWidth = 30;
     grid.$columns[1].computedWidth = 200;
 
     grid.$columns[0].width = '10%';
     grid.$columns[1].width = 'auto';
 
-    var result = GridResizer.computeWidth(300, grid.$columns);
+    const result = GridResizer.computeWidth(300, grid.$columns);
 
     // First column should have size equal to 100
     // Second column should use remaining space, i.e 200

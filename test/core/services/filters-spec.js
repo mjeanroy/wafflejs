@@ -22,30 +22,30 @@
  * SOFTWARE.
  */
 
-describe('filters', function() {
+describe('filters', () => {
 
-  it('should return predicate if it is already a function', function() {
-    var predicate = jasmine.createSpy('predicate');
-    var filter = $filters.$create(predicate);
+  it('should return predicate if it is already a function', () => {
+    const predicate = jasmine.createSpy('predicate');
+    const filter = $filters.$create(predicate);
     expect(filter).toBe(predicate);
   });
 
-  it('should return custom predicate if it is not already a function', function() {
-    var predicate = 'foo';
-    var filter = $filters.$create(predicate);
+  it('should return custom predicate if it is not already a function', () => {
+    const predicate = 'foo';
+    const filter = $filters.$create(predicate);
     expect(filter).not.toBe(predicate);
     expect(filter).toBeAFunction();
   });
 
-  it('should create a function that try to match object with predicate', function() {
-    var filter = $filters.$create('foo');
+  it('should create a function that try to match object with predicate', () => {
+    const filter = $filters.$create('foo');
 
-    var o1 = {
+    const o1 = {
       id: 1,
       name: 'foo'
     };
 
-    var o2 = {
+    const o2 = {
       id: 1,
       name: 'bar'
     };
@@ -54,17 +54,17 @@ describe('filters', function() {
     expect(filter(o2)).toBe(false);
   });
 
-  it('should create a function that try to match nested objects with predicate', function() {
-    var filter = $filters.$create('foo');
+  it('should create a function that try to match nested objects with predicate', () => {
+    const filter = $filters.$create('foo');
 
-    var o1 = {
+    const o1 = {
       id: 1,
       nested: {
         name: 'foo'
       }
     };
 
-    var o2 = {
+    const o2 = {
       id: 1,
       nested: {
         name: 'bar'
@@ -75,17 +75,17 @@ describe('filters', function() {
     expect(filter(o2)).toBe(false);
   });
 
-  it('should create a function that try to match objects with predicate as object', function() {
-    var filter = $filters.$create({
+  it('should create a function that try to match objects with predicate as object', () => {
+    const filter = $filters.$create({
       name: 'foo'
     });
 
-    var o1 = {
+    const o1 = {
       id: 1,
       name: 'foo'
     };
 
-    var o2 = {
+    const o2 = {
       id: 1,
       name: 'bar'
     };
@@ -94,18 +94,18 @@ describe('filters', function() {
     expect(filter(o2)).toBe(false);
   });
 
-  it('should create a function that try to match every objects values with predicate as object', function() {
-    var filter = $filters.$create({
+  it('should create a function that try to match every objects values with predicate as object', () => {
+    const filter = $filters.$create({
       id: 1,
       name: 'foo'
     });
 
-    var o1 = {
+    const o1 = {
       id: 1,
       name: 'foo'
     };
 
-    var o2 = {
+    const o2 = {
       id: 2,
       name: 'foo'
     };

@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-describe('Grid Data Observer', function() {
+describe('Grid Data Observer', () => {
 
-  var columns, data, table, grid, $data;
+  let columns, data, table, grid, $data;
 
-  beforeEach(function() {
+  beforeEach(() => {
     columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
@@ -45,9 +45,7 @@ describe('Grid Data Observer', function() {
     grid = new Grid(table, {
       data: data,
       columns: columns,
-      key: function(o) {
-        return o.id;
-      }
+      key: o => o.id
     });
 
     $data = grid.$data;
@@ -57,8 +55,8 @@ describe('Grid Data Observer', function() {
     spyOn(grid, 'dispatchEvent').and.callThrough();
   });
 
-  it('should call onSplice for a "splice" change', function() {
-    var changes = [
+  it('should call onSplice for a "splice" change', () => {
+    const changes = [
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
@@ -67,8 +65,8 @@ describe('Grid Data Observer', function() {
     expect(GridDataObserver.onSplice).toHaveBeenCalledWith(changes[0]);
   });
 
-  it('should call onUpdate for an "update" change', function() {
-    var changes = [
+  it('should call onUpdate for an "update" change', () => {
+    const changes = [
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
@@ -77,8 +75,8 @@ describe('Grid Data Observer', function() {
     expect(GridDataObserver.onUpdate).toHaveBeenCalledWith(changes[0]);
   });
 
-  it('should call all changes with appropriate methods', function() {
-    var changes = [
+  it('should call all changes with appropriate methods', () => {
+    const changes = [
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data },
       { type: 'update', removed: [], index: 0, addedCount: 0, object: data }
     ];
@@ -89,15 +87,15 @@ describe('Grid Data Observer', function() {
     expect(GridDataObserver.onUpdate).toHaveBeenCalledWith(changes[1]);
   });
 
-  describe('with splice change', function() {
-    it('should add new node', function() {
-      var d1 = {
+  describe('with splice change', () => {
+    it('should add new node', () => {
+      const d1 = {
         id: 4,
         firstName: 'foo4',
         lastName: 'bar4'
       };
 
-      var d2 = {
+      const d2 = {
         id: 5,
         firstName: 'foo5',
         lastName: 'bar5'
@@ -109,12 +107,12 @@ describe('Grid Data Observer', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      var expectedAddedNodes = [
+      const expectedAddedNodes = [
         grid.$tbody[0].childNodes[3],
         grid.$tbody[0].childNodes[4]
       ];
 
-      var expectedAddedData = [
+      const expectedAddedData = [
         grid.$data[3],
         grid.$data[4]
       ];
@@ -132,27 +130,22 @@ describe('Grid Data Observer', function() {
       expect(grid.$data[3]).toBe(d1);
       expect(grid.$data[4]).toBe(d2);
 
-      var tbody = grid.$tbody[0];
+      const tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(5);
-
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.getAttribute('data-waffle-idx') === idx.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
 
       // First column should be data id value
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should add new node at the beginning', function() {
-      var d1 = {
+    it('should add new node at the beginning', () => {
+      const d1 = {
         id: 4,
         firstName: 'foo4',
         lastName: 'bar4'
       };
 
-      var d2 = {
+      const d2 = {
         id: 5,
         firstName: 'foo5',
         lastName: 'bar5'
@@ -164,12 +157,12 @@ describe('Grid Data Observer', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      var expectedAddedNodes = [
+      const expectedAddedNodes = [
         grid.$tbody[0].childNodes[0],
         grid.$tbody[0].childNodes[1]
       ];
 
-      var expectedAddedData = [
+      const expectedAddedData = [
         grid.$data[0],
         grid.$data[1]
       ];
@@ -187,26 +180,21 @@ describe('Grid Data Observer', function() {
       expect(grid.$data[0]).toBe(d1);
       expect(grid.$data[1]).toBe(d2);
 
-      var tbody = grid.$tbody[0];
+      const tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(5);
-
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.getAttribute('data-waffle-idx') === idx.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
 
       // First column should be data id value
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should remove node', function() {
-      var expectedRemovedNodes = [
+    it('should remove node', () => {
+      const expectedRemovedNodes = [
         grid.$tbody[0].childNodes[1],
         grid.$tbody[0].childNodes[2]
       ];
 
-      var expectedRemovedData = [
+      const expectedRemovedData = [
         grid.$data[1],
         grid.$data[2]
       ];
@@ -229,18 +217,18 @@ describe('Grid Data Observer', function() {
       expect(grid.$data.length).toBe(1);
       expect(grid.$data[0].id).toBe(2);
 
-      var tbody = grid.$tbody[0];
+      const tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(1);
       expect(tbody.childNodes[0].getAttribute('data-waffle-idx')).toBe('0');
       expect(tbody.childNodes[0].childNodes[1].innerHTML).toBe('2');
     });
 
-    it('should remove node at the beginning', function() {
-      var expectedRemovedNodes = [
+    it('should remove node at the beginning', () => {
+      const expectedRemovedNodes = [
         grid.$tbody[0].childNodes[0]
       ];
 
-      var expectedRemovedData = [
+      const expectedRemovedData = [
         grid.$data[0]
       ];
 
@@ -263,38 +251,33 @@ describe('Grid Data Observer', function() {
       expect(grid.$data[0].id).toBe(1);
       expect(grid.$data[1].id).toBe(3);
 
-      var tbody = grid.$tbody[0];
+      const tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(2);
-
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.getAttribute('data-waffle-idx') === idx.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
 
       // First column should be data id value
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should add and remove node', function() {
-      var d1 = {
+    it('should add and remove node', () => {
+      const d1 = {
         id: 4,
         firstName: 'foo4',
         lastName: 'bar4'
       };
 
-      var d2 = {
+      const d2 = {
         id: 5,
         firstName: 'foo5',
         lastName: 'bar5'
       };
 
-      var expectedRemovedNodes = [
+      const expectedRemovedNodes = [
         grid.$tbody[0].childNodes[1],
         grid.$tbody[0].childNodes[2]
       ];
 
-      var expectedRemovedData = [
+      const expectedRemovedData = [
         grid.$data[1],
         grid.$data[2]
       ];
@@ -305,12 +288,12 @@ describe('Grid Data Observer', function() {
 
       expect(GridDataObserver.onSplice).toHaveBeenCalled();
 
-      var expectedAddedNodes = [
+      const expectedAddedNodes = [
         grid.$tbody[0].childNodes[1],
         grid.$tbody[0].childNodes[2]
       ];
 
-      var expectedAddedData = [
+      const expectedAddedData = [
         grid.$data[1],
         grid.$data[2]
       ];
@@ -329,27 +312,22 @@ describe('Grid Data Observer', function() {
       expect(grid.$data[1].id).toBe(4);
       expect(grid.$data[2].id).toBe(5);
 
-      var tbody = grid.$tbody[0];
+      const tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(3);
-
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.getAttribute('data-waffle-idx') === idx.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
 
       // First column should be data id value
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should clear grid', function() {
-      var expectedRemovedNodes = [
+    it('should clear grid', () => {
+      const expectedRemovedNodes = [
         grid.$tbody[0].childNodes[0],
         grid.$tbody[0].childNodes[1],
         grid.$tbody[0].childNodes[2]
       ];
 
-      var expectedRemovedData = [
+      const expectedRemovedData = [
         grid.$data[0],
         grid.$data[1],
         grid.$data[2]
@@ -374,16 +352,16 @@ describe('Grid Data Observer', function() {
       expect(grid.$tbody[0].childNodes.length).toBe(0);
     });
 
-    it('should remove node and remove selection', function() {
+    it('should remove node and remove selection', () => {
       grid.$selection.push(grid.$data[0]);
       jasmine.clock().tick();
       grid.dispatchEvent.calls.reset();
 
-      var expectedRemovedNodes = [
+      const expectedRemovedNodes = [
         grid.$tbody[0].childNodes[0]
       ];
 
-      var expectedRemovedData = [
+      const expectedRemovedData = [
         grid.$data[0]
       ];
 
@@ -407,7 +385,7 @@ describe('Grid Data Observer', function() {
       expect(grid.$data.length).toBe(2);
       expect(grid.$data[0].id).toBe(1);
 
-      var tbody = grid.$tbody[0];
+      const tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(2);
       expect(tbody.childNodes[0].getAttribute('data-waffle-idx')).toBe('0');
       expect(tbody.childNodes[0].childNodes[1].innerHTML).toBe('1');
@@ -415,14 +393,14 @@ describe('Grid Data Observer', function() {
       expect(grid.$selection.toArray()).toEqual([]);
     });
 
-    it('should add new node at the same index', function() {
-      var d1 = {
+    it('should add new node at the same index', () => {
+      const d1 = {
         id: 4,
         firstName: 'foo4',
         lastName: 'bar4'
       };
 
-      var d2 = {
+      const d2 = {
         id: 5,
         firstName: 'foo5',
         lastName: 'bar5'
@@ -433,8 +411,8 @@ describe('Grid Data Observer', function() {
       grid.$data.unshift(d2);
       jasmine.clock().tick();
 
-      var tbody = grid.$tbody[0];
-      var childNodes = tbody.childNodes;
+      const tbody = grid.$tbody[0];
+      const childNodes = tbody.childNodes;
 
       expect(childNodes.length).toBe(5);
       expect(childNodes[0].getAttribute('data-waffle-id')).toBe('5');
@@ -442,8 +420,8 @@ describe('Grid Data Observer', function() {
     });
   });
 
-  describe('with an update change', function() {
-    it('should update grid', function() {
+  describe('with an update change', () => {
+    it('should update grid', () => {
       expect(grid.$data[0].id).toBe(2);
       expect(grid.$data[1].id).toBe(1);
       expect(grid.$data[2].id).toBe(3);
@@ -469,26 +447,20 @@ describe('Grid Data Observer', function() {
       expect(grid.$data[1].id).toBe(1);
       expect(grid.$data[2].id).toBe(2);
 
-      var tbody = grid.$tbody[0];
+      const tbody = grid.$tbody[0];
       expect(tbody.childNodes.length).toBe(3);
-
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.getAttribute('data-waffle-idx') === idx.toString();
-      });
-
-      expect(tbody.childNodes).toVerify(function(node, idx) {
-        return node.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(tbody.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
+      expect(tbody.childNodes).toVerify((node, idx) => node.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should update grid and keep cid', function() {
-      var rows = grid.$tbody[0].childNodes;
-      var cid0 = rows[0].getAttribute('data-waffle-cid');
+    it('should update grid and keep cid', () => {
+      const rows = grid.$tbody[0].childNodes;
+      const cid0 = rows[0].getAttribute('data-waffle-cid');
 
       grid.$data.notifyUpdate(0);
       jasmine.clock().tick();
 
-      var newRows = grid.$tbody[0].childNodes;
+      const newRows = grid.$tbody[0].childNodes;
       expect(newRows[0].getAttribute('data-waffle-cid')).toBe(cid0);
     });
   });

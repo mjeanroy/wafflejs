@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-describe('Grid Sort', function() {
+describe('Grid Sort', () => {
 
-  var columns, data, table, grid;
+  let columns, data, table, grid;
 
-  beforeEach(function() {
+  beforeEach(() => {
     columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
@@ -43,7 +43,7 @@ describe('Grid Sort', function() {
     fixtures.appendChild(table);
   });
 
-  it('should check if grid is sortable', function() {
+  it('should check if grid is sortable', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -60,7 +60,7 @@ describe('Grid Sort', function() {
     expect(grid.isSortable()).toBe(false);
   });
 
-  it('should sort grid by default using one field', function() {
+  it('should sort grid by default using one field', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -78,7 +78,7 @@ describe('Grid Sort', function() {
       asc: true
     }));
 
-    var headers = grid.$thead[0].childNodes[0].childNodes;
+    const headers = grid.$thead[0].childNodes[0].childNodes;
     expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
     expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
     expect(headers[3].getAttribute('data-waffle-order')).toBeNull();
@@ -95,7 +95,7 @@ describe('Grid Sort', function() {
     expect(headers[3].className).not.toContain('waffle-sortable-asc');
     expect(headers[3].className).not.toContain('waffle-sortable-desc');
 
-    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+    const footers = grid.$tfoot[0].childNodes[0].childNodes;
     expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
     expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
     expect(footers[3].getAttribute('data-waffle-order')).toBeNull();
@@ -112,16 +112,11 @@ describe('Grid Sort', function() {
     expect(footers[3].className).not.toContain('waffle-sortable-asc');
     expect(footers[3].className).not.toContain('waffle-sortable-desc');
 
-    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-      return o1.firstName.localeCompare(o2.firstName);
-    });
-
-    expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-    });
+    expect(grid.$data.toArray()).toBeSorted((o1, o2) => o1.firstName.localeCompare(o2.firstName));
+    expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
   });
 
-  it('should sort grid by default using two fields', function() {
+  it('should sort grid by default using two fields', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -145,7 +140,7 @@ describe('Grid Sort', function() {
       asc: false
     }));
 
-    var headers = grid.$thead[0].childNodes[0].childNodes;
+    const headers = grid.$thead[0].childNodes[0].childNodes;
     expect(headers[1].getAttribute('data-waffle-order')).toBeNull();
     expect(headers[2].getAttribute('data-waffle-order')).toBe('+');
     expect(headers[3].getAttribute('data-waffle-order')).toBe('-');
@@ -162,7 +157,7 @@ describe('Grid Sort', function() {
     expect(headers[3].className).not.toContain('waffle-sortable-asc');
     expect(headers[3].className).toContain('waffle-sortable-desc');
 
-    var footers = grid.$tfoot[0].childNodes[0].childNodes;
+    const footers = grid.$tfoot[0].childNodes[0].childNodes;
     expect(footers[1].getAttribute('data-waffle-order')).toBeNull();
     expect(footers[2].getAttribute('data-waffle-order')).toBe('+');
     expect(footers[3].getAttribute('data-waffle-order')).toBe('-');
@@ -179,21 +174,18 @@ describe('Grid Sort', function() {
     expect(footers[3].className).not.toContain('waffle-sortable-asc');
     expect(footers[3].className).toContain('waffle-sortable-desc');
 
-    expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-      return (o1.firstName.localeCompare(o2.firstName)) ||
-             (o1.lastName.localeCompare(o2.lastName)) * -1;
-    });
+    expect(grid.$data.toArray()).toBeSorted((o1, o2) => (
+      (o1.firstName.localeCompare(o2.firstName)) || (o1.lastName.localeCompare(o2.lastName)) * -1
+    ));
 
-    expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-      return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-    });
+    expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
   });
 
-  describe('once initialized with a footer and a header', function() {
-    var headers;
-    var footers;
+  describe('once initialized with a footer and a header', () => {
+    let headers;
+    let footers;
 
-    beforeEach(function() {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -207,17 +199,12 @@ describe('Grid Sort', function() {
       footers = grid.$tfoot[0].childNodes[0].childNodes;
     });
 
-    it('should not sort grid by default', function() {
+    it('should not sort grid by default', () => {
       expect(grid.$comparators).toBeDefined();
       expect(grid.$comparators).toBeEmpty();
 
-      expect(headers).toVerify(function(th) {
-        return th.getAttribute('data-waffle-order') === null;
-      });
-
-      expect(footers).toVerify(function(th) {
-        return th.getAttribute('data-waffle-order') === null;
-      });
+      expect(headers).toVerify(th => th.getAttribute('data-waffle-order') === null);
+      expect(footers).toVerify(th => th.getAttribute('data-waffle-order') === null);
 
       // First th is for checkbox
 
@@ -229,33 +216,17 @@ describe('Grid Sort', function() {
       expect(footers[2].className.split(' ')).toContain('waffle-sortable');
       expect(footers[3].className.split(' ')).toContain('waffle-sortable');
 
-      expect(headers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
-      });
+      expect(headers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-asc') < 0);
+      expect(footers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-asc') < 0);
+      expect(headers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-desc') < 0);
+      expect(footers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-desc') < 0);
+      expect(grid.$data.toArray()).not.toBeSorted((o1, o2) => o1.id - o2.id);
 
-      expect(footers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
-      });
-
-      expect(headers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-desc') < 0;
-      });
-
-      expect(footers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-desc') < 0;
-      });
-
-      expect(grid.$data.toArray()).not.toBeSorted(function(o1, o2) {
-        return o1.id - o2.id;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        // First td is for checkbox
-        return tr.childNodes[1].innerHTML === data[idx].id.toString();
-      });
+      // First td is for checkbox
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === data[idx].id.toString());
     });
 
-    it('should sort grid in ascendant order using one field', function() {
+    it('should sort grid in ascendant order using one field', () => {
       grid.sortBy('id');
 
       expect(grid.$comparators.length).toBe(1);
@@ -296,16 +267,11 @@ describe('Grid Sort', function() {
       expect(footers[3].className).not.toContain('waffle-sortable-asc');
       expect(footers[3].className).not.toContain('waffle-sortable-desc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return o1.id - o2.id;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => o1.id - o2.id);
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should sort grid in descendant order using one field', function() {
+    it('should sort grid in descendant order using one field', () => {
       grid.sortBy('-id');
 
       expect(grid.$comparators.length).toBe(1);
@@ -336,16 +302,11 @@ describe('Grid Sort', function() {
       expect(footers[2].className).not.toContain('waffle-sortable-asc');
       expect(footers[2].className).not.toContain('waffle-sortable-desc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return (o1.id - o2.id) * -1;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => (o1.id - o2.id) * -1);
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should sort grid in ascendant using two fields', function() {
+    it('should sort grid in ascendant using two fields', () => {
       grid.sortBy(['firstName', '-lastName']);
 
       expect(grid.$comparators.length).toBe(2);
@@ -384,17 +345,14 @@ describe('Grid Sort', function() {
       expect(footers[3].className).toContain('waffle-sortable-desc');
       expect(footers[3].className).not.toContain('waffle-sortable-asc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return (o1.firstName.localeCompare(o2.firstName)) ||
-               (o1.lastName.localeCompare(o2.lastName) * -1);
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => (
+        (o1.firstName.localeCompare(o2.firstName)) || (o1.lastName.localeCompare(o2.lastName) * -1)
+      ));
 
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[3].innerHTML === grid.$data[idx].lastName.toString();
-      });
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[3].innerHTML === grid.$data[idx].lastName.toString());
     });
 
-    it('should sort data when column header is clicked', function() {
+    it('should sort data when column header is clicked', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -469,7 +427,7 @@ describe('Grid Sort', function() {
       expect(footers[3].className).not.toContain('waffle-sortable-asc');
     });
 
-    it('should sort data when column footer is clicked', function() {
+    it('should sort data when column footer is clicked', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -544,7 +502,7 @@ describe('Grid Sort', function() {
       expect(footers[3].className).not.toContain('waffle-sortable-asc');
     });
 
-    it('should not sort data when column header is clicked and column is not sortable', function() {
+    it('should not sort data when column header is clicked and column is not sortable', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -555,7 +513,7 @@ describe('Grid Sort', function() {
       expect(grid.$comparators).toBeEmpty();
     });
 
-    it('should not sort data when column footer is clicked and column is not sortable', function() {
+    it('should not sort data when column footer is clicked and column is not sortable', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -566,7 +524,7 @@ describe('Grid Sort', function() {
       expect(grid.$comparators).toBeEmpty();
     });
 
-    it('should sort data when column header is clicked using two field if shift key is pressed', function() {
+    it('should sort data when column header is clicked using two field if shift key is pressed', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -627,7 +585,7 @@ describe('Grid Sort', function() {
       }));
     });
 
-    it('should sort data when column footer is clicked using two field if shift key is pressed', function() {
+    it('should sort data when column footer is clicked using two field if shift key is pressed', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -691,10 +649,10 @@ describe('Grid Sort', function() {
     });
   });
 
-  describe('once initialized without footer', function() {
-    var headers;
+  describe('once initialized without footer', () => {
+    let headers;
 
-    beforeEach(function() {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -707,13 +665,11 @@ describe('Grid Sort', function() {
       headers = grid.$thead[0].childNodes[0].childNodes;
     });
 
-    it('should not sort grid by default', function() {
+    it('should not sort grid by default', () => {
       expect(grid.$comparators).toBeDefined();
       expect(grid.$comparators).toBeEmpty();
 
-      expect(headers).toVerify(function(th) {
-        return th.getAttribute('data-waffle-order') === null;
-      });
+      expect(headers).toVerify(th => th.getAttribute('data-waffle-order') === null);
 
       // First th is for checkbox
 
@@ -721,25 +677,15 @@ describe('Grid Sort', function() {
       expect(headers[2].className.split(' ')).toContain('waffle-sortable');
       expect(headers[3].className.split(' ')).toContain('waffle-sortable');
 
-      expect(headers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
-      });
+      expect(headers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-asc') < 0);
+      expect(headers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-desc') < 0);
+      expect(grid.$data.toArray()).not.toBeSorted((o1, o2) => o1.id - o2.id);
 
-      expect(headers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-desc') < 0;
-      });
-
-      expect(grid.$data.toArray()).not.toBeSorted(function(o1, o2) {
-        return o1.id - o2.id;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        // First td is for checkbox
-        return tr.childNodes[1].innerHTML === data[idx].id.toString();
-      });
+      // First td is for checkbox
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === data[idx].id.toString());
     });
 
-    it('should sort grid in ascendant order using one field', function() {
+    it('should sort grid in ascendant order using one field', () => {
       grid.sortBy('id');
 
       expect(grid.$comparators.length).toBe(1);
@@ -764,16 +710,11 @@ describe('Grid Sort', function() {
       expect(headers[3].className).not.toContain('waffle-sortable-asc');
       expect(headers[3].className).not.toContain('waffle-sortable-desc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return o1.id - o2.id;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => o1.id - o2.id);
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should sort grid in descendant order using one field', function() {
+    it('should sort grid in descendant order using one field', () => {
       grid.sortBy('-id');
 
       expect(grid.$comparators.length).toBe(1);
@@ -793,16 +734,11 @@ describe('Grid Sort', function() {
       expect(headers[2].className).not.toContain('waffle-sortable-asc');
       expect(headers[2].className).not.toContain('waffle-sortable-desc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return (o1.id - o2.id) * -1;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => (o1.id - o2.id) * -1);
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should sort grid in ascendant using two fields', function() {
+    it('should sort grid in ascendant using two fields', () => {
       grid.sortBy(['firstName', '-lastName']);
 
       expect(grid.$comparators.length).toBe(2);
@@ -829,17 +765,14 @@ describe('Grid Sort', function() {
       expect(headers[3].className).toContain('waffle-sortable-desc');
       expect(headers[3].className).not.toContain('waffle-sortable-asc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return (o1.firstName.localeCompare(o2.firstName)) ||
-               (o1.lastName.localeCompare(o2.lastName) * -1);
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => (
+        (o1.firstName.localeCompare(o2.firstName)) || (o1.lastName.localeCompare(o2.lastName) * -1)
+      ));
 
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[3].innerHTML === grid.$data[idx].lastName.toString();
-      });
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[3].innerHTML === grid.$data[idx].lastName.toString());
     });
 
-    it('should sort data when column header is clicked', function() {
+    it('should sort data when column header is clicked', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -890,7 +823,7 @@ describe('Grid Sort', function() {
       expect(headers[3].className).not.toContain('waffle-sortable-asc');
     });
 
-    it('should not sort data when column header is clicked and column is not sortable', function() {
+    it('should not sort data when column header is clicked and column is not sortable', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -901,7 +834,7 @@ describe('Grid Sort', function() {
       expect(grid.$comparators).toBeEmpty();
     });
 
-    it('should sort data when column header is clicked using two field if shift key is pressed', function() {
+    it('should sort data when column header is clicked using two field if shift key is pressed', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -962,10 +895,10 @@ describe('Grid Sort', function() {
     });
   });
 
-  describe('once initialized without header', function() {
-    var footers;
+  describe('once initialized without header', () => {
+    let footers;
 
-    beforeEach(function() {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -978,13 +911,11 @@ describe('Grid Sort', function() {
       footers = grid.$tfoot[0].childNodes[0].childNodes;
     });
 
-    it('should not sort grid by default', function() {
+    it('should not sort grid by default', () => {
       expect(grid.$comparators).toBeDefined();
       expect(grid.$comparators).toBeEmpty();
 
-      expect(footers).toVerify(function(th) {
-        return th.getAttribute('data-waffle-order') === null;
-      });
+      expect(footers).toVerify(th => th.getAttribute('data-waffle-order') === null);
 
       // First th is for checkbox
 
@@ -992,25 +923,15 @@ describe('Grid Sort', function() {
       expect(footers[2].className.split(' ')).toContain('waffle-sortable');
       expect(footers[3].className.split(' ')).toContain('waffle-sortable');
 
-      expect(footers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-asc') < 0;
-      });
+      expect(footers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-asc') < 0);
+      expect(footers).toVerify(th => th.className.split(' ').indexOf('waffle-sortable-desc') < 0);
+      expect(grid.$data.toArray()).not.toBeSorted((o1, o2) => o1.id - o2.id);
 
-      expect(footers).toVerify(function(th) {
-        return th.className.split(' ').indexOf('waffle-sortable-desc') < 0;
-      });
-
-      expect(grid.$data.toArray()).not.toBeSorted(function(o1, o2) {
-        return o1.id - o2.id;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        // First td is for checkbox
-        return tr.childNodes[1].innerHTML === data[idx].id.toString();
-      });
+      // First td is for checkbox
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === data[idx].id.toString());
     });
 
-    it('should sort grid in ascendant order using one field', function() {
+    it('should sort grid in ascendant order using one field', () => {
       grid.sortBy('id');
 
       expect(grid.$comparators.length).toBe(1);
@@ -1035,16 +956,11 @@ describe('Grid Sort', function() {
       expect(footers[3].className).not.toContain('waffle-sortable-asc');
       expect(footers[3].className).not.toContain('waffle-sortable-desc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return o1.id - o2.id;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => o1.id - o2.id);
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should sort grid in descendant order using one field', function() {
+    it('should sort grid in descendant order using one field', () => {
       grid.sortBy('-id');
 
       expect(grid.$comparators.length).toBe(1);
@@ -1064,16 +980,11 @@ describe('Grid Sort', function() {
       expect(footers[2].className).not.toContain('waffle-sortable-asc');
       expect(footers[2].className).not.toContain('waffle-sortable-desc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return (o1.id - o2.id) * -1;
-      });
-
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === grid.$data[idx].id.toString();
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => (o1.id - o2.id) * -1);
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === grid.$data[idx].id.toString());
     });
 
-    it('should sort grid in ascendant using two fields', function() {
+    it('should sort grid in ascendant using two fields', () => {
       grid.sortBy(['firstName', '-lastName']);
 
       expect(grid.$comparators.length).toBe(2);
@@ -1098,17 +1009,14 @@ describe('Grid Sort', function() {
       expect(footers[3].className).toContain('waffle-sortable-desc');
       expect(footers[3].className).not.toContain('waffle-sortable-asc');
 
-      expect(grid.$data.toArray()).toBeSorted(function(o1, o2) {
-        return (o1.firstName.localeCompare(o2.firstName)) ||
-               (o1.lastName.localeCompare(o2.lastName) * -1);
-      });
+      expect(grid.$data.toArray()).toBeSorted((o1, o2) => (
+        (o1.firstName.localeCompare(o2.firstName)) || (o1.lastName.localeCompare(o2.lastName) * -1)
+      ));
 
-      expect(grid.$tbody[0].childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[3].innerHTML === grid.$data[idx].lastName.toString();
-      });
+      expect(grid.$tbody[0].childNodes).toVerify((tr, idx) => tr.childNodes[3].innerHTML === grid.$data[idx].lastName.toString());
     });
 
-    it('should sort data when column footer is clicked', function() {
+    it('should sort data when column footer is clicked', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -1159,7 +1067,7 @@ describe('Grid Sort', function() {
       expect(footers[3].className).not.toContain('waffle-sortable-asc');
     });
 
-    it('should not sort data when column footer is clicked and column is not sortable', function() {
+    it('should not sort data when column footer is clicked and column is not sortable', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click
@@ -1170,7 +1078,7 @@ describe('Grid Sort', function() {
       expect(grid.$comparators).toBeEmpty();
     });
 
-    it('should sort data when column footer is clicked using two field if shift key is pressed', function() {
+    it('should sort data when column footer is clicked using two field if shift key is pressed', () => {
       spyOn(grid, 'sortBy').and.callThrough();
 
       // Trigger click

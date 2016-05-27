@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-describe('Event', function() {
+describe('Event', () => {
 
-  it('should create an event', function() {
-    var type = 'foo';
-    var target = {};
-    var params = null;
+  it('should create an event', () => {
+    const type = 'foo';
+    const target = {};
+    const params = null;
 
-    var event = new WaffleEvent(type, target, params);
+    const event = new WaffleEvent(type, target, params);
 
     expect(event.type).toBe(type);
     expect(event.bubbles).toBeFalse();
@@ -43,14 +43,14 @@ describe('Event', function() {
     expect(event.srcElement).toBe(target);
   });
 
-  it('should create an event with details', function() {
-    var type = 'foo';
-    var target = {};
-    var params = {
+  it('should create an event with details', () => {
+    const type = 'foo';
+    const target = {};
+    const params = {
       foo: 'bar'
     };
 
-    var event = new WaffleEvent(type, target, params);
+    const event = new WaffleEvent(type, target, params);
 
     expect(event.type).toBe(type);
     expect(event.bubbles).toBeFalse();
@@ -64,14 +64,14 @@ describe('Event', function() {
     expect(event.srcElement).toBe(target);
   });
 
-  it('should create an event with default functions', function() {
-    var type = 'foo';
-    var target = {};
-    var params = {
+  it('should create an event with default functions', () => {
+    const type = 'foo';
+    const target = {};
+    const params = {
       foo: 'bar'
     };
 
-    var event = new WaffleEvent(type, target, params);
+    const event = new WaffleEvent(type, target, params);
 
     expect(event.preventDefault).toBeAFunction();
     expect(event.stopPropagation).toBeAFunction();

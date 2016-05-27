@@ -22,17 +22,15 @@
  * SOFTWARE.
  */
 
-describe('map', function() {
+describe('map', () => {
 
-  var map;
+  let map;
 
-  beforeEach(function() {
-    map = new HashMap();
-  });
+  beforeEach(() => map = new HashMap());
 
-  it('should put element with given key - value and remove by key', function() {
-    var key = 'foo';
-    var value = {
+  it('should put element with given key - value and remove by key', () => {
+    const key = 'foo';
+    const value = {
       id: 1,
       name: 'foo'
     };
@@ -40,13 +38,13 @@ describe('map', function() {
     expect(map.contains(key)).toBe(false);
     expect(map.get(key)).toBeUndefined();
 
-    var r1 = map.put(key, value);
+    const r1 = map.put(key, value);
 
     expect(r1).toBe(map);
     expect(map.contains(key)).toBe(true);
     expect(map.get(key)).toBe(value);
 
-    var r2 = map.remove(key);
+    const r2 = map.remove(key);
 
     expect(r2).toBe(map);
     expect(map.contains(key)).toBe(false);

@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-describe('$', function() {
+describe('$', () => {
 
-  var node1;
-  var node2;
+  let node1;
+  let node2;
 
-  beforeEach(function() {
+  beforeEach(() => {
     node1 = document.createElement('div');
     node2 = document.createElement('div');
 
@@ -35,8 +35,8 @@ describe('$', function() {
     fixtures.appendChild(node2);
   });
 
-  it('should return instance of $', function() {
-    var $div = $([node1, node2]);
+  it('should return instance of $', () => {
+    const $div = $([node1, node2]);
     expect($div).toBeDefined();
     expect($div).toBeInstanceOf($);
 
@@ -44,47 +44,47 @@ describe('$', function() {
     expect($div[1]).toBe(node2);
   });
 
-  it('should return instance of $', function() {
-    var $div = $([node1, node2]);
-    var $other = $($div);
+  it('should return instance of $', () => {
+    const $div = $([node1, node2]);
+    const $other = $($div);
     expect($other.length).toBe($div.length);
     expect($other[0]).toBe($div[0]);
     expect($other[1]).toBe($div[1]);
   });
 
-  it('should return instance of $window', function() {
-    var $window = $(window);
+  it('should return instance of $window', () => {
+    const $window = $(window);
 
     expect($window.length).toBe(1);
     expect($window[0]).toBe(window);
   });
 
-  describe('once created', function() {
-    var $div;
+  describe('once created', () => {
+    let $div;
 
-    beforeEach(function() {
+    beforeEach(() => {
       $div = $([node1, node2]);
     });
 
-    it('should clear node content', function() {
+    it('should clear node content', () => {
       node1.innerHTML = 'foo';
       node2.innerHTML = 'bar';
 
-      var $result = $div.empty();
+      const $result = $div.empty();
 
       expect($result).toBe($div);
       expect(node1.innerHTML).toBe('');
       expect(node1.innerHTML).toBe('');
     });
 
-    it('should append node', function() {
-      var childNode = document.createElement('span');
+    it('should append node', () => {
+      const childNode = document.createElement('span');
       childNode.innerHTML = 'foo';
 
       expect(node1.childNodes.length).toBe(0);
       expect(node2.childNodes.length).toBe(0);
 
-      var $result = $div.append(childNode);
+      const $result = $div.append(childNode);
 
       expect($result).toBe($div);
       expect(node2.childNodes.length).toBe(1);
@@ -94,14 +94,14 @@ describe('$', function() {
       // expect(node1.childNodes.length).toBe(1);
     });
 
-    it('should prepend node', function() {
-      var childNode = document.createElement('span');
+    it('should prepend node', () => {
+      const childNode = document.createElement('span');
       childNode.innerHTML = 'foo';
 
       expect(node1.childNodes.length).toBe(0);
       expect(node2.childNodes.length).toBe(0);
 
-      var $result = $div.prepend(childNode);
+      const $result = $div.prepend(childNode);
 
       expect($result).toBe($div);
       expect(node2.childNodes[0]).toBe(childNode);
@@ -111,29 +111,29 @@ describe('$', function() {
       // expect(node1.childNodes.length).toBe(1);
     });
 
-    it('should append node after element', function() {
-      var childNode = document.createElement('span');
+    it('should append node after element', () => {
+      const childNode = document.createElement('span');
       childNode.innerHTML = 'foo';
 
       expect(node1.childNodes.length).toBe(0);
       expect(node2.childNodes.length).toBe(0);
 
-      var $n1 = $($div[0]);
-      var $result = $n1.after(childNode);
+      const $n1 = $($div[0]);
+      const $result = $n1.after(childNode);
 
       expect($result).toBe($n1);
       expect(node1.nextSibling).toBe(childNode);
       expect(node2.nextSibling).toBeNull();
     });
 
-    it('should add inline style to node', function() {
-      var $result = $div.css('max-height', '10px');
+    it('should add inline style to node', () => {
+      const $result = $div.css('max-height', '10px');
       expect($result).toBe($div);
       expect($div[0].style['max-height']).toEqual('10px');
     });
 
-    it('should add inline styles defined as object to node', function() {
-      var $result = $div.css({
+    it('should add inline styles defined as object to node', () => {
+      const $result = $div.css({
         'max-height': '10px',
         'max-width': '20px'
       });
@@ -143,13 +143,13 @@ describe('$', function() {
       expect($div[0].style['max-width']).toEqual('20px');
     });
 
-    it('should add class to node', function() {
-      var $result = $div.addClass('foo');
+    it('should add class to node', () => {
+      const $result = $div.addClass('foo');
       expect($result).toBe($div);
       expect($div[0].className).toBe('foo');
     });
 
-    it('should remove class of node', function() {
+    it('should remove class of node', () => {
       $div[0].className = 'foo bar foobar';
       $div[1].className = 'foo foobar';
 
@@ -159,31 +159,31 @@ describe('$', function() {
       expect($div[1].className).toBe('');
     });
 
-    it('should get element at given index', function() {
-      var $node1 = $div.eq(1);
+    it('should get element at given index', () => {
+      const $node1 = $div.eq(1);
       expect($node1).toBeInstanceOf($);
       expect($node1[0]).toBe($div[1]);
     });
 
-    it('should get children', function() {
-      var span1 = document.createElement('span');
+    it('should get children', () => {
+      const span1 = document.createElement('span');
       span1.setAttribute('id', 'span1');
-      var span2 = document.createElement('span');
+      const span2 = document.createElement('span');
       span2.setAttribute('id', 'span2');
 
       $div[0].appendChild(span1);
       $div[1].appendChild(span2);
 
-      var $children = $div.children();
+      const $children = $div.children();
       expect($children).toBeInstanceOf($);
       expect($children.length).toBe(2);
       expect($children[0].getAttribute('id')).toBe('span1');
       expect($children[1].getAttribute('id')).toBe('span2');
     });
 
-    it('should bind and unbind event', function() {
+    it('should bind and unbind event', () => {
       // Bind and check callbacks
-      var callback = jasmine.createSpy('callback');
+      const callback = jasmine.createSpy('callback');
       $div.on('click', callback);
 
       // Test for internal jqLite
@@ -214,9 +214,9 @@ describe('$', function() {
       expect(callback).not.toHaveBeenCalled();
     });
 
-    it('should bind and unbind specific event', function() {
+    it('should bind and unbind specific event', () => {
       // Bind and check callbacks
-      var callback = jasmine.createSpy('callback');
+      const callback = jasmine.createSpy('callback');
       $div.on('click', callback);
       $div.on('dblclick', callback);
 
@@ -257,10 +257,10 @@ describe('$', function() {
       callback.calls.reset();
     });
 
-    it('should bind and unbind specific listener', function() {
+    it('should bind and unbind specific listener', () => {
       // Bind and check callbacks
-      var callback1 = jasmine.createSpy('callback1');
-      var callback2 = jasmine.createSpy('callback2');
+      const callback1 = jasmine.createSpy('callback1');
+      const callback2 = jasmine.createSpy('callback2');
 
       $div.on('click', callback1);
       $div.on('click', callback2);
@@ -302,9 +302,9 @@ describe('$', function() {
       callback2.calls.reset();
     });
 
-    it('should bind and unbind list of event', function() {
+    it('should bind and unbind list of event', () => {
       // Bind and check callbacks
-      var callback = jasmine.createSpy('callback');
+      const callback = jasmine.createSpy('callback');
       $div.on('click dblclick', callback);
 
       // Test for internal jqLite
@@ -339,9 +339,9 @@ describe('$', function() {
       expect(callback).not.toHaveBeenCalled();
     });
 
-    it('should bind list of events and unbind some', function() {
+    it('should bind list of events and unbind some', () => {
       // Bind and check callbacks
-      var callback = jasmine.createSpy('callback');
+      const callback = jasmine.createSpy('callback');
       $div.on('click dblclick', callback);
 
       // Test for internal jqLite
@@ -379,9 +379,9 @@ describe('$', function() {
       expect(callback).toHaveBeenCalled();
     });
 
-    it('should set node attribute', function() {
-      var attrName = 'data-foo';
-      var attrValue = '1';
+    it('should set node attribute', () => {
+      const attrName = 'data-foo';
+      const attrValue = '1';
 
       $div.attr('data-foo', '1');
 
@@ -389,13 +389,13 @@ describe('$', function() {
       expect($div[1].getAttribute(attrName)).toBe(attrValue);
     });
 
-    it('should set node attributes', function() {
-      var a1 = 'data-foo';
-      var v1 = '1';
-      var a2 = 'data-bar';
-      var v2 = '2';
+    it('should set node attributes', () => {
+      const a1 = 'data-foo';
+      const v1 = '1';
+      const a2 = 'data-bar';
+      const v2 = '2';
 
-      var attributes = {};
+      const attributes = {};
       attributes[a1] = v1;
       attributes[a2] = v2;
 
@@ -408,9 +408,9 @@ describe('$', function() {
       expect($div[1].getAttribute(a2)).toBe(v2);
     });
 
-    it('should remove node attributes', function() {
-      var name = 'data-foo';
-      var value = '1';
+    it('should remove node attributes', () => {
+      const name = 'data-foo';
+      const value = '1';
 
       $div[0].setAttribute(name, value);
       $div[1].setAttribute(name, value);

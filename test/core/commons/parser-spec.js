@@ -22,17 +22,15 @@
  * SOFTWARE.
  */
 
-describe('parse', function() {
+describe('parse', () => {
 
-  var obj;
-  var nestedObj;
+  let obj;
+  let nestedObj;
 
-  beforeEach(function() {
+  beforeEach(() => {
     obj = {
       id: 1,
-      foo: function() {
-        return 'bar';
-      }
+      foo: () => 'bar'
     };
 
     nestedObj = {
@@ -42,44 +40,44 @@ describe('parse', function() {
     };
   });
 
-  it('should return undefined for undefined object', function() {
+  it('should return undefined for undefined object', () => {
     expect($parse('id')(undefined)).toBeUndefined();
   });
 
-  it('should return undefined for null object', function() {
+  it('should return undefined for null object', () => {
     expect($parse('id')(null)).toBeUndefined();
   });
 
-  it('should return undefined for number object', function() {
+  it('should return undefined for number object', () => {
     expect($parse('id')(1)).toBeUndefined();
   });
 
-  it('should return undefined for string object', function() {
+  it('should return undefined for string object', () => {
     expect($parse('id')('foo')).toBeUndefined();
   });
 
-  it('should return undefined for boolean object', function() {
+  it('should return undefined for boolean object', () => {
     expect($parse('id')(true)).toBeUndefined();
   });
 
-  it('should return undefined for NaN object', function() {
+  it('should return undefined for NaN object', () => {
     expect($parse('id')(NaN)).toBeUndefined();
   });
 
-  it('should return value of attribute of simple object', function() {
+  it('should return value of attribute of simple object', () => {
     expect($parse('id')(obj)).toBe(1);
   });
 
-  it('should return result of function execution', function() {
+  it('should return result of function execution', () => {
     expect($parse('foo()')(obj)).toBe('bar');
     expect($parse('foo( )')(obj)).toBe('bar');
   });
 
-  it('should return value of attribute of nested object', function() {
+  it('should return value of attribute of nested object', () => {
     expect($parse('nested.id')(nestedObj)).toBe(1);
   });
 
-  it('should return value of attribute of nested object using bracket notation', function() {
+  it('should return value of attribute of nested object using bracket notation', () => {
     expect($parse('nested["id"]')(nestedObj)).toBe(1);
     expect($parse('nested[\'id\']')(nestedObj)).toBe(1);
 
@@ -87,7 +85,7 @@ describe('parse', function() {
     expect($parse('nested[ \'id\' ]')(nestedObj)).toBe(1);
   });
 
-  it('should keep key with spaces', function() {
+  it('should keep key with spaces', () => {
     obj['foo bar'] = 'foo';
 
     if (typeof angular === 'undefined') {
@@ -95,38 +93,18 @@ describe('parse', function() {
       expect($parse('foo bar')(obj)).toBe('foo');
     } else {
       // But angular does not handle this
-      var exec = function() {
-        return $parse('foo bar')(obj);
-      };
-
+      const exec = () => $parse('foo bar')(obj);
       expect(exec).toThrow();
     }
   });
 
-  it('should throw error if expression is malformed', function() {
-    var withoutClosingBracket = function() {
-      return $parse('nested["id"');
-    };
-
-    var withoutClosingParenthesis = function() {
-      return $parse('nested(');
-    };
-
-    var withoutClosingDoubleQuote = function() {
-      return $parse('nested["id]');
-    };
-
-    var withoutClosingSingleQuote = function() {
-      return $parse('nested[\'id]');
-    };
-
-    var withoutClosingQuote = function() {
-      return $parse('nested["id\']');
-    };
-
-    var withLastDot = function() {
-      return $parse('nested.');
-    };
+  it('should throw error if expression is malformed', () => {
+    const withoutClosingBracket = () => $parse('nested["id"');
+    const withoutClosingParenthesis = () => $parse('nested(');
+    const withoutClosingDoubleQuote = () => $parse('nested["id]');
+    const withoutClosingSingleQuote = () => $parse('nested[\'id]');
+    const withoutClosingQuote = () => $parse('nested["id\']');
+    const withLastDot = () => $parse('nested.');
 
     expect(withoutClosingBracket).toThrow();
     expect(withoutClosingParenthesis).toThrow();
@@ -136,16 +114,16 @@ describe('parse', function() {
     expect(withLastDot).toThrow();
   });
 
-  it('should use cache', function() {
-    var f1 = $parse('nested["id"]');
-    var f2 = $parse('nested["id"]');
+  it('should use cache', () => {
+    const f1 = $parse('nested["id"]');
+    const f2 = $parse('nested["id"]');
     expect(f1).toBe(f2);
   });
 
-  it('should set value on object', function() {
-    var o = {};
-    var parser = $parse('id');
-    var setter = parser.assign;
+  it('should set value on object', () => {
+    const o = {};
+    const parser = $parse('id');
+    const setter = parser.assign;
 
     setter(o, 'foo');
 
@@ -154,14 +132,13 @@ describe('parse', function() {
     });
   });
 
-  it('should set value on nested object', function() {
-    var o = {
-      nested: {
-      }
+  it('should set value on nested object', () => {
+    const o = {
+      nested: {}
     };
 
-    var parser = $parse('nested.id');
-    var setter = parser.assign;
+    const parser = $parse('nested.id');
+    const setter = parser.assign;
 
     setter(o, 'foo');
 
@@ -172,12 +149,10 @@ describe('parse', function() {
     });
   });
 
-  it('should set value on nested object and create nested object if needed', function() {
-    var o = {
-    };
-
-    var parser = $parse('nested.id');
-    var setter = parser.assign;
+  it('should set value on nested object and create nested object if needed', () => {
+    const o = {};
+    const parser = $parse('nested.id');
+    const setter = parser.assign;
 
     setter(o, 'foo');
 

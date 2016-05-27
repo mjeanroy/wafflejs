@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-describe('Backbone WaffleView', function() {
-  var Model;
-  var Collection;
-  var table;
+describe('Backbone WaffleView', () => {
+  let Model;
+  let Collection;
+  let table;
 
-  beforeEach(function() {
+  beforeEach(() => {
     Model = Backbone.Model.extend({
       urlRoot: '/foo'
     });
@@ -40,25 +40,25 @@ describe('Backbone WaffleView', function() {
     table = document.createElement('table');
   });
 
-  it('should have el tagName', function() {
+  it('should have el tagName', () => {
     expect(Backbone.WaffleView.prototype.tagName).toBe('table');
   });
 
-  it('should create default view', function() {
+  it('should create default view', () => {
     spyOn(Waffle, 'create').and.callThrough();
 
-    var data = [
+    const data = [
       {id: 1, name: 'foo'},
       {id: 2, name: 'bar'}
     ];
 
-    var options = {
+    const options = {
       comparator: 'name'
     };
 
-    var collection = new Collection(data, options);
+    const collection = new Collection(data, options);
 
-    var view = new Backbone.WaffleView({
+    const view = new Backbone.WaffleView({
       collection: collection
     });
 
@@ -86,12 +86,12 @@ describe('Backbone WaffleView', function() {
     expect(view.grid.$data[1]).toEqual(jasmine.objectContaining(collection.at(1).toJSON()));
   });
 
-  describe('once initialized', function() {
-    var collection;
-    var view;
+  describe('once initialized', () => {
+    let collection;
+    let view;
 
-    beforeEach(function() {
-      var data = [
+    beforeEach(() => {
+      const data = [
         {id: 1, name: 'foo'},
         {id: 2, name: 'bar'}
       ];
@@ -110,16 +110,16 @@ describe('Backbone WaffleView', function() {
       });
     });
 
-    it('should render grid', function() {
+    it('should render grid', () => {
       spyOn(view.grid, 'render').and.callThrough();
       view.render();
       expect(view.grid.render).toHaveBeenCalled();
     });
 
-    it('should update grid when data is added to the collection', function() {
+    it('should update grid when data is added to the collection', () => {
       spyOn(view.grid.$data, 'add').and.callThrough();
 
-      var o = {
+      const o = {
         id: 3,
         name: 'qux'
       };
@@ -128,26 +128,26 @@ describe('Backbone WaffleView', function() {
 
       expect(view.grid.$data.add).toHaveBeenCalledWith(collection.last(), 2);
 
-      var data = view.grid.$data;
+      const data = view.grid.$data;
       expect(data.length).toBe(3);
       expect(data[0]).toEqual(jasmine.objectContaining(collection.at(0).toJSON()));
       expect(data[1]).toEqual(jasmine.objectContaining(collection.at(1).toJSON()));
       expect(data[2]).toEqual(jasmine.objectContaining(collection.at(2).toJSON()));
     });
 
-    it('should update grid when data is removed from the collection', function() {
+    it('should update grid when data is removed from the collection', () => {
       spyOn(view.grid.$data, 'remove').and.callThrough();
 
-      var removed = collection.pop();
+      const removed = collection.pop();
 
       expect(view.grid.$data.remove).toHaveBeenCalledWith(removed);
 
-      var data = view.grid.$data;
+      const data = view.grid.$data;
       expect(data.length).toBe(1);
       expect(data[0]).toEqual(jasmine.objectContaining(collection.at(0).toJSON()));
     });
 
-    it('should update grid when collection is resetted', function() {
+    it('should update grid when collection is resetted', () => {
       spyOn(view.grid.$data, 'reset').and.callThrough();
 
       collection.reset([
@@ -156,26 +156,26 @@ describe('Backbone WaffleView', function() {
 
       expect(view.grid.$data.reset).toHaveBeenCalledWith(collection.models);
 
-      var data = view.grid.$data;
+      const data = view.grid.$data;
       expect(data.length).toBe(1);
       expect(data[0]).toEqual(jasmine.objectContaining(collection.at(0).toJSON()));
     });
 
-    it('should update grid when model is changed', function() {
+    it('should update grid when model is changed', () => {
       spyOn(view.grid.$data, 'replace').and.callThrough();
 
       collection.last().set('name', 'qux');
 
       expect(view.grid.$data.replace).toHaveBeenCalledWith(collection.last());
 
-      var data = view.grid.$data;
+      const data = view.grid.$data;
       expect(data.length).toBe(2);
 
-      var o = data[1];
+      const o = data[1];
       expect(o.name).toBe('qux');
     });
 
-    it('should update grid when collection is sorted', function() {
+    it('should update grid when collection is sorted', () => {
       spyOn(view.grid, 'sortBy').and.callThrough();
 
       collection.comparator = 'name';
@@ -183,27 +183,27 @@ describe('Backbone WaffleView', function() {
 
       expect(view.grid.sortBy).toHaveBeenCalledWith('name');
 
-      var data = view.grid.$data;
+      const data = view.grid.$data;
       expect(data[0]).toEqual(jasmine.objectContaining(collection.at(0).toJSON()));
       expect(data[1]).toEqual(jasmine.objectContaining(collection.at(1).toJSON()));
     });
 
-    it('should trigger update on model if data is edited', function() {
-      var spy = jasmine.createSpy('spy');
+    it('should trigger update on model if data is edited', () => {
+      const spy = jasmine.createSpy('spy');
       collection.on('change', spy);
 
-      var tr = document.createElement('tr');
+      const tr = document.createElement('tr');
       tr.setAttribute('data-waffle-idx', '0');
       tr.setAttribute('data-waffle-id', collection.at(0).cid);
 
-      var input = document.createElement('input');
+      const input = document.createElement('input');
       input.setAttribute('data-waffle-id', 'name');
       input.value = 'qux';
 
       spyOn($doc, 'findParent').and.returnValue(tr);
       spyOn(view.grid, 'dispatchEvent').and.callThrough();
 
-      var event = {
+      const event = {
         type: 'change',
         target: input
       };
@@ -220,16 +220,16 @@ describe('Backbone WaffleView', function() {
       expect(view.onChange).not.toHaveBeenCalled();
     });
 
-    it('should trigger sort on collection when grid is sorted', function() {
-      var spy = jasmine.createSpy('spy');
+    it('should trigger sort on collection when grid is sorted', () => {
+      const spy = jasmine.createSpy('spy');
       collection.on('sort', spy);
 
-      var th = document.createElement('th');
+      const th = document.createElement('th');
       th.setAttribute('data-waffle-id', 'name');
       th.setAttribute('data-waffle-order', '-');
       th.setAttribute('data-waffle-sortable', 'true');
 
-      var event = {
+      const event = {
         target: th
       };
 
@@ -255,89 +255,89 @@ describe('Backbone WaffleView', function() {
       expect(collection.at(1).get('name')).toBe('foo');
     });
 
-    it('should destroy grid when view is removed', function() {
-      var destroyFn = spyOn(view.grid, 'destroy').and.callThrough();
+    it('should destroy grid when view is removed', () => {
+      const destroyFn = spyOn(view.grid, 'destroy').and.callThrough();
       view.remove();
       expect(destroyFn).toHaveBeenCalled();
     });
 
-    it('should update element', function() {
+    it('should update element', () => {
       spyOn(view.grid, 'attach').and.callThrough();
 
-      var newTable = document.createElement('table');
+      const newTable = document.createElement('table');
 
       view.setElement(newTable);
 
       expect(view.grid.attach).toHaveBeenCalledWith(newTable);
     });
 
-    it('should proxify filter method', function() {
+    it('should proxify filter method', () => {
       spyOn(view.grid, 'filter').and.callThrough();
 
-      var result = view.filter('foo');
+      const result = view.filter('foo');
 
       expect(view.grid.filter).toHaveBeenCalledWith('foo');
       expect(result).toBe(view);
     });
 
-    it('should proxify removeFilter method', function() {
+    it('should proxify removeFilter method', () => {
       spyOn(view.grid, 'removeFilter').and.callThrough();
 
-      var result = view.removeFilter();
+      const result = view.removeFilter();
 
       expect(view.grid.removeFilter).toHaveBeenCalled();
       expect(result).toBe(view);
     });
 
-    it('should proxify select method', function() {
+    it('should proxify select method', () => {
       spyOn(view.grid, 'select').and.callThrough();
 
-      var result = view.select();
+      const result = view.select();
 
       expect(view.grid.select).toHaveBeenCalled();
       expect(result).toBe(view);
     });
 
-    it('should proxify deselect method', function() {
+    it('should proxify deselect method', () => {
       spyOn(view.grid, 'deselect').and.callThrough();
 
-      var result = view.deselect();
+      const result = view.deselect();
 
       expect(view.grid.deselect).toHaveBeenCalled();
       expect(result).toBe(view);
     });
 
-    it('should proxify resize method', function() {
+    it('should proxify resize method', () => {
       spyOn(view.grid, 'resize').and.callThrough();
 
-      var result = view.resize();
+      const result = view.resize();
 
       expect(view.grid.resize).toHaveBeenCalled();
       expect(result).toBe(view);
     });
 
-    it('should proxify renderBody method', function() {
+    it('should proxify renderBody method', () => {
       spyOn(view.grid, 'renderBody').and.callThrough();
 
-      var result = view.renderBody();
+      const result = view.renderBody();
 
       expect(view.grid.renderBody).toHaveBeenCalled();
       expect(result).toBe(view);
     });
 
-    it('should proxify renderFooter method', function() {
+    it('should proxify renderFooter method', () => {
       spyOn(view.grid, 'renderFooter').and.callThrough();
 
-      var result = view.renderFooter();
+      const result = view.renderFooter();
 
       expect(view.grid.renderFooter).toHaveBeenCalled();
       expect(result).toBe(view);
     });
 
-    it('should proxify renderHeader method', function() {
+    it('should proxify renderHeader method', () => {
       spyOn(view.grid, 'renderHeader').and.callThrough();
 
-      var result = view.renderHeader();
+      const result = view.renderHeader();
 
       expect(view.grid.renderHeader).toHaveBeenCalled();
       expect(result).toBe(view);

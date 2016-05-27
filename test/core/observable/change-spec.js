@@ -22,17 +22,15 @@
  * SOFTWARE.
  */
 
-describe('Change', function() {
-  var object;
+describe('Change', () => {
+  let object;
 
-  beforeEach(function() {
-    object = [];
-  });
+  beforeEach(() => object = []);
 
-  it('should create update change', function() {
-    var index = 1;
+  it('should create update change', () => {
+    const index = 1;
 
-    var change = Change.createUpdate(index, object);
+    const change = Change.createUpdate(index, object);
 
     expect(change).toEqual({
       type: 'update',
@@ -44,12 +42,12 @@ describe('Change', function() {
     })
   });
 
-  it('should create splice change', function() {
-    var index = 1;
-    var added = [1, 2, 3];
-    var removed = [4, 5];
+  it('should create splice change', () => {
+    const index = 1;
+    const added = [1, 2, 3];
+    const removed = [4, 5];
 
-    var change = Change.createSplice(removed, added, index, object);
+    const change = Change.createSplice(removed, added, index, object);
 
     expect(change).toEqual({
       type: 'splice',

@@ -22,10 +22,9 @@
  * SOFTWARE.
  */
 
-describe('Backbone.Waffle', function() {
+describe('Backbone.Waffle', () => {
 
-  it('should define Backbone.Waffle', function() {
+  it('should define Backbone.Waffle', () => {
   	expect(Backbone.Waffle).toBe(Waffle);
   });
-
 });

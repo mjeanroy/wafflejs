@@ -22,21 +22,21 @@
  * SOFTWARE.
  */
 
-describe('collection', function() {
+describe('collection', () => {
 
-  it('should initialize empty collection', function() {
-    var collection = new Collection();
+  it('should initialize empty collection', () => {
+    const collection = new Collection();
     expect(collection.length).toBe(0);
     expect(collection.$$map).toEqual(createMap());
     expect(collection.$$model).toBe(Object);
     expect(collection.$$key).toEqual(jasmine.any(Function));
 
-    var id = collection.$$key({ id: 1 });
+    const id = collection.$$key({ id: 1 });
     expect(id).toBe(1);
   });
 
-  it('should initialize empty collection with id attribute', function() {
-    var collection = new Collection([], {
+  it('should initialize empty collection with id attribute', () => {
+    const collection = new Collection([], {
       key: 'name'
     });
 
@@ -45,14 +45,14 @@ describe('collection', function() {
     expect(collection.$$model).toBe(Object);
     expect(collection.$$key).toEqual(jasmine.any(Function));
 
-    var name = collection.$$key({ id: 1, name: 'foo' });
+    const name = collection.$$key({ id: 1, name: 'foo' });
     expect(name).toBe('foo');
   });
 
-  it('should initialize empty collection with model constructor', function() {
-    var Model = function() { };
+  it('should initialize empty collection with model constructor', () => {
+    const Model = () => { };
 
-    var collection = new Collection([], {
+    const collection = new Collection([], {
       key: 'name',
       model: Model
     });
@@ -63,12 +63,12 @@ describe('collection', function() {
     expect(collection.$$key).toEqual(jasmine.any(Function));
   });
 
-  it('should initialize collection with array', function() {
-    var o1 = { id: 1, name: 'foo' };
-    var o2 = { id: 2, name: 'bar' };
-    var items = [o1, o2];
+  it('should initialize collection with array', () => {
+    const o1 = { id: 1, name: 'foo' };
+    const o2 = { id: 2, name: 'bar' };
+    const items = [o1, o2];
 
-    var collection = new Collection(items);
+    const collection = new Collection(items);
 
     expect(collection.length).toBe(2);
     expect(collection[0]).toBe(o1);
@@ -83,17 +83,19 @@ describe('collection', function() {
     });
   });
 
-  it('should initialize collection with array and model constructor', function() {
-    var Model = function(data) {
-      this.id = data.id;
-      this.name = data.name;
-    };
+  it('should initialize collection with array and model constructor', () => {
+    class Model {
+      constructor(data) {
+        this.id = data.id;
+        this.name = data.name;
+      }
+    }
 
-    var o1 = { id: 1, name: 'foo' };
-    var o2 = { id: 2, name: 'bar' };
-    var items = [o1, o2];
+    const o1 = { id: 1, name: 'foo' };
+    const o2 = { id: 2, name: 'bar' };
+    const items = [o1, o2];
 
-    var collection = new Collection(items, {
+    const collection = new Collection(items, {
       model: Model
     });
 
@@ -113,22 +115,25 @@ describe('collection', function() {
     });
   });
 
-  describe('once initialized', function() {
-    var o1;
-    var o2;
-    var collection;
+  describe('once initialized', () => {
+    let o1;
+    let o2;
+    let collection;
 
-    beforeEach(function() {
-      o1 = { id: 1, name: 'foo' };
-      o2 = { id: 2, name: 'bar' };
+    beforeEach(() => {
+      class Model {
+        constructor(id, name) {
+          this.id = id;
+          this.name = name;
+        }
 
-      o1.toString = function() {
-        return this.id.toString();
-      };
+        toString() {
+          return this.id.toString();
+        }
+      }
 
-      o2.toString = function() {
-        return this.id.toString();
-      };
+      o1 = new Model(1, 'foo');
+      o2 = new Model(2, 'bar');
 
       collection = new Collection([o1, o2]);
       expect(collection.length).toBe(2);
@@ -136,38 +141,27 @@ describe('collection', function() {
       jasmine.clock().tick(1);
     });
 
-    it('should get collection options', function() {
-      var options = collection.options();
+    it('should get collection options', () => {
+      const options = collection.options();
       expect(options).toEqual({
         model: collection.$$model,
         key: collection.$$key
       });
     });
 
-    it('should fail if added value is not object', function() {
-      var o1 = { id: 1, name: 'foo' };
-      var o2 = { id: 2, name: 'bar' };
-      var o3 = { id: 3, name: 'foo' };
-      var o4 = null;
-      var collection = new Collection([o1, o2]);
+    it('should fail if added value is not object', () => {
+      const o1 = { id: 1, name: 'foo' };
+      const o2 = { id: 2, name: 'bar' };
+      const o3 = { id: 3, name: 'foo' };
+      const o4 = null;
+      const collection = new Collection([o1, o2]);
 
-      var push = function() {
-        collection.push(o3, o4);
-      };
+      const push = () => collection.push(o3, o4);
+      const unshift = () => collection.unshift(o3, o4);
+      const add = () => collection.add([o3, o4], 0);
+      const splice = () => collection.splice(0, 0, o3, o4);
 
-      var unshift = function() {
-        collection.unshift(o3, o4);
-      };
-
-      var add = function() {
-        collection.add([o3, o4], 0);
-      };
-
-      var splice = function() {
-        collection.splice(0, 0, o3, o4);
-      };
-
-      var error = new Error('Waffle collections are not array, only object are allowed');
+      const error = new Error('Waffle collections are not array, only object are allowed');
 
       expect(push).toThrow(error);
       expect(unshift).toThrow(error);
@@ -180,31 +174,17 @@ describe('collection', function() {
       expect(collection[1]).toBe(o2);
     });
 
-    it('should fail if added value is does not have an id', function() {
-      var o1 = { name: 'foo' };
-      var collection = new Collection([]);
+    it('should fail if added value is does not have an id', () => {
+      const o1 = { name: 'foo' };
+      const collection = new Collection([]);
 
-      var create = function() {
-        return new Collection([o1]);
-      };
+      const create = () => new Collection([o1]);
+      const push = () => collection.push(o1);
+      const unshift = () => collection.unshift(o1);
+      const add = () => collection.add([o1], 0);
+      const splice = () => collection.splice(0, 0, o1);
 
-      var push = function() {
-        collection.push(o1);
-      };
-
-      var unshift = function() {
-        collection.unshift(o1);
-      };
-
-      var add = function() {
-        collection.add([o1], 0);
-      };
-
-      var splice = function() {
-        collection.splice(0, 0, o1);
-      };
-
-      var error = new Error('Collection elements must have an id, you probably missed to specify the id key on initialization ?');
+      const error = new Error('Collection elements must have an id, you probably missed to specify the id key on initialization ?');
 
       expect(create).toThrow(error);
       expect(push).toThrow(error);
@@ -216,56 +196,56 @@ describe('collection', function() {
       expect(collection.length).toBe(0);
     });
 
-    it('get element by key', function() {
-      var o1 = { id: 1, name: 'foo' };
-      var o2 = { id: 2, name: 'bar' };
-      var items = [o1, o2];
+    it('get element by key', () => {
+      const o1 = { id: 1, name: 'foo' };
+      const o2 = { id: 2, name: 'bar' };
+      const items = [o1, o2];
 
-      var collection = new Collection(items);
+      const collection = new Collection(items);
 
       expect(collection.byKey(1)).toBe(o1);
       expect(collection.byKey(2)).toBe(o2);
       expect(collection.byKey(3)).toBe(undefined);
     });
 
-    it('should join elements', function() {
+    it('should join elements', () => {
       expect(collection.join()).toBe('1,2');
       expect(collection.join(';')).toBe('1;2');
     });
 
-    it('should get string value', function() {
+    it('should get string value', () => {
       expect(collection.toString()).toBe('1,2');
     });
 
-    it('should get locale string value', function() {
-      var expectedValue = ['1', '2'].toLocaleString();
+    it('should get locale string value', () => {
+      const expectedValue = ['1', '2'].toLocaleString();
       expect(collection.toLocaleString()).toBe(expectedValue);
     });
 
-    it('should get json representation', function() {
+    it('should get json representation', () => {
       expect(collection.toJSON()).toEqual(JSON.stringify([o1, o2]));
     });
 
-    it('should check if collection is empty', function() {
+    it('should check if collection is empty', () => {
       expect(new Collection().isEmpty()).toBe(true);
       expect(collection.isEmpty()).toBe(false);
     });
 
-    it('should get size of collection', function() {
+    it('should get size of collection', () => {
       expect(new Collection().size()).toBe(0);
       expect(collection.size()).toBe(2);
     });
 
-    it('should get element at index', function() {
+    it('should get element at index', () => {
       expect(collection.at(0)).toBe(o1);
       expect(collection.at(1)).toBe(o2);
     });
 
-    it('should concat collections', function() {
-      var o3 = { id: 3 };
-      var o4 = { id: 4 };
+    it('should concat collections', () => {
+      const o3 = { id: 3 };
+      const o4 = { id: 4 };
 
-      var newCollection = collection.concat([o3, o4]);
+      const newCollection = collection.concat([o3, o4]);
 
       expect(newCollection).not.toBe(collection);
       expect(newCollection.length).toBe(4);
@@ -281,41 +261,41 @@ describe('collection', function() {
       }));
     });
 
-    it('should slice entire collection', function() {
-      var c1 = collection.slice();
+    it('should slice entire collection', () => {
+      const c1 = collection.slice();
       jasmine.clock().tick(1);
       expect(c1).toEqual(collection);
 
-      var c2 = collection.slice(0);
+      const c2 = collection.slice(0);
       jasmine.clock().tick(1);
       expect(c2).toEqual(collection);
 
-      var c3 = collection.slice(0, collection.length);
+      const c3 = collection.slice(0, collection.length);
       jasmine.clock().tick(1);
       expect(c3).toEqual(collection);
     });
 
-    it('should split collection into chunks', function() {
-      var chunks = collection.split(1);
+    it('should split collection into chunks', () => {
+      const chunks = collection.split(1);
       expect(chunks).toEqual([[o1], [o2]]);
     });
 
-    it('should split collection into chunks of two elements', function() {
-      var o1 = { id: 1 };
-      var o2 = { id: 2 };
-      var o3 = { id: 3 };
+    it('should split collection into chunks of two elements', () => {
+      const o1 = { id: 1 };
+      const o2 = { id: 2 };
+      const o3 = { id: 3 };
       collection = new Collection([o1, o2, o3]);
 
-      var chunks = collection.split(2);
+      const chunks = collection.split(2);
 
       expect(chunks).toEqual([[o1, o2], [o3]]);
     });
 
-    it('should clear collection', function() {
+    it('should clear collection', () => {
       spyOn(collection, 'notify').and.callThrough();
 
-      var old1 = collection[0];
-      var old2 = collection[1];
+      const old1 = collection[0];
+      const old2 = collection[1];
 
       collection.clear();
 
@@ -334,22 +314,22 @@ describe('collection', function() {
       });
     });
 
-    it('should reset collection', function() {
+    it('should reset collection', () => {
       spyOn(collection, 'notify').and.callThrough();
 
       expect(collection.length).toBe(2);
 
-      var o3 = {
+      const o3 = {
         id: 3,
         name: 'foo3'
       };
 
-      var o4 = {
+      const o4 = {
         id: 4,
         name: 'foo4'
       };
 
-      var o5 = {
+      const o5 = {
         id: 5,
         name: 'foo5'
       };
@@ -366,13 +346,13 @@ describe('collection', function() {
       ]);
     });
 
-    it('should reset collection and push new elements', function() {
+    it('should reset collection and push new elements', () => {
       spyOn(collection, 'notify').and.callThrough();
 
       expect(collection.length).toBe(2);
 
-      var newElements = [];
-      for (var i = 0; i < 10; i++) {
+      const newElements = [];
+      for (let i = 0; i < 10; i++) {
         newElements.push({
           id: i,
           name: 'foo' + i
@@ -383,7 +363,7 @@ describe('collection', function() {
 
       expect(collection.length).toBe(10);
 
-      for (var k = 0; k < 10; k++) {
+      for (let k = 0; k < 10; k++) {
         expect(collection[k]).toBe(newElements[k]);
       }
 
@@ -392,12 +372,14 @@ describe('collection', function() {
       ]);
     });
 
-    it('should reset collection and notify with models', function() {
-      var Model = function(o) {
-        this.id = o.id;
-        this.name = o.name;
-        this.toString = o.toString;
-      };
+    it('should reset collection and notify with models', () => {
+      class Model {
+        constructor(o) {
+          this.id = o.id;
+          this.name = o.name;
+          this.toString = o.toString;
+        }
+      }
 
       collection = new Collection([o1, o2], {
         model: Model
@@ -405,7 +387,7 @@ describe('collection', function() {
 
       expect(collection.length).toBe(2);
 
-      var o3 = {
+      const o3 = {
         id: 3,
         name: 'foo3'
       };
@@ -429,26 +411,25 @@ describe('collection', function() {
         }
       ]);
 
-      var added = collection.notify.calls.mostRecent().args[0][0].added;
+      const added = collection.notify.calls.mostRecent().args[0][0].added;
       expect(added[0]).toBeInstanceOf(Model);
     });
 
-    it('should reset collection with order', function() {
-      var Model = function(data) {
-        this.id = data.id;
-      };
+    it('should reset collection with order', () => {
+      class Model {
+        constructor(data) {
+          this.id = data.id;
+        }
 
-      Model.prototype.name = function() {
-        return 'foo ' + this.id;
-      };
+        name() {
+          return 'foo ' + this.id;
+        }
+      }
 
-      var sortFn = jasmine.createSpy('sortFn').and.callFake(function(o1, o2) {
-        return o1.name().localeCompare(o2.name());
-      });
-
-      var m1 = { id: 1 };
-      var m2 = { id: 2 };
-      var collection = new Collection([m1, m2], {
+      const sortFn = jasmine.createSpy('sortFn').and.callFake((o1, o2) => o1.name().localeCompare(o2.name()));
+      const m1 = { id: 1 };
+      const m2 = { id: 2 };
+      const collection = new Collection([m1, m2], {
         model: Model
       });
 
@@ -458,8 +439,8 @@ describe('collection', function() {
       expect(collection[0]).toEqual(jasmine.objectContaining(m1));
       expect(collection[1]).toEqual(jasmine.objectContaining(m2));
 
-      var m3 = { id: 3 };
-      var m4 = { id: 4 };
+      const m3 = { id: 3 };
+      const m4 = { id: 4 };
 
       collection.reset([m4, m3]);
 
@@ -468,12 +449,12 @@ describe('collection', function() {
       expect(collection[1]).toEqual(jasmine.objectContaining(m4));
     });
 
-    it('should remove array data', function() {
+    it('should remove array data', () => {
       spyOn(collection, 'splice').and.callThrough();
       spyOn(collection, 'notify').and.callThrough();
 
-      var old1 = collection[0];
-      var old2 = collection[1];
+      const old1 = collection[0];
+      const old2 = collection[1];
 
       collection.notify.calls.reset();
       collection.splice.calls.reset();
@@ -500,12 +481,12 @@ describe('collection', function() {
       }]);
     });
 
-    it('should remove single data', function() {
+    it('should remove single data', () => {
       spyOn(collection, 'splice').and.callThrough();
       spyOn(collection, 'notify').and.callThrough();
 
-      var old1 = collection[0];
-      var old2 = collection[1];
+      const old1 = collection[0];
+      const old2 = collection[1];
 
       collection.splice.calls.reset();
       collection.notify.calls.reset();
@@ -532,19 +513,17 @@ describe('collection', function() {
       }]);
     });
 
-    it('should remove data with a predicate', function() {
+    it('should remove data with a predicate', () => {
       spyOn(collection, 'splice').and.callThrough();
       spyOn(collection, 'notify').and.callThrough();
 
-      var old1 = collection[0];
-      var old2 = collection[1];
+      const old1 = collection[0];
+      const old2 = collection[1];
 
       collection.splice.calls.reset();
       collection.notify.calls.reset();
 
-      collection.remove(function(current) {
-        return current.id === old1.id;
-      });
+      collection.remove(current => current.id === old1.id);
 
       expect(collection.splice).not.toHaveBeenCalled();
 
@@ -566,14 +545,14 @@ describe('collection', function() {
       }]);
     });
 
-    it('should not remove unknown data', function() {
+    it('should not remove unknown data', () => {
       spyOn(collection, 'splice').and.callThrough();
       spyOn(collection, 'notify').and.callThrough();
 
       collection.splice.calls.reset();
       collection.notify.calls.reset();
 
-      var removed = collection.remove({
+      const removed = collection.remove({
         id: 5
       });
 
@@ -582,8 +561,8 @@ describe('collection', function() {
       expect(collection.notify).not.toHaveBeenCalled();
     });
 
-    it('should slice part of collection', function() {
-      var results = collection.slice(0, 1);
+    it('should slice part of collection', () => {
+      const results = collection.slice(0, 1);
       expect(results.length).toBe(1);
       expect(results[0]).toBe(collection[0]);
       expect(results.$$map).toEqual(createMap({
@@ -591,7 +570,7 @@ describe('collection', function() {
       }));
     });
 
-    it('should get index of element', function() {
+    it('should get index of element', () => {
       expect(collection.indexOf(o1)).toBe(0);
       expect(collection.indexOf(o2)).toBe(1);
       expect(collection.indexOf({ id: 3 })).toBe(-1);
@@ -601,7 +580,7 @@ describe('collection', function() {
       expect(collection.indexOf(3)).toBe(-1);
     });
 
-    it('should get last index of element', function() {
+    it('should get last index of element', () => {
       expect(collection.lastIndexOf(o1)).toBe(0);
       expect(collection.lastIndexOf(o2)).toBe(1);
       expect(collection.lastIndexOf({ id: 3 })).toBe(-1);
@@ -611,7 +590,7 @@ describe('collection', function() {
       expect(collection.lastIndexOf(3)).toBe(-1);
     });
 
-    it('should check if collection contains data', function() {
+    it('should check if collection contains data', () => {
       expect(collection.contains(o1)).toBeTrue();
       expect(collection.contains(o2)).toBeTrue();
       expect(collection.contains({ id: 3 })).toBeFalse();
@@ -621,7 +600,7 @@ describe('collection', function() {
       expect(collection.contains(3)).toBeFalse();
     });
 
-    it('should toggle data', function() {
+    it('should toggle data', () => {
       expect(collection.contains(o1)).toBeTrue();
 
       spyOn(collection, 'push').and.callThrough();
@@ -641,32 +620,32 @@ describe('collection', function() {
       expect(collection.remove).not.toHaveBeenCalled();
     });
 
-    it('should get first element of collection', function() {
+    it('should get first element of collection', () => {
       expect(collection.first()).toBe(o1);
       expect(collection.first(1)).toEqual([o1]);
       expect(collection.first(2)).toEqual([o1, o2]);
     });
 
-    it('should get last element of collection', function() {
+    it('should get last element of collection', () => {
       expect(collection.last()).toBe(o2);
       expect(collection.last(1)).toEqual([o2]);
       expect(collection.last(2)).toEqual([o1, o2]);
     });
 
-    it('should get rest of collection', function() {
+    it('should get rest of collection', () => {
       expect(collection.rest()).toEqual([o2]);
       expect(collection.rest(1)).toEqual([o2]);
       expect(collection.rest(2)).toEqual([]);
     });
 
-    it('should get initial elements of collection', function() {
+    it('should get initial elements of collection', () => {
       expect(collection.initial()).toEqual([o1]);
       expect(collection.initial(1)).toEqual([o1]);
       expect(collection.initial(2)).toEqual([]);
     });
 
-    it('should apply callback on each elements', function() {
-      var callback = jasmine.createSpy('callback');
+    it('should apply callback on each elements', () => {
+      const callback = jasmine.createSpy('callback');
 
       collection.forEach(callback);
 
@@ -674,12 +653,9 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should map elements', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id;
-      });
-
-      var newArray = collection.map(callback);
+    it('should map elements', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => current.id);
+      const newArray = collection.map(callback);
 
       expect(newArray.length).toBe(2);
       expect(newArray[0]).toBe(collection[0].id);
@@ -689,120 +665,90 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should check if every collection elements satisfies test', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return !!current.id;
-      });
-
-      var result = collection.every(callback);
+    it('should check if every collection elements satisfies test', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => !!current.id);
+      const result = collection.every(callback);
 
       expect(result).toBe(true);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should check if some collection elements satisfies test', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return !!current.id;
-      });
-
-      var result = collection.some(callback);
+    it('should check if some collection elements satisfies test', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => !!current.id);
+      const result = collection.some(callback);
 
       expect(result).toBe(true);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).not.toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should reduce collection from left to right', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(previous, current) {
-        return previous + current.id;
-      });
-
-      var result = collection.reduce(callback, 0);
+    it('should reduce collection from left to right', () => {
+      const callback = jasmine.createSpy('callback').and.callFake((previous, current) => previous + current.id);
+      const result = collection.reduce(callback, 0);
 
       expect(result).toBe(3);
       expect(callback).toHaveBeenCalledWith(0, collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(1, collection[1], 1, collection);
     });
 
-    it('should reduce collection from right to left', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(previous, current) {
-        return previous + current.id;
-      });
-
-      var result = collection.reduceRight(callback, 0);
+    it('should reduce collection from right to left', () => {
+      const callback = jasmine.createSpy('callback').and.callFake((previous, current) => previous + current.id);
+      const result = collection.reduceRight(callback, 0);
 
       expect(result).toBe(3);
       expect(callback).toHaveBeenCalledWith(0, collection[1], 1, collection);
       expect(callback).toHaveBeenCalledWith(2, collection[0], 0, collection);
     });
 
-    it('should filter collection', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id === 2;
-      });
-
-      var results = collection.filter(callback);
+    it('should filter collection', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => current.id === 2);
+      const results = collection.filter(callback);
 
       expect(results).toEqual([collection[1]]);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should reject collection', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id === 2;
-      });
-
-      var results = collection.reject(callback);
+    it('should reject collection', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => current.id === 2);
+      const results = collection.reject(callback);
 
       expect(results).toEqual([collection[0]]);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should find element in collection', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id === 2;
-      });
-
-      var result = collection.find(callback);
+    it('should find element in collection', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => current.id === 2);
+      const result = collection.find(callback);
 
       expect(result).toBe(collection[1]);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should find element index in collection', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return current.id === 2;
-      });
-
-      var result = collection.findIndex(callback);
+    it('should find element index in collection', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => current.id === 2);
+      const result = collection.findIndex(callback);
 
       expect(result).toBe(1);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should return -1 if element index in collection is not found', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(current) {
-        return false;
-      });
-
-      var result = collection.findIndex(callback);
+    it('should return -1 if element index in collection is not found', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(current => false);
+      const result = collection.findIndex(callback);
 
       expect(result).toBe(-1);
       expect(callback).toHaveBeenCalledWith(collection[0], 0, collection);
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should partition array', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
-        return value.id % 2 === 0;
-      });
-
-      var partition = collection.partition(callback);
+    it('should partition array', () => {
+      const callback = jasmine.createSpy('callback').and.callFake(value => value.id % 2 === 0);
+      const partition = collection.partition(callback);
 
       expect(partition).toEqual([
         [collection[1]],
@@ -813,28 +759,25 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should pluck collection', function() {
+    it('should pluck collection', () => {
       collection[0].foo = { id: 1 };
       collection[1].foo = { id: 2 };
 
-      var result1 = collection.pluck('id');
-      var result2 = collection.pluck('foo.id');
+      const result1 = collection.pluck('id');
+      const result2 = collection.pluck('foo.id');
 
       expect(result1).toEqual(result2);
       expect(result1).toEqual([1, 2]);
     });
 
-    it('should index collection', function() {
+    it('should index collection', () => {
       collection[0].foo = { id: 1 };
       collection[1].foo = { id: 2 };
 
-      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
-        return value.id;
-      });
-
-      var result1 = collection.indexBy(callback);
-      var result2 = collection.indexBy('id');
-      var result3 = collection.indexBy('foo.id');
+      const callback = jasmine.createSpy('callback').and.callFake(value => value.id);
+      const result1 = collection.indexBy(callback);
+      const result2 = collection.indexBy('id');
+      const result3 = collection.indexBy('foo.id');
 
       expect(result1).toEqual(result2);
       expect(result1).toEqual(result3);
@@ -847,17 +790,14 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should group collection', function() {
+    it('should group collection', () => {
       collection[0].foo = { id: 1 };
       collection[1].foo = { id: 2 };
 
-      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
-        return value.id;
-      });
-
-      var result1 = collection.groupBy(callback);
-      var result2 = collection.groupBy('id');
-      var result3 = collection.groupBy('foo.id');
+      const callback = jasmine.createSpy('callback').and.callFake(value => value.id);
+      const result1 = collection.groupBy(callback);
+      const result2 = collection.groupBy('id');
+      const result3 = collection.groupBy('foo.id');
 
       expect(result1).toEqual(result2);
       expect(result1).toEqual(result3);
@@ -870,17 +810,14 @@ describe('collection', function() {
       expect(callback).toHaveBeenCalledWith(collection[1], 1, collection);
     });
 
-    it('should group collection', function() {
+    it('should group collection', () => {
       collection[0].foo = { id: 1 };
       collection[1].foo = { id: 2 };
 
-      var callback = jasmine.createSpy('callback').and.callFake(function(value) {
-        return value.id;
-      });
-
-      var result1 = collection.countBy(callback);
-      var result2 = collection.countBy('id');
-      var result3 = collection.countBy('foo.id');
+      const callback = jasmine.createSpy('callback').and.callFake(value => value.id);
+      const result1 = collection.countBy(callback);
+      const result2 = collection.countBy('id');
+      const result3 = collection.countBy('foo.id');
 
       expect(result1).toEqual(result2);
       expect(result1).toEqual(result3);

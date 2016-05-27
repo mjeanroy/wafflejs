@@ -22,41 +22,41 @@
  * SOFTWARE.
  */
 
-describe('constants', function() {
+describe('constants', () => {
 
-  it('should define css sortable class', function() {
+  it('should define css sortable class', () => {
     expect(CSS_SORTABLE).toBe('waffle-sortable');
   });
 
-  it('should define css sortable asc class', function() {
+  it('should define css sortable asc class', () => {
     expect(CSS_SORTABLE_ASC).toBe('waffle-sortable-asc');
   });
 
-  it('should define css sortable desc class', function() {
+  it('should define css sortable desc class', () => {
     expect(CSS_SORTABLE_DESC).toBe('waffle-sortable-desc');
   });
 
-  it('should define css selected class', function() {
+  it('should define css selected class', () => {
     expect(CSS_SELECTED).toBe('waffle-selected');
   });
 
-  it('should define data attribute name for id value', function() {
+  it('should define data attribute name for id value', () => {
     expect(DATA_WAFFLE_ID).toBe('data-waffle-id');
   });
 
-  it('should define data attribute name for sortable value', function() {
+  it('should define data attribute name for sortable value', () => {
     expect(DATA_WAFFLE_SORTABLE).toBe('data-waffle-sortable');
   });
 
-  it('should define data attribute name for order value', function() {
+  it('should define data attribute name for order value', () => {
     expect(DATA_WAFFLE_ORDER).toBe('data-waffle-order');
   });
 
-  it('should define order flag for ascendant order', function() {
+  it('should define order flag for ascendant order', () => {
     expect(CHAR_ORDER_ASC).toBe('+');
   });
 
-  it('should define order flag for descendant order', function() {
+  it('should define order flag for descendant order', () => {
     expect(CHAR_ORDER_DESC).toBe('-');
   });
 });

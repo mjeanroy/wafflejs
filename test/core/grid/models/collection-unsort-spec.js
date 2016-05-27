@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-describe('Unsorted collection', function() {
+describe('Unsorted collection', () => {
 
-  var o0;
-  var o1;
-  var o2;
-  var o3;
-  var o4;
-  var collection;
+  let o0;
+  let o1;
+  let o2;
+  let o3;
+  let o4;
+  let collection;
 
-  beforeEach(function() {
+  beforeEach(() => {
     o0 = { id: 0, name: 'foobar' };
     o1 = { id: 1, name: 'foo' };
     o2 = { id: 2, name: 'bar' };
@@ -46,8 +46,8 @@ describe('Unsorted collection', function() {
     spyOn(Collection.prototype, 'notify').and.callThrough();
   });
 
-  it('should remove last element', function() {
-    var removedElement = collection.pop();
+  it('should remove last element', () => {
+    const removedElement = collection.pop();
 
     expect(removedElement).toBe(o2);
     expect(collection.length).toBe(1);
@@ -67,8 +67,8 @@ describe('Unsorted collection', function() {
     }]);
   });
 
-  it('should remove first element', function() {
-    var removedElement = collection.shift();
+  it('should remove first element', () => {
+    const removedElement = collection.shift();
 
     expect(removedElement).toBe(o1);
     expect(collection.length).toBe(1);
@@ -88,8 +88,8 @@ describe('Unsorted collection', function() {
     }]);
   });
 
-  it('should push new elements at the end', function() {
-    var newLength = collection.push(o0, o3);
+  it('should push new elements at the end', () => {
+    const newLength = collection.push(o0, o3);
 
     expect(newLength).toBe(4);
     expect(collection.length).toBe(4);
@@ -110,8 +110,8 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should unshift new elements', function() {
-    var newLength = collection.unshift(o3, o4);
+  it('should unshift new elements', () => {
+    const newLength = collection.unshift(o3, o4);
 
     expect(newLength).toBe(4);
     expect(collection.length).toBe(4);
@@ -132,11 +132,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should add elements at given index', function() {
+  it('should add elements at given index', () => {
     collection = new Collection([o0, o1, o2, o3]);
     expect(collection.length).toBe(4);
 
-    var newLength = collection.add([o4], 2);
+    const newLength = collection.add([o4], 2);
 
     expect(newLength).toBe(5);
     expect(collection.length).toBe(5);
@@ -159,11 +159,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should add elements at the end by default', function() {
+  it('should add elements at the end by default', () => {
     collection = new Collection([o0, o1, o2, o3]);
     expect(collection.length).toBe(4);
 
-    var newLength = collection.add([o4]);
+    const newLength = collection.add([o4]);
 
     expect(newLength).toBe(5);
     expect(collection.length).toBe(5);
@@ -186,11 +186,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should add elements at the beginning with zero', function() {
+  it('should add elements at the beginning with zero', () => {
     collection = new Collection([o0, o1, o2, o3]);
     expect(collection.length).toBe(4);
 
-    var newLength = collection.add([o4], 0);
+    const newLength = collection.add([o4], 0);
 
     expect(newLength).toBe(5);
     expect(collection.length).toBe(5);
@@ -213,11 +213,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should not changed collection using splice with no args', function() {
+  it('should not changed collection using splice with no args', () => {
     collection = new Collection([o1, o2, o3]);
     collection.notify.calls.reset();
 
-    var removed = collection.splice();
+    const removed = collection.splice();
 
     expect(removed).toEqual([]);
     expect(collection.length).toBe(3);
@@ -233,11 +233,11 @@ describe('Unsorted collection', function() {
     expect(collection.notify).not.toHaveBeenCalled();
   });
 
-  it('should remove element using splice with two argument', function() {
+  it('should remove element using splice with two argument', () => {
     collection = new Collection([o1, o2, o3]);
     collection.notify.calls.reset();
 
-    var removed = collection.splice(1, 1);
+    const removed = collection.splice(1, 1);
 
     expect(removed).toEqual([o2]);
     expect(collection.length).toBe(2);
@@ -253,10 +253,10 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove element using splice with negative argument', function() {
+  it('should remove element using splice with negative argument', () => {
     collection = new Collection([o1, o2, o3]);
 
-    var removed = collection.splice(-1, 1);
+    const removed = collection.splice(-1, 1);
 
     expect(removed).toEqual([o3]);
     expect(collection.length).toBe(2);
@@ -272,10 +272,10 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove element and add new one using splice', function() {
+  it('should remove element and add new one using splice', () => {
     collection = new Collection([o1, o2, o3]);
 
-    var removed = collection.splice(1, 1, o4);
+    const removed = collection.splice(1, 1, o4);
 
     expect(removed).toEqual([o2]);
     expect(collection.length).toBe(3);
@@ -293,10 +293,10 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove element and add new one using splice', function() {
+  it('should remove element and add new one using splice', () => {
     collection = new Collection([o1, o2]);
 
-    var removed = collection.splice(1, 1, o3, o4);
+    const removed = collection.splice(1, 1, o3, o4);
 
     expect(removed).toEqual([o2]);
     expect(collection.length).toBe(3);
@@ -314,9 +314,9 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should replace existing data using splice', function() {
+  it('should replace existing data using splice', () => {
     collection = new Collection([o1, o2]);
-    var removed = collection.splice(0, 0, o1);
+    const removed = collection.splice(0, 0, o1);
 
     expect(removed).toEqual([]);
     expect(collection.length).toBe(2);
@@ -332,9 +332,9 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should replace existing data and add new data using splice', function() {
+  it('should replace existing data and add new data using splice', () => {
     collection = new Collection([o1, o2]);
-    var removed = collection.splice(2, 0, o1, o3);
+    const removed = collection.splice(2, 0, o1, o3);
 
     expect(removed).toEqual([]);
     expect(collection.length).toBe(3);
@@ -356,9 +356,9 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should replace existing data and add new data using splice and keep order', function() {
+  it('should replace existing data and add new data using splice and keep order', () => {
     collection = new Collection([o1, o2]);
-    var removed = collection.splice(0, 0, o1, o3);
+    const removed = collection.splice(0, 0, o1, o3);
 
     expect(removed).toEqual([]);
     expect(collection.length).toBe(3);
@@ -380,11 +380,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove element using start index', function() {
+  it('should remove element using start index', () => {
     collection = new Collection([o1, o2, o3, o4]);
     expect(collection.length).toBe(4);
 
-    var removed = collection.remove(2);
+    const removed = collection.remove(2);
 
     expect(removed).toEqual([o3, o4]);
     expect(collection.length).toBe(2);
@@ -402,11 +402,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove element using index and delete count', function() {
+  it('should remove element using index and delete count', () => {
     collection = new Collection([o1, o2, o3, o4]);
     expect(collection.length).toBe(4);
 
-    var removed = collection.remove(2, 1);
+    const removed = collection.remove(2, 1);
 
     expect(removed).toEqual([o3]);
     expect(collection.length).toBe(3);
@@ -424,13 +424,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove element using predicate', function() {
+  it('should remove element using predicate', () => {
     collection = new Collection([o1, o2, o3, o4]);
     expect(collection.length).toBe(4);
 
-    var removed = collection.remove(function(o) {
-      return o.id % 2 !== 0;
-    });
+    const removed = collection.remove(o => o.id % 2 !== 0);
 
     expect(removed).toEqual([o1, o3]);
     expect(collection.length).toBe(2);
@@ -449,13 +447,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove element using predicate and merge changes', function() {
+  it('should remove element using predicate and merge changes', () => {
     collection = new Collection([o1, o2, o3, o4]);
     expect(collection.length).toBe(4);
 
-    var removed = collection.remove(function(o) {
-      return o.id <= 2;
-    });
+    const removed = collection.remove(o => o.id <= 2);
 
     expect(removed).toEqual([o1, o2]);
     expect(collection.length).toBe(2);
@@ -473,11 +469,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove array of elements', function() {
+  it('should remove array of elements', () => {
     collection = new Collection([o1, o2, o3, o4]);
     expect(collection.length).toBe(4);
 
-    var removed = collection.remove([o1, o3]);
+    const removed = collection.remove([o1, o3]);
 
     expect(removed).toEqual([o1, o3]);
     expect(collection.length).toBe(2);
@@ -496,11 +492,11 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should remove single element', function() {
+  it('should remove single element', () => {
     collection = new Collection([o1, o2, o3, o4]);
     expect(collection.length).toBe(4);
 
-    var removed = collection.remove([o1]);
+    const removed = collection.remove([o1]);
 
     expect(removed).toEqual([o1]);
     expect(collection.length).toBe(3);
@@ -519,10 +515,10 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should reverse collection with odd length', function() {
+  it('should reverse collection with odd length', () => {
     collection = new Collection([o1, o2]);
 
-    var result = collection.reverse();
+    const result = collection.reverse();
 
     expect(result).toBe(collection);
     expect(collection.length).toBe(2);
@@ -535,10 +531,10 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should reverse collection with even length', function() {
+  it('should reverse collection with even length', () => {
     collection = new Collection([o1, o2, o3]);
 
-    var result = collection.reverse();
+    const result = collection.reverse();
 
     expect(result).toBe(collection);
     expect(collection.length).toBe(3);
@@ -552,12 +548,12 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should replace data', function() {
+  it('should replace data', () => {
     collection = new Collection([o1, o2, o3]);
 
     spyOn(collection, 'splice').and.callThrough();
 
-    var clone = {
+    const clone = {
       id: 1,
       name: 'foo bar'
     };
@@ -572,15 +568,13 @@ describe('Unsorted collection', function() {
     ]);
   });
 
-  it('should not replace unknown data', function() {
-    var data = {
+  it('should not replace unknown data', () => {
+    const data = {
       id: 50,
       name: 'foo bar'
     };
 
-    var replace = function() {
-      collection.replace(data);
-    };
+    const replace = () => collection.replace(data);
 
     expect(replace).toThrow(Error('Data to replace is not in collection !'));
   });

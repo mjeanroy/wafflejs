@@ -22,35 +22,33 @@
  * SOFTWARE.
  */
 
-describe('$vdom', function() {
+describe('$vdom', () => {
 
-  var fixtures;
+  let fixtures;
 
-  beforeEach(function() {
+  beforeEach(() => {
     fixtures = document.createElement('div');
     fixtures.setAttribute('id', 'fixtures');
 
-    var node1 = document.createElement('span');
+    const node1 = document.createElement('span');
     node1.setAttribute('id', 'span1');
     fixtures.appendChild(node1);
 
-    var node2 = document.createElement('span');
+    const node2 = document.createElement('span');
     node2.setAttribute('id', 'span2');
     fixtures.appendChild(node2);
 
     document.body.appendChild(fixtures);
   });
 
-  afterEach(function() {
-    fixtures.parentNode.removeChild(fixtures);
-  });
+  afterEach(() => fixtures.parentNode.removeChild(fixtures));
 
-  it('should update node attribute', function() {
-    var node1 = document.createElement('div');
+  it('should update node attribute', () => {
+    const node1 = document.createElement('div');
     node1.setAttribute('data-foo', 'bar');
     node1.setAttribute('data-idx', 1);
 
-    var node2 = document.createElement('div');
+    const node2 = document.createElement('div');
     node2.setAttribute('data-foo', 'foo');
     node2.setAttribute('data-idx', 2);
 
@@ -60,11 +58,11 @@ describe('$vdom', function() {
     expect(node1.getAttribute('data-idx')).toBe('2');
   });
 
-  it('should update node attribute and add new ones', function() {
-    var node1 = document.createElement('div');
+  it('should update node attribute and add new ones', () => {
+    const node1 = document.createElement('div');
     node1.setAttribute('data-idx', 1);
 
-    var node2 = document.createElement('div');
+    const node2 = document.createElement('div');
     node2.setAttribute('data-foo', 'foo');
     node2.setAttribute('data-idx', 2);
 
@@ -74,12 +72,12 @@ describe('$vdom', function() {
     expect(node1.getAttribute('data-idx')).toBe('2');
   });
 
-  it('should update node attribute and remove old ones', function() {
-    var node1 = document.createElement('div');
+  it('should update node attribute and remove old ones', () => {
+    const node1 = document.createElement('div');
     node1.setAttribute('data-foo', 'foo');
     node1.setAttribute('data-idx', 1);
 
-    var node2 = document.createElement('div');
+    const node2 = document.createElement('div');
     node2.setAttribute('data-idx', 2);
 
     $vdom.mergeAttributes(node1, node2);
@@ -88,12 +86,12 @@ describe('$vdom', function() {
     expect(node1.getAttribute('data-idx')).toBe('2');
   });
 
-  it('should update node inline styles', function() {
-    var node1 = document.createElement('div');
+  it('should update node inline styles', () => {
+    const node1 = document.createElement('div');
     node1.style.width = '100px';
     node1.style.height = '200px';
 
-    var node2 = document.createElement('div');
+    const node2 = document.createElement('div');
     node2.style.width = '110px';
     node2.style.height = '210px';
 
@@ -103,11 +101,11 @@ describe('$vdom', function() {
     expect(node1.style.height).toBe('210px');
   });
 
-  it('should update node inline styles and add new ones', function() {
-    var node1 = document.createElement('div');
+  it('should update node inline styles and add new ones', () => {
+    const node1 = document.createElement('div');
     node1.style.width = '100px';
 
-    var node2 = document.createElement('div');
+    const node2 = document.createElement('div');
     node2.style.width = '110px';
     node2.style.height = '210px';
 
@@ -117,12 +115,12 @@ describe('$vdom', function() {
     expect(node1.style.height).toBe('210px');
   });
 
-  it('should update node inline styles and remove old ones', function() {
-    var node1 = document.createElement('div');
+  it('should update node inline styles and remove old ones', () => {
+    const node1 = document.createElement('div');
     node1.style.width = '100px';
     node1.style.height = '200px';
 
-    var node2 = document.createElement('div');
+    const node2 = document.createElement('div');
     node2.style.width = '110px';
 
     $vdom.mergeAttributes(node1, node2);
@@ -131,11 +129,11 @@ describe('$vdom', function() {
     expect(node1.style.height).toBeEmpty();
   });
 
-  it('should update node classes', function() {
-    var node1 = document.createElement('div');
+  it('should update node classes', () => {
+    const node1 = document.createElement('div');
     node1.className = 'foo bar';
 
-    var node2 = document.createElement('div');
+    const node2 = document.createElement('div');
     node2.className = 'foo';
 
     $vdom.mergeAttributes(node1, node2);
@@ -143,19 +141,19 @@ describe('$vdom', function() {
     expect(node1.className).toBe('foo');
   });
 
-  it('should merge two nodes', function() {
+  it('should merge two nodes', () => {
     spyOn($vdom, 'mergeAttributes').and.callThrough();
 
-    var node1 = document.createElement('div');
-    var node2 = document.createElement('div');
+    const node1 = document.createElement('div');
+    const node2 = document.createElement('div');
 
-    var span1 = document.createElement('span');
+    const span1 = document.createElement('span');
     span1.className = 'foo-1';
     span1.setAttribute('foo', 'foo1');
     span1.style.width = '100px';
     span1.innerHTML = 'foo #1';
 
-    var span2 = document.createElement('span');
+    const span2 = document.createElement('span');
     span2.className = 'foo-2';
     span2.setAttribute('foo', 'foo2');
     span2.style.width = '200px';
@@ -164,11 +162,11 @@ describe('$vdom', function() {
     node1.appendChild(span1);
     node2.appendChild(span2);
 
-    var rootNode = document.createElement('div');
+    const rootNode = document.createElement('div');
     rootNode.appendChild(node1);
     rootNode.appendChild(node2);
 
-    var result = $vdom.mergeNodes(rootNode, node1, node2);
+    const result = $vdom.mergeNodes(rootNode, node1, node2);
 
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(node1, node2);
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(span1, span2);
@@ -180,29 +178,29 @@ describe('$vdom', function() {
     expect(node1.childNodes[0].innerHTML).toBe('foo #2');
   });
 
-  it('should update content of nodes', function() {
+  it('should update content of nodes', () => {
     spyOn($vdom, 'mergeAttributes').and.callThrough();
 
-    var node1 = document.createElement('div');
-    var node2 = document.createElement('div');
+    const node1 = document.createElement('div');
+    const node2 = document.createElement('div');
 
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     span.className = 'foo-1';
     span.setAttribute('foo', 'foo1');
     span.style.width = '100px';
     span.innerHTML = 'foo #1';
 
-    var input = document.createElement('input');
+    const input = document.createElement('input');
     input.setAttribute('type', 'text');
 
     node1.appendChild(span);
     node2.appendChild(input);
 
-    var rootNode = document.createElement('div');
+    const rootNode = document.createElement('div');
     rootNode.appendChild(node1);
     rootNode.appendChild(node2);
 
-    var result = $vdom.mergeNodes(rootNode, node1, node2);
+    const result = $vdom.mergeNodes(rootNode, node1, node2);
 
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(node1, node2);
     expect($vdom.mergeAttributes).not.toHaveBeenCalledWith(span, input);
@@ -212,36 +210,36 @@ describe('$vdom', function() {
     expect(node1.childNodes[0]).toBe(input);
   });
 
-  it('should update content of nodes if nodes do not have same child length', function() {
+  it('should update content of nodes if nodes do not have same child length', () => {
     spyOn($vdom, 'mergeAttributes').and.callThrough();
 
-    var node1 = document.createElement('div');
-    var node2 = document.createElement('div');
+    const node1 = document.createElement('div');
+    const node2 = document.createElement('div');
 
-    var span1 = document.createElement('span');
+    const span1 = document.createElement('span');
     span1.className = 'foo-1';
     span1.setAttribute('foo', 'foo1');
     span1.style.width = '100px';
     span1.innerHTML = 'foo #1';
 
-    var span2 = document.createElement('span');
+    const span2 = document.createElement('span');
     span2.className = 'foo-1';
     span2.setAttribute('foo', 'foo1');
     span2.style.width = '100px';
     span2.innerHTML = 'foo #1';
 
-    var input = document.createElement('input');
+    const input = document.createElement('input');
     input.setAttribute('type', 'text');
 
     node1.appendChild(span1);
     node2.appendChild(span2);
     node2.appendChild(input);
 
-    var rootNode = document.createElement('div');
+    const rootNode = document.createElement('div');
     rootNode.appendChild(node1);
     rootNode.appendChild(node2);
 
-    var result = $vdom.mergeNodes(rootNode, node1, node2);
+    const result = $vdom.mergeNodes(rootNode, node1, node2);
 
     expect($vdom.mergeAttributes).toHaveBeenCalledWith(node1, node2);
     expect($vdom.mergeAttributes).not.toHaveBeenCalledWith(span1, span2);
@@ -253,19 +251,19 @@ describe('$vdom', function() {
     expect(node1.childNodes[1]).toBe(input);
   });
 
-  it('should replace node if types are different', function() {
+  it('should replace node if types are different', () => {
     spyOn($vdom, 'mergeAttributes').and.callThrough();
 
-    var node1 = document.createElement('div');
-    var node2 = document.createElement('p');
+    const node1 = document.createElement('div');
+    const node2 = document.createElement('p');
 
-    var span1 = document.createElement('span');
+    const span1 = document.createElement('span');
     span1.className = 'foo-1';
     span1.setAttribute('foo', 'foo1');
     span1.style.width = '100px';
     span1.innerHTML = 'foo #1';
 
-    var span2 = document.createElement('span');
+    const span2 = document.createElement('span');
     span2.className = 'foo-1';
     span2.setAttribute('foo', 'foo1');
     span2.style.width = '100px';
@@ -274,11 +272,11 @@ describe('$vdom', function() {
     node1.appendChild(span1);
     node2.appendChild(span2);
 
-    var rootNode = document.createElement('div');
+    const rootNode = document.createElement('div');
     rootNode.appendChild(node1);
     rootNode.appendChild(node2);
 
-    var result = $vdom.mergeNodes(rootNode, node1, node2);
+    const result = $vdom.mergeNodes(rootNode, node1, node2);
 
     expect($vdom.mergeAttributes).not.toHaveBeenCalled();
 

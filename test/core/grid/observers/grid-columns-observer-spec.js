@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-describe('Grid Columns Observer', function() {
+describe('Grid Columns Observer', () => {
 
-  var columns, data, table, grid, $columns, $data;
+  let columns, data, table, grid, $columns, $data;
 
-  beforeEach(function() {
+  beforeEach(() => {
     columns = [
       { id: 'id' },
       { id: 'firstName' }
@@ -46,7 +46,7 @@ describe('Grid Columns Observer', function() {
 
   });
 
-  it('should call onSplice for a "splice" change', function() {
+  it('should call onSplice for a "splice" change', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns
@@ -54,7 +54,7 @@ describe('Grid Columns Observer', function() {
 
     jasmine.clock().tick();
 
-    var changes = [
+    const changes = [
       { type: 'splice', removed: [], index: 0, addedCount: 0, object: data }
     ];
 
@@ -63,8 +63,8 @@ describe('Grid Columns Observer', function() {
     expect(GridColumnsObserver.onSplice).toHaveBeenCalledWith(changes[0]);
   });
 
-  describe('with splice change', function() {
-    beforeEach(function() {
+  describe('with splice change', () => {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -80,16 +80,14 @@ describe('Grid Columns Observer', function() {
       jasmine.clock().tick();
     });
 
-    it('should add new column', function() {
-      var thead = grid.$thead[0];
-      var tbody = grid.$tbody[0];
-      var tfoot = grid.$tfoot[0];
+    it('should add new column', () => {
+      const thead = grid.$thead[0];
+      const tbody = grid.$tbody[0];
+      const tfoot = grid.$tfoot[0];
 
       expect(thead.childNodes[0].childNodes.length).toBe(1 + 2);
       expect(tfoot.childNodes[0].childNodes.length).toBe(1 + 2);
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes.length === (1 + 2);
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes.length === (1 + 2));
 
       $columns.push({
         id: 'lastName'
@@ -99,9 +97,7 @@ describe('Grid Columns Observer', function() {
 
       expect(thead.childNodes[0].childNodes.length).toBe(1 + 3);
       expect(tfoot.childNodes[0].childNodes.length).toBe(1 + 3);
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes.length === (1 + 3);
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes.length === (1 + 3));
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
@@ -111,14 +107,10 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
       expect(tfoot.childNodes[0].childNodes[2].getAttribute('data-waffle-id')).toBe($columns.at(1).id);
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id &&
-               tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[0].getAttribute('data-waffle-id') === null);
+      expect(tbody.childNodes).toVerify(tr => (
+        tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id && tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id
+      ));
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('columnsspliced', {
         index: 2,
@@ -141,7 +133,7 @@ describe('Grid Columns Observer', function() {
       });
     });
 
-    it('should add new column with draggable flag', function() {
+    it('should add new column with draggable flag', () => {
       grid.options.dnd = true;
 
       $columns.push({
@@ -152,8 +144,8 @@ describe('Grid Columns Observer', function() {
 
       expect($columns.last().draggable).toBe(true);
 
-      var thead = grid.$thead[0];
-      var tfoot = grid.$tfoot[0];
+      const thead = grid.$thead[0];
+      const tfoot = grid.$tfoot[0];
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('draggable')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('draggable')).toBeNull();
@@ -166,7 +158,7 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[3].getAttribute('draggable')).toBe('true');
     });
 
-    it('should add new column and disable sort if grid is not sortable', function() {
+    it('should add new column and disable sort if grid is not sortable', () => {
       grid.options.sortable = false;
 
       $columns.push({
@@ -177,27 +169,27 @@ describe('Grid Columns Observer', function() {
 
       expect($columns.last().sortable).toBe(false);
 
-      var thead = grid.$thead[0];
-      var tfoot = grid.$tfoot[0];
+      const thead = grid.$thead[0];
+      const tfoot = grid.$tfoot[0];
 
       expect(thead.childNodes[0].childNodes[3].getAttribute('waffle-sortable')).toBeNull();
       expect(tfoot.childNodes[0].childNodes[3].getAttribute('waffle-sortable')).toBeNull();
     });
 
-    it('should remove column', function() {
-      var thead = grid.$thead[0];
-      var tbody = grid.$tbody[0];
-      var tfoot = grid.$tfoot[0];
+    it('should remove column', () => {
+      const thead = grid.$thead[0];
+      const tbody = grid.$tbody[0];
+      const tfoot = grid.$tfoot[0];
 
-      var expectedTheadRemovedNodes = [
+      const expectedTheadRemovedNodes = [
         thead.childNodes[0].childNodes[1]
       ];
 
-      var expectedTfootRemovedNodes = [
+      const expectedTfootRemovedNodes = [
         tfoot.childNodes[0].childNodes[1]
       ];
 
-      var expectedTbodyRemovedNodes = [
+      const expectedTbodyRemovedNodes = [
         tbody.childNodes[0].childNodes[1],
         tbody.childNodes[1].childNodes[1],
         tbody.childNodes[2].childNodes[1]
@@ -212,9 +204,7 @@ describe('Grid Columns Observer', function() {
 
       expect(thead.childNodes[0].childNodes.length).toBe(1 + 1);
       expect(tfoot.childNodes[0].childNodes.length).toBe(1 + 1);
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes.length === (1 + 1);
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes.length === (1 + 1));
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
@@ -222,13 +212,8 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(tfoot.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[0].getAttribute('data-waffle-id') === null);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id);
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('columnsspliced', {
         index: 0,
@@ -247,20 +232,20 @@ describe('Grid Columns Observer', function() {
       });
     });
 
-    it('should add and remove columns', function() {
-      var thead = grid.$thead[0];
-      var tbody = grid.$tbody[0];
-      var tfoot = grid.$tfoot[0];
+    it('should add and remove columns', () => {
+      const thead = grid.$thead[0];
+      const tbody = grid.$tbody[0];
+      const tfoot = grid.$tfoot[0];
 
-      var expectedTheadRemovedNodes = [
+      const expectedTheadRemovedNodes = [
         thead.childNodes[0].childNodes[1]
       ];
 
-      var expectedTfootRemovedNodes = [
+      const expectedTfootRemovedNodes = [
         tfoot.childNodes[0].childNodes[1]
       ];
 
-      var expectedTbodyRemovedNodes = [
+      const expectedTbodyRemovedNodes = [
         tbody.childNodes[0].childNodes[1],
         tbody.childNodes[1].childNodes[1],
         tbody.childNodes[2].childNodes[1]
@@ -278,9 +263,7 @@ describe('Grid Columns Observer', function() {
 
       expect(thead.childNodes[0].childNodes.length).toBe(1 + 2);
       expect(tfoot.childNodes[0].childNodes.length).toBe(1 + 2);
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes.length === (1 + 2);
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes.length === (1 + 2));
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
@@ -290,14 +273,10 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
       expect(tfoot.childNodes[0].childNodes[2].getAttribute('data-waffle-id')).toBe($columns.at(1).id);
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id &&
-               tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[0].getAttribute('data-waffle-id') === null);
+      expect(tbody.childNodes).toVerify(tr => (
+        tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id && tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id
+      ));
 
       expect(grid.dispatchEvent).toHaveBeenCalledWith('columnsspliced', {
         index: 0,
@@ -320,7 +299,7 @@ describe('Grid Columns Observer', function() {
       });
     });
 
-    it('should add new column and bind input events', function() {
+    it('should add new column and bind input events', () => {
       spyOn(grid, 'isEditable').and.returnValue(true);
       spyOn(GridDomBinders, 'bindEdition').and.callThrough();
 
@@ -336,7 +315,7 @@ describe('Grid Columns Observer', function() {
       expect(GridDomBinders.bindEdition).toHaveBeenCalledWith(grid);
     });
 
-    it('should remove column and unbind input events', function() {
+    it('should remove column and unbind input events', () => {
       spyOn(grid, 'isEditable').and.returnValue(false);
       spyOn(GridDomBinders, 'unbindEdition').and.callThrough();
 
@@ -347,7 +326,7 @@ describe('Grid Columns Observer', function() {
       expect(GridDomBinders.unbindEdition).toHaveBeenCalledWith(grid);
     });
 
-    it('should add columns and rebind if needed', function() {
+    it('should add columns and rebind if needed', () => {
       spyOn(grid, 'isEditable').and.returnValue(true);
       spyOn(GridDomBinders, 'bindEdition').and.callThrough();
 
@@ -386,7 +365,7 @@ describe('Grid Columns Observer', function() {
       }));
     });
 
-    it('should add new column and trigger new resize', function() {
+    it('should add new column and trigger new resize', () => {
       spyOn(grid, 'isResizable').and.returnValue(true);
       spyOn(grid, 'resize');
 
@@ -399,7 +378,7 @@ describe('Grid Columns Observer', function() {
       expect(grid.resize).toHaveBeenCalled();
     });
 
-    it('should add new column and not trigger new resize if grid is not resizable', function() {
+    it('should add new column and not trigger new resize if grid is not resizable', () => {
       spyOn(grid, 'isResizable').and.returnValue(false);
       spyOn(grid, 'resize');
 
@@ -412,7 +391,7 @@ describe('Grid Columns Observer', function() {
       expect(grid.resize).not.toHaveBeenCalled();
     });
 
-    it('should remove column and trigger new resize', function() {
+    it('should remove column and trigger new resize', () => {
       spyOn(grid, 'isResizable').and.returnValue(true);
       spyOn(grid, 'resize');
 
@@ -423,7 +402,7 @@ describe('Grid Columns Observer', function() {
       expect(grid.resize).toHaveBeenCalled();
     });
 
-    it('should remove column and not trigger new resize if grid is not resizable', function() {
+    it('should remove column and not trigger new resize if grid is not resizable', () => {
       spyOn(grid, 'isResizable').and.returnValue(false);
       spyOn(grid, 'resize');
 
@@ -434,10 +413,10 @@ describe('Grid Columns Observer', function() {
       expect(grid.resize).not.toHaveBeenCalled();
     });
 
-    it('should not try to add unknow cells in tbody', function() {
-      var thead = grid.$thead[0];
-      var tbody = grid.$tbody[0];
-      var tfoot = grid.$tfoot[0];
+    it('should not try to add unknow cells in tbody', () => {
+      const thead = grid.$thead[0];
+      const tbody = grid.$tbody[0];
+      const tfoot = grid.$tfoot[0];
 
       $columns.splice(0, 0, {
         id: 'lastName'
@@ -452,13 +431,11 @@ describe('Grid Columns Observer', function() {
       jasmine.clock().tick();
 
       // One column for checkbox, three columns for daya
-      var expectedColumnsSize = 1 + 3;
+      const expectedColumnsSize = 1 + 3;
 
       expect(thead.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
       expect(tfoot.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes.length === expectedColumnsSize;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes.length === expectedColumnsSize);
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
@@ -470,32 +447,19 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[2].getAttribute('data-waffle-id')).toBe($columns.at(1).id);
       expect(tfoot.childNodes[0].childNodes[3].getAttribute('data-waffle-id')).toBe($columns.at(2).id);
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[3].getAttribute('data-waffle-id') === $columns.at(2).id;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[0].getAttribute('data-waffle-id') === null);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[3].getAttribute('data-waffle-id') === $columns.at(2).id);
 
       // Check content
-      expect(tbody.childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === $data.at(idx).lastName.toString();
-      });
+      expect(tbody.childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === $data.at(idx).lastName.toString());
     });
 
-    it('should not try to remove unknow cells in tbody', function() {
-      var thead = grid.$thead[0];
-      var tbody = grid.$tbody[0];
-      var tfoot = grid.$tfoot[0];
+    it('should not try to remove unknow cells in tbody', () => {
+      const thead = grid.$thead[0];
+      const tbody = grid.$tbody[0];
+      const tfoot = grid.$tfoot[0];
 
       $data.reset([
         { id: 4, firstName: 'foo4', lastName: 'bar4' },
@@ -508,13 +472,11 @@ describe('Grid Columns Observer', function() {
       jasmine.clock().tick();
 
       // One column for checkbox, one columns for data
-      var expectedColumnsSize = 1 + 1;
+      const expectedColumnsSize = 1 + 1;
 
       expect(thead.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
       expect(tfoot.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes.length === expectedColumnsSize;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes.length === expectedColumnsSize);
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
@@ -522,24 +484,17 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(tfoot.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[0].getAttribute('data-waffle-id') === null);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id);
 
       // Check content
-      expect(tbody.childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[1].innerHTML === $data.at(idx).id.toString();
-      });
+      expect(tbody.childNodes).toVerify((tr, idx) => tr.childNodes[1].innerHTML === $data.at(idx).id.toString());
     });
 
-    it('should remove and columns with same id', function() {
-      var thead = grid.$thead[0];
-      var tbody = grid.$tbody[0];
-      var tfoot = grid.$tfoot[0];
+    it('should remove and columns with same id', () => {
+      const thead = grid.$thead[0];
+      const tbody = grid.$tbody[0];
+      const tfoot = grid.$tfoot[0];
 
       $data.reset([
         { id: 4, firstName: 'foo4', lastName: 'bar4' },
@@ -556,13 +511,11 @@ describe('Grid Columns Observer', function() {
       jasmine.clock().tick();
 
       // One column for checkbox, three columns for data
-      var expectedColumnsSize = 1 + 3;
+      const expectedColumnsSize = 1 + 3;
 
       expect(thead.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
       expect(tfoot.childNodes[0].childNodes.length).toBe(expectedColumnsSize);
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes.length === expectedColumnsSize;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes.length === expectedColumnsSize);
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('data-waffle-id')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('data-waffle-id')).toBe($columns.at(0).id);
@@ -574,31 +527,18 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[2].getAttribute('data-waffle-id')).toBe($columns.at(1).id);
       expect(tfoot.childNodes[0].childNodes[3].getAttribute('data-waffle-id')).toBe($columns.at(2).id);
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[0].getAttribute('data-waffle-id') === null;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id;
-      });
-
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[3].getAttribute('data-waffle-id') === $columns.at(2).id;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[0].getAttribute('data-waffle-id') === null);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[1].getAttribute('data-waffle-id') === $columns.at(0).id);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[2].getAttribute('data-waffle-id') === $columns.at(1).id);
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[3].getAttribute('data-waffle-id') === $columns.at(2).id);
 
       // Check content
-      expect(tbody.childNodes).toVerify(function(tr, idx) {
-        return tr.childNodes[2].innerHTML === $data.at(idx).lastName.toString();
-      });
+      expect(tbody.childNodes).toVerify((tr, idx) => tr.childNodes[2].innerHTML === $data.at(idx).lastName.toString());
     });
   });
 
-  describe('with update change', function() {
-    beforeEach(function() {
+  describe('with update change', () => {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -614,12 +554,12 @@ describe('Grid Columns Observer', function() {
       jasmine.clock().tick();
     });
 
-    it('should update columns', function() {
-      var thead = grid.$thead[0];
-      var tbody = grid.$tbody[0];
-      var tfoot = grid.$tfoot[0];
+    it('should update columns', () => {
+      const thead = grid.$thead[0];
+      const tbody = grid.$tbody[0];
+      const tfoot = grid.$tfoot[0];
 
-      var oldNodes = {
+      const oldNodes = {
         thead: [
           thead.childNodes[0].childNodes[1]
         ],
@@ -635,13 +575,11 @@ describe('Grid Columns Observer', function() {
 
       expect(thead.childNodes[0].childNodes[1].style.maxWidth).toBeEmpty();
       expect(tfoot.childNodes[0].childNodes[1].style.maxWidth).toBeEmpty();
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return !tr.childNodes[0].style.maxWidth;
-      });
+      expect(tbody.childNodes).toVerify(tr => !tr.childNodes[0].style.maxWidth);
 
       $columns.at(0).computedWidth = 100;
 
-      var changes = [
+      const changes = [
         { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
       ];
 
@@ -649,11 +587,9 @@ describe('Grid Columns Observer', function() {
 
       expect(thead.childNodes[0].childNodes[1].style.maxWidth).not.toBeEmpty();
       expect(tfoot.childNodes[0].childNodes[1].style.maxWidth).not.toBeEmpty();
-      expect(tbody.childNodes).toVerify(function(tr) {
-        return tr.childNodes[1].style.maxWidth;
-      });
+      expect(tbody.childNodes).toVerify(tr => tr.childNodes[1].style.maxWidth);
 
-      var newNodes = {
+      const newNodes = {
         thead: [
           thead.childNodes[0].childNodes[1]
         ],
@@ -674,14 +610,14 @@ describe('Grid Columns Observer', function() {
       });
     });
 
-    it('should update columns and bind edition events', function() {
+    it('should update columns and bind edition events', () => {
       spyOn(GridDomBinders, 'bindEdition').and.callThrough();
 
       $columns.at(0).editable = {
         type: 'text'
       };
 
-      var changes = [
+      const changes = [
         { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
       ];
 
@@ -690,13 +626,13 @@ describe('Grid Columns Observer', function() {
       expect(GridDomBinders.bindEdition).toHaveBeenCalled();
     });
 
-    it('should update columns and unbind edition events if grid is not editable anymore', function() {
+    it('should update columns and unbind edition events if grid is not editable anymore', () => {
       spyOn(grid, 'isEditable').and.returnValue(false);
       spyOn(GridDomBinders, 'unbindEdition').and.callThrough();
 
       $columns.at(0).editable = false;
 
-      var changes = [
+      const changes = [
         { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
       ];
 
@@ -705,13 +641,13 @@ describe('Grid Columns Observer', function() {
       expect(GridDomBinders.unbindEdition).toHaveBeenCalled();
     });
 
-    it('should update columns and not unbind edition events if grid is still editable', function() {
+    it('should update columns and not unbind edition events if grid is still editable', () => {
       spyOn(grid, 'isEditable').and.returnValue(true);
       spyOn(GridDomBinders, 'unbindEdition').and.callThrough();
 
       $columns.at(0).editable = false;
 
-      var changes = [
+      const changes = [
         { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
       ];
 
@@ -720,10 +656,10 @@ describe('Grid Columns Observer', function() {
       expect(GridDomBinders.unbindEdition).not.toHaveBeenCalled();
     });
 
-    it('should update columns and update draggable flag', function() {
+    it('should update columns and update draggable flag', () => {
       grid.options.dnd = true;
 
-      var changes = [
+      const changes = [
         { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
       ];
 
@@ -731,8 +667,8 @@ describe('Grid Columns Observer', function() {
 
       expect(grid.$columns.at(0).draggable).toBe(true);
 
-      var thead = grid.$thead[0];
-      var tfoot = grid.$tfoot[0];
+      const thead = grid.$thead[0];
+      const tfoot = grid.$tfoot[0];
 
       expect(thead.childNodes[0].childNodes[0].getAttribute('draggable')).toBeNull();
       expect(thead.childNodes[0].childNodes[1].getAttribute('draggable')).toBe('true');
@@ -743,10 +679,10 @@ describe('Grid Columns Observer', function() {
       expect(tfoot.childNodes[0].childNodes[2].getAttribute('draggable')).toBeNull();
     });
 
-    it('should add new column and disable sort if grid is not sortable', function() {
+    it('should add new column and disable sort if grid is not sortable', () => {
       grid.options.sortable = false;
 
-      var changes = [
+      const changes = [
         { type: 'update', removed: [], index: 0, addedCount: 0, object: $columns }
       ];
 
@@ -754,8 +690,8 @@ describe('Grid Columns Observer', function() {
 
       expect(grid.$columns.at(0).sortable).toBe(false);
 
-      var thead = grid.$thead[0];
-      var tfoot = grid.$tfoot[0];
+      const thead = grid.$thead[0];
+      const tfoot = grid.$tfoot[0];
 
       expect(thead.childNodes[0].childNodes[1].getAttribute('waffle-sortable')).toBeNull();
       expect(tfoot.childNodes[0].childNodes[1].getAttribute('waffle-sortable')).toBeNull();

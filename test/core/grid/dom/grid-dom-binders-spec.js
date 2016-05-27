@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-describe('Grid Dom Binders', function() {
+describe('Grid Dom Binders', () => {
 
-  var table, columns, data;
+  let table, columns, data;
 
-  beforeEach(function() {
+  beforeEach(() => {
     table = document.createElement('table');
 
     columns = [
@@ -42,10 +42,10 @@ describe('Grid Dom Binders', function() {
     ];
   });
 
-  describe('with headers and footers', function() {
-    var grid;
+  describe('with headers and footers', () => {
+    let grid;
 
-    beforeEach(function() {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -69,8 +69,8 @@ describe('Grid Dom Binders', function() {
       spyOn(grid.$table, 'off');
     });
 
-    it('should bind resize event', function() {
-      var jq = $.fn || $.prototype;
+    it('should bind resize event', () => {
+      const jq = $.fn || $.prototype;
       spyOn(jq, 'on');
 
       GridDomBinders.bindResize(grid);
@@ -89,7 +89,7 @@ describe('Grid Dom Binders', function() {
       expect(jq.on).not.toHaveBeenCalled();
     });
 
-    it('should bind input events', function() {
+    it('should bind input events', () => {
       spyOn($sniffer, 'hasEvent').and.returnValue(true);
 
       GridDomBinders.bindEdition(grid);
@@ -117,12 +117,12 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
-    it('should unbind input events', function() {
+    it('should unbind input events', () => {
       spyOn($sniffer, 'hasEvent').and.returnValue(true);
 
       GridDomBinders.bindEdition(grid);
 
-      var onInputTbody = grid.$$events.onInputTbody.handler;
+      const onInputTbody = grid.$$events.onInputTbody.handler;
 
       GridDomBinders.unbindEdition(grid);
 
@@ -133,7 +133,7 @@ describe('Grid Dom Binders', function() {
       expect(grid.$$events.onInputTbody).toBeNull();
     });
 
-    it('should bind selection events', function() {
+    it('should bind selection events', () => {
       GridDomBinders.bindSelection(grid);
 
       expect(grid.$$events).toEqual({
@@ -169,12 +169,12 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
-    it('should unbind selection events', function() {
+    it('should unbind selection events', () => {
       GridDomBinders.bindSelection(grid);
 
-      var onClickThead = grid.$$events.onClickThead.handler;
-      var onClickTfoot = grid.$$events.onClickTfoot.handler;
-      var onClickTbody = grid.$$events.onClickTbody.handler;
+      const onClickThead = grid.$$events.onClickThead.handler;
+      const onClickTfoot = grid.$$events.onClickTfoot.handler;
+      const onClickTbody = grid.$$events.onClickTbody.handler;
 
       GridDomBinders.unbindSelection(grid);
 
@@ -188,7 +188,7 @@ describe('Grid Dom Binders', function() {
       expect(grid.$$events.onClickTbody).toBeNull();
     });
 
-    it('should bind sort events', function() {
+    it('should bind sort events', () => {
       GridDomBinders.bindSort(grid);
 
       expect(grid.$$events).toEqual({
@@ -221,11 +221,11 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
-    it('should unbind sort events', function() {
+    it('should unbind sort events', () => {
       GridDomBinders.bindSort(grid);
 
-      var onClickThead = grid.$$events.onClickThead.handler;
-      var onClickTfoot = grid.$$events.onClickTfoot.handler;
+      const onClickThead = grid.$$events.onClickThead.handler;
+      const onClickTfoot = grid.$$events.onClickTfoot.handler;
 
       GridDomBinders.unbindSort(grid);
 
@@ -237,7 +237,7 @@ describe('Grid Dom Binders', function() {
       expect(grid.$$events.onClickTfoot).toBeNull();
     });
 
-    it('should bind drag & drop events', function() {
+    it('should bind drag & drop events', () => {
       GridDomBinders.bindDragDrop(grid);
 
       expect(grid.$$events).toEqual({
@@ -292,15 +292,15 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
-    it('should unbind drag & drop events', function() {
+    it('should unbind drag & drop events', () => {
       GridDomBinders.bindDragDrop(grid);
 
-      var onDragStart = grid.$$events.onDragStart.handler;
-      var onDragOver = grid.$$events.onDragOver.handler;
-      var onDragEnd = grid.$$events.onDragEnd.handler;
-      var onDragLeave = grid.$$events.onDragLeave.handler;
-      var onDragEnter = grid.$$events.onDragEnter.handler;
-      var onDragDrop = grid.$$events.onDragDrop.handler;
+      const onDragStart = grid.$$events.onDragStart.handler;
+      const onDragOver = grid.$$events.onDragOver.handler;
+      const onDragEnd = grid.$$events.onDragEnd.handler;
+      const onDragLeave = grid.$$events.onDragLeave.handler;
+      const onDragEnter = grid.$$events.onDragEnter.handler;
+      const onDragDrop = grid.$$events.onDragDrop.handler;
 
       GridDomBinders.unbindDragDrop(grid);
 
@@ -313,10 +313,10 @@ describe('Grid Dom Binders', function() {
     });
   });
 
-  describe('without footer', function() {
-    var grid;
+  describe('without footer', () => {
+    let grid;
 
-    beforeEach(function() {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -336,7 +336,7 @@ describe('Grid Dom Binders', function() {
       spyOn(grid.$tbody, 'off');
     });
 
-    it('should bind selection events', function() {
+    it('should bind selection events', () => {
       GridDomBinders.bindSelection(grid);
 
       expect(grid.$$events).toEqual({
@@ -363,7 +363,7 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
-    it('should bind sort events', function() {
+    it('should bind sort events', () => {
       GridDomBinders.bindSort(grid);
 
       expect(grid.$$events).toEqual({
@@ -385,10 +385,10 @@ describe('Grid Dom Binders', function() {
     });
   });
 
-  describe('without header', function() {
-    var grid;
+  describe('without header', () => {
+    let grid;
 
-    beforeEach(function() {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -408,7 +408,7 @@ describe('Grid Dom Binders', function() {
       spyOn(grid.$tbody, 'off');
     });
 
-    it('should bind selection events', function() {
+    it('should bind selection events', () => {
       GridDomBinders.bindSelection(grid);
 
       expect(grid.$$events).toEqual({
@@ -435,7 +435,7 @@ describe('Grid Dom Binders', function() {
       expect(grid.$tbody.on).not.toHaveBeenCalled();
     });
 
-    it('should bind sort events', function() {
+    it('should bind sort events', () => {
       GridDomBinders.bindSort(grid);
 
       expect(grid.$$events).toEqual({

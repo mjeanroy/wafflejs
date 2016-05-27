@@ -22,11 +22,10 @@
  * SOFTWARE.
  */
 
-describe('waffle-jq-angular', function() {
+describe('waffle-jq-angular', () => {
 
-  it('should define $ as a variable', function() {
+  it('should define $ as a variable', () => {
   	expect($).toBeDefined();
     expect($).toBe(angular.element);
   });
-
 });

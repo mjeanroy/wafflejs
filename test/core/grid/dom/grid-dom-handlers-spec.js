@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-describe('Grid Dom Handlers', function() {
+describe('Grid Dom Handlers', () => {
 
-  var table, grid, data, columns;
-  var onClickTbody, onClickThead, onClickTfoot, onInputTbody;
+  let table, grid, data, columns;
+  let onClickTbody, onClickThead, onClickTfoot, onInputTbody;
 
   // Drag & Drop events
-  var onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDragDrop, onSelectStart;
+  let onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDragDrop, onSelectStart;
 
-  var event;
+  let event;
 
-  beforeEach(function() {
+  beforeEach(() => {
     table = document.createElement('table');
 
     columns = [
@@ -52,9 +52,7 @@ describe('Grid Dom Handlers', function() {
     grid = new Grid(table, {
       data: data,
       columns: columns,
-      key: function(o) {
-        return o.id;
-      }
+      key: o => o.id
     });
 
     onClickThead = _.bind(GridDomHandlers.onClickThead, grid);
@@ -78,14 +76,14 @@ describe('Grid Dom Handlers', function() {
     ]);
   });
 
-  describe('onClickThead', function() {
-    beforeEach(function() {
+  describe('onClickThead', () => {
+    beforeEach(() => {
       spyOn(grid, 'sortBy').and.callThrough();
       spyOn(grid, 'select').and.callThrough();
       spyOn(grid, 'deselect').and.callThrough();
     });
 
-    it('should not sort grid if target element is thead', function() {
+    it('should not sort grid if target element is thead', () => {
       event.target = document.createElement('THEAD');
 
       onClickThead(event);
@@ -99,7 +97,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid without shift key', function() {
+    it('should sort grid without shift key', () => {
       event.shiftKey = false;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -116,7 +114,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid without shift key and turn sort in descendant order', function() {
+    it('should sort grid without shift key and turn sort in descendant order', () => {
       event.shiftKey = false;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -134,7 +132,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid without shift key and turn sort in ascendant order', function() {
+    it('should sort grid without shift key and turn sort in ascendant order', () => {
       event.shiftKey = false;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -152,7 +150,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid with shift key', function() {
+    it('should sort grid with shift key', () => {
       event.shiftKey = true;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -169,7 +167,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid with shift key and turn sort in descendant order', function() {
+    it('should sort grid with shift key and turn sort in descendant order', () => {
       event.shiftKey = true;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -187,7 +185,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid with shift key and turn sort in ascendant order', function() {
+    it('should sort grid with shift key and turn sort in ascendant order', () => {
       event.shiftKey = true;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -205,8 +203,8 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should add column to current sort', function() {
-      var currentComparator = FieldComparator.of(grid, '+foo');
+    it('should add column to current sort', () => {
+      const currentComparator = FieldComparator.of(grid, '+foo');
       grid.$comparators.reset([currentComparator]);
 
       event.shiftKey = true;
@@ -226,9 +224,9 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should replace column to current sort in descendant order', function() {
-      var idComparator = FieldComparator.of(grid, '+id');
-      var fooComparator = FieldComparator.of(grid, '+foo');
+    it('should replace column to current sort in descendant order', () => {
+      const idComparator = FieldComparator.of(grid, '+id');
+      const fooComparator = FieldComparator.of(grid, '+foo');
       grid.$comparators.reset([
         idComparator,
         fooComparator
@@ -251,7 +249,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should deselect all grid', function() {
+    it('should deselect all grid', () => {
       event.target = document.createElement('INPUT');
       event.target.setAttribute('type', 'checkbox');
       event.target.checked = false;
@@ -271,7 +269,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should select all grid', function() {
+    it('should select all grid', () => {
       event.target = document.createElement('INPUT');
       event.target.setAttribute('type', 'checkbox');
       event.target.checked = true;
@@ -292,14 +290,14 @@ describe('Grid Dom Handlers', function() {
     });
   });
 
-  describe('onClickTfoot', function() {
-    beforeEach(function() {
+  describe('onClickTfoot', () => {
+    beforeEach(() => {
       spyOn(grid, 'sortBy').and.callThrough();
       spyOn(grid, 'select').and.callThrough();
       spyOn(grid, 'deselect').and.callThrough();
     });
 
-    it('should not sort grid if target element is thead', function() {
+    it('should not sort grid if target element is thead', () => {
       event.target = document.createElement('THEAD');
 
       onClickTfoot(event);
@@ -313,7 +311,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid without shift key', function() {
+    it('should sort grid without shift key', () => {
       event.shiftKey = false;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -330,7 +328,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid without shift key and turn sort in descendant order', function() {
+    it('should sort grid without shift key and turn sort in descendant order', () => {
       event.shiftKey = false;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -348,7 +346,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid without shift key and turn sort in ascendant order', function() {
+    it('should sort grid without shift key and turn sort in ascendant order', () => {
       event.shiftKey = false;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -366,7 +364,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid with shift key', function() {
+    it('should sort grid with shift key', () => {
       event.shiftKey = true;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -383,7 +381,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid with shift key and turn sort in descendant order', function() {
+    it('should sort grid with shift key and turn sort in descendant order', () => {
       event.shiftKey = true;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -401,7 +399,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should sort grid with shift key and turn sort in ascendant order', function() {
+    it('should sort grid with shift key and turn sort in ascendant order', () => {
       event.shiftKey = true;
       event.target = document.createElement('TH');
       event.target.setAttribute('data-waffle-id', 'id');
@@ -419,8 +417,8 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should add column to current sort', function() {
-      var fooComparator = FieldComparator.of(grid, '+foo');
+    it('should add column to current sort', () => {
+      const fooComparator = FieldComparator.of(grid, '+foo');
       grid.$comparators.reset([fooComparator]);
 
       event.shiftKey = true;
@@ -440,9 +438,9 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should replace column to current sort in descendant order', function() {
-      var idComparator = FieldComparator.of(grid, '+id');
-      var fooComparator = FieldComparator.of(grid, '+foo');
+    it('should replace column to current sort in descendant order', () => {
+      const idComparator = FieldComparator.of(grid, '+id');
+      const fooComparator = FieldComparator.of(grid, '+foo');
       grid.$comparators.reset([
         idComparator,
         fooComparator
@@ -465,7 +463,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should not deselect entire grid if grid is not selectable', function() {
+    it('should not deselect entire grid if grid is not selectable', () => {
       grid.options.selection.enable = false;
 
       event.target = document.createElement('INPUT');
@@ -484,7 +482,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should not select entire grid if grid is not selectable', function() {
+    it('should not select entire grid if grid is not selectable', () => {
       grid.options.selection.enable = false;
 
       event.target = document.createElement('INPUT');
@@ -503,7 +501,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should deselect entire grid', function() {
+    it('should deselect entire grid', () => {
       event.target = document.createElement('INPUT');
       event.target.setAttribute('type', 'checkbox');
       event.target.checked = false;
@@ -520,7 +518,7 @@ describe('Grid Dom Handlers', function() {
       expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
     });
 
-    it('should select entire grid', function() {
+    it('should select entire grid', () => {
       event.target = document.createElement('INPUT');
       event.target.setAttribute('type', 'checkbox');
       event.target.checked = true;
@@ -538,14 +536,14 @@ describe('Grid Dom Handlers', function() {
     });
   });
 
-  describe('onClickTbody', function() {
-    beforeEach(function() {
+  describe('onClickTbody', () => {
+    beforeEach(() => {
       spyOn(grid.$selection, 'reset').and.callThrough();
       spyOn(grid.$selection, 'push').and.callThrough();
       spyOn(grid.$selection, 'remove').and.callThrough();
     });
 
-    it('should not select data if target element is tbody', function() {
+    it('should not select data if target element is tbody', () => {
       event.target = document.createElement('TBODY');
 
       onClickTbody(event);
@@ -555,8 +553,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$selection.reset).not.toHaveBeenCalled();
     });
 
-    it('should not select data if target element is an editable input control', function() {
-      var input = document.createElement('INPUT');
+    it('should not select data if target element is an editable input control', () => {
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 10);
 
       event.target = input;
@@ -568,7 +566,7 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$selection.reset).not.toHaveBeenCalled();
     });
 
-    it('should not select data if grid is not selectable', function() {
+    it('should not select data if grid is not selectable', () => {
       grid.options.selection.enable = false;
 
       event.shiftKey = false;
@@ -583,8 +581,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$selection.reset).not.toHaveBeenCalled();
     });
 
-    it('should not select data if grid is selectable but data is not', function() {
-      var fn = jasmine.createSpy('fn').and.returnValue(false);
+    it('should not select data if grid is selectable but data is not', () => {
+      const fn = jasmine.createSpy('fn').and.returnValue(false);
 
       grid.options.selection.enable = fn;
 
@@ -601,12 +599,12 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$selection.reset).not.toHaveBeenCalled();
     });
 
-    describe('with single selection', function() {
-      beforeEach(function() {
+    describe('with single selection', () => {
+      beforeEach(() => {
         grid.options.selection.multi = false;
       });
 
-      it('should select data', function() {
+      it('should select data', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -622,7 +620,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should select and deselect data', function() {
+      it('should select and deselect data', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -646,7 +644,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should other data', function() {
+      it('should other data', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -674,12 +672,12 @@ describe('Grid Dom Handlers', function() {
       });
     });
 
-    describe('with multi selection', function() {
-      beforeEach(function() {
+    describe('with multi selection', () => {
+      beforeEach(() => {
         grid.options.selection.multi = true;
       });
 
-      it('should select data', function() {
+      it('should select data', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -695,7 +693,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should select and deselect data', function() {
+      it('should select and deselect data', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -719,7 +717,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should select other data', function() {
+      it('should select other data', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -748,7 +746,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should select set of data with shift key', function() {
+      it('should select set of data with shift key', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -780,10 +778,8 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should select set of selectable data with shift key', function() {
-        var fn = jasmine.createSpy('fn').and.callFake(function(data) {
-          return data.firstName !== 'foo2';
-        });
+      it('should select set of selectable data with shift key', () => {
+        const fn = jasmine.createSpy('fn').and.callFake(data => data.firstName !== 'foo2');
 
         grid.options.selection.enable = fn;
 
@@ -817,7 +813,7 @@ describe('Grid Dom Handlers', function() {
         expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
       });
 
-      it('should set of data with shift key in reverse order', function() {
+      it('should set of data with shift key in reverse order', () => {
         event.shiftKey = false;
         event.ctrlKey = false;
         event.target = document.createElement('TR');
@@ -851,14 +847,14 @@ describe('Grid Dom Handlers', function() {
     });
   });
 
-  describe('onInputTbody', function() {
-    var columnFirstName;
-    var columnAdmin;
-    var columnAge;
-    var data0;
-    var tr;
+  describe('onInputTbody', () => {
+    let columnFirstName;
+    let columnAdmin;
+    let columnAge;
+    let data0;
+    let tr;
 
-    beforeEach(function() {
+    beforeEach(() => {
       data0 = grid.$data.at(0);
 
       columnFirstName = grid.$columns.at(1);
@@ -887,8 +883,8 @@ describe('Grid Dom Handlers', function() {
         debounce: 0
       };
 
-      var columns = grid.$columns;
-      for (var i = 0, size = columns.length; i < size; ++i) {
+      const columns = grid.$columns;
+      for (let i = 0, size = columns.length; i < size; ++i) {
         spyOn(columns[i], 'value').and.callThrough();
       }
 
@@ -903,8 +899,8 @@ describe('Grid Dom Handlers', function() {
       spyOn(grid, 'dispatchEvent').and.callThrough();
     });
 
-    it('should update object value using text type', function() {
-      var input = document.createElement('INPUT');
+    it('should update object value using text type', () => {
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
@@ -929,8 +925,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
-    it('should update object value using number type', function() {
-      var input = document.createElement('INPUT');
+    it('should update object value using number type', () => {
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'age');
       input.value = '50';
 
@@ -955,8 +951,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
-    it('should update object value using checked checkbox', function() {
-      var checkbox = document.createElement('input');
+    it('should update object value using checked checkbox', () => {
+      const checkbox = document.createElement('input');
       checkbox.setAttribute('type', 'checkbox');
       checkbox.setAttribute('data-waffle-id', 'admin');
       checkbox.checked = true;
@@ -982,10 +978,10 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
-    it('should update object value using unchecked checkbox', function() {
+    it('should update object value using unchecked checkbox', () => {
       data0.admin = true;
 
-      var checkbox = document.createElement('input');
+      const checkbox = document.createElement('input');
       checkbox.setAttribute('type', 'checkbox');
       checkbox.setAttribute('data-waffle-id', 'admin');
       checkbox.checked = false;
@@ -1011,8 +1007,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
-    it('should not update object if event type is not handled', function() {
-      var input = document.createElement('INPUT');
+    it('should not update object if event type is not handled', () => {
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'age');
       input.value = '50';
 
@@ -1030,8 +1026,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
     });
 
-    it('should not update object value for input event not related to grid column', function() {
-      var input = document.createElement('INPUT');
+    it('should not update object value for input event not related to grid column', () => {
+      const input = document.createElement('INPUT');
       input.value = 'foo bar';
 
       event.target = input;
@@ -1039,8 +1035,8 @@ describe('Grid Dom Handlers', function() {
       onInputTbody(event);
     });
 
-    it('should not update object value for input event not related to editable column', function() {
-      var input = document.createElement('INPUT');
+    it('should not update object value for input event not related to editable column', () => {
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
@@ -1057,8 +1053,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
     });
 
-    it('should not update object value for input event not related to editable column using enable attribute', function() {
-      var input = document.createElement('INPUT');
+    it('should not update object value for input event not related to editable column using enable attribute', () => {
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
@@ -1079,8 +1075,8 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
     });
 
-    it('should not update object value for input event not related to grid row', function() {
-      var input = document.createElement('INPUT');
+    it('should not update object value for input event not related to grid row', () => {
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
@@ -1098,10 +1094,10 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).not.toHaveBeenCalled();
     });
 
-    it('should debounce update', function() {
+    it('should debounce update', () => {
       columnFirstName.editable.debounce = 100;
 
-      var input = document.createElement('INPUT');
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
@@ -1137,10 +1133,10 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
-    it('should debounce update and cancel previous update', function() {
+    it('should debounce update and cancel previous update', () => {
       columnFirstName.editable.debounce = 100;
 
-      var input = document.createElement('INPUT');
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
@@ -1191,14 +1187,14 @@ describe('Grid Dom Handlers', function() {
       expect(grid.$data.notifyUpdate).toHaveBeenCalledWith(0);
     });
 
-    it('should debounce update and cancel previous update using different debounce value by event', function() {
+    it('should debounce update and cancel previous update using different debounce value by event', () => {
       columnFirstName.editable.updateOn = 'input change';
       columnFirstName.editable.debounce = {
         change: 10,
         input: 100
       };
 
-      var input = document.createElement('INPUT');
+      const input = document.createElement('INPUT');
       input.setAttribute('data-waffle-id', 'firstName');
       input.value = 'foo bar';
 
@@ -1247,10 +1243,10 @@ describe('Grid Dom Handlers', function() {
     });
   });
 
-  describe('Drag & Drop', function() {
-    var th1;
+  describe('Drag & Drop', () => {
+    let th1;
 
-    beforeEach(function() {
+    beforeEach(() => {
       th1 = document.createElement('TH');
       th1.draggable = true;
       th1.setAttribute('data-waffle-id', 'id');
@@ -1262,7 +1258,7 @@ describe('Grid Dom Handlers', function() {
       };
     });
 
-    it('should start drag effect', function() {
+    it('should start drag effect', () => {
       event.target = th1;
 
       onDragStart(event);
@@ -1274,10 +1270,10 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.setData).toHaveBeenCalledWith('Text', 'id');
     });
 
-    it('should start drag effect and get dataTransfer object from originalEvent', function() {
+    it('should start drag effect and get dataTransfer object from originalEvent', () => {
       event.target = th1;
 
-      var dataTransfer = event.dataTransfer;
+      const dataTransfer = event.dataTransfer;
 
       // With jQuery, dataTransfer object is stored under "originalEvent"
       delete event.dataTransfer;
@@ -1293,7 +1289,7 @@ describe('Grid Dom Handlers', function() {
       expect(dataTransfer.setData).toHaveBeenCalledWith('Text', 'id');
     });
 
-    it('should not start drag effect for non draggable element', function() {
+    it('should not start drag effect for non draggable element', () => {
       th1.removeAttribute('draggable');
       event.target = th1;
 
@@ -1304,9 +1300,9 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.setData).not.toHaveBeenCalled();
     });
 
-    it('should end drag effect', function() {
-      var th2 = document.createElement('TH');
-      var th3 = document.createElement('TH');
+    it('should end drag effect', () => {
+      const th2 = document.createElement('TH');
+      const th3 = document.createElement('TH');
 
       th1.className = 'waffle-draggable-over';
       th2.className = 'waffle-draggable-over';
@@ -1332,9 +1328,9 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
-    it('should not remove css on end drag effect for non table childs', function() {
-      var th2 = document.createElement('TH');
-      var th3 = document.createElement('TH');
+    it('should not remove css on end drag effect for non table childs', () => {
+      const th2 = document.createElement('TH');
+      const th3 = document.createElement('TH');
 
       th1.className = 'waffle-draggable-over';
       th2.className = 'waffle-draggable-over';
@@ -1359,9 +1355,9 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
-    it('should end drag effect and get dataTransfer object from originalEvent', function() {
-      var th2 = document.createElement('TH');
-      var th3 = document.createElement('TH');
+    it('should end drag effect and get dataTransfer object from originalEvent', () => {
+      const th2 = document.createElement('TH');
+      const th3 = document.createElement('TH');
 
       th1.className = 'waffle-draggable-over';
       th2.className = 'waffle-draggable-over';
@@ -1373,7 +1369,7 @@ describe('Grid Dom Handlers', function() {
       th1.className = 'waffle-draggable-drag';
       event.target = th1;
 
-      var dataTransfer = event.dataTransfer;
+      const dataTransfer = event.dataTransfer;
 
       // With jQuery, dataTransfer object is stored under "originalEvent"
       delete event.dataTransfer;
@@ -1395,7 +1391,7 @@ describe('Grid Dom Handlers', function() {
       expect(dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
-    it('should not end drag effect for non draggable elements', function() {
+    it('should not end drag effect for non draggable elements', () => {
       th1.removeAttribute('draggable');
 
       spyOn($doc, 'byTagName').and.returnValue([]);
@@ -1408,15 +1404,15 @@ describe('Grid Dom Handlers', function() {
       expect($doc.byTagName).toHaveBeenCalled();
     });
 
-    it('should drag over element', function() {
-      var th2 = document.createElement('TH');
+    it('should drag over element', () => {
+      const th2 = document.createElement('TH');
       th2.setAttribute('draggable', true);
 
       spyOn($doc, 'findParent').and.returnValue(table);
 
       event.target = th2;
 
-      var result = onDragOver(event);
+      const result = onDragOver(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(result).toBeFalse();
@@ -1424,15 +1420,15 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.dropEffect).toBe('move');
     });
 
-    it('should not drag over element for non table childs element', function() {
-      var th2 = document.createElement('TH');
+    it('should not drag over element for non table childs element', () => {
+      const th2 = document.createElement('TH');
       th2.setAttribute('draggable', true);
 
       spyOn($doc, 'findParent').and.returnValue(document.createElement('table'));
 
       event.target = th2;
 
-      var result = onDragOver(event);
+      const result = onDragOver(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();
@@ -1440,8 +1436,8 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.dropEffect).not.toBe('move');
     });
 
-    it('should drag over element and get dataTransfer object from originalEvent', function() {
-      var dataTransfer = event.dataTransfer;
+    it('should drag over element and get dataTransfer object from originalEvent', () => {
+      const dataTransfer = event.dataTransfer;
 
       // With jQuery, dataTransfer object is stored under "originalEvent"
       delete event.dataTransfer;
@@ -1449,14 +1445,14 @@ describe('Grid Dom Handlers', function() {
         dataTransfer: dataTransfer
       };
 
-      var th2 = document.createElement('TH');
+      const th2 = document.createElement('TH');
       th2.setAttribute('draggable', true);
 
       spyOn($doc, 'findParent').and.returnValue(table);
 
       event.target = th2;
 
-      var result = onDragOver(event);
+      const result = onDragOver(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(result).toBeFalse();
@@ -1464,15 +1460,15 @@ describe('Grid Dom Handlers', function() {
       expect(dataTransfer.dropEffect).toBe('move');
     });
 
-    it('should enter new element', function() {
-      var th2 = document.createElement('TH');
+    it('should enter new element', () => {
+      const th2 = document.createElement('TH');
       th2.draggable = true;
 
       spyOn($doc, 'findParent').and.returnValue(table);
 
       event.target = th2;
 
-      var result = onDragEnter(event);
+      const result = onDragEnter(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(result).toBeFalse();
@@ -1480,15 +1476,15 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).toContain('waffle-draggable-over');
     });
 
-    it('should enter new element for non table childs', function() {
-      var th2 = document.createElement('TH');
+    it('should enter new element for non table childs', () => {
+      const th2 = document.createElement('TH');
       th2.draggable = true;
 
       spyOn($doc, 'findParent').and.returnValue(document.createElement('table'));
 
       event.target = th2;
 
-      var result = onDragEnter(event);
+      const result = onDragEnter(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();
@@ -1496,15 +1492,15 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).not.toContain('waffle-draggable-over');
     });
 
-    it('should not enter new element for non draggable element', function() {
-      var th2 = document.createElement('TH');
+    it('should not enter new element for non draggable element', () => {
+      const th2 = document.createElement('TH');
       th2.removeAttribute('draggable');
 
       spyOn($doc, 'findParent').and.returnValue(table);
 
       event.target = th2;
 
-      var result = onDragEnter(event);
+      const result = onDragEnter(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();
@@ -1513,8 +1509,8 @@ describe('Grid Dom Handlers', function() {
       expect($doc.findParent).not.toHaveBeenCalled();
     });
 
-    it('should leave element', function() {
-      var th2 = document.createElement('TH');
+    it('should leave element', () => {
+      const th2 = document.createElement('TH');
       th2.draggable = true;
       th2.className = 'waffle-draggable-over';
 
@@ -1522,7 +1518,7 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      var result = onDragLeave(event);
+      const result = onDragLeave(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(result).toBeFalse();
@@ -1530,8 +1526,8 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).not.toContain('waffle-draggable-over');
     });
 
-    it('should not leave element for non table childs', function() {
-      var th2 = document.createElement('TH');
+    it('should not leave element for non table childs', () => {
+      const th2 = document.createElement('TH');
       th2.draggable = true;
       th2.className = 'waffle-draggable-over';
 
@@ -1539,7 +1535,7 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      var result = onDragLeave(event);
+      const result = onDragLeave(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();
@@ -1547,15 +1543,15 @@ describe('Grid Dom Handlers', function() {
       expect(th2.className).toContain('waffle-draggable-over');
     });
 
-    it('should drop element', function() {
-      var columns = grid.$columns;
+    it('should drop element', () => {
+      const columns = grid.$columns;
       spyOn(columns, 'remove').and.callThrough();
       spyOn(columns, 'add').and.callThrough();
       spyOn(columns, 'indexOf').and.callThrough();
 
-      var oldColumn = columns.at(0);
+      const oldColumn = columns.at(0);
 
-      var th2 = document.createElement('TH');
+      const th2 = document.createElement('TH');
       th2.draggable = true;
       th2.setAttribute('data-waffle-id', 'firstName');
       th2.className = 'waffle-draggable-over';
@@ -1578,15 +1574,15 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
-    it('should drop element on non table childs', function() {
-      var columns = grid.$columns;
+    it('should drop element on non table childs', () => {
+      const columns = grid.$columns;
       spyOn(columns, 'remove').and.callThrough();
       spyOn(columns, 'add').and.callThrough();
       spyOn(columns, 'indexOf').and.callThrough();
 
-      var oldColumn = columns.at(0);
+      const oldColumn = columns.at(0);
 
-      var th2 = document.createElement('TH');
+      const th2 = document.createElement('TH');
       th2.draggable = true;
       th2.setAttribute('data-waffle-id', 'firstName');
       th2.className = 'waffle-draggable-over';
@@ -1598,7 +1594,7 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      var result = onDragDrop(event);
+      const result = onDragDrop(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();
@@ -1608,21 +1604,21 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.getData).not.toHaveBeenCalled();
     });
 
-    it('should drop element and get dataTransfer object from originalEvent', function() {
-      var columns = grid.$columns;
+    it('should drop element and get dataTransfer object from originalEvent', () => {
+      const columns = grid.$columns;
       spyOn(columns, 'remove').and.callThrough();
       spyOn(columns, 'add').and.callThrough();
       spyOn(columns, 'indexOf').and.callThrough();
 
-      var oldColumn = columns.at(0);
+      const oldColumn = columns.at(0);
 
-      var th2 = document.createElement('TH');
+      const th2 = document.createElement('TH');
       th2.draggable = true;
       th2.setAttribute('data-waffle-id', 'firstName');
       th2.className = 'waffle-draggable-over';
 
       // Spy dataTransfer object
-      var dataTransfer = event.dataTransfer;
+      const dataTransfer = event.dataTransfer;
       dataTransfer.getData.and.returnValue('id');
 
       // With jQuery, dataTransfer object is stored under "originalEvent"
@@ -1646,15 +1642,15 @@ describe('Grid Dom Handlers', function() {
       expect(dataTransfer.clearData).not.toHaveBeenCalled();
     });
 
-    it('should drop element on non draggable elements', function() {
-      var columns = grid.$columns;
+    it('should drop element on non draggable elements', () => {
+      const columns = grid.$columns;
       spyOn(columns, 'remove').and.callThrough();
       spyOn(columns, 'add').and.callThrough();
       spyOn(columns, 'indexOf').and.callThrough();
 
-      var oldColumn = columns.at(0);
+      const oldColumn = columns.at(0);
 
-      var th2 = document.createElement('TH');
+      const th2 = document.createElement('TH');
       th2.removeAttribute('draggable');
       th2.setAttribute('data-waffle-id', 'firstName');
 
@@ -1663,7 +1659,7 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      var result = onDragDrop(event);
+      const result = onDragDrop(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();
@@ -1675,15 +1671,15 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.getData).not.toHaveBeenCalled();
     });
 
-    it('should not drop element on same element', function() {
-      var columns = grid.$columns;
+    it('should not drop element on same element', () => {
+      const columns = grid.$columns;
       spyOn(columns, 'remove').and.callThrough();
       spyOn(columns, 'add').and.callThrough();
       spyOn(columns, 'indexOf').and.callThrough();
 
-      var oldColumn = columns.at(0);
+      const oldColumn = columns.at(0);
 
-      var th2 = document.createElement('TH');
+      const th2 = document.createElement('TH');
       th2.removeAttribute('draggable');
       th2.setAttribute('data-waffle-id', 'id');
 
@@ -1692,7 +1688,7 @@ describe('Grid Dom Handlers', function() {
 
       event.target = th2;
 
-      var result = onDragDrop(event);
+      const result = onDragDrop(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();
@@ -1704,12 +1700,12 @@ describe('Grid Dom Handlers', function() {
       expect(event.dataTransfer.getData).not.toHaveBeenCalled();
     });
 
-    it('should initiate drag&drop on text selection', function() {
+    it('should initiate drag&drop on text selection', () => {
       th1.dragDrop = jasmine.createSpy('dragDrop');
 
       event.target = th1;
 
-      var result = onSelectStart(event);
+      const result = onSelectStart(event);
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(result).toBeFalse();
@@ -1717,13 +1713,13 @@ describe('Grid Dom Handlers', function() {
       expect(th1.dragDrop).toHaveBeenCalled();
     });
 
-    it('should initiate drag&drop on text selection for non draggable elements', function() {
+    it('should initiate drag&drop on text selection for non draggable elements', () => {
       th1.removeAttribute('draggable');
       th1.dragDrop = jasmine.createSpy('dragDrop');
 
       event.target = th1;
 
-      var result = onSelectStart(event);
+      const result = onSelectStart(event);
 
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).not.toBeFalse();

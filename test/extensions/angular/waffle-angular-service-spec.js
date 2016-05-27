@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-describe('waffle-angular', function() {
+describe('waffle-angular', () => {
 
-  it('should define waffle service', inject(function(_Waffle_) {
+  it('should define waffle service', inject((_Waffle_) => {
     expect(_Waffle_).toBeDefined();
     expect(_Waffle_).toBe(Waffle);
   }));

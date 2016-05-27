@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-describe('Stack', function() {
-  it('should create a new stack', function() {
-    var stack = new Stack();
+describe('Stack', () => {
+  it('should create a new stack', () => {
+    const stack = new Stack();
     expect(stack.root).toBeNull();
   });
 
-  it('should push value onto the stack', function() {
-    var stack = new Stack();
+  it('should push value onto the stack', () => {
+    const stack = new Stack();
 
     stack.push('foo');
 
@@ -49,8 +49,8 @@ describe('Stack', function() {
     }));
   });
 
-  it('should peek value from the stack', function() {
-    var stack = new Stack();
+  it('should peek value from the stack', () => {
+    const stack = new Stack();
 
     stack.push('foo');
     expect(stack.peek()).toBe('foo');
@@ -61,8 +61,8 @@ describe('Stack', function() {
     expect(stack.peek()).toBe('bar');
   });
 
-  it('should pop value from the stack', function() {
-    var stack = new Stack();
+  it('should pop value from the stack', () => {
+    const stack = new Stack();
 
     stack.push('foo');
     stack.push('bar');
@@ -72,8 +72,8 @@ describe('Stack', function() {
     expect(stack.pop()).toBeUndefined();
   });
 
-  it('should check if stack is empty', function() {
-    var stack = new Stack();
+  it('should check if stack is empty', () => {
+    const stack = new Stack();
     expect(stack.isEmpty()).toBeTrue();
 
     stack.push('bar');

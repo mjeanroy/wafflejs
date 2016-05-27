@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-describe('waffle-angular-run', function() {
+describe('waffle-angular-run', () => {
 
   it('should define $parse service', inject(function(_$parse_) {
     expect($parse).toBeDefined();
@@ -34,7 +34,7 @@ describe('waffle-angular-run', function() {
     expect($sanitize).toBe(_$sanitize_);
   }));
 
-  it('should define filters as waffle renderer', function() {
+  it('should define filters as waffle renderer', () => {
     expect($renderers.$get('date')).toBeDefined();
     expect($renderers.$get('uppercase')).toBeDefined();
     expect($renderers.$get('lowercase')).toBeDefined();

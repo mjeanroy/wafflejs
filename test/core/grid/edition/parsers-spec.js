@@ -22,31 +22,29 @@
  * SOFTWARE.
  */
 
-describe('$parsers', function() {
-  it('should return a number value', function() {
+describe('$parsers', () => {
+  it('should return a number value', () => {
     expect($parsers.$format('number', '1')).toBe(1);
     expect($parsers.$format('number', '1.1')).toBe(1.1);
     expect($parsers.$format('number', 1)).toBe(1);
   });
 
-  it('should return a boolean value', function() {
+  it('should return a boolean value', () => {
     expect($parsers.$format('checkbox', true)).toBe(true);
     expect($parsers.$format('checkbox', false)).toBe(false);
     expect($parsers.$format('checkbox', null)).toBe(false);
   });
 
-  it('should return a text value', function() {
+  it('should return a text value', () => {
     expect($parsers.$format('boolean', 'foo')).toBe('foo');
     expect($parsers.$format('boolean', 'true')).toBe('true');
     expect($parsers.$format('boolean', 'false')).toBe('false');
   });
 
-  it('should add a parser', function() {
+  it('should add a parser', () => {
     expect($parsers.$format('text', 'foo')).toBe('foo');
 
-    var spy = jasmine.createSpy('parser').and.callFake(function(val) {
-      return val;
-    });
+    const spy = jasmine.createSpy('parser').and.callFake(val => val);
 
     $parsers.$add('text', spy);
     $parsers.$format('text', 'foo');

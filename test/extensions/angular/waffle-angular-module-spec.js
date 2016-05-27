@@ -26,11 +26,10 @@
 beforeEach(angular.mock.module('ngSanitize'));
 beforeEach(angular.mock.module('waffle'));
 
-describe('waffle-angular', function() {
+describe('waffle-angular', () => {
 
-  it('should define waffle module', function() {
+  it('should define waffle module', () => {
     // Test will fail if module is not available because of beforeEach function
     expect(waffleModule).toBeDefined();
   });
-
 });

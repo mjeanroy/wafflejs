@@ -22,39 +22,34 @@
  * SOFTWARE.
  */
 
-describe('sniffer', function() {
+describe('sniffer', () => {
 
-  var documentMode;
+  let documentMode;
 
-  beforeEach(function() {
-    documentMode = document.documentMode;
-  });
+  beforeEach(() => documentMode = document.documentMode);
+  afterEach(() => document.documentMode = documentMode);
 
-  afterEach(function() {
-    document.documentMode = documentMode;
-  });
-
-  it('should check if event is available', function() {
-    var result = $sniffer.hasEvent('input');
+  it('should check if event is available', () => {
+    const result = $sniffer.hasEvent('input');
     expect(result).toBeDefined();
   });
 
-  it('should force event to be false for IE 8', function() {
+  it('should force event to be false for IE 8', () => {
     document.documentMode = 8;
     expect($sniffer.hasEvent('input')).toBe(false);
   });
 
-  it('should force event to be false for IE 9', function() {
+  it('should force event to be false for IE 9', () => {
     document.documentMode = 9;
     expect($sniffer.hasEvent('input')).toBe(false);
   });
 
-  it('should force event to be false for IE 10', function() {
+  it('should force event to be false for IE 10', () => {
     document.documentMode = 10;
     expect($sniffer.hasEvent('input')).toBe(false);
   });
 
-  it('should force event to be false for IE 11', function() {
+  it('should force event to be false for IE 11', () => {
     document.documentMode = 11;
     expect($sniffer.hasEvent('input')).toBe(false);
   });

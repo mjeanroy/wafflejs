@@ -22,15 +22,14 @@
  * SOFTWARE.
  */
 
-describe('Grid Selection', function() {
+describe('Grid Selection', () => {
 
-  var columns, data, table, grid, tbody, thead, tfoot;
+  let columns, data, table, grid, tbody, thead, tfoot;
+  let findCheckbox;
 
-  var findCheckbox = function(row) {
-    return row.childNodes[0].childNodes[0];
-  };
+  beforeEach(() => {
+    findCheckbox = row => row.childNodes[0].childNodes[0];
 
-  beforeEach(function() {
     columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
@@ -47,7 +46,7 @@ describe('Grid Selection', function() {
     fixtures.appendChild(table);
   });
 
-  it('should check if grid is selectable', function() {
+  it('should check if grid is selectable', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -80,7 +79,7 @@ describe('Grid Selection', function() {
     expect(grid.hasCheckbox()).toBeTrue();
   });
 
-  it('should initialize selection collection', function() {
+  it('should initialize selection collection', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns
@@ -91,7 +90,7 @@ describe('Grid Selection', function() {
     expect(grid.$selection.options()).toEqual(grid.$data.options());
   });
 
-  it('should initialize selection collection even if grid is not selectable', function() {
+  it('should initialize selection collection even if grid is not selectable', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -105,7 +104,7 @@ describe('Grid Selection', function() {
     expect(grid.$selection.options()).toEqual(grid.$data.options());
   });
 
-  it('should not check if data is selected if grid is not selectable', function() {
+  it('should not check if data is selected if grid is not selectable', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -120,7 +119,7 @@ describe('Grid Selection', function() {
     expect(grid.isSelected(grid.$data[2])).toBeFalse();
   });
 
-  it('should select everything', function() {
+  it('should select everything', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns
@@ -133,7 +132,7 @@ describe('Grid Selection', function() {
     expect(grid.$selection.length).toBe(grid.$data.length);
   });
 
-  it('should deselect everything', function() {
+  it('should deselect everything', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns
@@ -153,12 +152,9 @@ describe('Grid Selection', function() {
     expect(grid.$selection.clear).toHaveBeenCalled();
   });
 
-  it('should select all selectable data', function() {
-    var isEven = function(data) {
-      return data.id % 2 === 0;
-    };
-
-    var fn = jasmine.createSpy('fn').and.callFake(isEven);
+  it('should select all selectable data', () => {
+    const isEven = data => data.id % 2 === 0;
+    const fn = jasmine.createSpy('fn').and.callFake(isEven);
 
     grid = new Grid(table, {
       data: data,
@@ -178,7 +174,7 @@ describe('Grid Selection', function() {
     expect(grid.$selection).toVerify(isEven);
   });
 
-  it('should check if data is selected', function() {
+  it('should check if data is selected', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns
@@ -211,10 +207,8 @@ describe('Grid Selection', function() {
     expect(grid.isSelected(grid.$data[2])).toBeTrue();
   });
 
-  it('should check if data is selected', function() {
-    var fn = jasmine.createSpy('fn').and.callFake(function(data) {
-      return data.id % 2 === 0;
-    });
+  it('should check if data is selected', () => {
+    const fn = jasmine.createSpy('fn').and.callFake(data => data.id % 2 === 0);
 
     grid = new Grid(table, {
       data: data,
@@ -255,7 +249,7 @@ describe('Grid Selection', function() {
     expect(grid.isSelected(grid.$data[2])).toBeTrue();
   });
 
-  it('should check that grid has checkbox', function() {
+  it('should check that grid has checkbox', () => {
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -277,8 +271,8 @@ describe('Grid Selection', function() {
     expect(grid.hasCheckbox()).toBeFalse();
   });
 
-  describe('with single selection', function() {
-    beforeEach(function() {
+  describe('with single selection', () => {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -293,17 +287,17 @@ describe('Grid Selection', function() {
       tfoot = grid.$tfoot[0];
     });
 
-    it('should select data when row is clicked', function() {
-      var row = tbody.childNodes[1];
+    it('should select data when row is clicked', () => {
+      const row = tbody.childNodes[1];
 
       triggerClick(row);
 
-      var expectedSelection = [grid.$data[1]];
+      const expectedSelection = [grid.$data[1]];
       expect(grid.$selection.toArray()).toEqual(expectedSelection);
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
+      const trs = tbody.childNodes;
       expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
       expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
       expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
@@ -313,10 +307,10 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      const theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      const theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      const tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      const tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('1');
@@ -336,8 +330,8 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        var className = tr.getAttribute('class') || '';
+      expect(tbody.childNodes).toVerify(tr => {
+        const className = tr.getAttribute('class') || '';
         return className.indexOf(CSS_SELECTED) < 0;
       });
 
@@ -353,9 +347,9 @@ describe('Grid Selection', function() {
       expect(tfootCheckbox.indeterminate).toBeFalse();
     });
 
-    it('should replace select data when new row is clicked', function() {
-      var row1 = tbody.childNodes[1];
-      var row2 = tbody.childNodes[2];
+    it('should replace select data when new row is clicked', () => {
+      const row1 = tbody.childNodes[1];
+      const row2 = tbody.childNodes[2];
 
       triggerClick(row1);
 
@@ -363,20 +357,20 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
+      const trs1 = tbody.childNodes;
+      expect(trs1[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs1[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs1[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       // Check status of checkbox
-      expect(findCheckbox(trs[0]).checked).toBeFalse();
-      expect(findCheckbox(trs[1]).checked).toBeTrue();
-      expect(findCheckbox(trs[2]).checked).toBeFalse();
+      expect(findCheckbox(trs1[0]).checked).toBeFalse();
+      expect(findCheckbox(trs1[1]).checked).toBeTrue();
+      expect(findCheckbox(trs1[2]).checked).toBeFalse();
 
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      const theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      const theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      const tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      const tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('1');
@@ -396,15 +390,15 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
+      const trs2 = tbody.childNodes;
+      expect(trs2[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs2[1].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs2[2].getAttribute('class')).toContain(CSS_SELECTED);
 
       // Check status of checkbox
-      expect(findCheckbox(trs[0]).checked).toBeFalse();
-      expect(findCheckbox(trs[1]).checked).toBeFalse();
-      expect(findCheckbox(trs[2]).checked).toBeTrue();
+      expect(findCheckbox(trs2[0]).checked).toBeFalse();
+      expect(findCheckbox(trs2[1]).checked).toBeFalse();
+      expect(findCheckbox(trs2[2]).checked).toBeTrue();
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('1');
@@ -418,10 +412,10 @@ describe('Grid Selection', function() {
       expect(tfootCheckbox.indeterminate).toBeTrue();
     });
 
-    it('should keep current selection after sort', function() {
-      var id1 = 1;
-      var id2 = 2;
-      var id3 = 3;
+    it('should keep current selection after sort', () => {
+      const id1 = 1;
+      const id2 = 2;
+      const id3 = 3;
 
       // [1,2]
       grid.$selection.push(grid.$data[1], grid.$data[2]);
@@ -431,7 +425,7 @@ describe('Grid Selection', function() {
       grid.sortBy('lastName');
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
+      const trs = tbody.childNodes;
 
       expect(grid.$data[0].id).toEqual(id1);
       expect(trs[0].getAttribute('class')).toContain(CSS_SELECTED);
@@ -451,10 +445,10 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeFalse();
       expect(findCheckbox(trs[2]).checked).toBeTrue();
 
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      const theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      const theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      const tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      const tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('2');
@@ -469,8 +463,8 @@ describe('Grid Selection', function() {
     });
   });
 
-  describe('with multi selection', function() {
-    beforeEach(function() {
+  describe('with multi selection', () => {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -488,8 +482,8 @@ describe('Grid Selection', function() {
       tfoot = grid.$tfoot[0];
     });
 
-    it('should select data when row is clicked', function() {
-      var row = tbody.childNodes[1];
+    it('should select data when row is clicked', () => {
+      const row = tbody.childNodes[1];
 
       triggerClick(row);
 
@@ -497,7 +491,7 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
+      const trs = tbody.childNodes;
       expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
       expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
       expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
@@ -507,10 +501,10 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      const theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      const theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      const tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      const tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('1');
@@ -530,8 +524,8 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        var className = tr.getAttribute('class') || '';
+      expect(tbody.childNodes).toVerify(tr => {
+        const className = tr.getAttribute('class') || '';
         return className.indexOf(CSS_SELECTED) < 0;
       });
 
@@ -547,9 +541,9 @@ describe('Grid Selection', function() {
       expect(tfootCheckbox.indeterminate).toBeFalse();
     });
 
-    it('should add data to selection when new row is clicked with ctrl key', function() {
-      var row1 = tbody.childNodes[1];
-      var row2 = tbody.childNodes[2];
+    it('should add data to selection when new row is clicked with ctrl key', () => {
+      const row1 = tbody.childNodes[1];
+      const row2 = tbody.childNodes[2];
 
       triggerClick(row1);
 
@@ -557,20 +551,20 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
+      const trs1 = tbody.childNodes;
+      expect(trs1[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs1[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs1[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       // Check status of checkbox
-      expect(findCheckbox(trs[0]).checked).toBeFalse();
-      expect(findCheckbox(trs[1]).checked).toBeTrue();
-      expect(findCheckbox(trs[2]).checked).toBeFalse();
+      expect(findCheckbox(trs1[0]).checked).toBeFalse();
+      expect(findCheckbox(trs1[1]).checked).toBeTrue();
+      expect(findCheckbox(trs1[2]).checked).toBeFalse();
 
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      const theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      const theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      const tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      const tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('1');
@@ -590,15 +584,15 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
+      const trs2 = tbody.childNodes;
+      expect(trs2[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs2[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs2[2].getAttribute('class')).toContain(CSS_SELECTED);
 
       // Check status of checkbox
-      expect(findCheckbox(trs[0]).checked).toBeFalse();
-      expect(findCheckbox(trs[1]).checked).toBeTrue();
-      expect(findCheckbox(trs[2]).checked).toBeTrue();
+      expect(findCheckbox(trs2[0]).checked).toBeFalse();
+      expect(findCheckbox(trs2[1]).checked).toBeTrue();
+      expect(findCheckbox(trs2[2]).checked).toBeTrue();
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('2');
@@ -612,9 +606,9 @@ describe('Grid Selection', function() {
       expect(tfootCheckbox.indeterminate).toBeTrue();
     });
 
-    it('should add set of data to selection when new row is clicked with shift key', function() {
-      var row0 = tbody.childNodes[0];
-      var row2 = tbody.childNodes[2];
+    it('should add set of data to selection when new row is clicked with shift key', () => {
+      const row0 = tbody.childNodes[0];
+      const row2 = tbody.childNodes[2];
 
       triggerClick(row0);
 
@@ -622,20 +616,20 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
+      const trs1 = tbody.childNodes;
+      expect(trs1[0].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs1[1].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs1[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       // Check status of checkbox
-      expect(findCheckbox(trs[0]).checked).toBeTrue();
-      expect(findCheckbox(trs[1]).checked).toBeFalse();
-      expect(findCheckbox(trs[2]).checked).toBeFalse();
+      expect(findCheckbox(trs1[0]).checked).toBeTrue();
+      expect(findCheckbox(trs1[1]).checked).toBeFalse();
+      expect(findCheckbox(trs1[2]).checked).toBeFalse();
 
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      const theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      const theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      const tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      const tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('1');
@@ -655,15 +649,15 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      trs = tbody.childNodes;
-      expect(trs[0].getAttribute('class')).toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
+      const trs2 = tbody.childNodes;
+      expect(trs2[0].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs2[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs2[2].getAttribute('class')).toContain(CSS_SELECTED);
 
       // Check status of checkbox
-      expect(findCheckbox(trs[0]).checked).toBeTrue();
-      expect(findCheckbox(trs[1]).checked).toBeTrue();
-      expect(findCheckbox(trs[2]).checked).toBeTrue();
+      expect(findCheckbox(trs2[0]).checked).toBeTrue();
+      expect(findCheckbox(trs2[1]).checked).toBeTrue();
+      expect(findCheckbox(trs2[2]).checked).toBeTrue();
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('3');
@@ -678,8 +672,8 @@ describe('Grid Selection', function() {
     });
   });
 
-  describe('without checkbox', function() {
-    beforeEach(function() {
+  describe('without checkbox', () => {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -691,9 +685,9 @@ describe('Grid Selection', function() {
       tbody = grid.$tbody[0];
     });
 
-    it('should not try to update checkbox row is clicked', function() {
-      var row1 = tbody.childNodes[1];
-      var row2 = tbody.childNodes[2];
+    it('should not try to update checkbox row is clicked', () => {
+      const row1 = tbody.childNodes[1];
+      const row2 = tbody.childNodes[2];
 
       triggerClick(row1);
 
@@ -701,15 +695,15 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
+      const trs1 = tbody.childNodes;
 
-      expect(trs[0].childNodes.length).toBe(3);
-      expect(trs[1].childNodes.length).toBe(3);
-      expect(trs[2].childNodes.length).toBe(3);
+      expect(trs1[0].childNodes.length).toBe(3);
+      expect(trs1[1].childNodes.length).toBe(3);
+      expect(trs1[2].childNodes.length).toBe(3);
 
-      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs1[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs1[1].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs1[2].getAttribute('class')).not.toContain(CSS_SELECTED);
 
       // New click should toggle selection
       triggerClick(row2);
@@ -718,20 +712,20 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      trs = tbody.childNodes;
+      const trs2 = tbody.childNodes;
 
-      expect(trs[0].childNodes.length).toBe(3);
-      expect(trs[1].childNodes.length).toBe(3);
-      expect(trs[2].childNodes.length).toBe(3);
+      expect(trs2[0].childNodes.length).toBe(3);
+      expect(trs2[1].childNodes.length).toBe(3);
+      expect(trs2[2].childNodes.length).toBe(3);
 
-      expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[1].getAttribute('class')).not.toContain(CSS_SELECTED);
-      expect(trs[2].getAttribute('class')).toContain(CSS_SELECTED);
+      expect(trs2[0].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs2[1].getAttribute('class')).not.toContain(CSS_SELECTED);
+      expect(trs2[2].getAttribute('class')).toContain(CSS_SELECTED);
     });
   });
 
-  describe('without footer', function() {
-    beforeEach(function() {
+  describe('without footer', () => {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -745,17 +739,17 @@ describe('Grid Selection', function() {
       thead = grid.$thead[0];
     });
 
-    it('should select data when row is clicked', function() {
-      var row = tbody.childNodes[1];
+    it('should select data when row is clicked', () => {
+      const row = tbody.childNodes[1];
 
       triggerClick(row);
 
-      var expectedSelection = [grid.$data[1]];
+      const expectedSelection = [grid.$data[1]];
       expect(grid.$selection.toArray()).toEqual(expectedSelection);
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
+      const trs = tbody.childNodes;
       expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
       expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
       expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
@@ -765,8 +759,8 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
-      var theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
+      const theadSpan = thead.childNodes[0].childNodes[0].childNodes[0];
+      const theadCheckbox = thead.childNodes[0].childNodes[0].childNodes[1];
 
       // Main checkbox should be updated
       expect(theadSpan.innerHTML).toBe('1');
@@ -781,8 +775,8 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        var className = tr.getAttribute('class') || '';
+      expect(tbody.childNodes).toVerify(tr => {
+        const className = tr.getAttribute('class') || '';
         return className.indexOf(CSS_SELECTED) < 0;
       });
 
@@ -794,8 +788,8 @@ describe('Grid Selection', function() {
     });
   });
 
-  describe('without header', function() {
-    beforeEach(function() {
+  describe('without header', () => {
+    beforeEach(() => {
       grid = new Grid(table, {
         data: data,
         columns: columns,
@@ -809,17 +803,17 @@ describe('Grid Selection', function() {
       tfoot = grid.$tfoot[0];
     });
 
-    it('should select data when row is clicked', function() {
-      var row = tbody.childNodes[1];
+    it('should select data when row is clicked', () => {
+      const row = tbody.childNodes[1];
 
       triggerClick(row);
 
-      var expectedSelection = [grid.$data[1]];
+      const expectedSelection = [grid.$data[1]];
       expect(grid.$selection.toArray()).toEqual(expectedSelection);
 
       jasmine.clock().tick();
 
-      var trs = tbody.childNodes;
+      const trs = tbody.childNodes;
       expect(trs[0].getAttribute('class')).not.toContain(CSS_SELECTED);
       expect(trs[1].getAttribute('class')).toContain(CSS_SELECTED);
       expect(trs[2].getAttribute('class')).not.toContain(CSS_SELECTED);
@@ -829,8 +823,8 @@ describe('Grid Selection', function() {
       expect(findCheckbox(trs[1]).checked).toBeTrue();
       expect(findCheckbox(trs[2]).checked).toBeFalse();
 
-      var tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
-      var tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
+      const tfootSpan = tfoot.childNodes[0].childNodes[0].childNodes[1];
+      const tfootCheckbox = tfoot.childNodes[0].childNodes[0].childNodes[0];
 
       expect(tfootSpan.innerHTML).toBe('1');
       expect(tfootSpan.getAttribute('title')).toBe('1');
@@ -844,8 +838,8 @@ describe('Grid Selection', function() {
 
       jasmine.clock().tick();
 
-      expect(tbody.childNodes).toVerify(function(tr) {
-        var className = tr.getAttribute('class') || '';
+      expect(tbody.childNodes).toVerify(tr => {
+        const className = tr.getAttribute('class') || '';
         return className.indexOf(CSS_SELECTED) < 0;
       });
 

@@ -22,64 +22,61 @@
  * SOFTWARE.
  */
 
-describe('WaffleReactMixin', function() {
+describe('WaffleReactMixin', () => {
 
-  var mixin;
-  var table;
+  let mixin;
+  let table;
 
-  beforeEach(function() {
+  beforeEach(() => {
     table = document.createElement('table');
 
     mixin = Object.create(WaffleReactMixin);
     mixin.props = Grid.options;
 
-    spyOn(ReactDOM, 'findDOMNode').and.callFake(function () {
-      return table;
-    });
-
+    spyOn(ReactDOM, 'findDOMNode').and.callFake(() => table);
     spyOn(Waffle, 'create').and.callThrough();
   });
 
-  it('should have default props', function() {
-    var props = mixin.getDefaultProps();
+  it('should have default props', () => {
+    const props = mixin.getDefaultProps();
     expect(props).toBeDefined();
     expect(props).toEqual({
       waffle: jasmine.objectContaining(Grid.options)
     });
   });
 
-  it('should attach grid when component will be mounted', function() {
+  it('should attach grid when component will be mounted', () => {
     mixin.componentWillMount();
 
     expect(Waffle.create).toHaveBeenCalledWith(mixin.props.waffle);
     expect(mixin.grid).toBeDefined();
   });
 
-  it('should attach grid when component is mounted', function() {
+  it('should attach grid when component is mounted', () => {
     mixin.grid = jasmine.createSpyObj('grid', ['attach']);
     mixin.componentDidMount();
     expect(mixin.grid.attach).toHaveBeenCalled();
   });
 
-  it('should destroy grid when component is unmount', function() {
+  it('should destroy grid when component is unmount', () => {
     mixin.grid = jasmine.createSpyObj('grid', ['destroy']);
     mixin.componentWillUnmount();
     expect(mixin.grid.destroy).toHaveBeenCalled();
   });
 
-  it('should render grid when component is updated', function() {
+  it('should render grid when component is updated', () => {
     mixin.grid = jasmine.createSpyObj('grid', ['render']);
     mixin.componentDidUpdate();
     expect(mixin.grid.render).toHaveBeenCalled();
   });
 
-  it('should disable update', function() {
+  it('should disable update', () => {
     expect(mixin.shouldComponentUpdate()).toBe(false);
   });
 
-  it('should get grid element', function() {
+  it('should get grid element', () => {
     mixin.grid = jasmine.createSpyObj('grid', ['render', 'destroy']);
-    var grid = mixin.getGrid();
+    const grid = mixin.getGrid();
     expect(grid).toBe(mixin.grid);
   });
 });

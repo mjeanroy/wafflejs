@@ -24,13 +24,11 @@
 
 // Hooks called before and after each tests
 
-var fixtures;
-
 // Create map from entries
-var createMap = function(entries) {
-  var map = new HashMap();
+const createMap = entries => {
+  const map = new HashMap();
 
-  for (var i in entries) {
+  for (const i in entries) {
     if (entries.hasOwnProperty(i)) {
       map.put(i, entries[i]);
     }
@@ -39,8 +37,8 @@ var createMap = function(entries) {
   return map;
 };
 
-var triggerMouseEvent = function(type, relatedTarget, shiftKey, ctrlKey) {
-  var evt = document.createEvent('MouseEvent');
+const triggerMouseEvent = (type, relatedTarget, shiftKey, ctrlKey) => {
+  const evt = document.createEvent('MouseEvent');
 
   evt.initMouseEvent(
       type,           // type
@@ -65,36 +63,30 @@ var triggerMouseEvent = function(type, relatedTarget, shiftKey, ctrlKey) {
   return evt;
 }
 
-var triggerClick = function(relatedTarget, shiftKey, ctrlKey) {
-  return triggerMouseEvent('click', relatedTarget, shiftKey, ctrlKey);
-};
+const triggerClick = (relatedTarget, shiftKey, ctrlKey) => (
+  triggerMouseEvent('click', relatedTarget, shiftKey, ctrlKey)
+);
 
-var triggerDblClick = function(relatedTarget, shiftKey, ctrlKey) {
-  return triggerMouseEvent('dblclick', relatedTarget, shiftKey, ctrlKey);
-};
+const triggerDblClick = (relatedTarget, shiftKey, ctrlKey) => (
+  triggerMouseEvent('dblclick', relatedTarget, shiftKey, ctrlKey)
+);
 
 // == Fixtures
-beforeEach(function() {
+let fixtures;
+beforeEach(() => {
   fixtures = document.createElement('div');
   fixtures.setAttribute('id', 'fixtures');
   document.body.appendChild(fixtures);
 });
 
-afterEach(function() {
+afterEach(() => {
   fixtures.parentNode.removeChild(fixtures);
   fixtures = null;
 });
 
 // == setTimeout
-beforeEach(function() {
-  jasmine.clock().install();
-});
-
-afterEach(function() {
-  jasmine.clock().uninstall();
-});
+beforeEach(() => jasmine.clock().install());
+afterEach(() => jasmine.clock().uninstall());
 
 // == Unbind window events
-afterEach(function() {
-  $(window).off();
-});
+afterEach(() => $(window).off());

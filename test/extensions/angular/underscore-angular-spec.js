@@ -22,54 +22,54 @@
  * SOFTWARE.
  */
 
-describe('waffle-jq-angular', function() {
+describe('waffle-jq-angular', () => {
 
-  it('should define _.noop with angular function', function() {
+  it('should define _.noop with angular function', () => {
     expect(_.noop).toBeAFunction();
     expect(_.noop).toBe(angular.noop);
   });
 
-  it('should define _.identity with angular function', function() {
+  it('should define _.identity with angular function', () => {
     expect(_.identity).toBeAFunction();
     expect(_.identity).toBe(angular.identity);
   });
 
-  it('should define _.isString with angular function', function() {
+  it('should define _.isString with angular function', () => {
     expect(_.isString).toBeAFunction();
     expect(_.isString).toBe(angular.isString);
   });
 
-  it('should define _.isFunction with angular function', function() {
+  it('should define _.isFunction with angular function', () => {
     expect(_.isFunction).toBeAFunction();
     expect(_.isFunction).toBe(angular.isFunction);
   });
 
-  it('should define _.isArray with angular function', function() {
+  it('should define _.isArray with angular function', () => {
     expect(_.isArray).toBeAFunction();
     expect(_.isArray).toBe(angular.isArray);
   });
 
-  it('should define _.isNumber with angular function', function() {
+  it('should define _.isNumber with angular function', () => {
     expect(_.isNumber).toBeAFunction();
     expect(_.isNumber).toBe(angular.isNumber);
   });
 
-  it('should define _.isDate with angular function', function() {
+  it('should define _.isDate with angular function', () => {
     expect(_.isDate).toBeAFunction();
     expect(_.isDate).toBe(angular.isDate);
   });
 
-  it('should define _.isObject with angular function', function() {
+  it('should define _.isObject with angular function', () => {
     expect(_.isObject).toBeAFunction();
     expect(_.isObject).toBe(angular.isObject);
   });
 
-  it('should define _.isElement with angular function', function() {
+  it('should define _.isElement with angular function', () => {
     expect(_.isElement).toBeAFunction();
     expect(_.isElement).toBe(angular.isElement);
   });
 
-  it('should define _.clone with angular function', function() {
+  it('should define _.clone with angular function', () => {
     expect(_.clone).toBeAFunction();
     expect(_.clone).toBe(angular.copy);
   });

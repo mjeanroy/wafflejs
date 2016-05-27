@@ -22,22 +22,22 @@
  * SOFTWARE.
  */
 
-describe('GridBuilder', function() {
+describe('GridBuilder', () => {
 
-  var grid;
+  let grid;
 
-  beforeEach(function() {
-    var columns = [
+  beforeEach(() => {
+    const columns = [
       { id: 'foo', title: 'Foo', width: 100 },
       { id: 'bar', title: 'Boo', sortable: false }
     ];
 
-    var data = [
+    const data = [
       { foo: 'foo1', bar: 'bar1' },
       { foo: 'foo2', bar: 'bar2' }
     ];
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
     grid = new Grid(table, {
       data: data,
       columns: columns,
@@ -45,7 +45,7 @@ describe('GridBuilder', function() {
     });
   });
 
-  it('should compute columns width', function() {
+  it('should compute columns width', () => {
     GridBuilder.computeWidth(300, grid.$columns);
 
     // First column should have size equal to 100
@@ -54,7 +54,7 @@ describe('GridBuilder', function() {
     expect(grid.$columns[1].computedWidth).toBe(200);
   });
 
-  it('should compute columns width', function() {
+  it('should compute columns width', () => {
     grid.$columns[0].width = 120;
     grid.$columns[1].width = 180;
 
@@ -65,9 +65,9 @@ describe('GridBuilder', function() {
     expect(grid.$columns[1].computedWidth).toBe(180);
   });
 
-  it('should compute columns width using functions', function() {
-    var width1 = jasmine.createSpy('width1').and.returnValue(120);
-    var width2 = jasmine.createSpy('width2').and.returnValue(180);
+  it('should compute columns width using functions', () => {
+    const width1 = jasmine.createSpy('width1').and.returnValue(120);
+    const width2 = jasmine.createSpy('width2').and.returnValue(180);
 
     grid.$columns[0].width = width1;
     grid.$columns[1].width = width2;
@@ -85,7 +85,7 @@ describe('GridBuilder', function() {
     expect(width2.calls.count()).toBe(1);
   });
 
-  it('should compute columns width using percentage', function() {
+  it('should compute columns width using percentage', () => {
     grid.$columns[0].width = '10%';
     grid.$columns[1].width = 'auto';
 
@@ -97,12 +97,12 @@ describe('GridBuilder', function() {
     expect(grid.$columns[1].computedWidth).toBe(270);
   });
 
-  it('should create thead row with checkbox', function() {
+  it('should create thead row with checkbox', () => {
     spyOn(GridBuilder, 'theadCell').and.callThrough();
 
-    var tr = GridBuilder.theadRow(grid);
+    const tr = GridBuilder.theadRow(grid);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.theadCell.calls.count()).toBe(2);
     expect(GridBuilder.theadCell).toHaveBeenCalledWith(grid, columns.at(0), 0);
     expect(GridBuilder.theadCell).toHaveBeenCalledWith(grid, columns.at(1), 1);
@@ -112,19 +112,16 @@ describe('GridBuilder', function() {
 
     // 2 columns + 1 column for checkbox
     expect(tr.childNodes.length).toBe(3);
-
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TH');
   });
 
-  it('should create thead row without checkbox', function() {
+  it('should create thead row without checkbox', () => {
     spyOn(GridBuilder, 'theadCell').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(false);
 
-    var tr = GridBuilder.theadRow(grid);
+    const tr = GridBuilder.theadRow(grid);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.theadCell.calls.count()).toBe(2);
     expect(GridBuilder.theadCell).toHaveBeenCalledWith(grid, columns.at(0), 0);
     expect(GridBuilder.theadCell).toHaveBeenCalledWith(grid, columns.at(1), 1);
@@ -132,20 +129,18 @@ describe('GridBuilder', function() {
     expect(tr).toBeDefined();
     expect(tr.tagName).toEqual('TR');
     expect(tr.childNodes.length).toBe(2);
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TH');
   });
 
-  it('should create thead cell', function() {
-    var col0 = grid.columns().at(0);
-    var col1 = grid.columns().at(1);
+  it('should create thead cell', () => {
+    const col0 = grid.columns().at(0);
+    const col1 = grid.columns().at(1);
 
     col0.computedWidth = '100px';
     col1.computedWidth = null;
 
-    var th1 = GridBuilder.theadCell(grid, col0, 0);
-    var th2 = GridBuilder.theadCell(grid, col1, 1);
+    const th1 = GridBuilder.theadCell(grid, col0, 0);
+    const th2 = GridBuilder.theadCell(grid, col1, 1);
 
     expect(th1).toBeDefined();
     expect(th1.tagName).toEqual('TH');
@@ -165,54 +160,51 @@ describe('GridBuilder', function() {
     expect(th2.style.minWidth).toBeEmpty();
   });
 
-  it('should create thead cell for main checkbox with unchecked state', function() {
-    var th = GridBuilder.theadCheckboxCell(grid);
+  it('should create thead cell for main checkbox with unchecked state', () => {
+    const th = GridBuilder.theadCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
 
-    var span = th.childNodes[0];
+    const span = th.childNodes[0];
     expect(span.tagName).toBe('SPAN');
     expect(span.innerHTML).toBe('0');
     expect(span.getAttribute('title')).toBe('0');
 
-    var checkbox = th.childNodes[1];
+    const checkbox = th.childNodes[1];
     expect(checkbox.tagName).toBe('INPUT');
     expect(checkbox.getAttribute('type')).toBe('checkbox');
     expect(checkbox.checked).toBe(false);
     expect(checkbox.indeterminate).toBe(false);
   });
 
-  it('should create thead cell for main checkbox with checked state', function() {
+  it('should create thead cell for main checkbox with checked state', () => {
     grid.$selection.add(grid.$data.toArray());
 
-    var th = GridBuilder.theadCheckboxCell(grid);
+    const th = GridBuilder.theadCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
 
-    var span = th.childNodes[0];
+    const span = th.childNodes[0];
     expect(span.tagName).toBe('SPAN');
     expect(span.innerHTML).toBe('2');
     expect(span.getAttribute('title')).toBe('2');
 
-    var checkbox = th.childNodes[1];
+    const checkbox = th.childNodes[1];
     expect(checkbox.tagName).toBe('INPUT');
     expect(checkbox.getAttribute('type')).toBe('checkbox');
     expect(checkbox.checked).toBe(true);
     expect(checkbox.indeterminate).toBe(false);
   });
 
-  it('should create thead cell for main checkbox with checked state', function() {
-    var fn = jasmine.createSpy('fn').and.callFake(function(data) {
-      return data.foo === 'foo1';
-    });
-
-    var selectableData = grid.$data.filter(fn);
+  it('should create thead cell for main checkbox with checked state', () => {
+    const fn = jasmine.createSpy('fn').and.callFake(data => data.foo === 'foo1');
+    const selectableData = grid.$data.filter(fn);
 
     grid.options.selection = {
       enable: fn
@@ -220,53 +212,53 @@ describe('GridBuilder', function() {
 
     grid.$selection.add(selectableData);
 
-    var th = GridBuilder.theadCheckboxCell(grid);
+    const th = GridBuilder.theadCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
 
-    var span = th.childNodes[0];
+    const span = th.childNodes[0];
     expect(span.tagName).toBe('SPAN');
     expect(span.innerHTML).toBe('1');
     expect(span.getAttribute('title')).toBe('1');
 
-    var checkbox = th.childNodes[1];
+    const checkbox = th.childNodes[1];
     expect(checkbox.tagName).toBe('INPUT');
     expect(checkbox.getAttribute('type')).toBe('checkbox');
     expect(checkbox.checked).toBe(true);
     expect(checkbox.indeterminate).toBe(false);
   });
 
-  it('should create thead cell for main checkbox with undeterminate state', function() {
+  it('should create thead cell for main checkbox with undeterminate state', () => {
     grid.$selection.push(grid.$data[0]);
 
-    var th = GridBuilder.theadCheckboxCell(grid);
+    const th = GridBuilder.theadCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
 
-    var span = th.childNodes[0];
+    const span = th.childNodes[0];
     expect(span.tagName).toBe('SPAN');
     expect(span.innerHTML).toBe('1');
     expect(span.getAttribute('title')).toBe('1');
 
-    var checkbox = th.childNodes[1];
+    const checkbox = th.childNodes[1];
     expect(checkbox.tagName).toBe('INPUT');
     expect(checkbox.getAttribute('type')).toBe('checkbox');
     expect(checkbox.checked).toBe(false);
     expect(checkbox.indeterminate).toBe(true);
   });
 
-  it('should create tfoot row with checkbox', function() {
+  it('should create tfoot row with checkbox', () => {
     spyOn(GridBuilder, 'tfootCell').and.callThrough();
 
-    var tr = GridBuilder.tfootRow(grid);
+    const tr = GridBuilder.tfootRow(grid);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.tfootCell.calls.count()).toBe(2);
     expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(0), 0);
     expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(1), 1);
@@ -276,19 +268,16 @@ describe('GridBuilder', function() {
 
     // 2 columns + 1 column for checkbox
     expect(tr.childNodes.length).toBe(3);
-
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TH');
   });
 
-  it('should create tfoot row without checkbox', function() {
+  it('should create tfoot row without checkbox', () => {
     spyOn(GridBuilder, 'tfootCell').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(false);
 
-    var tr = GridBuilder.tfootRow(grid);
+    const tr = GridBuilder.tfootRow(grid);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.tfootCell.calls.count()).toBe(2);
     expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(0), 0);
     expect(GridBuilder.tfootCell).toHaveBeenCalledWith(grid, columns.at(1), 1);
@@ -296,20 +285,18 @@ describe('GridBuilder', function() {
     expect(tr).toBeDefined();
     expect(tr.tagName).toEqual('TR');
     expect(tr.childNodes.length).toBe(2);
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TH';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TH');
   });
 
-  it('should create tfoot cell', function() {
-    var col0 = grid.columns().at(0);
-    var col1 = grid.columns().at(1);
+  it('should create tfoot cell', () => {
+    const col0 = grid.columns().at(0);
+    const col1 = grid.columns().at(1);
 
     col0.computedWidth = '100px';
     col1.computedWidth = null;
 
-    var th1 = GridBuilder.tfootCell(grid, col0, 0);
-    var th2 = GridBuilder.theadCell(grid, col1, 1);
+    const th1 = GridBuilder.tfootCell(grid, col0, 0);
+    const th2 = GridBuilder.theadCell(grid, col1, 1);
 
     expect(th1).toBeDefined();
     expect(th1.tagName).toEqual('TH');
@@ -329,79 +316,79 @@ describe('GridBuilder', function() {
     expect(th2.style.minWidth).toBeEmpty();
   });
 
-  it('should create tfoot cell for main checkbox with unchecked state', function() {
-    var th = GridBuilder.tfootCheckboxCell(grid);
+  it('should create tfoot cell for main checkbox with unchecked state', () => {
+    const th = GridBuilder.tfootCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
 
-    var checkbox = th.childNodes[0];
+    const checkbox = th.childNodes[0];
     expect(checkbox.tagName).toBe('INPUT');
     expect(checkbox.getAttribute('type')).toBe('checkbox');
     expect(checkbox.checked).toBe(false);
     expect(checkbox.indeterminate).toBe(false);
 
-    var span = th.childNodes[1];
+    const span = th.childNodes[1];
     expect(span.tagName).toBe('SPAN');
     expect(span.innerHTML).toBe('0');
     expect(span.getAttribute('title')).toBe('0');
   });
 
-  it('should create thead cell for main checkbox with checked state', function() {
+  it('should create thead cell for main checkbox with checked state', () => {
     grid.$selection.add(grid.$data.toArray());
 
-    var th = GridBuilder.tfootCheckboxCell(grid);
+    const th = GridBuilder.tfootCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
 
-    var checkbox = th.childNodes[0];
+    const checkbox = th.childNodes[0];
     expect(checkbox.tagName).toBe('INPUT');
     expect(checkbox.getAttribute('type')).toBe('checkbox');
     expect(checkbox.checked).toBe(true);
     expect(checkbox.indeterminate).toBe(false);
 
-    var span = th.childNodes[1];
+    const span = th.childNodes[1];
     expect(span.tagName).toBe('SPAN');
     expect(span.innerHTML).toBe('2');
     expect(span.getAttribute('title')).toBe('2');
   });
 
-  it('should create tfoot cell for main checkbox with undeterminate state', function() {
+  it('should create tfoot cell for main checkbox with undeterminate state', () => {
     grid.$selection.push(grid.$data[0]);
 
-    var th = GridBuilder.tfootCheckboxCell(grid);
+    const th = GridBuilder.tfootCheckboxCell(grid);
 
     expect(th).toBeDefined();
     expect(th.tagName).toEqual('TH');
     expect(th.className).toContain('waffle-checkbox');
     expect(th.childNodes.length).toBe(2);
 
-    var checkbox = th.childNodes[0];
+    const checkbox = th.childNodes[0];
     expect(checkbox.tagName).toBe('INPUT');
     expect(checkbox.getAttribute('type')).toBe('checkbox');
     expect(checkbox.checked).toBe(false);
     expect(checkbox.indeterminate).toBe(true);
 
-    var span = th.childNodes[1];
+    const span = th.childNodes[1];
     expect(span.tagName).toBe('SPAN');
     expect(span.innerHTML).toBe('1');
     expect(span.getAttribute('title')).toBe('1');
   });
 
-  it('should create tbody rows', function() {
+  it('should create tbody rows', () => {
     spyOn(GridBuilder, 'tbodyRow').and.callThrough();
 
-    var data = [
+    const data = [
       { foo: 1, bar: 'hello 1' },
       { foo: 2, bar: 'hello 2'}
     ];
 
-    var fragment = GridBuilder.tbodyRows(grid, data, 0);
+    const fragment = GridBuilder.tbodyRows(grid, data, 0);
 
     expect(GridBuilder.tbodyRow.calls.count()).toBe(2);
     expect(GridBuilder.tbodyRow).toHaveBeenCalledWith(grid, data[0], 0);
@@ -409,28 +396,20 @@ describe('GridBuilder', function() {
 
     expect(fragment).toBeDefined();
     expect(fragment.childNodes.length).toBe(2);
-    expect(fragment.childNodes).toVerify(function(node) {
-      return node.tagName === 'TR';
-    });
-
-    expect(fragment.childNodes).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-idx') === idx.toString();
-    });
-
-    expect(fragment.childNodes).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-id') === data[idx].foo.toString();
-    });
+    expect(fragment.childNodes).toVerify(node => node.tagName === 'TR');
+    expect(fragment.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === idx.toString());
+    expect(fragment.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-id') === data[idx].foo.toString());
   });
 
-  it('should create tbody rows', function() {
+  it('should create tbody rows', () => {
     spyOn(GridBuilder, 'tbodyRow').and.callThrough();
 
-    var data = [
+    const data = [
       { foo: 1, bar: 'hello 1' },
       { foo: 2, bar: 'hello 2'}
     ];
 
-    var fragment = GridBuilder.tbodyRows(grid, data, 10);
+    const fragment = GridBuilder.tbodyRows(grid, data, 10);
 
     expect(GridBuilder.tbodyRow.calls.count()).toBe(2);
     expect(GridBuilder.tbodyRow).toHaveBeenCalledWith(grid, data[0], 10);
@@ -438,26 +417,21 @@ describe('GridBuilder', function() {
 
     expect(fragment).toBeDefined();
     expect(fragment.childNodes.length).toBe(2);
-    expect(fragment.childNodes).toVerify(function(node) {
-      return node.tagName === 'TR';
-    });
-
-    expect(fragment.childNodes).toVerify(function(node, idx) {
-      return node.getAttribute('data-waffle-idx') === (10 + idx).toString();
-    });
+    expect(fragment.childNodes).toVerify(node => node.tagName === 'TR');
+    expect(fragment.childNodes).toVerify((node, idx) => node.getAttribute('data-waffle-idx') === (10 + idx).toString());
   });
 
-  it('should create tbody row with checkbox', function() {
+  it('should create tbody row with checkbox', () => {
     spyOn(GridBuilder, 'tbodyCell').and.callThrough();
 
-    var data = {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var tr = GridBuilder.tbodyRow(grid, data, 0);
+    const tr = GridBuilder.tbodyRow(grid, data, 0);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.tbodyCell.calls.count()).toBe(2);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(0), 0);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(1), 1);
@@ -471,24 +445,21 @@ describe('GridBuilder', function() {
 
     // 2 columns + 1 column for checkbox
     expect(tr.childNodes.length).toBe(3);
-
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TD';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TD');
   });
 
-  it('should create tbody row without checkbox', function() {
+  it('should create tbody row without checkbox', () => {
     spyOn(GridBuilder, 'tbodyCell').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(false);
 
-    var data = {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var tr = GridBuilder.tbodyRow(grid, data, 0);
+    const tr = GridBuilder.tbodyRow(grid, data, 0);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.tbodyCell.calls.count()).toBe(2);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(0), 0);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(1), 1);
@@ -500,26 +471,22 @@ describe('GridBuilder', function() {
     expect(tr.className).toContain('waffle-selectable');
     expect(tr.className).not.toContain('waffle-selected');
     expect(tr.childNodes.length).toBe(2);
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TD';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TD');
   });
 
-  it('should not create selectable tbody row', function() {
+  it('should not create selectable tbody row', () => {
     spyOn(GridBuilder, 'tbodyCell').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(true);
-    spyOn(grid, 'isSelectable').and.callFake(function(data) {
-      return !data;
-    });
+    spyOn(grid, 'isSelectable').and.callFake(data => !data);
 
-    var data = {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var tr = GridBuilder.tbodyRow(grid, data, 0);
+    const tr = GridBuilder.tbodyRow(grid, data, 0);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.tbodyCell.calls.count()).toBe(2);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(0), 0);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(1), 1);
@@ -530,25 +497,23 @@ describe('GridBuilder', function() {
     expect(tr.className).not.toContain('waffle-selectable');
     expect(tr.className).not.toContain('waffle-selected');
     expect(tr.childNodes.length).toBe(3);
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TD';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TD');
   });
 
-  it('should create selected tbody row', function() {
+  it('should create selected tbody row', () => {
     spyOn(GridBuilder, 'tbodyCell').and.callThrough();
     spyOn(grid, 'hasCheckbox').and.returnValue(true);
     spyOn(grid, 'isSelectable').and.returnValue(true);
     spyOn(grid.$selection, 'contains').and.returnValue(true);
 
-    var data = {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var tr = GridBuilder.tbodyRow(grid, data, 0);
+    const tr = GridBuilder.tbodyRow(grid, data, 0);
 
-    var columns = grid.columns();
+    const columns = grid.columns();
     expect(GridBuilder.tbodyCell.calls.count()).toBe(2);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(0), 0);
     expect(GridBuilder.tbodyCell).toHaveBeenCalledWith(grid, data, columns.at(1), 1);
@@ -559,19 +524,17 @@ describe('GridBuilder', function() {
     expect(tr.className).toContain('waffle-selectable');
     expect(tr.className).toContain('waffle-selected');
     expect(tr.childNodes.length).toBe(3);
-    expect(tr.childNodes).toVerify(function(node) {
-      return node.tagName === 'TD';
-    });
+    expect(tr.childNodes).toVerify(node => node.tagName === 'TD');
   });
 
-  it('should create tbody cell', function() {
-    var data = {
+  it('should create tbody cell', () => {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var col0 = grid.columns().at(0);
-    var col1 = grid.columns().at(1);
+    const col0 = grid.columns().at(0);
+    const col1 = grid.columns().at(1);
 
     spyOn(col0, 'cssClasses').and.callThrough();
     spyOn(col1, 'cssClasses').and.callThrough();
@@ -579,8 +542,8 @@ describe('GridBuilder', function() {
     col0.computedWidth = '100px';
     col1.computedWidth = null;
 
-    var td1 = GridBuilder.tbodyCell(grid, data, col0, 0);
-    var td2 = GridBuilder.tbodyCell(grid, data, col1, 1);
+    const td1 = GridBuilder.tbodyCell(grid, data, col0, 0);
+    const td2 = GridBuilder.tbodyCell(grid, data, col1, 1);
 
     expect(col0.cssClasses).toHaveBeenCalledWith(0, false, data);
     expect(col1.cssClasses).toHaveBeenCalledWith(1, false, data);
@@ -603,11 +566,11 @@ describe('GridBuilder', function() {
     expect(td2.style.minWidth).toBeEmpty();
   });
 
-  it('should create tbody cell for row checkbox', function() {
+  it('should create tbody cell for row checkbox', () => {
     spyOn(grid, 'isSelectable').and.returnValue(true);
 
-    var data = grid.$data[0];
-    var td = GridBuilder.tbodyCheckboxCell(grid, data);
+    const data = grid.$data[0];
+    const td = GridBuilder.tbodyCheckboxCell(grid, data);
 
     expect(grid.isSelectable).toHaveBeenCalledWith(data);
     expect(td).toBeDefined();
@@ -619,11 +582,11 @@ describe('GridBuilder', function() {
     expect(td.childNodes[0].checked).toBeFalse();
   });
 
-  it('should create tbody cell for row checkbox', function() {
+  it('should create tbody cell for row checkbox', () => {
     spyOn(grid, 'isSelectable').and.returnValue(false);
 
-    var data = grid.$data[0];
-    var td = GridBuilder.tbodyCheckboxCell(grid, data);
+    const data = grid.$data[0];
+    const td = GridBuilder.tbodyCheckboxCell(grid, data);
 
     expect(grid.isSelectable).toHaveBeenCalledWith(data);
     expect(td).toBeDefined();
@@ -632,15 +595,15 @@ describe('GridBuilder', function() {
     expect(td.childNodes.length).toBe(0);
   });
 
-  it('should create tbody cell for row checkbox and check data if it is selected', function() {
-    var data = {
+  it('should create tbody cell for row checkbox and check data if it is selected', () => {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
     spyOn(grid.$selection, 'contains').and.returnValue(true);
 
-    var td = GridBuilder.tbodyCheckboxCell(grid, data);
+    const td = GridBuilder.tbodyCheckboxCell(grid, data);
 
     expect(td).toBeDefined();
     expect(td.tagName).toEqual('TD');
@@ -651,10 +614,10 @@ describe('GridBuilder', function() {
     expect(td.childNodes[0].checked).toBeTrue();
   });
 
-  it('should create editable tbody cell', function() {
+  it('should create editable tbody cell', () => {
     spyOn(GridBuilder, 'tbodyControl').and.callThrough();
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       enable: true,
@@ -662,12 +625,12 @@ describe('GridBuilder', function() {
       css: null
     };
 
-    var data = {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var td1 = GridBuilder.tbodyCell(grid, data, grid.columns().at(0), 0);
+    const td1 = GridBuilder.tbodyCell(grid, data, grid.columns().at(0), 0);
 
     expect(td1).toBeDefined();
     expect(td1.tagName).toEqual('TD');
@@ -675,7 +638,7 @@ describe('GridBuilder', function() {
     expect(td1.className).toContain('waffle-sortable');
     expect(td1.getAttribute('data-waffle-id')).toBe('foo');
 
-    var childNodes = td1.childNodes;
+    const childNodes = td1.childNodes;
     expect(childNodes.length).toBe(1);
     expect(childNodes[0].tagName).toBe('INPUT');
     expect(childNodes[0].value).toBe('1');
@@ -683,33 +646,30 @@ describe('GridBuilder', function() {
     expect(GridBuilder.tbodyControl).toHaveBeenCalledWith(column, data);
   });
 
-  it('should create editable tbody cell using data condition', function() {
+  it('should create editable tbody cell using data condition', () => {
     spyOn(GridBuilder, 'tbodyControl').and.callThrough();
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
-    var fn = jasmine.createSpy('fn').and.callFake(function(data) {
-      return data.foo === 1;
-    });
-
+    const fn = jasmine.createSpy('fn').and.callFake(data => data.foo === 1);
     column.editable = {
       enable: fn,
       type: 'text',
       css: null
     };
 
-    var data1 = {
+    const data1 = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var data2 = {
+    const data2 = {
       foo: 2,
       bar: 'hello world'
     };
 
-    var td1 = GridBuilder.tbodyCell(grid, data1, grid.columns().at(0), 0);
-    var td2 = GridBuilder.tbodyCell(grid, data2, grid.columns().at(0), 0);
+    const td1 = GridBuilder.tbodyCell(grid, data1, grid.columns().at(0), 0);
+    const td2 = GridBuilder.tbodyCell(grid, data2, grid.columns().at(0), 0);
 
     expect(td1).toBeDefined();
     expect(td1.tagName).toEqual('TD');
@@ -727,31 +687,31 @@ describe('GridBuilder', function() {
     expect(fn).toHaveBeenCalledWith(data2);
 
     // Should be editable
-    var childNodes1 = td1.childNodes;
+    const childNodes1 = td1.childNodes;
     expect(childNodes1.length).toBe(1);
     expect(childNodes1[0].tagName).toBe('INPUT');
     expect(childNodes1[0].value).toBe('1');
 
     // Should not be editable
-    var childNodes2 = td2.childNodes;
+    const childNodes2 = td2.childNodes;
     expect(childNodes2.length).toBe(1);
     expect(childNodes2[0].tagName).not.toBe('INPUT');
     expect(childNodes2[0].nodeValue).toBe('2');
   });
 
-  it('should create editable control for tbody cell', function() {
-    var data = {
+  it('should create editable control for tbody cell', () => {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       type: 'text'
     };
 
-    var control = GridBuilder.tbodyControl(column, data);
+    const control = GridBuilder.tbodyControl(column, data);
 
     expect(control).toBeDefined();
     expect(control.tagName).toEqual('INPUT');
@@ -761,19 +721,19 @@ describe('GridBuilder', function() {
     expect(control.value).toBe('1');
   });
 
-  it('should create editable control for checkbox input', function() {
-    var data = {
+  it('should create editable control for checkbox input', () => {
+    const data = {
       foo: true,
       bar: 'hello world'
     };
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       type: 'checkbox'
     };
 
-    var control = GridBuilder.tbodyControl(column, data);
+    const control = GridBuilder.tbodyControl(column, data);
 
     expect(control).toBeDefined();
     expect(control.tagName).toEqual('INPUT');
@@ -783,18 +743,18 @@ describe('GridBuilder', function() {
     expect(control.checked).toBe(true);
   });
 
-  it('should create editable control for checkbox input and convert to truthy/falsy value', function() {
-    var data = {
+  it('should create editable control for checkbox input and convert to truthy/falsy value', () => {
+    const data = {
       bar: 'hello world'
     };
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       type: 'checkbox'
     };
 
-    var control = GridBuilder.tbodyControl(column, data);
+    const control = GridBuilder.tbodyControl(column, data);
 
     expect(control).toBeDefined();
     expect(control.tagName).toEqual('INPUT');
@@ -804,20 +764,20 @@ describe('GridBuilder', function() {
     expect(control.checked).toBe(false);
   });
 
-  it('should create editable control for tbody cell with css classes', function() {
-    var data = {
+  it('should create editable control for tbody cell with css classes', () => {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       type: 'text',
       css: 'foo bar'
     };
 
-    var control = GridBuilder.tbodyControl(column, data);
+    const control = GridBuilder.tbodyControl(column, data);
 
     expect(control).toBeDefined();
     expect(control.tagName).toEqual('INPUT');
@@ -827,13 +787,13 @@ describe('GridBuilder', function() {
     expect(control.className).toBe('foo bar');
   });
 
-  it('should create editable control for tbody cell with select element', function() {
-    var data = {
+  it('should create editable control for tbody cell with select element', () => {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       type: 'select',
@@ -842,7 +802,7 @@ describe('GridBuilder', function() {
       ]
     };
 
-    var control = GridBuilder.tbodyControl(column, data);
+    const control = GridBuilder.tbodyControl(column, data);
 
     expect(control).toBeDefined();
     expect(control.tagName).toEqual('SELECT');
@@ -854,13 +814,13 @@ describe('GridBuilder', function() {
     expect(control.childNodes[0].innerHTML).toBe('foo');
   });
 
-  it('should create editable control for tbody cell with select element with label and value', function() {
-    var data = {
+  it('should create editable control for tbody cell with select element with label and value', () => {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       type: 'select',
@@ -869,7 +829,7 @@ describe('GridBuilder', function() {
       ]
     };
 
-    var control = GridBuilder.tbodyControl(column, data);
+    const control = GridBuilder.tbodyControl(column, data);
 
     expect(control).toBeDefined();
     expect(control.tagName).toEqual('SELECT');
@@ -881,13 +841,13 @@ describe('GridBuilder', function() {
     expect(control.childNodes[0].innerHTML).toBe('foo');
   });
 
-  it('should create editable control for tbody cell with select element with empty label', function() {
-    var data = {
+  it('should create editable control for tbody cell with select element with empty label', () => {
+    const data = {
       foo: 1,
       bar: 'hello world'
     };
 
-    var column = grid.$columns.at(0);
+    const column = grid.$columns.at(0);
 
     column.editable = {
       type: 'select',
@@ -896,7 +856,7 @@ describe('GridBuilder', function() {
       ]
     };
 
-    var control = GridBuilder.tbodyControl(column, data);
+    const control = GridBuilder.tbodyControl(column, data);
 
     expect(control).toBeDefined();
     expect(control.tagName).toEqual('SELECT');

@@ -22,11 +22,10 @@
  * SOFTWARE.
  */
 
-describe('Backbone $', function() {
+describe('Backbone $', () => {
 
-  it('should define $ as a variable', function() {
+  it('should define $ as a variable', () => {
   	expect($).toBeDefined();
     expect($).toBe(Backbone.$);
   });
-
 });

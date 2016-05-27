@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-describe('Grid Observers', function() {
+describe('Grid Observers', () => {
 
-  var columns, data, table, grid;
+  let columns, data, table, grid;
 
-  beforeEach(function() {
+  beforeEach(() => {
     columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
@@ -48,12 +48,12 @@ describe('Grid Observers', function() {
     });
   });
 
-  it('should observe data collection', function() {
+  it('should observe data collection', () => {
     spyOn(GridDataObserver, 'on');
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -66,19 +66,19 @@ describe('Grid Observers', function() {
       callback: jasmine.any(Function)
     }]);
 
-    var observer = grid.$data.$$observers[0];
-    var changes = [];
+    const observer = grid.$data.$$observers[0];
+    const changes = [];
 
     observer.callback.call(observer.ctx, changes);
     expect(GridDataObserver.on).toHaveBeenCalledWith(changes);
   });
 
-  it('should observe selection collection', function() {
+  it('should observe selection collection', () => {
     spyOn(GridSelectionObserver, 'on');
 
-    var table = document.createElement('table');
+    const table = document.createElement('table');
 
-    var grid = new Grid(table, {
+    const grid = new Grid(table, {
       data: [],
       columns: [
         { id: 'foo', title: 'Foo' },
@@ -91,8 +91,8 @@ describe('Grid Observers', function() {
       callback: jasmine.any(Function)
     }]);
 
-    var observer = grid.$selection.$$observers[0];
-    var changes = [];
+    const observer = grid.$selection.$$observers[0];
+    const changes = [];
     observer.callback.call(observer.ctx, changes);
     expect(GridSelectionObserver.on).toHaveBeenCalledWith(changes);
   });

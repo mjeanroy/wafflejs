@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-describe('SorterComparator', function() {
+describe('SorterComparator', () => {
 
-  var grid;
-  var comparisonFunction;
+  let grid;
+  let comparisonFunction;
 
-  beforeEach(function() {
-    var columns = [
+  beforeEach(() => {
+    const columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
       { id: 'lastName' }
     ];
 
-    var data = [
+    const data = [
       { id: 1, firstName: 'foo1', lastName: 'bar1' },
       { id: 2, firstName: 'foo2', lastName: 'bar2' },
       { id: 3, firstName: 'foo2', lastName: 'bar3' }
@@ -43,47 +43,43 @@ describe('SorterComparator', function() {
     grid = new Grid({
       data: data,
       columns: columns,
-      key: function(o) {
-        return o.id;
-      }
+      key: o => o.id
     });
 
-    comparisonFunction = function(o1, o2) {
-      return o1.id - o2.id;
-    };
+    comparisonFunction = (o1, o2) => o1.id - o2.id;
   });
 
-  it('should create comparator', function() {
-    var comparator = SorterComparator.of(grid, comparisonFunction);
+  it('should create comparator', () => {
+    const comparator = SorterComparator.of(grid, comparisonFunction);
     expect(comparator.id).toBeDefined();
     expect(comparator.comparator).toBe(comparisonFunction);
   });
 
-  it('should be an instance of BasicComparator', function() {
-    var comparator = SorterComparator.of(grid, comparisonFunction);
+  it('should be an instance of BasicComparator', () => {
+    const comparator = SorterComparator.of(grid, comparisonFunction);
     expect(comparator).toBeInstanceOf(BasicComparator);
   });
 
-  it('should return predicate', function() {
-    var comparator = SorterComparator.of(grid, comparisonFunction);
+  it('should return predicate', () => {
+    const comparator = SorterComparator.of(grid, comparisonFunction);
     expect(comparator.predicate()).toBe(comparator.id);
   });
 
-  it('should compare objects', function() {
-    var comparator = SorterComparator.of(grid, comparisonFunction);
+  it('should compare objects', () => {
+    const comparator = SorterComparator.of(grid, comparisonFunction);
 
-    var o1 = {id: 1};
-    var o2 = {id: 2};
-    var o3 = {id: 2};
+    const o1 = {id: 1};
+    const o2 = {id: 2};
+    const o3 = {id: 2};
 
     expect(comparator.compare(o1, o2)).toBeNegative();
     expect(comparator.compare(o2, o1)).toBePositive();
     expect(comparator.compare(o2, o3)).toBeZero();
   });
 
-  it('should check if comparators are equals', function() {
-    var c1 = SorterComparator.of(grid, comparisonFunction);
-    var c2 = SorterComparator.of(grid, comparisonFunction);
+  it('should check if comparators are equals', () => {
+    const c1 = SorterComparator.of(grid, comparisonFunction);
+    const c2 = SorterComparator.of(grid, comparisonFunction);
 
     expect(c1.equals(c1)).toBeTrue();
     expect(c1.equals(c2)).toBeFalse();

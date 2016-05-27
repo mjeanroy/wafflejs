@@ -22,13 +22,11 @@
  * SOFTWARE.
  */
 
-describe('comparators', function() {
+describe('comparators', () => {
 
-  beforeEach(function() {
-  	jasmine.spyAll($comparators);
-  })
+  beforeEach(() => jasmine.spyAll($comparators));
 
-  it('should compare two strings', function() {
+  it('should compare two strings', () => {
     expect($comparators.$string('foo', 'foo')).toBeZero();
     expect($comparators.$string('foo', 'bar')).toBePositive();
     expect($comparators.$string('bar', 'foo')).toBeNegative();
@@ -39,7 +37,7 @@ describe('comparators', function() {
     expect($comparators.$string(null, undefined)).toBeZero();
   });
 
-  it('should compare two numbers', function() {
+  it('should compare two numbers', () => {
     expect($comparators.$number(1, 1)).toBeZero();
     expect($comparators.$number(1, 0)).toBePositive();
     expect($comparators.$number(0, 1)).toBeNegative();
@@ -52,7 +50,7 @@ describe('comparators', function() {
     expect($comparators.$number(null, undefined)).toBeZero();
   });
 
-  it('should compare two booleans', function() {
+  it('should compare two booleans', () => {
     expect($comparators.$boolean(true, true)).toBeZero();
     expect($comparators.$boolean(false, false)).toBeZero();
     expect($comparators.$boolean(true, false)).toBePositive();
@@ -66,16 +64,16 @@ describe('comparators', function() {
     expect($comparators.$boolean(undefined, null)).toBeZero();
   });
 
-  it('should compare two dates', function() {
-    var d1 = new Date();
-    var d2 = new Date(d1.getTime());
+  it('should compare two dates', () => {
+    const d1 = new Date();
+    const d2 = new Date(d1.getTime());
 
     expect($comparators.$date(d1, d2)).toBeZero();
     expect($comparators.$date(d1.getTime(), d2.getTime())).toBeZero();
     expect($comparators.$date(d1, d2.getTime())).toBeZero();
     expect($comparators.$date(d1.getTime(), d2)).toBeZero();
 
-    var d3 = new Date(d1.getTime() + 3600);
+    const d3 = new Date(d1.getTime() + 3600);
 
     expect($comparators.$date(d1, d3)).toBeNegative();
     expect($comparators.$date(d3, d1)).toBePositive();
@@ -85,7 +83,7 @@ describe('comparators', function() {
     expect($comparators.$date(null, undefined)).toBeZero();
   });
 
-  it('should use automatic comparison with strings', function() {
+  it('should use automatic comparison with strings', () => {
     expect($comparators.$auto('foo', 'bar')).toBePositive();
     expect($comparators.$string).toHaveBeenCalled();
     $comparators.$string.calls.reset();
@@ -99,7 +97,7 @@ describe('comparators', function() {
     $comparators.$string.calls.reset();
   });
 
-  it('should use automatic comparison with numbers', function() {
+  it('should use automatic comparison with numbers', () => {
     expect($comparators.$auto(1, 0)).toBePositive();
     expect($comparators.$number).toHaveBeenCalled();
     $comparators.$number.calls.reset();
@@ -117,7 +115,7 @@ describe('comparators', function() {
     $comparators.$number.calls.reset();
   });
 
-  it('should use automatic comparison with booleans', function() {
+  it('should use automatic comparison with booleans', () => {
     expect($comparators.$auto(false, true)).toBeNegative();
     expect($comparators.$boolean).toHaveBeenCalled();
     $comparators.$boolean.calls.reset();
@@ -135,21 +133,21 @@ describe('comparators', function() {
     $comparators.$boolean.calls.reset();
   });
 
-  it('should use automatic comparison with null', function() {
+  it('should use automatic comparison with null', () => {
     expect($comparators.$auto(null, null)).toBeZero();
   });
 
-  it('should use automatic comparison with undefined', function() {
+  it('should use automatic comparison with undefined', () => {
     expect($comparators.$auto(undefined, undefined)).toBeZero();
   });
 
-  it('should use automatic comparison with null and undefined', function() {
+  it('should use automatic comparison with null and undefined', () => {
     expect($comparators.$auto(null, undefined)).toBeZero();
   });
 
-  it('should use automatic comparison even with non supported type', function() {
-    var o1 = { id: 1 };
-    var o2 = { id: 2 };
+  it('should use automatic comparison even with non supported type', () => {
+    const o1 = { id: 1 };
+    const o2 = { id: 2 };
     expect($comparators.$auto(o1, o2)).not.toBeZero();
     expect($comparators.$auto(o2, o1)).not.toBeZero();
   });

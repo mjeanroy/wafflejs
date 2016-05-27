@@ -26,5 +26,4 @@
 beforeEach(angular.mock.module('waffle'));
 
 // Make an inject call, this will force waffle module to be loaded.
-beforeEach(angular.mock.inject(function(_$parse_) {
-}));
+beforeEach(angular.mock.inject((_$parse_) => {}));

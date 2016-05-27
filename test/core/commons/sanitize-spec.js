@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-describe('sanitize', function() {
+describe('sanitize', () => {
 
-  it('should escape html string', function() {
-    var html = '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>';
+  it('should escape html string', () => {
+    const html = '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>';
     expect($sanitize(html)).toBe('&lt;em onmouseover="this.textContent=\'PWN3D!\'"&gt;click here&lt;/em&gt;');
   });
 
-  it('should not change safe string', function() {
+  it('should not change safe string', () => {
     expect($sanitize('foo')).toBe('foo');
   });
 });

@@ -22,68 +22,68 @@
  * SOFTWARE.
  */
 
-describe('$util', function() {
+describe('$util', () => {
 
-  it('should translate a value to a px notation', function() {
+  it('should translate a value to a px notation', () => {
     expect($util.toPx(100)).toBe('100px');
     expect($util.toPx('100px')).toBe('100px');
   });
 
-  it('should translate a px notation to a number', function() {
+  it('should translate a px notation to a number', () => {
     expect($util.fromPx('100px')).toBe(100);
     expect($util.fromPx(100)).toBe(100);
   });
 
-  it('should check if string end with given suffix', function() {
+  it('should check if string end with given suffix', () => {
     expect($util.endWith('10%', '%')).toBeTrue();
     expect($util.endWith('10%', 'px')).toBeFalse();
   });
 
-  it('should check if value is a percentage value', function() {
+  it('should check if value is a percentage value', () => {
     expect($util.isPercentage('10%')).toBeTrue();
     expect($util.isPercentage('10px')).toBeFalse();
   });
 
-  it('should convert percentage value', function() {
+  it('should convert percentage value', () => {
     expect($util.fromPercentage(10)).toBe(10);
     expect($util.fromPercentage('10%')).toBe(10);
   });
 
-  it('should check if value is a percentage value', function() {
+  it('should check if value is a percentage value', () => {
     expect($util.isPx('10px')).toBeTrue();
     expect($util.isPx('10%')).toBeFalse();
   });
 
-  it('should capitalize string', function() {
+  it('should capitalize string', () => {
     expect($util.capitalize('foo')).toBe('Foo');
     expect($util.capitalize('FOO')).toBe('FOO');
     expect($util.capitalize('Foo')).toBe('Foo');
   });
 
-  it('should parse json object', function() {
-    var o = $util.parse('{"id": 1, "name": "foo"}');
+  it('should parse json object', () => {
+    const o = $util.parse('{"id": 1, "name": "foo"}');
     expect(o).toEqual({
       id: 1,
       name: 'foo'
     });
   });
 
-  it('should parse json array', function() {
-    var o = $util.parse('[{"id": 1, "name": "foo"}]');
+  it('should parse json array', () => {
+    const o = $util.parse('[{"id": 1, "name": "foo"}]');
     expect(o).toEqual([{
       id: 1,
       name: 'foo'
     }]);
   });
 
-  it('should parse boolean value', function() {
-    var f = $util.parse('false');
-    var t = $util.parse('true');
+  it('should parse boolean value', () => {
+    const f = $util.parse('false');
+    const t = $util.parse('true');
     expect(f).toBe(false);
     expect(t).toBe(true);
   });
 
-  it('should handle exception', function() {
+  it('should handle exception', () => {
     spyOn($json, 'fromJson').and.throwError('Error');
 
     expect($util.parse('false')).toBe(false);
@@ -92,76 +92,76 @@ describe('$util', function() {
     expect($util.parse('foo')).toBe('foo');
   });
 
-  it('should parse number value', function() {
-    var nb = $util.parse('25');
+  it('should parse number value', () => {
+    const nb = $util.parse('25');
     expect(nb).toBe(25);
   });
 
-  it('should parse string value', function() {
-    var str1 = $util.parse('hello');
-    var str2 = $util.parse('"hello"');
+  it('should parse string value', () => {
+    const str1 = $util.parse('hello');
+    const str2 = $util.parse('"hello"');
     expect(str1).toBe('hello');
     expect(str2).toBe('hello');
   });
 
-  it('should convert to spinal case string', function() {
+  it('should convert to spinal case string', () => {
     expect($util.toSpinalCase('hello')).toBe('hello');
     expect($util.toSpinalCase('helloWorld')).toBe('hello-world');
     expect($util.toSpinalCase('hello-world')).toBe('hello-world');
   });
 
-  it('should get result', function() {
+  it('should get result', () => {
     expect($util.resultWith('foo')).toBe('foo');
 
-    var ctx = {};
-    var fn = jasmine.createSpy('fn').and.returnValue('bar');
+    const ctx = {};
+    const fn = jasmine.createSpy('fn').and.returnValue('bar');
     expect($util.resultWith(fn, ctx, ['foo'])).toBe('bar');
     expect(fn).toHaveBeenCalledWith('foo');
   });
 
-  it('should split array into chunks', function() {
-    var array = [0, 1];
-    var chunks = $util.split(array, 1);
+  it('should split array into chunks', () => {
+    const array = [0, 1];
+    const chunks = $util.split(array, 1);
     expect(chunks).toEqual([[0], [1]]);
   });
 
-  it('should split collection into chunks of two elements', function() {
-    var array = [0, 1, 2];
-    var chunks = $util.split(array, 2);
+  it('should split collection into chunks of two elements', () => {
+    const array = [0, 1, 2];
+    const chunks = $util.split(array, 2);
     expect(chunks).toEqual([[0, 1], [2]]);
   });
 
-  it('should destroy object', function() {
-    var fn = jasmine.createSpy('fn');
-    var protoFn = jasmine.createSpy('protoFn');
-    var prototype = {
-      protoFn: protoFn
-    };
+  it('should destroy object', () => {
+    const fn = jasmine.createSpy('fn');
+    class Test {
+      constructor() {
+        this.foo = 'test';
+        this.fn = fn;
+      }
 
-    var o = {
-      foo: 'bar',
-      fn: fn
-    };
+      protoFn() {
+      }
+    }
 
-    o.prototype = prototype;
+    const o = new Test();
+    const proto = Test.prototype;
 
     $util.destroy(o);
 
     expect(o.foo).toBeNull();
     expect(o.fn).toBeNull();
-    expect(o.prototype).toBeNull();
-    expect(prototype.protoFn).toBe(protoFn);
+    expect(proto.protoFn).toBeDefined();
   });
 
-  it('should call async task', function() {
-    var data = [
+  it('should call async task', () => {
+    const data = [
       [1, 2, 3],
       [4, 5, 6],
       [7, 8, 9]
     ];
 
-    var onIteration = jasmine.createSpy('onIteration');
-    var onEnded = jasmine.createSpy('onEnded');
+    const onIteration = jasmine.createSpy('onIteration');
+    const onEnded = jasmine.createSpy('onEnded');
 
     $util.asyncTask(data, 10, onIteration, onEnded);
 

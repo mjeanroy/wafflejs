@@ -22,22 +22,22 @@
  * SOFTWARE.
  */
 
-describe('Grid Filter', function() {
+describe('Grid Filter', () => {
 
-  var table;
-  var grid;
-  var tbody;
-  var childNodes;
-  var oddPredicate;
+  let table;
+  let grid;
+  let tbody;
+  let childNodes;
+  let oddPredicate;
 
-  beforeEach(function() {
-    var columns = [
+  beforeEach(() => {
+    const columns = [
       { id: 'id', sortable: false },
       { id: 'firstName' },
       { id: 'lastName' }
     ];
 
-    var data = [
+    const data = [
       { id: 1, firstName: 'foo1', lastName: 'bar1' },
       { id: 2, firstName: 'foo2', lastName: 'bar2' },
       { id: 3, firstName: 'foo2', lastName: 'bar3' }
@@ -49,9 +49,7 @@ describe('Grid Filter', function() {
     grid = new Grid(table, {
       data: data,
       columns: columns,
-      key: function(o) {
-        return o.id;
-      }
+      key: o => o.id
     });
 
     tbody = grid.$tbody[0];
@@ -61,21 +59,17 @@ describe('Grid Filter', function() {
     spyOn(GridFilter, 'applyFilter').and.callThrough();
   });
 
-  beforeEach(function() {
-    oddPredicate = jasmine.createSpy('predicate').and.callFake(function(data) {
-      return data.id % 2 === 0;
-    });
-  });
+  beforeEach(() => (
+    oddPredicate = jasmine.createSpy('predicate').and.callFake(data => data.id % 2 === 0)
+  ));
 
-  beforeEach(function() {
-    expect(childNodes.length).toBe(3);
-  });
+  beforeEach(() => expect(childNodes.length).toBe(3));
 
-  it('should filter grid and remove data that does not pass predicate', function() {
-    var row0 = childNodes[0];
-    var row2 = childNodes[2];
+  it('should filter grid and remove data that does not pass predicate', () => {
+    const row0 = childNodes[0];
+    const row2 = childNodes[2];
 
-    var result = grid.filter(oddPredicate);
+    const result = grid.filter(oddPredicate);
 
     expect(result).toBe(grid);
     expect(grid.$filter).toBe(oddPredicate);
@@ -110,9 +104,9 @@ describe('Grid Filter', function() {
     });
   });
 
-  it('should filter grid and remove data that does not pass predicate, then display visible rows', function() {
-    var row0 = childNodes[0];
-    var row2 = childNodes[2];
+  it('should filter grid and remove data that does not pass predicate, then display visible rows', () => {
+    const row0 = childNodes[0];
+    const row2 = childNodes[2];
 
     grid.filter(oddPredicate);
 
@@ -188,9 +182,9 @@ describe('Grid Filter', function() {
     });
   });
 
-  it('should filter grid and keep filtered data removed', function() {
-    var row0 = childNodes[0];
-    var row2 = childNodes[2];
+  it('should filter grid and keep filtered data removed', () => {
+    const row0 = childNodes[0];
+    const row2 = childNodes[2];
 
     grid.filter(oddPredicate);
 
@@ -227,9 +221,7 @@ describe('Grid Filter', function() {
 
     grid.dispatchEvent.calls.reset();
 
-    var newOddPredicate = function(o) {
-      return oddPredicate(o);
-    };
+    const newOddPredicate = o => oddPredicate(o);
 
     grid.filter(oddPredicate);
 
@@ -255,9 +247,9 @@ describe('Grid Filter', function() {
     expect(childNodes[0].childNodes[1].innerHTML).toBe('2');
   });
 
-  it('should filter using a simple value', function() {
-    var value = 'foo';
-    var predicate = jasmine.createSpy('predicate').and.returnValue(false);
+  it('should filter using a simple value', () => {
+    const value = 'foo';
+    const predicate = jasmine.createSpy('predicate').and.returnValue(false);
     spyOn($filters, '$create').and.returnValue(predicate);
 
     grid.filter(value);
@@ -268,12 +260,12 @@ describe('Grid Filter', function() {
     expect($filters.$create).toHaveBeenCalledWith(value);
   });
 
-  it('should filter using object value', function() {
-    var value = {
+  it('should filter using object value', () => {
+    const value = {
       name: 'foo'
     };
 
-    var predicate = jasmine.createSpy('predicate').and.returnValue(false);
+    const predicate = jasmine.createSpy('predicate').and.returnValue(false);
 
     spyOn($filters, '$create').and.returnValue(predicate);
 
@@ -285,9 +277,9 @@ describe('Grid Filter', function() {
     expect($filters.$create).toHaveBeenCalledWith(value);
   });
 
-  it('should not filter twice if predicate value is still the same', function() {
-    var value = 'foo';
-    var predicate = jasmine.createSpy('predicate').and.returnValue(false);
+  it('should not filter twice if predicate value is still the same', () => {
+    const value = 'foo';
+    const predicate = jasmine.createSpy('predicate').and.returnValue(false);
 
     spyOn($filters, '$create').and.callThrough();
 
@@ -305,7 +297,7 @@ describe('Grid Filter', function() {
     expect($filters.$create).not.toHaveBeenCalled();
   });
 
-  it('should remove filter', function() {
+  it('should remove filter', () => {
     grid.filter(oddPredicate);
 
     expect(grid.$filter).toBe(oddPredicate);
@@ -329,7 +321,7 @@ describe('Grid Filter', function() {
 
     spyOn(grid, 'filter').and.callThrough();
 
-    var result = grid.removeFilter();
+    const result = grid.removeFilter();
 
     expect(result).toBe(grid);
     expect(grid.filter).toHaveBeenCalledWith(undefined);
@@ -337,7 +329,7 @@ describe('Grid Filter', function() {
     expect(GridFilter.applyFilter).toHaveBeenCalledWith(undefined);
   });
 
-  it('should try to remove filter if filter is alreay undefined', function() {
+  it('should try to remove filter if filter is alreay undefined', () => {
     expect(grid.$filter).not.toBeDefined();
 
     spyOn(grid, 'filter').and.callThrough();
@@ -349,8 +341,8 @@ describe('Grid Filter', function() {
     expect(GridFilter.applyFilter).not.toHaveBeenCalled();
   });
 
-  it('should check if data is visible', function() {
-    var data = grid.$data;
+  it('should check if data is visible', () => {
+    const data = grid.$data;
 
     expect(grid.isVisible(data[0])).toBeTrue();
     expect(grid.isVisible(data[1])).toBeTrue();
@@ -363,16 +355,16 @@ describe('Grid Filter', function() {
     expect(grid.isVisible(data[2])).toBeFalse();
   });
 
-  it('should get visible data', function() {
-    var data = grid.$data;
+  it('should get visible data', () => {
+    const data = grid.$data;
     expect(grid.visibleData()).toEqual([data[0], data[1], data[2]]);
 
     grid.filter(oddPredicate);
     expect(grid.visibleData()).toEqual([data[1]]);
   });
 
-  describe('on render', function() {
-    it('should only render unfiltered data', function() {
+  describe('on render', () => {
+    it('should only render unfiltered data', () => {
       grid.filter(oddPredicate);
       expect(childNodes.length).toBe(1);
 
@@ -380,7 +372,7 @@ describe('Grid Filter', function() {
       expect(childNodes.length).toBe(1);
     });
 
-    it('should only render unfiltered data with async rendering', function() {
+    it('should only render unfiltered data with async rendering', () => {
       grid.filter(oddPredicate);
       expect(childNodes.length).toBe(1);
 
@@ -398,16 +390,16 @@ describe('Grid Filter', function() {
     });
   });
 
-  describe('on data splice', function() {
-    var data;
-    var map;
+  describe('on data splice', () => {
+    let data;
+    let map;
 
-    beforeEach(function() {
+    beforeEach(() => {
       data = grid.$data;
       map = data.$$map;
     });
 
-    it('should not display filtered data when data collection is unshifted', function() {
+    it('should not display filtered data when data collection is unshifted', () => {
       grid.filter(oddPredicate);
 
       // Check flags
@@ -451,7 +443,7 @@ describe('Grid Filter', function() {
       expect(childNodes[2].getAttribute('data-waffle-idx')).toBe('4');
     });
 
-    it('should not display filtered data when data collection is pushed', function() {
+    it('should not display filtered data when data collection is pushed', () => {
       grid.filter(oddPredicate);
 
       // Check flags
@@ -495,7 +487,7 @@ describe('Grid Filter', function() {
       expect(childNodes[2].getAttribute('data-waffle-idx')).toBe('5');
     });
 
-    it('should not display anything but indexes should be updated', function() {
+    it('should not display anything but indexes should be updated', () => {
       grid.filter(oddPredicate);
 
       // Check flags
@@ -531,7 +523,7 @@ describe('Grid Filter', function() {
       expect(childNodes[0].getAttribute('data-waffle-idx')).toBe('2');
     });
 
-    it('should not try to remove filtered row when collection is shifted', function() {
+    it('should not try to remove filtered row when collection is shifted', () => {
       grid.filter(oddPredicate);
 
       // Check flags
@@ -565,7 +557,7 @@ describe('Grid Filter', function() {
       expect(childNodes[0].childNodes[1].innerHTML).toBe('2');
     });
 
-    it('should not try to remove filtered row when collection is popped', function() {
+    it('should not try to remove filtered row when collection is popped', () => {
       grid.filter(oddPredicate);
 
       // Check flags
@@ -599,7 +591,7 @@ describe('Grid Filter', function() {
       expect(childNodes[0].childNodes[1].innerHTML).toBe('2');
     });
 
-    it('should not try to remove filtered row but remove unfiltered row when collection is spliced', function() {
+    it('should not try to remove filtered row but remove unfiltered row when collection is spliced', () => {
       grid.filter(oddPredicate);
 
       // Check flags
@@ -631,10 +623,8 @@ describe('Grid Filter', function() {
       expect(childNodes.length).toBe(0);
     });
 
-    it('should not try to add nodes to an empty grid', function() {
-      var falsePredicate = jasmine.createSpy('predicate').and.callFake(function(data) {
-        return false;
-      });
+    it('should not try to add nodes to an empty grid', () => {
+      const falsePredicate = jasmine.createSpy('predicate').and.callFake(data => false);
 
       grid.filter(falsePredicate);
 
@@ -670,14 +660,12 @@ describe('Grid Filter', function() {
     });
   });
 
-  describe('on data update', function() {
-    var data;
+  describe('on data update', () => {
+    let data;
 
-    beforeEach(function() {
-      data = grid.$data;
-    });
+    beforeEach(() => data = grid.$data);
 
-    it('should not try to update a filtered row', function() {
+    it('should not try to update a filtered row', () => {
       grid.filter(oddPredicate);
 
       grid.dispatchEvent.calls.reset();
@@ -687,7 +675,7 @@ describe('Grid Filter', function() {
       expect(grid.dispatchEvent).not.toHaveBeenCalled();
     });
 
-    it('should not update row at valid index', function() {
+    it('should not update row at valid index', () => {
       grid.filter(oddPredicate);
 
       grid.dispatchEvent.calls.reset();
@@ -702,16 +690,16 @@ describe('Grid Filter', function() {
     });
   });
 
-  describe('on selection splice', function() {
-    var data;
-    var selection;
+  describe('on selection splice', () => {
+    let data;
+    let selection;
 
-    beforeEach(function() {
+    beforeEach(() => {
       data = grid.$data;
       selection = grid.$selection;
     });
 
-    it('should not try to select row when data collection is unshifted', function() {
+    it('should not try to select row when data collection is unshifted', () => {
       grid.filter(oddPredicate);
 
       expect(childNodes).toHaveLength(1);
@@ -720,15 +708,15 @@ describe('Grid Filter', function() {
       selection.push(data[0]);
       jasmine.clock().tick();
 
-      var row = childNodes[0];
+      const row = childNodes[0];
       expect(row.className).not.toContain('waffle-selected');
 
-      var td = row.childNodes[0];
-      var checkbox = td.childNodes[0];
+      const td = row.childNodes[0];
+      const checkbox = td.childNodes[0];
       expect(checkbox.checked).toBeFalse();
     });
 
-    it('should not try to unchecked row when data collection is unshifted', function() {
+    it('should not try to unchecked row when data collection is unshifted', () => {
       selection.push(data[0]);
       selection.push(data[1]);
       jasmine.clock().tick();
@@ -744,11 +732,11 @@ describe('Grid Filter', function() {
       selection.shift();
       jasmine.clock().tick();
 
-      var row = childNodes[0];
+      const row = childNodes[0];
       expect(row.className).toContain('waffle-selected');
 
-      var td = row.childNodes[0];
-      var checkbox = td.childNodes[0];
+      const td = row.childNodes[0];
+      const checkbox = td.childNodes[0];
       expect(checkbox.checked).toBeTrue();
     });
   });

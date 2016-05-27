@@ -22,20 +22,20 @@
  * SOFTWARE.
  */
 
-describe('Observable', function() {
+describe('Observable', () => {
 
-  var callback1;
-  var callback2;
+  let callback1;
+  let callback2;
 
-  var ctx1;
-  var ctx2;
+  let ctx1;
+  let ctx2;
 
-  var change1;
-  var change2;
+  let change1;
+  let change2;
 
-  var instance;
+  let instance;
 
-  beforeEach(function() {
+  beforeEach(() => {
     jasmine.clock().tick(1);
 
     callback1 = jasmine.createSpy('callback1');
@@ -63,10 +63,9 @@ describe('Observable', function() {
     Observable.$$observers = undefined;
     Observable.$$changes = undefined;
 
-    var Constructor = function() {
-    };
+    const Constructor = () => {};
 
-    for (var i in Observable) {
+    for (let i in Observable) {
       if (Observable.hasOwnProperty(i)) {
         Constructor.prototype[i] = Observable[i];
       }
@@ -75,7 +74,7 @@ describe('Observable', function() {
     instance = new Constructor();
   });
 
-  it('should register observer', function() {
+  it('should register observer', () => {
     instance.observe(callback1);
 
     expect(instance.$$observers).toEqual([
@@ -83,7 +82,7 @@ describe('Observable', function() {
     ]);
   });
 
-  it('should register observer with context', function() {
+  it('should register observer with context', () => {
     instance.observe(callback1, ctx1);
 
     expect(instance.$$observers).toEqual([
@@ -91,7 +90,7 @@ describe('Observable', function() {
     ]);
   });
 
-  it('should unregister everything', function() {
+  it('should unregister everything', () => {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
@@ -102,7 +101,7 @@ describe('Observable', function() {
     expect(instance.$$observers).toEqual([]);
   });
 
-  it('should unregister callback', function() {
+  it('should unregister callback', () => {
     instance.$$observers = [
       { ctx: null, callback: callback1 },
       { ctx: null, callback: callback2 }
@@ -115,7 +114,7 @@ describe('Observable', function() {
     ]);
   });
 
-  it('should unregister callback with context', function() {
+  it('should unregister callback with context', () => {
     instance.$$observers = [
       { ctx: ctx1, callback: callback1 },
       { ctx: ctx2, callback: callback1 }
@@ -128,20 +127,20 @@ describe('Observable', function() {
     ]);
   });
 
-  it('should notify changes asynchronously', function() {
+  it('should notify changes asynchronously', () => {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    var changes = [change1, change2];
+    const changes = [change1, change2];
 
     instance.notify(changes);
 
     expect(instance.$$changes).toEqual(changes);
     expect(callback1).not.toHaveBeenCalled();
 
-    var $$changes = instance.$$changes.slice();
+    const $$changes = instance.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -149,7 +148,7 @@ describe('Observable', function() {
     expect(instance.$$changes).toEqual([]);
   });
 
-  it('should notify single change', function() {
+  it('should notify single change', () => {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
@@ -161,7 +160,7 @@ describe('Observable', function() {
     expect(callback1).not.toHaveBeenCalled();
     expect(instance.$asyncTask).toBeTruthy();
 
-    var $$changes = instance.$$changes.slice();
+    const $$changes = instance.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -170,8 +169,8 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should notify changes and keep new changes', function() {
-    var asyncCallback = jasmine.createSpy('asyncCallback').and.callFake(function() {
+  it('should notify changes and keep new changes', () => {
+    const asyncCallback = jasmine.createSpy('asyncCallback').and.callFake(() => {
       instance.$$changes.push(change2);
     });
 
@@ -186,7 +185,7 @@ describe('Observable', function() {
     expect(asyncCallback).not.toHaveBeenCalled();
     expect(instance.$asyncTask).toBeTruthy();
 
-    var $$changes = instance.$$changes.slice();
+    const $$changes = instance.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -196,8 +195,8 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should notify changes and remove old ones', function() {
-    var asyncCallback = jasmine.createSpy('asyncCallback').and.callFake(function() {
+  it('should notify changes and remove old ones', () => {
+    const asyncCallback = jasmine.createSpy('asyncCallback').and.callFake(() => {
       return instance.notify(change2);
     });
 
@@ -212,7 +211,7 @@ describe('Observable', function() {
     expect(asyncCallback).not.toHaveBeenCalled();
     expect(instance.$asyncTask).toBeTruthy();
 
-    var $$changes = instance.$$changes.slice();
+    const $$changes = instance.$$changes.slice();
 
     jasmine.clock().tick();
 
@@ -222,23 +221,23 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should notify all changes once asynchronously', function() {
+  it('should notify all changes once asynchronously', () => {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    var changes1 = [change1];
+    const changes1 = [change1];
     instance.notify(changes1);
 
-    var changes2 = [change2];
+    const changes2 = [change2];
     instance.notify(changes2);
 
     expect(instance.$$changes).toEqual(changes1.concat(changes2));
     expect(callback1).not.toHaveBeenCalled();
     expect(instance.$asyncTask).toBeTruthy();
 
-    var $$changes = instance.$$changes.slice();
+    const $$changes = instance.$$changes.slice();
 
     jasmine.clock().tick(1);
 
@@ -247,8 +246,8 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should notify all changes once and notify callback once', function() {
-    var asyncFn = jasmine.createSpy('asyncFn');
+  it('should notify all changes once and notify callback once', () => {
+    const asyncFn = jasmine.createSpy('asyncFn');
     spyOn(_, 'bind').and.returnValue(asyncFn);
 
     instance.$$observers = [{
@@ -257,11 +256,11 @@ describe('Observable', function() {
     }];
 
     // notify first change
-    var changes1 = [change1];
+    const changes1 = [change1];
     instance.notify(changes1);
 
     // notify second change
-    var changes2 = [change2];
+    const changes2 = [change2];
     instance.notify(changes2);
 
     expect(asyncFn).not.toHaveBeenCalled();
@@ -272,7 +271,7 @@ describe('Observable', function() {
     expect(asyncFn.calls.count()).toBe(1);
   });
 
-  it('should clear changes', function() {
+  it('should clear changes', () => {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
@@ -283,14 +282,14 @@ describe('Observable', function() {
     expect(instance.$$changes).not.toBeDefined();
   });
 
-  it('should clear changes and create empty array', function() {
+  it('should clear changes and create empty array', () => {
     instance.$$observers = [{
       ctx: null,
       callback: callback1
     }];
 
-    var changes1 = [change1];
-    var changes2 = [change2];
+    const changes1 = [change1];
+    const changes2 = [change2];
 
     instance.notify(changes1);
     instance.notify(changes2);
@@ -299,7 +298,7 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeDefined();
     expect(instance.$$changes.length).toBe(2);
 
-    var $asyncTask = instance.$asyncTask;
+    const $asyncTask = instance.$asyncTask;
 
     instance.clearChanges();
 
@@ -307,7 +306,7 @@ describe('Observable', function() {
     expect(instance.$asyncTask).toBeNull();
   });
 
-  it('should get pending changes', function() {
+  it('should get pending changes', () => {
     instance.$$observers = [{
       ctx: null,
       callback: callback1

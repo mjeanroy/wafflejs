@@ -25,11 +25,14 @@
 // Karma configuration
 // Generated on Tue Feb 03 2015 20:25:57 GMT+0100 (CET)
 
-module.exports = function(config) {
+const path = require('path');
+const root = path.join(__dirname, '..');
+
+module.exports = config => {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '.',
+    basePath: root,
 
 
     // frameworks to use
@@ -86,7 +89,7 @@ module.exports = function(config) {
     // optionally, configure the reporter
     coverageReporter: {
       type : 'html',
-      dir : 'coverage/'
+      dir : path.join(root, 'coverage')
     }
   });
 };

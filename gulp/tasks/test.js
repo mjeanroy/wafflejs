@@ -22,14 +22,15 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var karma = require('karma');
-var jasmine = require('gulp-jasmine');
-var Q = require('q');
-var gutil = require('gulp-util');
-var KarmaServer = karma.Server;
+const path = require('path');
+const gulp = require('gulp');
+const karma = require('karma');
+const jasmine = require('gulp-jasmine');
+const Q = require('q');
+const gutil = require('gulp-util');
+const KarmaServer = karma.Server;
 
-module.exports = function(options) {
+module.exports = options => {
   // Test files builder
   gulp.task('test:build', function() {
     return gulp.src([
@@ -40,14 +41,14 @@ module.exports = function(options) {
     .pipe(jasmine());
   });
 
-  var files = options.files;
-  var targets = Object.keys(files);
-  var karmaConf = options.basePath + '/karma.conf.js';
+  const files = options.files;
+  const targets = Object.keys(files);
+  const karmaConf = path.join(__dirname, '..', '/karma.conf.js');
 
-  var tddTasks = [];
-  var testTasks = [];
+  const tddTasks = [];
+  const testTasks = [];
 
-  var getFiles = function(target) {
+  const getFiles = target => {
     return []
       .concat(files[target].vendor)  // Vendor libs
       .concat(files[target].src)     // Waffle sources
@@ -56,14 +57,10 @@ module.exports = function(options) {
 
   // Run karma.
   // Done callback is wrapped into a promise.
-  var runKarma = function(target, singleRun) {
-    var deferred = Q.defer();
-
-    var onDone = function() {
-      deferred.resolve();
-    };
-
-    var config = {
+  const runKarma = (target, singleRun) => {
+    const deferred = Q.defer();
+    const onDone = () => deferred.resolve();
+    const config = {
       configFile: karmaConf,
       files: getFiles(target)
     };
@@ -80,26 +77,25 @@ module.exports = function(options) {
       config.reporters = ['progress'];
     }
 
-    var server = new KarmaServer(config, onDone);
+    const server = new KarmaServer(config, onDone);
     server.start();
-
     return deferred.promise;
   };
 
-  targets.forEach(function(target) {
-    var tddTask = 'tdd:' + target;
-    var testTask = 'test:' + target;
+  targets.forEach(target => {
+    const tddTask = `tdd:${target}`;
+    const testTask = `test:${target}`;
 
     tddTasks.push(tddTask);
     testTasks.push(testTask);
 
     // Create tdd task for each target
-    gulp.task(tddTask, ['test:build', 'bower:install'], function(done) {
+    gulp.task(tddTask, ['test:build', 'bower:install'], done => {
       runKarma(target, false).then(done);
     });
 
     // Create test task for each target
-    gulp.task(testTask, ['test:build', 'bower:install'], function(done) {
+    gulp.task(testTask, ['test:build', 'bower:install'], done => {
       runKarma(target, true).then(done);
     });
   });
@@ -108,16 +104,16 @@ module.exports = function(options) {
   gulp.task('tdd', ['test:build'].concat(tddTasks));
 
   // Run all test suite in order.
-  gulp.task('test', ['test:build', 'bower:install'], function(done) {
-    var tasks = targets.slice();
-    var onIteration = function() {
+  gulp.task('test', ['test:build', 'bower:install'], done => {
+    const tasks = targets.slice();
+    const onIteration = () => {
       if (tasks.length === 0) {
         done();
       } else {
-        var target = tasks.shift();
-        gutil.log('Starting \'' + gutil.colors.cyan(target) + '\' test suite');
+        const target = tasks.shift();
+        gutil.log(`Starting '${gutil.colors.cyan(target)}' test suite`);
         runKarma(target, true).then(function() {
-          gutil.log('Finished \'' + gutil.colors.cyan(target) + '\' test suite');
+          gutil.log(`Finished '${gutil.colors.cyan(target)}' test suite`);
           onIteration();
         });
       }

@@ -22,21 +22,22 @@
  * SOFTWARE.
  */
 
-var fs = require('fs');
-var path = require('path');
-var gulp = require('gulp');
-var files = require('./build/waffle');
+const fs = require('fs');
+const path = require('path');
+const gulp = require('gulp');
+const files = require('./build/waffle');
 
 // Options for each sub-tasks
-var options = {
+const dir = path.join(__dirname, 'gulp', 'tasks');
+const options = {
   basePath: __dirname,
-  dist: __dirname + '/dist',
+  dist: path.join(__dirname, '/dist'),
   files: files
 };
 
 // Read sub-tasks
-fs.readdirSync(path.join(__dirname, 'gulp')).forEach(function(file) {
-  require(path.join(__dirname, 'gulp', file))(options);
+fs.readdirSync(dir).forEach(file => {
+  require(path.join(dir, file))(options);
 });
 
 // Create default tasks

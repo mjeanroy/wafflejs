@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-describe('renderers', function() {
+describe('renderers', () => {
 
-  it('should turn value to a lowercase string', function() {
+  it('should turn value to a lowercase string', () => {
     expect($renderers.$lowercase('FOO')).toBe('foo');
     expect($renderers.$lowercase('foo')).toBe('foo');
     expect($renderers.$lowercase('Foo')).toBe('foo');
@@ -35,7 +35,7 @@ describe('renderers', function() {
     expect($renderers.$lowercase(false)).toBe('false');
   });
 
-  it('should turn value to an uppercase string', function() {
+  it('should turn value to an uppercase string', () => {
     expect($renderers.$uppercase('FOO')).toBe('FOO');
     expect($renderers.$uppercase('foo')).toBe('FOO');
     expect($renderers.$uppercase('Foo')).toBe('FOO');
@@ -46,7 +46,7 @@ describe('renderers', function() {
     expect($renderers.$uppercase(false)).toBe('FALSE');
   });
 
-  it('should return exact value', function() {
+  it('should return exact value', () => {
     expect($renderers.$identity('FOO')).toBe('FOO');
     expect($renderers.$identity(undefined)).toBe(undefined);
     expect($renderers.$identity(null)).toBe(null);
@@ -54,7 +54,7 @@ describe('renderers', function() {
     expect($renderers.$identity(false)).toBe(false);
   });
 
-  it('should return empty value', function() {
+  it('should return empty value', () => {
     expect($renderers.$empty('FOO')).toBe('');
     expect($renderers.$empty(undefined)).toBe('');
     expect($renderers.$empty(null)).toBe('');
@@ -62,7 +62,7 @@ describe('renderers', function() {
     expect($renderers.$empty(false)).toBe('');
   });
 
-  it('should capitalize string', function() {
+  it('should capitalize string', () => {
     expect($renderers.$capitalize('foo')).toBe('Foo');
     expect($renderers.$capitalize('FOO')).toBe('FOO');
     expect($renderers.$capitalize(0)).toBe('0');

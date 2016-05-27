@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-describe('waffle-polymer', function() {
+describe('waffle-polymer', () => {
 
-  var origPolymer;
-  var Polymer;
-  var table;
+  let origPolymer;
+  let Polymer;
+  let table;
 
-  var restore = function(o, prop, val) {
+  const restore = (o, prop, val) => {
     if (val) {
       o[prop] = val;
     } else {
@@ -36,7 +36,7 @@ describe('waffle-polymer', function() {
     }
   };
 
-  beforeEach(function() {
+  beforeEach(() => {
     origPolymer = window.Polymer;
 
     Polymer = jasmine.createSpyObj('Polymer', ['dom']);
@@ -46,11 +46,9 @@ describe('waffle-polymer', function() {
     table = document.createElement('table');
   });
 
-  afterEach(function() {
-    restore(window, 'Polymer', origPolymer);
-  });
+  afterEach(() => restore(window, 'Polymer', origPolymer));
 
-  it('should have properties', function() {
+  it('should have properties', () => {
     expect(PolymerBehavior.properties).toEqual({
       options: {
         type: Object,
@@ -59,11 +57,11 @@ describe('waffle-polymer', function() {
     });
   });
 
-  it('should initialize grid on ready listener', function() {
+  it('should initialize grid on ready listener', () => {
     spyOn(Waffle, 'create').and.callThrough();
     spyOn(Grid.prototype, 'addEventListener').and.callThrough();
 
-    var ctx = document.createElement('div');
+    const ctx = document.createElement('div');
     ctx.appendChild(table);
     ctx.fire = jasmine.createSpy('fire');
 
@@ -78,8 +76,8 @@ describe('waffle-polymer', function() {
     expect(ctx.$grid).toBeDefined();
     expect(ctx.$grid.addEventListener).toHaveBeenCalled();
 
-    var events = _.keys(Waffle.options.events);
-    var nbEvents = events.length;
+    const events = _.keys(Waffle.options.events);
+    const nbEvents = events.length;
     expect(ctx.$grid.addEventListener.calls.count()).toBe(nbEvents);
 
     // Trigger one event and check that fire method is called
@@ -91,11 +89,11 @@ describe('waffle-polymer', function() {
     expect(PolymerBehavior.grid.call(ctx)).toBe(ctx.$grid);
   });
 
-  it('should initialize grid and create table on ready listener', function() {
+  it('should initialize grid and create table on ready listener', () => {
     spyOn(Waffle, 'create').and.callThrough();
     spyOn(Grid.prototype, 'addEventListener').and.callThrough();
 
-    var ctx = document.createElement('div');
+    const ctx = document.createElement('div');
     ctx.fire = jasmine.createSpy('fire');
     ctx.firstElementChild = null;
     spyOn(ctx, 'appendChild').and.callThrough();
@@ -113,8 +111,8 @@ describe('waffle-polymer', function() {
     expect(ctx.$grid.$table).toBeDefined();
     expect(ctx.$grid.addEventListener).toHaveBeenCalled();
 
-    var events = _.keys(Waffle.options.events);
-    var nbEvents = events.length;
+    const events = _.keys(Waffle.options.events);
+    const nbEvents = events.length;
     expect(ctx.$grid.addEventListener.calls.count()).toBe(nbEvents);
 
     // Trigger one event and check that fire method is called

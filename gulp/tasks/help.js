@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var taskListing = require('gulp-task-listing');
+const gulp = require('gulp');
+const taskListing = require('gulp-task-listing');
 
-module.exports = function(options) {
+module.exports = options => {
   gulp.task('help', taskListing);
 };

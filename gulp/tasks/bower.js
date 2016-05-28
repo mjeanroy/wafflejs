@@ -22,20 +22,16 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var bower = require('gulp-bower');
+const gulp = require('gulp');
+const bower = require('gulp-bower');
 
-module.exports = function() {
-  gulp.task('bower:install', function() {
-    return bower({
-      cmd: 'install'
-    });
-  });
-
-  gulp.task('bower:update', function() {
-    return bower({
-      cmd: 'update'
-    });
+module.exports = () => {
+  ['install', 'update'].forEach(task => {
+    gulp.task(`bower:${task}`, () => (
+      bower({
+        cmd: task
+      })
+    ));
   });
 
   gulp.task('bower', ['bower:install']);

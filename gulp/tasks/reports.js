@@ -22,25 +22,29 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var prettyBytes = require('pretty-bytes');
-var gzipSize = require('gzip-size');
-var through = require('through2');
-var pad = require('pad');
+const path = require('path');
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const prettyBytes = require('pretty-bytes');
+const gzipSize = require('gzip-size');
+const through = require('through2');
+const pad = require('pad');
 
-module.exports = function(options) {
-  function log(filename, size, gzipFileSize) {
-    var msg = '' +
-      gutil.colors.blue(pad(filename, 30)) + ' ' +
-      gutil.colors.magenta(pad(prettyBytes(size), 10)) + ' -- ' +
-      gutil.colors.green(pad(prettyBytes(gzipFileSize), 10)) + gutil.colors.gray(' (gzipped)');
+module.exports = options => {
+  const blue = gutil.colors.blue;
+  const magenta = gutil.colors.magenta;
+  const green = gutil.colors.green;
+  const gray = gutil.colors.gray;
 
-    gutil.log(msg);
+  const log = (filename, size, gzipFileSize) => {
+    const fName = pad(filename, 30);
+    const fSize = pad(prettyBytes(size), 10);
+    const fGzipSize = pad(prettyBytes(gzipFileSize), 10);
+    gutil.log(`${blue(fName)} ${magenta(fSize)} -- ${green(fGzipSize)} ${gray(' (gzipped)')}`);
   }
 
-  function run() {
-    return through.obj(function (file, enc, cb) {
+  const run = () => {
+    return through.obj((file, enc, cb) => {
       if (file.isNull()) {
         cb(null, file);
         return;
@@ -56,8 +60,7 @@ module.exports = function(options) {
     });
   }
 
-  gulp.task('size', ['less', 'minify', 'vulcanize'], function() {
-    return gulp.src(options.dist + '/**/*')
-      .pipe(run());
-  });
+  gulp.task('size', ['less', 'minify', 'vulcanize'], () => (
+    gulp.src(path.join(options.dist, '**/*')).pipe(run())
+  ));
 };

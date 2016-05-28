@@ -22,18 +22,19 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var less = require('gulp-less');
-var rename = require('gulp-rename');
-var cssnano = require('gulp-cssnano');
+const path = require('path');
+const gulp = require('gulp');
+const less = require('gulp-less');
+const rename = require('gulp-rename');
+const cssnano = require('gulp-cssnano');
 
-module.exports = function(options) {
-  gulp.task('less', function() {
-    return gulp.src('src/less/*.less')
+module.exports = options => {
+  gulp.task('less', () => (
+    gulp.src(path.join(options.src, 'less', '*.less'))
       .pipe(less())
       .pipe(gulp.dest(options.dist))
       .pipe(cssnano())
       .pipe(rename('waffle.min.css'))
-      .pipe(gulp.dest(options.dist));
-  });
+      .pipe(gulp.dest(options.dist))
+  ));
 };

@@ -22,21 +22,22 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var jshint = require('gulp-jshint');
-var jscs = require('gulp-jscs');
+const path = require('path');
+const gulp = require('gulp');
+const jshint = require('gulp-jshint');
+const jscs = require('gulp-jscs');
 
-module.exports = function() {
-  gulp.task('jshint', function() {
-    return gulp.src('src/**/*.js')
+module.exports = (options) => {
+  gulp.task('jshint', () => (
+    gulp.src(path.join(options.src, '**/*.js'))
       .pipe(jshint())
       .pipe(jshint.reporter('default'))
-  });
+  ));
 
-  gulp.task('jscs', function() {
-    return gulp.src('src/**/*.js')
-      .pipe(jscs());
-  });
+  gulp.task('jscs', () => (
+    gulp.src(path.join(options.src, '**/*.js'))
+      .pipe(jscs())
+  ));
 
   gulp.task('lint', ['jshint', 'jscs']);
 };

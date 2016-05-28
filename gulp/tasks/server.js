@@ -22,25 +22,21 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var server = require('gulp-express');
+const path = require('path');
+const gulp = require('gulp');
+const server = require('gulp-express');
 
-module.exports = function(options) {
-  var basePath = options.basePath;
-  var dist = options.dist;
+module.exports = options => {
+  const basePath = options.basePath;
+  const dist = options.dist;
 
-  gulp.task('server', ['bower:install', 'ie8', 'concat', 'less', 'vulcanize'], function () {
-    server.run([basePath + '/sample/server.js']);
+  gulp.task('server', ['bower:install', 'ie8', 'concat', 'less', 'vulcanize'], () => {
+    server.run([path.join(options.sample, 'server.js')]);
 
-    gulp.watch([basePath + '/src/**/*.js'], ['ie8', 'concat']);
-    gulp.watch([basePath + '/src/less/*.less'], ['less']);
+    gulp.watch([path.join(options.src, '**/*.js')], ['ie8', 'concat']);
+    gulp.watch([path.join(options.src, 'less', '*.less')], ['less']);
 
-    gulp.watch([dist + '/**/*'], function() {
-      return server.notify();
-    });
-
-    gulp.watch([basePath + '/sample/**/*'], function() {
-      return server.notify();
-    });
+    gulp.watch([path.join(options.dist, '**/*')], () => server.notify());
+    gulp.watch([path.join(options.sample, '**/*')], () => server.notify());
   });
 };

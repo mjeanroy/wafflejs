@@ -22,76 +22,77 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-var wrap = require('gulp-wrap');
-var rename = require('gulp-rename');
-var strip = require('gulp-strip-comments');
-var esformatter = require('gulp-esformatter');
-var babel = require('gulp-babel');
+const path = require('path');
+const gulp = require('gulp');
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
+const wrap = require('gulp-wrap');
+const rename = require('gulp-rename');
+const strip = require('gulp-strip-comments');
+const esformatter = require('gulp-esformatter');
+const babel = require('gulp-babel');
 
-module.exports = function(options) {
-  var files = options.files;
-  var targets = Object.keys(files);
-  var concatTasks = [];
-  var minifyTasks = [];
+module.exports = options => {
+  const files = options.files;
+  const targets = Object.keys(files);
+  const concatTasks = [];
+  const minifyTasks = [];
 
-  targets.forEach(function(target) {
-    var concatTask = 'concat:' + target;
-    var minifyTask = 'minify:' + target;
+  const uglifyOptions = {
+    mangle: true,
+    compress: {
+      screw_ie8: false,
+      sequences: true,
+      dead_code: true,
+      drop_debugger: true,
+      comparisons: true,
+      conditionals: true,
+      evaluate: true,
+      booleans: true,
+      loops: true,
+      unused: true,
+      hoist_funs: false,
+      hoist_vars: false,
+      if_return: true,
+      join_vars: true,
+      cascade: true,
+      drop_console: true
+    }
+  };
+
+  targets.forEach(target => {
+    const concatTask = `concat:${target}`;
+    const minifyTask = `minify:${target}`;
 
     concatTasks.push(concatTask);
     minifyTasks.push(minifyTask);
 
-    var uglifyOptions = {
-      mangle: true,
-      compress: {
-        screw_ie8: false,
-        sequences: true,
-        dead_code: true,
-        drop_debugger: true,
-        comparisons: true,
-        conditionals: true,
-        evaluate: true,
-        booleans: true,
-        loops: true,
-        unused: true,
-        hoist_funs: false,
-        hoist_vars: false,
-        if_return: true,
-        join_vars: true,
-        cascade: true,
-        drop_console: true
-      }
-    };
-
-    gulp.task(concatTask, ['test:build'], function() {
-      return gulp.src(files[target].src)
-        .pipe(concat('waffle-' + target + '.js'))
+    gulp.task(concatTask, ['test:build'], () => (
+      gulp.src(files[target].src)
+        .pipe(concat(`waffle-${target}.js`))
         .pipe(strip({ block: true }))
         .pipe(babel())
-        .pipe(wrap({ src: 'templates/wrap-template-' + target + '.js' }))
+        .pipe(wrap({ src: `templates/wrap-template-${target}.js` }))
         .pipe(esformatter({indent: {value: '  '}}))
-        .pipe(gulp.dest(options.dist));
-    });
+        .pipe(gulp.dest(options.dist))
+    ));
 
-    gulp.task(minifyTask, [concatTask], function() {
-      return gulp.src(options.dist + '/waffle-' + target + '.js')
+    gulp.task(minifyTask, [concatTask], () => (
+      gulp.src(path.join(options.dist, `/waffle-${target}.js`))
         .pipe(uglify(uglifyOptions))
-        .pipe(rename('waffle-' + target + '.min.js'))
-        .pipe(gulp.dest(options.dist));
-    });
+        .pipe(rename(`waffle-${target}.min.js`))
+        .pipe(gulp.dest(options.dist))
+    ));
   });
 
   // Add task for ie8 polyfills
-  gulp.task('ie8', function() {
-    gulp.src('src/ie8/*')
-      .pipe(gulp.dest(options.dist + '/ie8'))
-      .pipe(uglify())
+  gulp.task('ie8', () => (
+    gulp.src(path.join(options.src, 'ie8/*'))
+      .pipe(gulp.dest(path.join(options.dist, 'ie8')))
+      .pipe(uglify(uglifyOptions))
       .pipe(rename('waffle-ie8.min.js'))
-      .pipe(gulp.dest(options.dist + '/ie8'));
-  });
+      .pipe(gulp.dest(path.join(options.dist, 'ie8')))
+  ));
 
   // Add shortcuts to launch each sub-tasks
   gulp.task('concat', ['test:build'].concat(concatTasks));

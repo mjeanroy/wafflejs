@@ -32,14 +32,13 @@ const KarmaServer = karma.Server;
 
 module.exports = options => {
   // Test files builder
-  gulp.task('test:build', function() {
-    return gulp.src([
-      'waffle.js',
-      'node_modules/jasmine-utils/src/jasmine-utils.js',
-      'build/test/*-spec.js'
-    ])
-    .pipe(jasmine());
-  });
+  const buildSrc = [
+    'waffle.js',
+    'node_modules/jasmine-utils/src/jasmine-utils.js',
+    'build/test/*-spec.js'
+  ];
+
+  gulp.task('test:build', () => gulp.src(buildSrc).pipe(jasmine()));
 
   const files = options.files;
   const targets = Object.keys(files);

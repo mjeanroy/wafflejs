@@ -31,7 +31,9 @@ const files = require('./build/waffle');
 const dir = path.join(__dirname, 'gulp', 'tasks');
 const options = {
   basePath: __dirname,
-  dist: path.join(__dirname, '/dist'),
+  src: path.join(__dirname, 'src'),
+  sample: path.join(__dirname, 'sample'),
+  dist: path.join(__dirname, 'dist'),
   files: files
 };
 

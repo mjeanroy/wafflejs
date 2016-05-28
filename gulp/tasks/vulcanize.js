@@ -22,27 +22,31 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var rename = require('gulp-rename');
-var vulcanize = require('gulp-vulcanize');
+const path = require('path');
+const gulp = require('gulp');
+const rename = require('gulp-rename');
+const vulcanize = require('gulp-vulcanize');
 
-module.exports = function(options) {
-  gulp.task('vulcanize:csp', ['less', 'minify:polymer'], function() {
-    return gulp.src('src/polymer/waffle-polymer.html')
+module.exports = options => {
+
+  const vulcanizeOptions = {
+      abspath: '/',
+      excludes: [],
+      stripExcludes: false,
+      inlineScripts: true,
+      inlineCss: true
+  };
+
+  gulp.task('vulcanize:csp', ['less', 'minify:polymer'], () => (
+    gulp.src(path.join(options.src, 'polymer', 'waffle-polymer.html'))
       .pipe(rename('waffle-polymer-csp.html'))
-      .pipe(gulp.dest(options.dist));
-  });
+      .pipe(gulp.dest(options.dist))
+  ));
 
-  gulp.task('vulcanize', ['vulcanize:csp'], function() {
-    return gulp.src(options.dist + '/waffle-polymer-csp.html')
-        .pipe(vulcanize({
-            abspath: '/',
-            excludes: [],
-            stripExcludes: false,
-            inlineScripts: true,
-            inlineCss: true
-        }))
+  gulp.task('vulcanize', ['vulcanize:csp'], () => {
+    gulp.src(path.join(options.dist, 'waffle-polymer-csp.html'))
+        .pipe(vulcanize(vulcanizeOptions))
         .pipe(rename('waffle-polymer.html'))
-        .pipe(gulp.dest(options.dist));
+        .pipe(gulp.dest(options.dist))
   });
 };

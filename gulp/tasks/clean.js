@@ -22,19 +22,14 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var del = require('del');
+const path = require('path');
+const gulp = require('gulp');
+const del = require('del');
 
-module.exports = function(options) {
-  gulp.task('clean', function(done) {
-    del(options.dist, done);
-  });
+module.exports = options => {
+  gulp.task('clean', () => del(options.dist));
 
-  gulp.task('clean:css', function(done) {
-    del(options.dist + '/**/*.css', done);
-  });
-
-  gulp.task('clean:js', function(done) {
-    del(options.dist + '/**/*.js', done);
+  ['css', 'js'].forEach(ext => {
+    gulp.task(`clean:${ext}`, () => del(path.join(options.dist, `/**/*.${ext}`)));
   });
 };

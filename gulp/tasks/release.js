@@ -22,39 +22,30 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var git = require('gulp-git');
-var bump = require('gulp-bump');
-var gulpFilter = require('gulp-filter');
-var tag_version = require('gulp-tag-version');
+const path = require('path');
+const gulp = require('gulp');
+const git = require('gulp-git');
+const bump = require('gulp-bump');
+const gulpFilter = require('gulp-filter');
+const tag_version = require('gulp-tag-version');
 
-module.exports = function(options) {
-  var basePath = options.basePath;
-
-  var src = [
-    basePath + '/package.json',
-    basePath + '/bower.json',
+module.exports = options => {
+  const basePath = options.basePath;
+  const src = [
+    path.join(basePath, 'package.json'),
+    path.join(basePath, 'bower.json'),
     options.dist
   ];
 
-  ['minor', 'major', 'patch'].forEach(function(level) {
-    gulp.task('release:' + level, ['build'], function(done) {
-      var restoreOptions = {
-        restore: true
-      };
+  const restoreOptions = { restore: true };
+  const isPackageJson = file => file.path.indexOf('package.json') >= 0;
+  const isDist = file => file.path === options.dist;
+  const packageJsonFilter = gulpFilter(isPackageJson, restoreOptions);
+  const distFilter = gulpFilter(isDist, restoreOptions);
 
-      var isPackageJson = function(file) {
-        return file.path.indexOf('package.json') >= 0;
-      };
-
-      var isDist = function(file) {
-        return file.path === options.dist;
-      };
-
-      var packageJsonFilter = gulpFilter(isPackageJson, restoreOptions);
-      var distFilter = gulpFilter(isDist, restoreOptions);
-
-      return gulp.src(src)
+  ['minor', 'major', 'patch'].forEach(level => {
+    gulp.task(`release:${level}`, ['build'], () => (
+      gulp.src(src)
         .pipe(bump({type: level}))
         .pipe(gulp.dest('./'))
         .pipe(git.add({ args: '-f' }))
@@ -64,8 +55,8 @@ module.exports = function(options) {
         .pipe(packageJsonFilter.restore)
         .pipe(distFilter)
         .pipe(git.rm({ args: '-r' }))
-        .pipe(git.commit('release: start new release'));
-    });
+        .pipe(git.commit('release: start new release'))
+    ));
   });
 
   gulp.task('release', ['release:minor']);

@@ -40,11 +40,28 @@ gulp.task('lint', () => {
 });
 
 gulp.task('test', (done) => {
-  runKarma('test', done);
+  runKarma('test', () => done());
 });
 
 gulp.task('tdd', (done) => {
-  runKarma('tdd', done);
+  runKarma('tdd', () => done());
+});
+
+gulp.task('travis', (done) => {
+  runKarma('tdd', () => done());
+});
+
+gulp.task('saucelab', (done) => {
+  runKarma('saucelab', () => done());
+});
+
+gulp.task('travis', (done) => {
+  if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
+    gutil.log(gutil.colors.grey('SauceLab environment not set, running classic test suite'));
+    runKarma('test', () => done());
+  } else {
+    runKarma('saucelab', () => done());
+  }
 });
 
 /**

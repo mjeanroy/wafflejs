@@ -19,6 +19,7 @@
     "postinstall": "lerna bootstrap",
     "lint": "lerna run lint",
     "test": "lerna run test",
+    "travis": "lerna run travis",
     "build": "lerna run build"
   }
 }

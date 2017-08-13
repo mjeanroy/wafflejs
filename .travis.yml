@@ -1,3 +1,10 @@
 language: node_js
 node_js:
   - "6"
+script: npm run lint && npm run travis
+addons:
+  sauce_connect: true
+env:
+  global:
+    - secure: Qc2vXDHRlORuJ0l5XZnkpsGxHx45oAfKXko8CCbCqcO0TppcnhJcxB+lKYRf5wL8/2nVTUcMu/3oguo6Vso0V2hKLD0TPJi0b03br4NNoxOVRaGozWINOE9o2lXGJNlGa/EF+Ps5W/C3qnyJzuSHT/cq6bkMhtXhwSgK2yYpEg0=
+    - secure: QAkavYQla27dS6IqNRnM5AjJq0II+zqba9AbMerhtyyw6sRpPJU+HEoJ8YbHbAOrNkS/k62UI6u091K05zIg0nbdz0ZPa+p/2FfkWmmRYJ/SJ+G9zNDxzJij2zDNsqATQQptHMEhTw+0PKLzFW973hPz5b33Kx7l5ElZPPkufFg=

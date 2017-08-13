@@ -45,7 +45,7 @@ export function keysFactory(has) {
    * Creates an array of the own enumerable property names of `object`.
    *
    * @param {Object} object The object.
-  * @return {Array<string>} Array of own enumerable properties of `object`.
+   * @return {Array<string>} Array of own enumerable properties of `object`.
    */
   return function keys(object) {
     return _keys(object);

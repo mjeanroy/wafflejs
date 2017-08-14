@@ -22,32 +22,30 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+/**
+ * Create the `filter` function.
+ *
+ * @return {function} The `filter` function.
+ */
+export function filterFactory() {
+  /**
+   * Creates a new array with all elements that pass the test implemented
+   * by the provided function.
+   *
+   * @param {Array} collection Array (or "array-like" object).
+   * @param {function} predicate Predicate function.
+   * @param {*} ctx Callback context (i.e value of `this`).
+   * @return {void}
+   */
+  return function filter(collection, predicate, ctx) {
+    const newArray = [];
 
-import {testSuite} from './core/index';
+    for (let i = 0, size = collection.length; i < size; ++i) {
+      if (predicate.call(ctx, collection[i], i, collection)) {
+        newArray.push(collection[i]);
+      }
+    }
 
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+    return newArray;
+  };
+}

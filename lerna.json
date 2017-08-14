@@ -2,6 +2,7 @@
   "lerna": "2.0.0",
   "packages": [
     "packages/private/waffle-commons",
+    "packages/private/waffle-jq",
     "packages/private/waffle-ds"
   ],
   "version": "0.0.0"

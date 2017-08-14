@@ -22,32 +22,9 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+import {$} from '../src/index.standalone';
+import {jqTestSuite} from './core/jq.spec';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
+describe('Waffle JQ Standalone', () => {
+  jqTestSuite($);
 });

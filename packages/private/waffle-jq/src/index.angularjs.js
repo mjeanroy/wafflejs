@@ -22,32 +22,14 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+import angular from 'angular';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+/**
+ * The `angular.element` facade.
+ *
+ * @param {*} nodes DOM node (or angular element, or string element).
+ * @return {Object} AngularJS element from given node.
+ */
+export function $(nodes) {
+  return angular.element(nodes);
+}

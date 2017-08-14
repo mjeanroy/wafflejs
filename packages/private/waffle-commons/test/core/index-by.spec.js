@@ -22,32 +22,29 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+export const indexBySpec = (indexBy) => {
+  describe('indexBy', () => {
+    it('should index element in array', () => {
+      const callback = jasmine.createSpy('callback').and.callFake((value) => (
+        value.id
+      ));
 
-import {testSuite} from './core/index';
+      const o1 = {id: 1};
+      const o2 = {id: 2};
+      const o3 = {id: 3};
+      const o4 = {id: 4};
+      const a = [o1, o2, o3, o4];
 
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
+      const i1 = indexBy(a, callback);
+      const i2 = indexBy(a, 'id');
+
+      expect(i1).toEqual(i2);
+      expect(i1).toEqual({
+        1: o1,
+        2: o2,
+        3: o3,
+        4: o4,
+      });
+    });
   });
-});
+};

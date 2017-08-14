@@ -22,32 +22,19 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+export const isStringSpec = (isString) => {
+  describe('isString', () => {
+    it('should check if object is a string', () => {
+      expect(isString(undefined)).toBe(false);
+      expect(isString(null)).toBe(false);
+      expect(isString(1)).toBe(false);
+      expect(isString(true)).toBe(false);
 
-import {testSuite} from './core/index';
+      expect(isString('foo')).toBe(true);
+      expect(isString(String('foo'))).toBe(true);
 
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
+      // With angular.js, this is not a string: bug?
+      // expect(_.isString(new String('foo'))).toBe(true);
+    });
   });
-});
+};

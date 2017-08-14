@@ -22,32 +22,32 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+/**
+ * Create the `indexBy` function.
+ *
+ * @param {function} isString The `isString` function.
+ * @return {function} The `indexBy` function.
+ */
+export function indexByFactory(isString) {
+  /**
+   * Given a list, and an iteratee function that returns a key for each element in the
+   * list (or a property name), returns an object with an index of each item.
+   *
+   * @param {Array} collection Array (or "array-like" object).
+   * @param {string|function} predicate Predicate function.
+   * @param {*} ctx Callback context (i.e value of `this`).
+   * @return {void}
+   */
+  return function indexBy(collection, predicate, ctx) {
+    const result = {};
+    const iteratee = isString(predicate) ? (o) => o[predicate] : predicate;
 
-import {testSuite} from './core/index';
+    for (let i = 0, size = collection.length; i < size; ++i) {
+      const value = collection[i];
+      const key = iteratee.call(ctx, value, i, collection);
+      result[key] = value;
+    }
 
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+    return result;
+  };
+}

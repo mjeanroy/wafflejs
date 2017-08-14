@@ -22,32 +22,39 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+/**
+ * Trigger native mouse event.
+ *
+ * @param {string} type Event type (`click`, `dblClick`, etc.).
+ * @param {DOMNode} relatedTarget The node target.
+ * @param {boolean} shiftKey If the shift key is pressed.
+ * @param {ctrlKey} ctrlKey If the ctrl key is pressed.
+ * @return {Event} The created event.
+ */
+export function triggerMouseEvent(type, relatedTarget, shiftKey = false, ctrlKey = false) {
+  const evt = document.createEvent('MouseEvent');
 
-import {testSuite} from './core/index';
+  /* eslint-disable no-multi-spaces */
+  evt.initMouseEvent(
+      type,         // type
+      true,         // canBubble
+      true,         // cancelable,
+      window,       // 'view'
+      0,            // detail
+      0,            // screenX,
+      0,            // screenY,
+      0,            // clientX,
+      0,            // clientY,
+      ctrlKey,      // ctrlKey,
+      false,        // altKey,
+      shiftKey,     // shiftKey,
+      false,        // metaKey,
+      0,            // button,
+      relatedTarget // relatedTarget
+  );
+  /* eslint-enabme no-multi-spaces */
 
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+  relatedTarget.dispatchEvent(evt);
+
+  return evt;
+}

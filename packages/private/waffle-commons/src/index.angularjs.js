@@ -27,14 +27,19 @@ import angular from 'angular';
 import {hasFactory} from './core/has';
 import {keysFactory} from './core/keys';
 import {defaultsFactory} from './core/defaults';
+import {filterFactory} from './core/filter';
+import {indexByFactory} from './core/index-by';
 
 // Methods from AngularJS
 export const isUndefined = angular.isUndefined;
 export const isObject = angular.isObject;
 export const isElement = angular.isElement;
+export const isString = angular.isString;
 export const forEach = angular.forEach;
 
 // Factories
 export const has = hasFactory();
 export const keys = keysFactory(has);
 export const defaults = defaultsFactory(forEach, keys, isUndefined);
+export const filter = filterFactory();
+export const indexBy = indexByFactory(isString);

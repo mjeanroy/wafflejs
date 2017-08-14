@@ -24,10 +24,13 @@
 
 import {isUndefinedSpec} from './is-undefined.spec';
 import {isObjectSpec} from './is-object.spec';
+import {isStringSpec} from './is-string.spec';
 import {hasSpec} from './has.spec';
 import {keysSpec} from './keys.spec';
 import {forEachSpec} from './for-each.spec';
 import {defaultsSpec} from './defaults.spec';
+import {filterSpec} from './filter.spec';
+import {indexBySpec} from './index-by.spec';
 
 /**
  * Run test suite.
@@ -38,8 +41,11 @@ import {defaultsSpec} from './defaults.spec';
 export function testSuite(_) {
   isUndefinedSpec(_.isUndefined);
   isObjectSpec(_.isObject);
+  isStringSpec(_.isString);
   hasSpec(_.has);
   keysSpec(_.keys);
   forEachSpec(_.forEach);
   defaultsSpec(_.defaults);
+  filterSpec(_.filter);
+  indexBySpec(_.indexBy);
 }

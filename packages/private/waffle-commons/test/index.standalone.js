@@ -26,10 +26,13 @@ import {
   isUndefined,
   isObject,
   isElement,
+  isString,
   has,
   keys,
   forEach,
   defaults,
+  filter,
+  indexBy,
 } from '../src/index.standalone';
 
 import {testSuite} from './core/index';
@@ -39,9 +42,12 @@ describe('Waffle Standalone', () => {
     isUndefined,
     isObject,
     isElement,
+    isString,
     has,
     keys,
     forEach,
     defaults,
+    filter,
+    indexBy,
   });
 });

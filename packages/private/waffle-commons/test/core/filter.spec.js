@@ -22,32 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+export const filterSpec = (filter) => {
+  describe('filter', () => {
+    it('should filter array', () => {
+      const callback = jasmine.createSpy('callback').and.callFake((value) => (
+        value % 2 === 0
+      ));
 
-import {testSuite} from './core/index';
+      const array = [1, 2, 3, 4];
+      const newArray = filter(array, callback, 10);
 
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
+      expect(newArray).toEqual([2, 4]);
+      expect(callback).toHaveBeenCalledWith(1, 0, array);
+      expect(callback).toHaveBeenCalledWith(2, 1, array);
+      expect(callback).toHaveBeenCalledWith(3, 2, array);
+      expect(callback).toHaveBeenCalledWith(4, 3, array);
+    });
   });
-});
+};

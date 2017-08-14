@@ -25,15 +25,21 @@
 import {isUndefinedFactory} from './core/is-undefined';
 import {isObjectFactory} from './core/is-object';
 import {isElementFactory} from './core/is-element';
+import {isStringFactory} from './core/is-string';
 import {hasFactory} from './core/has';
 import {keysFactory} from './core/keys';
 import {forEachFactory} from './core/for-each';
 import {defaultsFactory} from './core/defaults';
+import {filterFactory} from './core/filter';
+import {indexByFactory} from './core/index-by';
 
 export const isUndefined = isUndefinedFactory();
 export const isObject = isObjectFactory();
 export const isElement = isElementFactory();
+export const isString = isStringFactory();
 export const has = hasFactory();
 export const keys = keysFactory(has);
 export const forEach = forEachFactory();
 export const defaults = defaultsFactory(forEach, keys, isUndefined);
+export const filter = filterFactory();
+export const indexBy = indexByFactory(isString);

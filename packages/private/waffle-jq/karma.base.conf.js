@@ -23,8 +23,8 @@
  */
 
 const path = require('path');
-const commonjs = require('rollup-plugin-commonjs');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
 const alias = require('rollup-plugin-alias');
 
 module.exports = (config) => ({
@@ -39,8 +39,9 @@ module.exports = (config) => ({
     path.join(__dirname, 'node_modules', 'jasmine-utils', 'src', 'jasmine-utils.js'),
 
     path.join(__dirname, 'test', 'index.standalone.js'),
-    path.join(__dirname, 'test', 'index.angularjs.js'),
     path.join(__dirname, 'test', 'index.underscore.js'),
+    path.join(__dirname, 'test', 'index.angularjs.js'),
+    path.join(__dirname, 'test', 'index.jquery.js'),
   ],
 
   exclude: [
@@ -102,17 +103,19 @@ module.exports = (config) => ({
     'test/index.standalone.js': ['rollupStandalone', 'babel'],
     'test/index.underscore.js': ['rollupUnderscore', 'babel'],
     'test/index.angularjs.js': ['rollupAngularJS', 'babel'],
+    'test/index.jquery.js': ['rollupJQuery', 'babel'],
   },
 
   rollupPreprocessor: {
     format: 'iife',
-    moduleName: 'WaffleDs',
+    moduleName: 'WaffleJq',
   },
 
   customPreprocessors: {
     rollupStandalone: rollupConfiguration('standalone'),
-    rollupAngularJS: rollupConfiguration('angularjs'),
     rollupUnderscore: rollupConfiguration('underscore'),
+    rollupAngularJS: rollupConfiguration('angularjs'),
+    rollupJQuery: rollupConfiguration('standalone'),
   },
 });
 
@@ -120,16 +123,16 @@ module.exports = (config) => ({
  * Create the rollup configuration with appropriate link on `@waffle/commons`
  * internal package.
  *
- * @param {string} target Link on `@waffle/commons`.
+ * @param {string} wflCommons Link on `@waffle/commons`.
  * @return {Object} Rollup configuration.
  */
-function rollupConfiguration(target) {
+function rollupConfiguration(wflCommons) {
   return {
     base: 'rollup',
     options: {
       plugins: [
         alias({
-          '@waffle/commons': require.resolve(`@waffle/commons/src/index.${target}.js`),
+          '@waffle/commons': require.resolve(`@waffle/commons/src/index.${wflCommons}.js`),
         }),
 
         commonjs(),

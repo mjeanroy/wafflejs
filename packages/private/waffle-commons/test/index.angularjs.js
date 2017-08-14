@@ -26,10 +26,13 @@ import {
   isUndefined,
   isObject,
   isElement,
+  isString,
   has,
   keys,
   forEach,
   defaults,
+  filter,
+  indexBy,
 } from '../src/index.angularjs';
 
 import {testSuite} from './core/index';
@@ -39,9 +42,12 @@ describe('Waffle AngularJS', () => {
     isUndefined,
     isObject,
     isElement,
+    isString,
     has,
     keys,
     forEach,
     defaults,
+    filter,
+    indexBy,
   });
 });

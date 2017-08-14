@@ -22,32 +22,14 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+const _ = require('lodash');
+const base = require('./karma.base.conf');
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+module.exports = (config) => {
+  config.set(_.extend(base(config), {
+    autoWatch: false,
+    singleRun: true,
+    browsers: ['PhantomJS'],
+    reporters: ['progress'],
+  }));
+};

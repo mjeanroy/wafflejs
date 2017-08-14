@@ -22,32 +22,15 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+import {ObjectProto} from './object-proto';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+/**
+ * Returns the tag name (i.e result of native `Object.prototype.toString` function) of
+ * a given `value`.
+ *
+ * @param {*} value Value to check.
+ * @return {string} The tag name.
+ */
+export function tagName(value) {
+  return ObjectProto.toString.call(value);
+}

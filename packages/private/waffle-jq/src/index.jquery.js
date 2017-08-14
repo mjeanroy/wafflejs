@@ -22,32 +22,14 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+import jQuery from 'jquery';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+/**
+ * The jQuery facade.
+ *
+ * @param {*} nodes DOM node (or jQuery element, or string element).
+ * @return {Object} jQuery element from given node.
+ */
+export function $(nodes) {
+  return jQuery(nodes);
+}

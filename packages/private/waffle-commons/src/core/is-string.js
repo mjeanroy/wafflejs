@@ -22,32 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+import {is} from './internal/is';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+/**
+ * Create the `isString` function.
+ *
+ * @return {function} The `isString` function.
+ */
+export function isStringFactory() {
+  /**
+   * Checks if `value` is a string value.
+   *
+   * @param {*} obj The value to check.
+   * @return {boolean} `true` if `obj` is a `string`, `false` otherwise.
+   */
+  return function isString(obj) {
+    return is(obj, 'String');
+  };
+}

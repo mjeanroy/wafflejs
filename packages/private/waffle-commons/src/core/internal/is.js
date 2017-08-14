@@ -22,32 +22,16 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+import {tagName} from './tag-name';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+/**
+ * Check if a given value is of a given type according to the tag name
+ * of the `value`.
+ *
+ * @param {*} value Value to check.
+ * @param {string} tag Expected tag name.
+ * @return {boolean} `true` if `value` is of given type, `false` otherwise.
+ */
+export function is(value, tag) {
+  return tagName(value) === `[object ${tag}]`;
+}

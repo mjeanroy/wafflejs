@@ -22,32 +22,16 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isObject,
-  isElement,
-  isString,
-  has,
-  keys,
-  forEach,
-  defaults,
-  filter,
-  indexBy,
-} from '../src/index.underscore';
+import {triggerMouseEvent} from './trigger-mouse-event';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Underscore', () => {
-  testSuite({
-    isUndefined,
-    isObject,
-    isElement,
-    isString,
-    has,
-    keys,
-    forEach,
-    defaults,
-    filter,
-    indexBy,
-  });
-});
+/**
+ * Trigger dblclick mouse event.
+ *
+ * @param {DOMNode} relatedTarget The node target.
+ * @param {boolean} shiftKey If the shift key is pressed.
+ * @param {ctrlKey} ctrlKey If the ctrl key is pressed.
+ * @return {Event} The created event.
+ */
+export function triggerDblClick(relatedTarget, shiftKey = false, ctrlKey = false) {
+  return triggerMouseEvent('dblclick', relatedTarget, shiftKey, ctrlKey);
+}

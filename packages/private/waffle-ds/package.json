@@ -1,26 +1,27 @@
 {
-  "name": "@waffle/commons",
+  "name": "@waffle/ds",
   "version": "0.6.0",
+  "description": "DataStructures for WaffleJS",
   "private": true,
-  "description": "Commons module for @waffle",
-  "scripts": {
-    "travis": "gulp travis",
-    "lint": "gulp lint",
-    "tdd": "gulp tdd",
-    "test": "gulp test"
-  },
+  "main": "src/index.js",
+  "author": "mickael.jeanroy@gmail.com",
+  "license": "MIT",
+  "homepage": "https://github.com/mjeanroy/wafflejs#readme",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/mjeanroy/wafflejs.git"
   },
-  "author": "mickael.jeanroy@gmail.com",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mjeanroy/wafflejs/issues"
   },
-  "homepage": "https://github.com/mjeanroy/wafflejs#readme",
+  "scripts": {
+    "lint": "gulp lint",
+    "tdd": "gulp tdd",
+    "travis": "gulp travis",
+    "test": "gulp test"
+  },
   "devDependencies": {
-    "angular": "1.6.5",
+    "@waffle/commons": "*",
     "babel-core": "6.25.0",
     "babel-preset-es2015": "6.24.1",
     "eslint": "4.4.1",
@@ -45,8 +46,8 @@
     "lodash": "4.17.4",
     "phantomjs-prebuilt": "2.1.14",
     "rollup": "0.47.4",
+    "rollup-plugin-alias": "1.3.1",
     "rollup-plugin-commonjs": "8.1.0",
-    "rollup-plugin-node-resolve": "3.0.0",
-    "underscore": "1.8.3"
+    "rollup-plugin-node-resolve": "3.0.0"
   }
 }

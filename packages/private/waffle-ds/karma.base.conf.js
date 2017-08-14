@@ -23,8 +23,9 @@
  */
 
 const path = require('path');
-const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
+const nodeResolve = require('rollup-plugin-node-resolve');
+const alias = require('rollup-plugin-alias');
 
 module.exports = (config) => ({
   // base path, that will be used to resolve files and exclude
@@ -38,8 +39,8 @@ module.exports = (config) => ({
     path.join(__dirname, 'node_modules', 'jasmine-utils', 'src', 'jasmine-utils.js'),
 
     path.join(__dirname, 'test', 'index.standalone.js'),
-    path.join(__dirname, 'test', 'index.underscore.js'),
     path.join(__dirname, 'test', 'index.angularjs.js'),
+    path.join(__dirname, 'test', 'index.underscore.js'),
   ],
 
   exclude: [
@@ -98,15 +99,42 @@ module.exports = (config) => ({
   reportSlowerThan: 500,
 
   preprocessors: {
-    'test/**/*.js': ['rollup', 'babel'],
+    'test/index.standalone.js': ['rollupStandalone', 'babel'],
+    'test/index.underscore.js': ['rollupAngularJS', 'babel'],
+    'test/index.angularjs.js': ['rollupUnderscore', 'babel'],
   },
 
   rollupPreprocessor: {
     format: 'iife',
-    moduleName: 'WaffleCommons',
-    plugins: [
-      nodeResolve(),
-      commonjs(),
-    ],
+    moduleName: 'WaffleDs',
+  },
+
+  customPreprocessors: {
+    rollupStandalone: rollupConfiguration('standalone'),
+    rollupAngularJS: rollupConfiguration('angularjs'),
+    rollupUnderscore: rollupConfiguration('underscore'),
   },
 });
+
+/**
+ * Create the rollup configuration with appropriate link on `@waffle/commons`
+ * internal package.
+ *
+ * @param {string} target Link on `@waffle/commons`.
+ * @return {Object} Rollup configuration.
+ */
+function rollupConfiguration(target) {
+  return {
+    base: 'rollup',
+    options: {
+      plugins: [
+        alias({
+          '@waffle/commons': require.resolve(`@waffle/commons/src/index.${target}.js`),
+        }),
+
+        commonjs(),
+        nodeResolve(),
+      ],
+    },
+  };
+}

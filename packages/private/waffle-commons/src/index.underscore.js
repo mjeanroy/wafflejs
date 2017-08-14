@@ -35,6 +35,9 @@ export const isNull = _.isNull;
 export const isObject = _.isObject;
 export const isElement = _.isElement;
 export const isString = _.isString;
+export const isNumber = _.isNumber;
+export const isDate = _.isDate;
+export const isBoolean = _.isBoolean;
 export const identity = _.identity;
 export const has = _.has;
 export const keys = _.keys;
@@ -42,6 +45,7 @@ export const forEach = _.forEach;
 export const defaults = _.defaults;
 export const filter = _.filter;
 export const indexBy = _.indexBy;
+export const find = _.find;
 
 export const isNil = isNilFactory(isUndefined, isNull);
 export const toString = toStringFactory(isNil);

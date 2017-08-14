@@ -22,54 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  identity,
-  has,
-  keys,
-  forEach,
-  find,
-  defaults,
-  filter,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.standalone';
+import {is} from './internal/is';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Standalone', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    identity,
-    has,
-    keys,
-    forEach,
-    find,
-    defaults,
-    filter,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+/**
+ * Create the `isNumber` function.
+ *
+ * @return {function} The `isNumber` function.
+ */
+export function isNumberFactory() {
+  /**
+   * Checks if `value` is a number value.
+   *
+   * @param {*} obj The value to check.
+   * @return {boolean} `true` if `obj` is a `number`, `false` otherwise.
+   */
+  return function isNumber(obj) {
+    return is(obj, 'Number');
+  };
+}

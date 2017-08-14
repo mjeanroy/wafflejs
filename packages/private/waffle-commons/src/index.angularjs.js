@@ -26,8 +26,10 @@ import angular from 'angular';
 
 import {isNullFactory} from './core/is-null';
 import {isNilFactory} from './core/is-nil';
+import {isBooleanFactory} from './core/is-boolean';
 import {hasFactory} from './core/has';
 import {keysFactory} from './core/keys';
+import {findFactory} from './core/find';
 import {defaultsFactory} from './core/defaults';
 import {filterFactory} from './core/filter';
 import {indexByFactory} from './core/index-by';
@@ -41,14 +43,18 @@ export const isUndefined = angular.isUndefined;
 export const isObject = angular.isObject;
 export const isElement = angular.isElement;
 export const isString = angular.isString;
+export const isNumber = angular.isNumber;
+export const isDate = angular.isDate;
 export const identity = angular.identity;
 export const forEach = angular.forEach;
 
 // Factories
 export const isNull = isNullFactory();
 export const isNil = isNilFactory(isUndefined, isNull);
+export const isBoolean = isBooleanFactory();
 export const has = hasFactory();
 export const keys = keysFactory(has);
+export const find = findFactory();
 export const defaults = defaultsFactory(forEach, keys, isUndefined);
 export const filter = filterFactory();
 export const indexBy = indexByFactory(isString);

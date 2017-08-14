@@ -36,6 +36,7 @@ module.exports = (config) => ({
   ],
 
   files: [
+    path.join(__dirname, 'node_modules', 'jasmine-utils', 'src', 'jasmine-utils.js'),
     path.join(__dirname, 'test', 'index.standalone.js'),
     path.join(__dirname, 'test', 'index.underscore.js'),
     path.join(__dirname, 'test', 'index.angularjs.js'),

@@ -22,54 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  identity,
-  has,
-  keys,
-  forEach,
-  find,
-  defaults,
-  filter,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.standalone';
+import {is} from './internal/is';
 
-import {testSuite} from './core/index';
-
-describe('Waffle Standalone', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    identity,
-    has,
-    keys,
-    forEach,
-    find,
-    defaults,
-    filter,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+/**
+ * Create the `isBoolean` function.
+ *
+ * @return {function} The `isBoolean` function.
+ */
+export function isBooleanFactory() {
+  /**
+   * Checks if `value` is a boolean value.
+   *
+   * @param {*} obj The value to check.
+   * @return {boolean} `true` if `obj` is a `boolean`, `false` otherwise.
+   */
+  return function isBoolean(obj) {
+    return obj === true || obj === false || is(obj, 'Boolean');
+  };
+}

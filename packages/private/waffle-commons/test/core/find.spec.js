@@ -22,54 +22,30 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  identity,
-  has,
-  keys,
-  forEach,
-  find,
-  defaults,
-  filter,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.standalone';
+export const findSpec = (find) => {
+  describe('find', () => {
+    it('should find element in collection', () => {
+      const callback = jasmine.createSpy('callback').and.callFake((value) => (
+        value % 2 === 0
+      ));
 
-import {testSuite} from './core/index';
+      const a1 = [1, 2, 3, 4];
+      const a2 = [1, 3, 5];
 
-describe('Waffle Standalone', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    identity,
-    has,
-    keys,
-    forEach,
-    find,
-    defaults,
-    filter,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+      const r1 = find(a1, callback);
+      const r2 = find(a2, callback);
+
+      expect(r1).toBe(2);
+      expect(r2).toBeUndefined();
+
+      expect(callback).toHaveBeenCalledWith(1, 0, a1);
+      expect(callback).toHaveBeenCalledWith(2, 1, a1);
+      expect(callback).not.toHaveBeenCalledWith(3, 2, a1);
+      expect(callback).not.toHaveBeenCalledWith(4, 3, a1);
+
+      expect(callback).toHaveBeenCalledWith(1, 0, a2);
+      expect(callback).toHaveBeenCalledWith(3, 1, a2);
+      expect(callback).toHaveBeenCalledWith(5, 2, a2);
+    });
   });
-});
+};

@@ -22,4 +22,5 @@
  * SOFTWARE.
  */
 
+import './comparators/index';
 import './renderers/index';

@@ -22,54 +22,16 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  identity,
-  has,
-  keys,
-  forEach,
-  find,
-  defaults,
-  filter,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.standalone';
+export const isBooleanSpec = (isBoolean) => {
+  describe('isBoolean', () => {
+    it('should check if object is a boolean', () => {
+      expect(isBoolean(true)).toBe(true);
+      expect(isBoolean(false)).toBe(true);
+      expect(isBoolean(Boolean(''))).toBe(true);
 
-import {testSuite} from './core/index';
-
-describe('Waffle Standalone', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    identity,
-    has,
-    keys,
-    forEach,
-    find,
-    defaults,
-    filter,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+      expect(isBoolean(undefined)).toBe(false);
+      expect(isBoolean(null)).toBe(false);
+      expect(isBoolean(1)).toBe(false);
+    });
   });
-});
+};

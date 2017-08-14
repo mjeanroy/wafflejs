@@ -29,6 +29,7 @@
     "gulp-eslint": "4.0.0",
     "gulp-util": "3.0.8",
     "jasmine-core": "2.7.0",
+    "jasmine-utils": "0.5.0",
     "karma": "1.7.0",
     "karma-babel-preprocessor": "6.0.1",
     "karma-chrome-launcher": "2.2.0",

@@ -22,54 +22,17 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  identity,
-  has,
-  keys,
-  forEach,
-  find,
-  defaults,
-  filter,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.standalone';
+export const isNumberSpec = (isNumber) => {
+  describe('isNumber', () => {
+    it('should check if object is a number', () => {
+      expect(isNumber(0)).toBe(true);
+      expect(isNumber(1)).toBe(true);
+      expect(isNumber(NaN)).toBe(true);
 
-import {testSuite} from './core/index';
-
-describe('Waffle Standalone', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    identity,
-    has,
-    keys,
-    forEach,
-    find,
-    defaults,
-    filter,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+      expect(isNumber(false)).toBe(false);
+      expect(isNumber(Boolean(''))).toBe(false);
+      expect(isNumber(undefined)).toBe(false);
+      expect(isNumber(null)).toBe(false);
+    });
   });
-});
+};

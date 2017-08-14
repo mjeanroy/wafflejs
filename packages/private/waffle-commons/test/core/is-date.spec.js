@@ -22,54 +22,18 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  identity,
-  has,
-  keys,
-  forEach,
-  find,
-  defaults,
-  filter,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.standalone';
+export const isDateSpec = (isDate) => {
+  describe('isDate', () => {
+    it('should check if object is a date', () => {
+      expect(isDate(new Date())).toBe(true);
 
-import {testSuite} from './core/index';
-
-describe('Waffle Standalone', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    identity,
-    has,
-    keys,
-    forEach,
-    find,
-    defaults,
-    filter,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+      expect(isDate(0)).toBe(false);
+      expect(isDate(1)).toBe(false);
+      expect(isDate(NaN)).toBe(false);
+      expect(isDate(false)).toBe(false);
+      expect(isDate(Boolean(''))).toBe(false);
+      expect(isDate(undefined)).toBe(false);
+      expect(isDate(null)).toBe(false);
+    });
   });
-});
+};

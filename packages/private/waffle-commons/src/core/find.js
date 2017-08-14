@@ -22,54 +22,31 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  identity,
-  has,
-  keys,
-  forEach,
-  find,
-  defaults,
-  filter,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.standalone';
+/**
+ * Create the `find` function.
+ *
+ * @return {function} The `find` function.
+ */
+export function findFactory() {
+  /**
+   * Looks through each value in the list, returning the first one that
+   * passes a truth test (predicate), or undefined if no value passes the test.
+   * The function returns as soon as it finds an acceptable element, and doesn't
+   * traverse the entire list.
+   *
+   * @param {Array} collection Array (or "array-like" object).
+   * @param {function} predicate Predicate function.
+   * @param {*} ctx Callback context (i.e value of `this`).
+   * @return {*} The first valid value.
+   */
+  return function find(collection, predicate, ctx) {
+    for (let i = 0, size = collection.length; i < size; ++i) {
+      const value = collection[i];
+      if (predicate.call(ctx, value, i, collection)) {
+        return value;
+      }
+    }
 
-import {testSuite} from './core/index';
-
-describe('Waffle Standalone', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    identity,
-    has,
-    keys,
-    forEach,
-    find,
-    defaults,
-    filter,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+    return undefined;
+  };
+}

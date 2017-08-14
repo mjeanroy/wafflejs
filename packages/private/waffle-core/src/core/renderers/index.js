@@ -42,14 +42,3 @@ const renderers = {
 export function getRenderer(name) {
   return has(renderers, name) ? renderers[name] : null;
 }
-
-/**
- * Add (or override exsisting) renderer.
- *
- * @param {string} name Renderer identitier.
- * @param {function} rendererFn Renderer function.
- * @return {void}
- */
-export function addRenderer(name, rendererFn) {
-  renderers[name] = rendererFn;
-}

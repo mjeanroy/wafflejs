@@ -3,7 +3,8 @@
   "packages": [
     "packages/private/waffle-commons",
     "packages/private/waffle-jq",
-    "packages/private/waffle-ds"
+    "packages/private/waffle-ds",
+    "packages/private/waffle-core"
   ],
   "version": "0.0.0"
 }

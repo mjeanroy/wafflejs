@@ -24,22 +24,35 @@
 
 import angular from 'angular';
 
+import {isNullFactory} from './core/is-null';
+import {isNilFactory} from './core/is-nil';
 import {hasFactory} from './core/has';
 import {keysFactory} from './core/keys';
 import {defaultsFactory} from './core/defaults';
 import {filterFactory} from './core/filter';
 import {indexByFactory} from './core/index-by';
+import {toStringFactory} from './core/to-string';
+import {toUpperFactory} from './core/to-upper';
+import {toLowerFactory} from './core/to-lower';
+import {capitalizeFactory} from './core/capitalize';
 
 // Methods from AngularJS
 export const isUndefined = angular.isUndefined;
 export const isObject = angular.isObject;
 export const isElement = angular.isElement;
 export const isString = angular.isString;
+export const identity = angular.identity;
 export const forEach = angular.forEach;
 
 // Factories
+export const isNull = isNullFactory();
+export const isNil = isNilFactory(isUndefined, isNull);
 export const has = hasFactory();
 export const keys = keysFactory(has);
 export const defaults = defaultsFactory(forEach, keys, isUndefined);
 export const filter = filterFactory();
 export const indexBy = indexByFactory(isString);
+export const toString = toStringFactory(isNil);
+export const toUpper = toUpperFactory(toString);
+export const toLower = toLowerFactory(toString);
+export const capitalize = capitalizeFactory(toString);

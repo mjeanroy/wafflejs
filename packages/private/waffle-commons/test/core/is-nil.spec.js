@@ -22,29 +22,14 @@
  * SOFTWARE.
  */
 
-import _ from 'underscore';
-
-import {isNilFactory} from './core/is-nil';
-import {toStringFactory} from './core/to-string';
-import {toUpperFactory} from './core/to-upper';
-import {toLowerFactory} from './core/to-lower';
-import {capitalizeFactory} from './core/capitalize';
-
-export const isUndefined = _.isUndefined;
-export const isNull = _.isNull;
-export const isObject = _.isObject;
-export const isElement = _.isElement;
-export const isString = _.isString;
-export const identity = _.identity;
-export const has = _.has;
-export const keys = _.keys;
-export const forEach = _.forEach;
-export const defaults = _.defaults;
-export const filter = _.filter;
-export const indexBy = _.indexBy;
-
-export const isNil = isNilFactory(isUndefined, isNull);
-export const toString = toStringFactory(isNil);
-export const toUpper = toUpperFactory(toString);
-export const toLower = toLowerFactory(toString);
-export const capitalize = capitalizeFactory(toString);
+ export const isNilSpec = (isNil) => {
+   describe('isNil', () => {
+      it('should check if object is null or undefined', () => {
+         expect(isNil(null)).toBe(true);
+         expect(isNil(undefined)).toBe(true);
+         expect(isNil(0)).toBe(false);
+         expect(isNil('')).toBe(false);
+         expect(isNil(NaN)).toBe(false);
+       });
+   });
+ };

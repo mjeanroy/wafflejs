@@ -23,14 +23,21 @@
  */
 
 import {isUndefinedSpec} from './is-undefined.spec';
+import {isNullSpec} from './is-null.spec';
+import {isNilSpec} from './is-nil.spec';
 import {isObjectSpec} from './is-object.spec';
 import {isStringSpec} from './is-string.spec';
+import {identitySpec} from './identity.spec';
 import {hasSpec} from './has.spec';
 import {keysSpec} from './keys.spec';
 import {forEachSpec} from './for-each.spec';
 import {defaultsSpec} from './defaults.spec';
 import {filterSpec} from './filter.spec';
 import {indexBySpec} from './index-by.spec';
+import {toStringSpec} from './to-string.spec';
+import {toUpperSpec} from './to-upper.spec';
+import {toLowerSpec} from './to-lower.spec';
+import {capitalizeSpec} from './capitalize.spec';
 
 /**
  * Run test suite.
@@ -40,12 +47,19 @@ import {indexBySpec} from './index-by.spec';
  */
 export function testSuite(_) {
   isUndefinedSpec(_.isUndefined);
+  isNullSpec(_.isNull);
+  isNilSpec(_.isNil);
   isObjectSpec(_.isObject);
   isStringSpec(_.isString);
+  identitySpec(_.identity);
   hasSpec(_.has);
   keysSpec(_.keys);
   forEachSpec(_.forEach);
   defaultsSpec(_.defaults);
   filterSpec(_.filter);
   indexBySpec(_.indexBy);
+  toStringSpec(_.toString);
+  toUpperSpec(_.toUpper);
+  toLowerSpec(_.toLower);
+  capitalizeSpec(_.capitalize);
 }

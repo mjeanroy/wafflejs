@@ -22,29 +22,34 @@
  * SOFTWARE.
  */
 
-import _ from 'underscore';
+import {has, identity, toUpper, toLower, capitalize} from '@waffle/commons';
 
-import {isNilFactory} from './core/is-nil';
-import {toStringFactory} from './core/to-string';
-import {toUpperFactory} from './core/to-upper';
-import {toLowerFactory} from './core/to-lower';
-import {capitalizeFactory} from './core/capitalize';
+// Built-in renderers.
+const renderers = {
+  $identity: identity,
+  $empty: () => '',
+  $lowercase: toLower,
+  $uppercase: toUpper,
+  $capitalize: capitalize,
+};
 
-export const isUndefined = _.isUndefined;
-export const isNull = _.isNull;
-export const isObject = _.isObject;
-export const isElement = _.isElement;
-export const isString = _.isString;
-export const identity = _.identity;
-export const has = _.has;
-export const keys = _.keys;
-export const forEach = _.forEach;
-export const defaults = _.defaults;
-export const filter = _.filter;
-export const indexBy = _.indexBy;
+/**
+ * Get renderer function by its id.
+ *
+ * @param {string} name Renderer identitier.
+ * @return {function} Renderer function, `null` if no renderer exist for the given `name`.
+ */
+export function getRenderer(name) {
+  return has(renderers, name) ? renderers[name] : null;
+}
 
-export const isNil = isNilFactory(isUndefined, isNull);
-export const toString = toStringFactory(isNil);
-export const toUpper = toUpperFactory(toString);
-export const toLower = toLowerFactory(toString);
-export const capitalize = capitalizeFactory(toString);
+/**
+ * Add (or override exsisting) renderer.
+ *
+ * @param {string} name Renderer identitier.
+ * @param {function} rendererFn Renderer function.
+ * @return {void}
+ */
+export function addRenderer(name, rendererFn) {
+  renderers[name] = rendererFn;
+}

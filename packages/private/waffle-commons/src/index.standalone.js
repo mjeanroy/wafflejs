@@ -23,23 +23,37 @@
  */
 
 import {isUndefinedFactory} from './core/is-undefined';
+import {isNullFactory} from './core/is-null';
+import {isNilFactory} from './core/is-nil';
 import {isObjectFactory} from './core/is-object';
 import {isElementFactory} from './core/is-element';
 import {isStringFactory} from './core/is-string';
+import {identityFactory} from './core/identity';
 import {hasFactory} from './core/has';
 import {keysFactory} from './core/keys';
 import {forEachFactory} from './core/for-each';
 import {defaultsFactory} from './core/defaults';
 import {filterFactory} from './core/filter';
 import {indexByFactory} from './core/index-by';
+import {toStringFactory} from './core/to-string';
+import {toUpperFactory} from './core/to-upper';
+import {toLowerFactory} from './core/to-lower';
+import {capitalizeFactory} from './core/capitalize';
 
 export const isUndefined = isUndefinedFactory();
+export const isNull = isNullFactory();
+export const isNil = isNilFactory(isUndefined, isNull);
 export const isObject = isObjectFactory();
 export const isElement = isElementFactory();
 export const isString = isStringFactory();
+export const identity = identityFactory();
 export const has = hasFactory();
 export const keys = keysFactory(has);
 export const forEach = forEachFactory();
 export const defaults = defaultsFactory(forEach, keys, isUndefined);
 export const filter = filterFactory();
 export const indexBy = indexByFactory(isString);
+export const toString = toStringFactory(isNil);
+export const toUpper = toUpperFactory(toString);
+export const toLower = toLowerFactory(toString);
+export const capitalize = capitalizeFactory(toString);

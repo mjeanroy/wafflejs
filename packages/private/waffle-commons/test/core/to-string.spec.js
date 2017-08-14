@@ -22,29 +22,28 @@
  * SOFTWARE.
  */
 
-import _ from 'underscore';
+ export const toStringSpec = (toString) => {
+   describe('toString', () => {
+     it('should should return to string value', () => {
+       expect(toString(null)).toBe('');
+       expect(toString(undefined)).toBe('');
+       expect(toString('foo')).toBe('foo');
+       expect(toString('FOO')).toBe('FOO');
+       expect(toString(0)).toBe('0');
+       expect(toString(false)).toBe('false');
+     });
 
-import {isNilFactory} from './core/is-nil';
-import {toStringFactory} from './core/to-string';
-import {toUpperFactory} from './core/to-upper';
-import {toLowerFactory} from './core/to-lower';
-import {capitalizeFactory} from './core/capitalize';
+     it('should should call object toString value', () => {
+       const expected = 'o';
+       const toStringSpy = jasmine.createSpy('toString').and.returnValue(expected);
+       const o = {
+         toString: toStringSpy,
+       };
 
-export const isUndefined = _.isUndefined;
-export const isNull = _.isNull;
-export const isObject = _.isObject;
-export const isElement = _.isElement;
-export const isString = _.isString;
-export const identity = _.identity;
-export const has = _.has;
-export const keys = _.keys;
-export const forEach = _.forEach;
-export const defaults = _.defaults;
-export const filter = _.filter;
-export const indexBy = _.indexBy;
+       const result = toString(o);
 
-export const isNil = isNilFactory(isUndefined, isNull);
-export const toString = toStringFactory(isNil);
-export const toUpper = toUpperFactory(toString);
-export const toLower = toLowerFactory(toString);
-export const capitalize = capitalizeFactory(toString);
+       expect(result).toBe(expected);
+       expect(toStringSpy).toHaveBeenCalledWith();
+     });
+   });
+ };

@@ -24,15 +24,22 @@
 
 import {
   isUndefined,
+  isNull,
+  isNil,
   isObject,
   isElement,
   isString,
+  identity,
   has,
   keys,
   forEach,
   defaults,
   filter,
   indexBy,
+  toString,
+  toUpper,
+  toLower,
+  capitalize,
 } from '../src/index.underscore';
 
 import {testSuite} from './core/index';
@@ -40,14 +47,21 @@ import {testSuite} from './core/index';
 describe('Waffle Underscore', () => {
   testSuite({
     isUndefined,
+    isNull,
+    isNil,
     isObject,
     isElement,
     isString,
+    identity,
     has,
     keys,
     forEach,
     defaults,
     filter,
     indexBy,
+    toString,
+    toUpper,
+    toLower,
+    capitalize,
   });
 });

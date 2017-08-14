@@ -100,9 +100,7 @@ module.exports = (config) => {
     singleRun: true,
 
     reporters: ['dots', 'saucelabs'],
-    browsers: _.keys(browsers).concat(
-      'PhantomJS'
-    ),
+    browsers: _.keys(browsers),
 
     concurrency: 1,
     captureTimeout: 120000,

@@ -22,62 +22,8 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+import './new-change.spec';
+import './create-splice.spec';
+import './create-update.spec';
+import './observable.spec';
+import './index.spec';

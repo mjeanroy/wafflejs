@@ -22,62 +22,15 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+export const isArraySpec = (isArray) => {
+  describe('isArray', () => {
+    it('should check if object is an array', () => {
+      expect(isArray([])).toBe(true);
+      expect(isArray(undefined)).toBe(false);
+      expect(isArray(null)).toBe(false);
+      expect(isArray(0)).toBe(false);
+      expect(isArray('')).toBe(false);
+      expect(isArray(NaN)).toBe(false);
+    });
   });
-});
+};

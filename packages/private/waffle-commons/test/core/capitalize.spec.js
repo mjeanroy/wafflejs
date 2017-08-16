@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
- export const capitalizeSpec = (capitalize) => {
-   describe('capitalize', () => {
-     it('should capitalize string', () => {
-       expect(capitalize('foo')).toBe('Foo');
-       expect(capitalize('FOO')).toBe('FOO');
-       expect(capitalize('Foo')).toBe('Foo');
-     });
-   });
- };
+export const capitalizeSpec = (capitalize) => {
+  describe('capitalize', () => {
+    it('should capitalize string', () => {
+      expect(capitalize('foo')).toBe('Foo');
+      expect(capitalize('FOO')).toBe('FOO');
+      expect(capitalize('Foo')).toBe('Foo');
+    });
+  });
+};

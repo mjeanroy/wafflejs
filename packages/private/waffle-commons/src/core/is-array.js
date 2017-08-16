@@ -22,62 +22,23 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
+import {is} from './internal/is';
 
-import {testSuite} from './core/index';
+/**
+ * Create the `isArray` function.
+ *
+ * @return {function} The `isArray` function.
+ */
+export function isArrayFactory() {
+  const _isArray = Array.isArray || ((o) => is(o, 'Array'));
 
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+  /**
+   * Checks if `value` is an array.
+   *
+   * @param {*} obj The value to check.
+   * @return {boolean} `true` if `obj` is an array, `false` otherwise.
+   */
+  return function isArray(obj) {
+    return _isArray(obj);
+  };
+}

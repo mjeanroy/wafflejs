@@ -38,12 +38,16 @@ export const isString = _.isString;
 export const isNumber = _.isNumber;
 export const isDate = _.isDate;
 export const isBoolean = _.isBoolean;
+export const isArray = _.isArray;
 export const identity = _.identity;
 export const has = _.has;
 export const keys = _.keys;
+export const size = _.size;
+export const isEmpty = _.isEmpty;
 export const forEach = _.forEach;
 export const defaults = _.defaults;
 export const filter = _.filter;
+export const reject = _.reject;
 export const indexBy = _.indexBy;
 export const find = _.find;
 

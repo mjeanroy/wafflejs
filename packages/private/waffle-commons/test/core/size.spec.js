@@ -22,62 +22,14 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+export const sizeSpec = (size) => {
+  describe('size', () => {
+    it('should get size of list', () => {
+      expect(size(undefined)).toBe(0);
+      expect(size(null)).toBe(0);
+      expect(size([])).toBe(0);
+      expect(size([1])).toBe(1);
+      expect(size([1, 2])).toBe(2);
+    });
   });
-});
+};

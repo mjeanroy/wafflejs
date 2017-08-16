@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2017 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,62 +22,47 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
+import {createSplice, createUpdate, Observable} from '../../../src/core/observable/index';
 
-import {testSuite} from './core/index';
+describe('observable', () => {
+  it('should create splice change', () => {
+    const object = [0, 4, 5];
+    const index = 1;
+    const added = [1, 2, 3];
+    const removed = [4, 5];
 
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+    const change = createSplice(removed, added, index, object);
+
+    expect(change).toEqual({
+      type: 'splice',
+      index,
+      object,
+      removed,
+      addedCount: added.length,
+      added,
+    });
+  });
+
+  it('should create update change', () => {
+    const object = [1, 4, 5];
+    const index = 1;
+
+    const change = createUpdate(index, object);
+
+    expect(change).toEqual({
+      type: 'update',
+      index,
+      object,
+      removed: [],
+      addedCount: 0,
+      added: [],
+    });
+  });
+
+  it('should create observable', () => {
+    const object = new Observable();
+    expect(object._observers).toEqual([]);
+    expect(object._changes).toEqual([]);
+    expect(object._observableTask).toBeNull();
   });
 });

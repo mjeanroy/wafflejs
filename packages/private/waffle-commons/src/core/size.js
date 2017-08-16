@@ -22,62 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+/**
+ * Create the `size` function.
+ *
+ * @param {function} isNil The `isNil` function.
+ * @return {function} The `size` function.
+ */
+export function sizeFactory(isNil) {
+  /**
+   * Return the size of the collection (this implementation does not support
+   * size of objects). This function returns zero for `null` and `undefined`.
+   *
+   * @param {Array} collection The collection.
+   * @return {number} The size of the collection.
+   */
+  return function size(collection) {
+    return isNil(collection) ? 0 : collection.length;
+  };
+}

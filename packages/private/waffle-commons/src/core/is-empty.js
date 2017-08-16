@@ -22,62 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+/**
+ * Create the `isEmpty` function.
+ *
+ * @param {function} size The `size` function.
+ * @return {function} The `isEmpty` function.
+ */
+export function isEmptyFactory(size) {
+  /**
+   * Check if the collection is empty (i.e if `length` is equal to zero).
+   * The implementation does not support object.
+   *
+   * @param {Array} collection The collection.
+   * @return {boolean} `true` if the collection is empty, `false` otherwise..
+   */
+  return function isEmpty(collection) {
+    return size(collection) === 0;
+  };
+}

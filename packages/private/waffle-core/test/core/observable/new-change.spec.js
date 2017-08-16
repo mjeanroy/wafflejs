@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2017 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,62 +22,26 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
+import {newChange} from '../../../src/core/observable/new-change';
 
-import {testSuite} from './core/index';
+describe('newChange', () => {
+  it('should create new change', () => {
+    const type = 'splice';
+    const removed = [2, 3];
+    const added = [4, 5, 6];
+    const addedCount = added.length;
+    const object = [1, 4, 5, 6];
+    const index = 1;
 
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+    const change = newChange(type, removed, added, index, object);
+
+    expect(change).toEqual({
+      type,
+      index,
+      object,
+      removed,
+      addedCount,
+      added,
+    });
   });
 });

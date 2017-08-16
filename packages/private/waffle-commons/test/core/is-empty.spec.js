@@ -22,62 +22,14 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+export const isEmptySpec = (isEmpty) => {
+  describe('isEmpty', () => {
+    it('should check if list is empty', () => {
+      expect(isEmpty(undefined)).toBeTrue();
+      expect(isEmpty(null)).toBeTrue();
+      expect(isEmpty([])).toBeTrue();
+      expect(isEmpty([1])).toBeFalse();
+      expect(isEmpty([1, 2])).toBeFalse();
+    });
   });
-});
+};

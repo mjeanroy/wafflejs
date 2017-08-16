@@ -24,3 +24,4 @@
 
 import './comparators/index';
 import './renderers/index';
+import './observable/index';

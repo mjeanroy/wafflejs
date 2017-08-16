@@ -22,62 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
+export const rejectSpec = (reject) => {
+  describe('reject', () => {
+    it('should reject value in array', () => {
+      const callback = jasmine.createSpy('callback').and.callFake((value) => (
+        value % 2 === 0
+      ));
 
-import {testSuite} from './core/index';
+      const array = [1, 2, 3, 4];
+      const newArray = reject(array, callback, 10);
 
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
+      expect(newArray).toEqual([1, 3]);
+      expect(callback).toHaveBeenCalledWith(1, 0, array);
+      expect(callback).toHaveBeenCalledWith(2, 1, array);
+      expect(callback).toHaveBeenCalledWith(3, 2, array);
+      expect(callback).toHaveBeenCalledWith(4, 3, array);
+    });
   });
-});
+};

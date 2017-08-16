@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2017 Mickael Jeanroy
+ * Copyright (c) 2015 Mickael Jeanroy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,62 +22,26 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+/**
+ * Create new change object.
+ * A change object is a an object that define all information about a change
+ * that has occurred in a collection (a.k.a array, or "array-like" object).
+ *
+ * @param {string} type Change type (`"splice"`, `"update"`).
+ * @param {Array} removed Array of removed elements.
+ * @param {Array} added Array of added elements.
+ * @param {number} index The index where the change occurred.
+ * @param {Array} object The object where the change occurred.
+ * @return {Object} The change object.
+ */
+export function newChange(type, removed, added, index, object) {
+  const addedCount = added.length;
+  return {
+    type,
+    removed,
+    index,
+    addedCount,
+    object,
+    added,
+  };
+}

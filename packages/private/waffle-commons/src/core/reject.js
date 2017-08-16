@@ -22,62 +22,23 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
-
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+/**
+ * Create the `reject` function.
+ *
+ * @param {function} filter The `filter` function.
+ * @return {function} The `reject` function.
+ */
+export function rejectFactory(filter) {
+  /**
+   * Creates a new array without all elements that pass the test implemented
+   * by the provided function.
+   *
+   * @param {Array} collection Array (or "array-like" object).
+   * @param {function} predicate Predicate function.
+   * @param {*} ctx Callback context (i.e value of `this`).
+   * @return {void}
+   */
+  return function reject(collection, predicate, ctx) {
+    return filter(collection, (x, i, c) => !predicate.call(ctx, x, i, c));
+  };
+}

@@ -5,6 +5,9 @@
   "private": true,
   "main": "src/index.js",
   "scripts": {
+    "lint": "gulp lint",
+    "tdd": "gulp tdd",
+    "travis": "gulp travis",
     "test": "gulp test"
   },
   "repository": {

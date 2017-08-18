@@ -23,5 +23,6 @@
  */
 
 import './comparators/index';
+import './events/index';
 import './renderers/index';
 import './observable/index';

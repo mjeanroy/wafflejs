@@ -22,66 +22,21 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  isFunction,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  now,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
+ /**
+  * Create the `now` function.
+  *
+  * @return {function} The `now` factory.
+  */
+export function nowFactory() {
+  // Return current timestamp.
+  const _now = Date.now || (() => new Date().getTime());
 
-import {testSuite} from './core/index';
-
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    isFunction,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    now,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+  /**
+   * Return current timestamp.
+   *
+   * @return {number} Current timestamp.
+   */
+  return function now() {
+    return _now();
+  };
+}

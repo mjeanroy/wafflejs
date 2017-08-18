@@ -22,66 +22,47 @@
  * SOFTWARE.
  */
 
-import {
-  isUndefined,
-  isNull,
-  isNil,
-  isObject,
-  isElement,
-  isString,
-  isNumber,
-  isBoolean,
-  isDate,
-  isArray,
-  isFunction,
-  identity,
-  has,
-  keys,
-  size,
-  isEmpty,
-  forEach,
-  find,
-  defaults,
-  filter,
-  reject,
-  indexBy,
-  now,
-  toString,
-  toUpper,
-  toLower,
-  capitalize,
-} from '../src/index.angularjs';
+import {now} from '@waffle/commons';
 
-import {testSuite} from './core/index';
+/**
+ * Event representation.
+ * Note that waffle events does not bubbles.
+ * TODO Use custom event api if available.
+ *
+ * @class
+ */
+export class WaffleEvent {
+  /**
+   * Create the event.
+   *
+   * @param {string} event Event type.
+   * @param {Object} target Event target.
+   * @param {Object} params Event details.
+   */
+  constructor(event, target, params) {
+    this.type = event;
+    this.bubbles = false;
+    this.cancelable = false;
+    this.details = params;
+    this.timeStamp = now();
 
-describe('Waffle AngularJS', () => {
-  testSuite({
-    isUndefined,
-    isNull,
-    isNil,
-    isObject,
-    isElement,
-    isString,
-    isNumber,
-    isBoolean,
-    isDate,
-    isArray,
-    isFunction,
-    identity,
-    has,
-    keys,
-    size,
-    isEmpty,
-    forEach,
-    find,
-    defaults,
-    filter,
-    reject,
-    indexBy,
-    now,
-    toString,
-    toUpper,
-    toLower,
-    capitalize,
-  });
-});
+    this.target = target;
+    this.currentTarget = target;
+    this.srcElement = target;
+  }
+
+  // Nothing to do for now.
+  // eslint-disable-next-line
+  preventDefault() {
+  }
+
+  // Nothing to do for now.
+  // eslint-disable-next-line
+  stopPropagation() {
+  }
+
+  // Nothing to do for now.
+  // eslint-disable-next-line
+  stopImmediatePropagation() {
+  }
+}

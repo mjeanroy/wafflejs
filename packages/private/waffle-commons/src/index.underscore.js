@@ -39,6 +39,7 @@ export const isNumber = _.isNumber;
 export const isDate = _.isDate;
 export const isBoolean = _.isBoolean;
 export const isArray = _.isArray;
+export const isFunction = _.isFunction;
 export const identity = _.identity;
 export const has = _.has;
 export const keys = _.keys;
@@ -50,6 +51,7 @@ export const filter = _.filter;
 export const reject = _.reject;
 export const indexBy = _.indexBy;
 export const find = _.find;
+export const now = _.now;
 
 export const isNil = isNilFactory(isUndefined, isNull);
 export const toString = toStringFactory(isNil);
